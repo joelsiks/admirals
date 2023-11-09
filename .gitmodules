@@ -1,0 +1,3 @@
+[submodule "Vulkan2D"]
+	path = Vulkan2D
+	url = https://github.com/PaoloMazzon/Vulkan2D
