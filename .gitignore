@@ -17,6 +17,7 @@ bld/
 out/
 Admirals.dir
 .vs
+.vscode
 build
 SDL2
-.vscode
+Vulkan2D
