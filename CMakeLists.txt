@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 list(APPEND CMAKE_PREFIX_PATH "SDL2/cmake")
-project(admirals CXX)
+project(admirals)
 
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
 # Set SDL2_DIR to the path of your SDL2 directory
-set(SDL2_DIR SDL2)
-
-#set(Vulkan_LIBRARYS "${VULKAN_SDK}/Lib/vulkan-1.lib")
-#set(Vulkan_INCLUDE_DIRS "${VULKAN_SDK}/Include")
-
+set(SDL2_DIR include/SDL2)
+set(VK2D_DIR include/Vulkan2D)
 
 # Find Vulkan and SDL2
 find_package(Vulkan REQUIRED)
@@ -25,37 +25,43 @@ set(SOURCES
     src/Engine.cpp
 )
 
-set(VMA_FILES Vulkan2D/VulkanMemoryAllocator/include/vk_mem_alloc.h Vulkan2D/VulkanMemoryAllocator/src/VmaUsage.cpp)
+set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
 
 # Set the source files for the main directory
-file(GLOB VK2D_C Vulkan2D/VK2D/*.c)
-file(GLOB VK2D_H Vulkan2D/VK2D/*.h)
+file(GLOB VK2D_C ${VK2D_DIR}/VK2D/*.c)
+file(GLOB VK2D_H ${VK2D_DIR}/VK2D/*.h)
+file(GLOB ASSETS src/assets/*)
 
-# Create vk2d library
-add_library(vk2d SHARED ${VK2D_C} ${VK2D_H} ${VMA_FILES})
-target_link_libraries(vk2d ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
-target_include_directories(vk2d 
-    PUBLIC 
-    ${SDL2_INCLUDE_DIRS}
-    ${Vulkan_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan2D/
-    PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan2D/VK2D/
-    ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan2D/VulkanMemoryAllocator/src/
-    ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan2D/VulkanMemoryAllocator/include/
-)
+message("COPYING ASSETS: ${ASSETS}")
+file(COPY ${ASSETS} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 
-# Create a library with the sources
-add_library(admirals ${SOURCES})
-target_link_libraries(admirals PRIVATE vk2d ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
+## Create a library with the sources
+add_library(admirals ${SOURCES} ${VMA_FILES} ${VK2D_C} ${VK2D_H})
+target_link_libraries(admirals m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
 target_include_directories(admirals PRIVATE 
     "src/" 
+    ${SDL2_INCLUDE_DIRS}
+    ${Vulkan_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
 )
 
-## Create test executable
-add_executable(renderer_test src/test/renderer.test.cpp)
-target_link_libraries(renderer_test PRIVATE vk2d ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
+# Create test executable
+add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} ${VK2D_H})
+target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
 target_include_directories(renderer_test PRIVATE 
     "src/test/"
-    "src/assets/"
+    "src/test/assets/"
+    ${SDL2_INCLUDE_DIRS}
+    ${Vulkan_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
 )
+
+
+#add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} ${VK2D_H})
+#target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARIES} vulkan)
+#target_include_directories(renderer_test 
+#    PUBLIC 
+#    ${SDL2_INCLUDE_DIRS}
+#    ${Vulkan_INCLUDE_DIRS}
+#    ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan2D/
+#)

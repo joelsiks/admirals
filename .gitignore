@@ -19,5 +19,4 @@ Admirals.dir
 .vs
 .vscode
 build
-SDL2
-Vulkan2D
+include/*

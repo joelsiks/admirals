@@ -13,7 +13,7 @@ struct AssetStore {
 };
 
 void render_frame(const AssetStore assets) {
-    vk2dRendererDrawTexture(assets.texture, 0, 0, 1, 1, 0, 0, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    vk2dRendererDrawTexture(assets.texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0, 1400, 1400);
 }
 
 int check_quit() {
