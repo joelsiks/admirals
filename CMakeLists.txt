@@ -9,8 +9,6 @@ set(CMAKE_CXX_STANDARD 20)
 # Set SDL2_DIR to the path of your SDL2 directory
 set(SDL2_DIR "SDL2")
 
-
-
 set(Vulkan_LIBRARY "${VULKAN_SDK}/Lib/vulkan-1.lib")
 set(Vulkan_INCLUDE_DIRS "${VULKAN_SDK}/Include")
 
@@ -21,6 +19,7 @@ find_package(SDL2 CONFIG REQUIRED)
 message("SDL2_INCLUDE_DIRS: ${SDL2_INCLUDE_DIR}")
 message("SDL2_LIBRARIES: ${SDL2_LIBRARIES}")
 
+# Add source files here.
 set(SOURCES 
     src/Engine.cpp
 )
