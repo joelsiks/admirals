@@ -16,9 +16,6 @@ set(Vulkan_INCLUDE_DIRS "${VULKAN_SDK}/Include")
 find_package(Vulkan REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 
-message("SDL2_INCLUDE_DIRS: ${SDL2_INCLUDE_DIR}")
-message("SDL2_LIBRARIES: ${SDL2_LIBRARIES}")
-
 # Add source files here.
 set(SOURCES 
     src/Engine.cpp
@@ -37,6 +34,6 @@ add_library(admirals ${SOURCES} ${VMA_FILES} ${VK2D_C} ${VK2D_H})
 
 target_include_directories(admirals PRIVATE "Vulkan2D")
 
-target_include_directories(admirals PRIVATE "${CMAKE_SOURCE_DIR}/SDL2/include" ${Vulkan_INCLUDE_DIRS} "src/" "Vulkan2D/VulkanMemoryAllocator/src")
+target_include_directories(admirals PRIVATE ${SDL2_INCLUDE_DIRS} ${Vulkan_INCLUDE_DIRS} "src/" "Vulkan2D/VulkanMemoryAllocator/src")
 
 target_link_libraries(admirals PRIVATE ${SDL2_LIBRARIES} ${Vulkan_LIBRARIES})
