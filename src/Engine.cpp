@@ -1,9 +1,7 @@
 
 #include <iostream>
 
-#include "SDL.h"
-
-#include "VK2D/Image.h"
+#include "VK2D/Model.h"
 
 #include "Engine.hpp"
 

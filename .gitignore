@@ -20,3 +20,4 @@ Admirals.dir
 build
 SDL2
 .vscode
+.cache
