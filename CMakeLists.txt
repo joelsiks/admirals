@@ -22,7 +22,7 @@ message("Vulkan_INCLUDE_DIR: ${Vulkan_INCLUDE_DIR}")
 message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
 
 set(SOURCES 
-    src/Engine.cpp
+    src/engine/Engine.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -35,11 +35,13 @@ file(GLOB ASSETS src/assets/*)
 message("COPYING ASSETS: ${ASSETS}")
 file(COPY ${ASSETS} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 
-## Create a library with the sources
+# -----------------------------------------------------------------------------
+
+# Create a library with the sources
 add_library(admirals ${SOURCES} ${VMA_FILES} ${VK2D_C} ${VK2D_H})
 target_link_libraries(admirals m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
 target_include_directories(admirals PRIVATE 
-    "src/" 
+    "src/engine" 
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
@@ -50,18 +52,7 @@ add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} $
 target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
 target_include_directories(renderer_test PRIVATE 
     "src/test/"
-    "src/test/assets/"
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
 )
-
-
-#add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} ${VK2D_H})
-#target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARIES} vulkan)
-#target_include_directories(renderer_test 
-#    PUBLIC 
-#    ${SDL2_INCLUDE_DIRS}
-#    ${Vulkan_INCLUDE_DIRS}
-#    ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan2D/
-#)
