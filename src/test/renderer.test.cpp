@@ -1,4 +1,4 @@
-#include <SDL2/SDL_vulkan.h>
+#include <SDL_vulkan.h>
 #include <VK2D/VK2D.h>
 #include <VK2D/Validation.h>
 #include <stdbool.h>

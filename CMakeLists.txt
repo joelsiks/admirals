@@ -15,6 +15,11 @@ set(VK2D_DIR include/Vulkan2D)
 find_package(Vulkan REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 
+# Insert SDL2.dll location to SDL2_DLL environment variable.
+get_target_property(SDL2_DLL SDL2::SDL2 IMPORTED_LOCATION)
+
+
+message("SDL2.dll path: ${SDL2_DLL}")
 message("SDL2_DIR: ${SDL2_DIR}")
 message("SDL2_INCLUDE_DIRS: ${SDL2_INCLUDE_DIR}")
 message("SDL2_LIBRARIES: ${SDL2_LIBRARIES}")
@@ -55,4 +60,11 @@ target_include_directories(renderer_test PRIVATE
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
+)
+
+# Copy SDL2.dll to the output directory after the executable is built
+add_custom_command(TARGET renderer_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SDL2_DLL}"
+        $<TARGET_FILE_DIR:renderer_test>
 )
