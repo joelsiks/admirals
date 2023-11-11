@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-list(APPEND CMAKE_PREFIX_PATH "SDL2/cmake")
+list(APPEND CMAKE_PREFIX_PATH "include/SDL2/cmake")
 project(admirals)
 
 set(CMAKE_C_STANDARD 11)
