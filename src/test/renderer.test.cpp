@@ -2,9 +2,16 @@
 #include <VK2D/VK2D.h>
 #include <VK2D/Validation.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <time.h>
+#include <memory>
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+#include "UI/DisplayLayout.hpp"
+#include "UI/TextElement.hpp"
+#include "UI/Button.hpp"
+
+const int WINDOW_WIDTH  = 550;
+const int WINDOW_HEIGHT = 550;
 
 struct AssetStore {
     VK2DTexture texture;
@@ -45,9 +52,21 @@ int main(int argc, char *argv[]) {
     vk2dRendererSetCamera(camera);
 
     // Load assets
-    VK2DTexture texture = vk2dTextureLoad("assets/test.jpg");
-    vec4 clear = {1, 1, 1, 1};
-    AssetStore assets = {texture};
+	VK2DTexture texture = vk2dTextureLoad("assets/test.jpg");
+	vec4 clear = {1, 1, 1, 1};
+    AssetStore assets = { texture };
+
+    admirals::UI::DisplayLayout layout(WINDOW_WIDTH, WINDOW_HEIGHT);
+    
+    vec2 elementSize = {150, 40};
+
+    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize);
+    layout.AddElement(std::make_unique<admirals::UI::Button>(testBtn));
+
+    admirals::UI::TextElement testText("Text Element1", "This is a text element.", elementSize);
+    testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
+    layout.AddElement(std::make_unique<admirals::UI::TextElement>(testText));
+
 
     // Start render loop
     bool quit = false;
@@ -56,7 +75,8 @@ int main(int argc, char *argv[]) {
         quit = check_quit();
         vk2dRendererStartFrame(clear);
         render_frame(assets);
-        vk2dRendererEndFrame();
+        layout.RenderUIElements();
+		vk2dRendererEndFrame();
     }
 
     // Free resources
