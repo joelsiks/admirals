@@ -28,6 +28,11 @@ message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
 
 set(SOURCES 
     src/engine/Engine.cpp
+    src/engine/UI/DisplayLayout.cpp
+    src/engine/UI/Element.cpp
+    src/engine/UI/Button.cpp
+    src/engine/UI/TextElement.cpp
+    src/engine/UI/Util.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -47,6 +52,7 @@ add_library(admirals ${SOURCES} ${VMA_FILES} ${VK2D_C} ${VK2D_H})
 target_link_libraries(admirals m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
 target_include_directories(admirals PRIVATE 
     "src/engine" 
+    "src/engine/UI" 
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
@@ -54,8 +60,9 @@ target_include_directories(admirals PRIVATE
 
 # Create test executable
 add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} ${VK2D_H})
-target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
+target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY} admirals)
 target_include_directories(renderer_test PRIVATE 
+    "src/engine"
     "src/test/"
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}

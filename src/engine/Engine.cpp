@@ -5,7 +5,7 @@
 
 #include "Engine.hpp"
 
-Engine::Engine() {
+admirals::Engine::Engine() {
 
     std::cout << "Hello World" << std::endl;
 }
