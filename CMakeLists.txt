@@ -27,12 +27,15 @@ message("Vulkan_INCLUDE_DIR: ${Vulkan_INCLUDE_DIR}")
 message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
 
 set(SOURCES 
-    src/engine/Engine.cpp
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
     src/engine/UI/Button.cpp
     src/engine/UI/TextElement.cpp
     src/engine/UI/Util.cpp
+    src/engine/Model.cpp
+    src/engine/GameObject.cpp
+    src/engine/Scene.cpp
+    src/engine/Renderer.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -47,26 +50,36 @@ file(COPY ${ASSETS} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 
 # -----------------------------------------------------------------------------
 
-# Create a library with the sources
-add_library(admirals ${SOURCES} ${VMA_FILES} ${VK2D_C} ${VK2D_H})
-target_link_libraries(admirals m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
-target_include_directories(admirals PRIVATE 
-    "src/engine" 
-    "src/engine/UI" 
+add_library(vk2d SHARED ${VMA_FILES} ${VK2D_C} ${VK2D_H})
+target_link_libraries(vk2d m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
+target_include_directories(vk2d 
+    PUBLIC 
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
 )
 
+# Create a library with the sources
+add_library(engine SHARED ${SOURCES})
+target_link_libraries(engine vk2d)
+target_include_directories(engine PRIVATE 
+    "src/engine/" 
+)
+
 # Create test executable
-add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} ${VK2D_H})
-target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY} admirals)
+add_executable(renderer_test src/test/renderer.test.cpp)
+target_link_libraries(renderer_test engine)
 target_include_directories(renderer_test PRIVATE 
     "src/engine"
     "src/test/"
-    ${SDL2_INCLUDE_DIRS}
-    ${Vulkan_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
+)
+
+# Create test executable
+add_executable(gameObject_test src/test/gameObject.test.cpp)
+target_link_libraries(gameObject_test engine)
+target_include_directories(gameObject_test PRIVATE 
+    "src/test/"
+    "src/engine/"
 )
 
 # Copy SDL2.dll to the output directory after the executable is built
