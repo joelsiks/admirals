@@ -1,7 +1,26 @@
 #include "Renderer.hpp"
+#include "cmath"
 
 namespace admirals {
 namespace renderer {
+
+static void RenderFont(const VK2DTexture font, const vec2 postion,
+                       const char *text) {
+    float x = postion[0];
+    float y = postion[1];
+    float ox = x;
+    for (int i = 0; i < (int)strlen(text); i++) {
+        if (text[i] != '\n') {
+            vk2dRendererDrawTexture(font, x, y, 2, 2, 0, 0, 0,
+                                    (text[i] * 8) % 128,
+                                    floorf(text[i] / 16) * 16, 8, 16);
+            x += 8 * 2;
+        } else {
+            x = ox;
+            y += 16 * 2;
+        }
+    }
+}
 
 Renderer::Renderer(const char *name, int width, int height) {
     this->m_windowWidth = width;
@@ -47,6 +66,13 @@ void Renderer::drawRectangle(const vec2 position, const vec2 size,
     vk2dRendererSetColourMod(color);
     vk2dRendererDrawRectangle(position[0], position[1], size[0], size[1], 0, 0,
                               0);
+    vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::drawText(const VK2DTexture font, const vec2 position,
+                        const vec4 color, const char *text) {
+    vk2dRendererSetColourMod(color);
+    RenderFont(font, position, text);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
