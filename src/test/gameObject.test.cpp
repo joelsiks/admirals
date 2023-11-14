@@ -1,8 +1,8 @@
 
-#include <memory>
-#include <thread>
 #include <chrono>
 #include <cmath>
+#include <memory>
+#include <thread>
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -93,7 +93,8 @@ int main(int argc, char *argv[]) {
     CellObject cell6 = CellObject(pos6, 0, VK2D_GREEN);
     scene->addObject(scene::GameObject::createFromDerived(cell6));
 
-    UI::DisplayLayout *layout = new UI::DisplayLayout(WINDOW_WIDTH, WINDOW_HEIGHT);
+    UI::DisplayLayout *layout =
+        new UI::DisplayLayout(WINDOW_WIDTH, WINDOW_HEIGHT);
     vec2 elementSize = {150, 40};
 
     UI::TextElement fpsText("Fps TextElement", "", elementSize);
@@ -115,7 +116,6 @@ int main(int argc, char *argv[]) {
         quit = check_quit();
         renderer.render(layers);
 
-
         auto t2 = std::chrono::high_resolution_clock::now();
         deltaT = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)
                      .count() /
@@ -124,7 +124,8 @@ int main(int argc, char *argv[]) {
 
         sprintf(fpsString, "DT = %f, FPS: %f", deltaT, 1.f / deltaT);
 
-        std::static_pointer_cast<UI::TextElement>(sharedFpsText)->SetText(std::string(fpsString));
+        std::static_pointer_cast<UI::TextElement>(sharedFpsText)
+            ->SetText(std::string(fpsString));
     }
 
     return EXIT_SUCCESS;

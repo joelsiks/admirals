@@ -14,8 +14,8 @@ void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     m_elements.push_back(std::move(element));
 }
 
-float DisplayLayout::GetHeightFromDisplayPosition(DisplayPosition pos,
-                                                  const vec2 &displaySize) const {
+float DisplayLayout::GetHeightFromDisplayPosition(
+    DisplayPosition pos, const vec2 &displaySize) const {
     float height = 0;
 
     switch (pos) {
