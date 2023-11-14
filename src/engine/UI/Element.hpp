@@ -2,6 +2,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include <SDL_events.h>
 #include <VK2D/Structs.h>
@@ -40,6 +41,15 @@ public:
 
     // Input handling
     virtual bool HandleEvent(const SDL_Event &event) { return false; }
+
+    template <typename T>
+    static std::shared_ptr<Element>
+    createFromDerived(const T &derivedObject) {
+        // Assuming T is derived from Element
+        std::shared_ptr<Element> element =
+            std::make_shared<T>(derivedObject);
+        return element;
+    }
 
 protected:
     // The name of the Element.

@@ -8,16 +8,14 @@ DisplayLayout::DisplayLayout(int windowWidth, int windowHeight)
 
     // TODO: This path should probably be configured someplace else.
     m_font = vk2dTextureLoad("assets/font.png");
-
-    resetPositionOffsets();
 }
 
-void DisplayLayout::AddElement(std::unique_ptr<Element> element) {
+void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     m_elements.push_back(std::move(element));
 }
 
 float DisplayLayout::GetHeightFromDisplayPosition(DisplayPosition pos,
-                                                  const vec2 &displaySize) {
+                                                  const vec2 &displaySize) const {
     float height = 0;
 
     switch (pos) {
@@ -34,21 +32,18 @@ float DisplayLayout::GetHeightFromDisplayPosition(DisplayPosition pos,
     return height;
 }
 
-void DisplayLayout::RenderUIElements() {
+void DisplayLayout::render() const {
+
+    float positionOffsets[4] = {0};
+
     for (const auto &element : m_elements) {
         DisplayPosition pos = element->GetDisplayPosition();
         const vec2 &displaySize = element->GetDisplaySize();
 
         float startHeight = GetHeightFromDisplayPosition(pos, displaySize);
-        vec2 renderPosition = {m_positionOffsets[pos], startHeight};
+        vec2 renderPosition = {positionOffsets[pos], startHeight};
         element->Render(this->m_font, renderPosition);
 
-        m_positionOffsets[pos] += displaySize[0];
+        positionOffsets[pos] += displaySize[0];
     }
-
-    resetPositionOffsets();
-}
-
-void DisplayLayout::resetPositionOffsets() {
-    m_positionOffsets = {0, 0, 0, 0};
 }
