@@ -6,10 +6,15 @@
 #include <SDL_events.h>
 #include <VK2D/Structs.h>
 
-#include "Util.hpp"
-
 namespace admirals {
 namespace UI {
+
+enum DisplayPosition {
+    UpperLeft = 0,
+    UpperRight = 1,
+    LowerLeft = 2,
+    LowerRight = 3,
+};
 
 // General UI element that can be rendered.
 class Element {
@@ -31,7 +36,7 @@ public:
     virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
 
     // Pure virtual function for rendering the UI element
-    virtual void Render(const VK2DTexture &font, const vec2 &startPos) = 0;
+    virtual void Render(const VK2DTexture font, const vec2 startPos) = 0;
 
     // Input handling
     virtual bool HandleEvent(const SDL_Event &event) { return false; }
@@ -52,5 +57,5 @@ protected:
     DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
 };
 
-}; // namespace UI
-}; // namespace admirals
+} // namespace UI
+} // namespace admirals

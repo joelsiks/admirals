@@ -1,12 +1,23 @@
 
 #include "DisplayLayout.hpp"
 
-void admirals::UI::DisplayLayout::AddElement(std::unique_ptr<Element> element) {
+using namespace admirals::UI;
+
+DisplayLayout::DisplayLayout(int windowWidth, int windowHeight)
+    : m_windowWidth(windowWidth), m_windowHeight(windowHeight) {
+
+    // TODO: This path should probably be configured someplace else.
+    m_font = vk2dTextureLoad("assets/font.png");
+
+    resetPositionOffsets();
+}
+
+void DisplayLayout::AddElement(std::unique_ptr<Element> element) {
     m_elements.push_back(std::move(element));
 }
 
-float admirals::UI::DisplayLayout::GetHeightFromDisplayPosition(
-    DisplayPosition pos, const vec2 &displaySize) {
+float DisplayLayout::GetHeightFromDisplayPosition(DisplayPosition pos,
+                                                  const vec2 &displaySize) {
     float height = 0;
 
     switch (pos) {
@@ -23,18 +34,21 @@ float admirals::UI::DisplayLayout::GetHeightFromDisplayPosition(
     return height;
 }
 
-void admirals::UI::DisplayLayout::RenderUIElements() {
+void DisplayLayout::RenderUIElements() {
     for (const auto &element : m_elements) {
         DisplayPosition pos = element->GetDisplayPosition();
         const vec2 &displaySize = element->GetDisplaySize();
 
         float startHeight = GetHeightFromDisplayPosition(pos, displaySize);
-        element->Render(this->m_font,
-                        vec2{m_positionOffsets[pos], startHeight});
+        vec2 renderPosition = {m_positionOffsets[pos], startHeight};
+        element->Render(this->m_font, renderPosition);
 
         m_positionOffsets[pos] += displaySize[0];
     }
 
-    // Reset position offsets.
+    resetPositionOffsets();
+}
+
+void DisplayLayout::resetPositionOffsets() {
     m_positionOffsets = {0, 0, 0, 0};
 }
