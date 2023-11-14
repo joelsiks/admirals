@@ -27,15 +27,14 @@ message("Vulkan_INCLUDE_DIR: ${Vulkan_INCLUDE_DIR}")
 message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
 
 set(SOURCES 
-    src/engine/Model.cpp
-    src/engine/GameObject.cpp
-    src/engine/Scene.cpp
-    src/engine/Renderer.cpp
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
     src/engine/UI/Button.cpp
     src/engine/UI/TextElement.cpp
-    src/engine/UI/Util.cpp
+    src/engine/Model.cpp
+    src/engine/GameObject.cpp
+    src/engine/Scene.cpp
+    src/engine/Renderer.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
