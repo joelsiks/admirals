@@ -14,15 +14,15 @@ namespace UI {
 // General UI element that can be rendered.
 class Element {
 public:
-    Element(const std::string& name, const std::string& text, vec2 size);
-    virtual ~Element() {};
+    Element(const std::string &name, const std::string &text, vec2 size);
+    virtual ~Element(){};
 
     // Getters and setters
-    virtual const std::string& GetName() const { return m_name; }
-    virtual void SetName(const std::string& name) { m_name = name; }
+    virtual const std::string &GetName() const { return m_name; }
+    virtual void SetName(const std::string &name) { m_name = name; }
 
-    virtual const vec2& GetDisplaySize() const { return m_displaySize; }
-    virtual void SetDisplaySize(const vec2 size) { 
+    virtual const vec2 &GetDisplaySize() const { return m_displaySize; }
+    virtual void SetDisplaySize(const vec2 size) {
         m_displaySize[0] = size[0];
         m_displaySize[1] = size[1];
     }
@@ -31,10 +31,10 @@ public:
     virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
 
     // Pure virtual function for rendering the UI element
-    virtual void Render(const VK2DTexture& font, const vec2& startPos) = 0;
+    virtual void Render(const VK2DTexture &font, const vec2 &startPos) = 0;
 
     // Input handling
-    virtual bool HandleEvent(const SDL_Event& event) { return false; }
+    virtual bool HandleEvent(const SDL_Event &event) { return false; }
 
 protected:
     // The name of the Element.
@@ -52,5 +52,5 @@ protected:
     DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
 };
 
-};
-};
+}; // namespace UI
+}; // namespace admirals

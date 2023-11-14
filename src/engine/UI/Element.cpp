@@ -1,10 +1,11 @@
 
-#include <VK2D/VK2D.h>
 #include <VK2D/Renderer.h>
+#include <VK2D/VK2D.h>
 
 #include "Element.hpp"
 
-admirals::UI::Element::Element(const std::string& name, const std::string& text, vec2 size) {
+admirals::UI::Element::Element(const std::string &name, const std::string &text,
+                               vec2 size) {
     this->m_name = name;
     this->m_text = text;
     this->m_displaySize[0] = size[0];
