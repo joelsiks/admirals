@@ -2,21 +2,22 @@
 #include <VK2D/VK2D.h>
 #include <VK2D/Validation.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <time.h>
 
 const int WINDOW_WIDTH  = 800;
 const int WINDOW_HEIGHT = 600;
 
-struct AssetStore {
+struct AssetStore 
+{
     VK2DTexture texture;
 };
 
-void render_frame(const AssetStore assets) {
+void render_frame(const AssetStore assets) 
+{
     vk2dRendererDrawTexture(assets.texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0, 1400, 1400);
 }
 
-int check_quit() {
+int check_quit() 
+{
     bool quit = false;
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
@@ -28,7 +29,8 @@ int check_quit() {
     return quit;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
     SDL_Window *window = SDL_CreateWindow("VK2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 
 	VK2DRendererConfig config = {VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE, VK2D_FILTER_TYPE_NEAREST};

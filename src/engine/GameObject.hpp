@@ -1,37 +1,27 @@
 #pragma once
 #include "Model.hpp"
-namespace engine 
-{
+#include "VK2D/Renderer.h"
 
-/// \brief 2D vector of floats
-typedef float vec2[2];
-
-/// \brief 2D vector of integers
-typedef int location_t[2];
+namespace admirals {
+namespace scene {
 
 class GameObject
 {
 private:
-    /* data */
-    Model model;
-    location_t position;
+    float _index;
+
+protected:
+    vec2 position;
 
 public:
-    GameObject();
+    GameObject(const vec2& position, const float& index);
     ~GameObject();
-    
-    void OnUpdate();
-    void OnStart();
+
+    float index() const;
+
+    virtual void onUpdate() = 0;
+    virtual void onStart() = 0;
+    virtual void render() = 0; // Should not be part of GameObject...
 };
 
-GameObject::GameObject()
-{
-    
-}
-
-GameObject::~GameObject()
-{
-    
-}
-
-}
+}}

@@ -1,42 +1,33 @@
 #pragma once
-#include <list>
+#include <set>
 #include <vector>
 #include "GameObject.hpp"
-namespace engine 
-{
-class Scene
+#include "IDrawable.hpp"
+
+namespace admirals {
+namespace scene {
+
+class Scene : public renderer::IDrawable
 {
 private:
-    /* data */
-    std::list<GameObject> objects;
+    // should be sorted with respect to game object index, lower first.
+    struct GameObjectComparator
+    {
+        bool operator()(const GameObject* l, const GameObject* r) const
+        {
+            return l->index() < r->index();
+        }
+    };
+
+    std::multiset<GameObject*, GameObjectComparator> objects;
+    
 public:
-    std::vector<GameObject> GetObjects();
-
-    void AddObject(const GameObject object);
-
     Scene();
     ~Scene();
+
+    void render() const;
+    void addObject(GameObject *object);
+    std::vector<GameObject*> getObjects() const;
 };
 
-std::vector<GameObject> Scene::GetObjects()
-{
-    std::vector<GameObject> v { objects.begin(), objects.end() };
-    return v;
-}
-
-void Scene::AddObject(const GameObject object)
-{
-    this->objects.push_back(object);
-}
-
-Scene::Scene()
-{
-    this->objects = {};
-}
-
-Scene::~Scene()
-{
-
-}
-
-}
+}}

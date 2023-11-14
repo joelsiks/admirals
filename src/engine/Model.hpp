@@ -1,22 +1,12 @@
 #pragma once
-namespace engine 
+namespace admirals 
 {
 class Model
 {
 private:
     /* data */
 public:
-    Model(/* args */);
+    Model();
     ~Model();
 };
-
-Model::Model(/* args */)
-{
-    
-}
-
-Model::~Model()
-{
-
-}
 }
