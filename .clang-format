@@ -1,0 +1,9 @@
+# options: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: LLVM
+IndentWidth: 4
+# Indent "public/private" in classes by nothing (negative of IndentWidth)
+AccessModifierOffset: -4
+# Must be 80 characters or less!
+ColumnLimit: 80
+# use \n instead of \r\n
+UseCRLF: false
