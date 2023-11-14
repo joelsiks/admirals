@@ -27,6 +27,10 @@ message("Vulkan_INCLUDE_DIR: ${Vulkan_INCLUDE_DIR}")
 message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
 
 set(SOURCES 
+    src/engine/UI/DisplayLayout.cpp
+    src/engine/UI/Element.cpp
+    src/engine/UI/Button.cpp
+    src/engine/UI/TextElement.cpp
     src/engine/Model.cpp
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
@@ -63,8 +67,9 @@ target_include_directories(engine PRIVATE
 
 # Create test executable
 add_executable(renderer_test src/test/renderer.test.cpp)
-target_link_libraries(renderer_test vk2d)
+target_link_libraries(renderer_test engine)
 target_include_directories(renderer_test PRIVATE 
+    "src/engine"
     "src/test/"
 )
 

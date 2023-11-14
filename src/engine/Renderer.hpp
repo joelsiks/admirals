@@ -3,17 +3,14 @@
 #include <memory>
 #include <vector>
 
-#include "IDrawable.hpp"
 #include <VK2D/VK2D.h>
+
+#include "IDrawable.hpp"
 
 namespace admirals {
 namespace renderer {
-class Renderer {
-private:
-    int m_windowWidth;
-    int m_windowHeight;
-    SDL_Window *m_window;
 
+class Renderer {
 public:
     Renderer(const char *name, int width, int height);
     ~Renderer();
@@ -23,6 +20,15 @@ public:
 
     static void drawRectangle(const vec2 position, const vec2 size,
                               const vec4 color);
+
+    static void drawText(const VK2DTexture font, const vec2 position,
+                         const vec4 color, const char *text);
+
+private:
+    int m_windowWidth;
+    int m_windowHeight;
+    SDL_Window *m_window;
 };
+
 } // namespace renderer
 } // namespace admirals
