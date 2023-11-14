@@ -1,4 +1,3 @@
-
 #include "DisplayLayout.hpp"
 
 using namespace admirals::UI;

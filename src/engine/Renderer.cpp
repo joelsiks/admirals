@@ -1,5 +1,6 @@
+#include <cmath>
+
 #include "Renderer.hpp"
-#include "cmath"
 
 namespace admirals {
 namespace renderer {

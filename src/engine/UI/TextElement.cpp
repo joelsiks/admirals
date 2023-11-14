@@ -1,6 +1,3 @@
-
-#include <iostream>
-
 #include <VK2D/VK2D.h>
 
 #include "Renderer.hpp"

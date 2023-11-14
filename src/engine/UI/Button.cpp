@@ -1,8 +1,4 @@
-
-#include <iostream>
-
-#include <VK2D/Renderer.h>
-#include <VK2D/VK2d.h>
+#include <VK2D/VK2D.h>
 
 #include "Button.hpp"
 #include "Renderer.hpp"

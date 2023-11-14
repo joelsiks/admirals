@@ -9,6 +9,7 @@
 
 namespace admirals {
 namespace renderer {
+
 class Renderer {
 public:
     Renderer(const char *name, int width, int height);
@@ -28,5 +29,6 @@ private:
     int m_windowHeight;
     SDL_Window *m_window;
 };
+
 } // namespace renderer
 } // namespace admirals

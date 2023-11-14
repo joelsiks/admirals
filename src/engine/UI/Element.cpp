@@ -1,6 +1,4 @@
-
 #include <VK2D/Renderer.h>
-#include <VK2D/VK2D.h>
 
 #include "Element.hpp"
 
