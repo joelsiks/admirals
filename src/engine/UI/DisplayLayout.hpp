@@ -7,30 +7,27 @@
 #include <VK2D/VK2D.h>
 
 #include "Element.hpp"
+#include "IDrawable.hpp"
 
 namespace admirals {
 namespace UI {
 
-class DisplayLayout {
+class DisplayLayout : public renderer::IDrawable {
 public:
     DisplayLayout(int windowWidth, int windowHeight);
 
-    void AddElement(std::unique_ptr<Element> element);
+    void AddElement(std::shared_ptr<Element> element);
 
     float GetHeightFromDisplayPosition(DisplayPosition pos,
-                                       const vec2 &displaySize);
+                                       const vec2 &displaySize) const;
 
-    void RenderUIElements();
+    void render() const;
 
 private:
     VK2DTexture m_font;
 
     int m_windowWidth, m_windowHeight;
-    std::vector<std::unique_ptr<Element>> m_elements;
-
-    std::vector<float> m_positionOffsets{4, 0};
-
-    void resetPositionOffsets();
+    std::vector<std::shared_ptr<Element>> m_elements;
 };
 
 } // namespace UI
