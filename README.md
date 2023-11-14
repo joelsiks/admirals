@@ -5,7 +5,7 @@ Game engine focused on 2D (grid-based), real-time strategy (RTS), multiplayer ga
 # Installation and Building
 
 ## Prerequisites
-Vulkan, SDL2, CMake and a C++ compiler for Windows (Visual Studio or MSYS2 with g++).
+Vulkan, SDL2, CMake, clang-format (code formatting) and a C++ compiler for Windows (with support for C99).
 
 ## Cloning
 
@@ -39,6 +39,30 @@ You can then move on to creating build files:
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER:FILEPATH=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_CXX_COMPILER=C:/msys64/ucrt64/bin/g++.exe
 ```
+
+## Formatting
+
+This project uses clang-format to format source code, with a config file called `.clang-format` in the project root. clang-format is part of the clang suite, which can be downloaded using the following commands:
+
+```bash
+# MSYS2
+pacman -S --needed mingw-w64-ucrt-x86_64-clang
+
+# Ubuntu
+sudo apt-get install clang-format
+```
+
+Run the following command to format a single source file:
+```bash
+clang-format --style=file -i <source_file>
+```
+
+To format all files in the `src/` dir, run:
+```bash
+find src -name '*.cpp' -o -name '*.hpp' | xargs clang-format --style=file -i
+```
+
+Additionally, if using Visual Studio Code, you can download the C/C++ extension, set the default formatter (Ctrl+Shift+P -> Format Document With..) to C/C++ and enable format on save to format while writing code.
 
 # Authors
 
