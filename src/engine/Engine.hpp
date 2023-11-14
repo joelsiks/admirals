@@ -1,5 +1,6 @@
+#pragma once
 
-class Engine {
-public:
-    Engine();
-};
+#include "GameObject.hpp"
+#include "Model.hpp"
+#include "Renderer.hpp"
+#include "Scene.hpp"

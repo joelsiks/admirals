@@ -14,7 +14,7 @@ Start by cloning this repository and download all submodules needed:
 git clone --recurse-submodules https://github.com/joelsiks/admirals.git
 ```
 
-You are also able to download/update depdencies using this command:
+You are also able to download/update dependencies using this command:
 ```bash
 git submodule update --init --recursive
 ```
