@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
         quit = check_quit();
         vk2dRendererStartFrame(clear);
         render_frame(assets);
-        layout.RenderUIElements();
+        layout.render();
         vk2dRendererEndFrame();
     }
 
