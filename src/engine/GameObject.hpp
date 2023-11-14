@@ -5,8 +5,7 @@
 namespace admirals {
 namespace scene {
 
-class GameObject
-{
+class GameObject {
 private:
     float _index;
 
@@ -14,7 +13,7 @@ protected:
     vec2 position;
 
 public:
-    GameObject(const vec2& position, const float& index);
+    GameObject(const vec2 &position, const float &index);
     ~GameObject();
 
     float index() const;
@@ -24,4 +23,5 @@ public:
     virtual void render() = 0; // Should not be part of GameObject...
 };
 
-}}
+} // namespace scene
+} // namespace admirals

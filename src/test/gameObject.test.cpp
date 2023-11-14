@@ -1,63 +1,53 @@
+#include <Engine.hpp>
 #include <SDL_vulkan.h>
-#include <VK2D/VK2D.h>
 #include <VK2D/Constants.h>
+#include <VK2D/VK2D.h>
+#include <chrono>
+#include <cmath>
 #include <stdbool.h>
 #include <stdio.h>
-#include <chrono>
 #include <thread>
-#include <cmath>
-#include <Engine.hpp>
 
-const int WINDOW_WIDTH  = 1000;
+const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
 float deltaT = 0;
 
 using namespace admirals;
 
-class CellObject : public scene::GameObject 
-{
-    private:
+class CellObject : public scene::GameObject {
+private:
     vec4 color;
 
-    public:
-    CellObject(const vec2 &pos, const float &index, const vec4 &color) : scene::GameObject(pos, index)  
-    {
+public:
+    CellObject(const vec2 &pos, const float &index, const vec4 &color)
+        : scene::GameObject(pos, index) {
         this->color[0] = color[0];
         this->color[1] = color[1];
         this->color[2] = color[2];
         this->color[3] = color[3];
     }
 
-    void onStart() 
-    {
+    void onStart() {}
 
-    }
-
-    void onUpdate() 
-    {
+    void onUpdate() {
         this->position[0] = (this->position[0] + 1000.f * deltaT);
-        if (this->position[0] > WINDOW_WIDTH) 
-        {
+        if (this->position[0] > WINDOW_WIDTH) {
             this->position[0] = -100 + this->position[0] - WINDOW_WIDTH;
         }
     }
- 
-    void render() 
-    {
-        vec2 size = { 100, 100 };
+
+    void render() {
+        vec2 size = {100, 100};
         renderer::Renderer::drawRectangle(this->position, size, this->color);
     }
 };
 
-int check_quit() 
-{
+int check_quit() {
     bool quit = false;
     SDL_Event e;
 
-    while (SDL_PollEvent(&e)) 
-    {
-        if (e.type == SDL_QUIT) 
-        {
+    while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT) {
             quit = true;
         }
     }
@@ -66,9 +56,9 @@ int check_quit()
     return quit;
 }
 
-int main(int argc, char *argv[]) 
-{
-    renderer::Renderer renderer = renderer::Renderer("Admirals", WINDOW_WIDTH, WINDOW_HEIGHT);
+int main(int argc, char *argv[]) {
+    renderer::Renderer renderer =
+        renderer::Renderer("Admirals", WINDOW_WIDTH, WINDOW_HEIGHT);
     renderer.init(true);
 
     scene::Scene *scene = new scene::Scene();
@@ -96,19 +86,20 @@ int main(int argc, char *argv[])
     CellObject *cell6 = new CellObject(pos6, 0, VK2D_GREEN);
     scene->addObject(cell6);
 
-    std::vector<renderer::IDrawable*> layers = { scene };
-    
+    std::vector<renderer::IDrawable *> layers = {scene};
+
     // Start render loop
     bool quit = false;
     SDL_Event e;
     auto t1 = std::chrono::high_resolution_clock::now();
-    while (!quit) 
-    {
-		quit = check_quit();
+    while (!quit) {
+        quit = check_quit();
         renderer.render(layers);
 
         auto t2 = std::chrono::high_resolution_clock::now();
-        deltaT = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / 1000000.f;
+        deltaT = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)
+                     .count() /
+                 1000000.f;
         t1 = t2;
         printf("\rDT = %f, FPS: %f", deltaT, 1.f / deltaT);
     }

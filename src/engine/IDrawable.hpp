@@ -2,11 +2,11 @@
 
 namespace admirals {
 namespace renderer {
-class IDrawable
-{
+class IDrawable {
 public:
-    IDrawable() { };
-    ~IDrawable() { };
+    IDrawable(){};
+    ~IDrawable(){};
     virtual void render() const = 0;
 };
-}}
+} // namespace renderer
+} // namespace admirals

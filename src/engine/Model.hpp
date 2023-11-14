@@ -1,12 +1,10 @@
 #pragma once
-namespace admirals 
-{
-class Model
-{
+namespace admirals {
+class Model {
 private:
     /* data */
 public:
     Model();
     ~Model();
 };
-}
+} // namespace admirals
