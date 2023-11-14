@@ -1,30 +1,33 @@
 #pragma once
-#include "GameObject.hpp"
-#include "IDrawable.hpp"
+
+#include <memory>
 #include <set>
 #include <vector>
+
+#include "GameObject.hpp"
+#include "IDrawable.hpp"
 
 namespace admirals {
 namespace scene {
 
 class Scene : public renderer::IDrawable {
 private:
-    // should be sorted with respect to game object index, lower first.
+    // Should be sorted with respect to game object index, lower first.
     struct GameObjectComparator {
-        bool operator()(const GameObject *l, const GameObject *r) const {
+        bool operator()(const std::shared_ptr<GameObject> l,
+                        const std::shared_ptr<GameObject> r) const {
             return l->index() < r->index();
         }
     };
 
-    std::multiset<GameObject *, GameObjectComparator> objects;
+    std::multiset<std::shared_ptr<GameObject>, GameObjectComparator> objects;
 
 public:
     Scene();
     ~Scene();
 
     void render() const;
-    void addObject(GameObject *object);
-    std::vector<GameObject *> getObjects() const;
+    void addObject(std::shared_ptr<GameObject> object);
 };
 
 } // namespace scene

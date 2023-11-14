@@ -6,6 +6,8 @@
 #include <cmath>
 #include <stdbool.h>
 #include <stdio.h>
+
+#include <memory>
 #include <thread>
 
 const int WINDOW_WIDTH = 1000;
@@ -63,30 +65,31 @@ int main(int argc, char *argv[]) {
 
     scene::Scene *scene = new scene::Scene();
     vec2 pos1 = {0, 0};
-    CellObject *cell1 = new CellObject(pos1, 2, VK2D_BLUE);
-    scene->addObject(cell1);
+    CellObject cell1 = CellObject(pos1, 2, VK2D_BLUE);
+    scene->addObject(scene::GameObject::createFromDerived(cell1));
 
     vec2 pos2 = {50, 50};
-    CellObject *cell2 = new CellObject(pos2, 3, VK2D_RED);
-    scene->addObject(cell2);
+    CellObject cell2 = CellObject(pos2, 3, VK2D_RED);
+    scene->addObject(scene::GameObject::createFromDerived(cell2));
 
     vec2 pos3 = {100, 100};
-    CellObject *cell3 = new CellObject(pos3, 1, VK2D_BLACK);
-    scene->addObject(cell3);
+    CellObject cell3 = CellObject(pos3, 1, VK2D_BLACK);
+    scene->addObject(scene::GameObject::createFromDerived(cell3));
 
     vec2 pos4 = {100, 200};
-    CellObject *cell4 = new CellObject(pos4, 0, VK2D_BLUE);
-    scene->addObject(cell4);
+    CellObject cell4 = CellObject(pos4, 0, VK2D_BLUE);
+    scene->addObject(scene::GameObject::createFromDerived(cell4));
 
     vec2 pos5 = {200, 100};
-    CellObject *cell5 = new CellObject(pos5, 0, VK2D_RED);
-    scene->addObject(cell5);
+    CellObject cell5 = CellObject(pos5, 0, VK2D_RED);
+    scene->addObject(scene::GameObject::createFromDerived(cell5));
 
     vec2 pos6 = {200, 200};
-    CellObject *cell6 = new CellObject(pos6, 0, VK2D_GREEN);
-    scene->addObject(cell6);
+    CellObject cell6 = CellObject(pos6, 0, VK2D_GREEN);
+    scene->addObject(scene::GameObject::createFromDerived(cell6));
 
-    std::vector<renderer::IDrawable *> layers = {scene};
+    std::vector<std::shared_ptr<renderer::IDrawable>> layers;
+    layers.emplace_back(scene);
 
     // Start render loop
     bool quit = false;
@@ -103,8 +106,6 @@ int main(int argc, char *argv[]) {
         t1 = t2;
         printf("\rDT = %f, FPS: %f", deltaT, 1.f / deltaT);
     }
-
-    free(scene);
 
     return EXIT_SUCCESS;
 }
