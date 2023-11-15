@@ -38,7 +38,7 @@ public:
         this->setPosition(position);
     }
 
-    void render() {
+    void render() const {
         Vector2 size(100, 100);
         renderer::Renderer::drawRectangle(this->position(), size,
                                           this->m_color);

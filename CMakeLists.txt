@@ -38,6 +38,12 @@ set(SOURCES
     src/engine/Renderer.cpp
     src/engine/Engine.cpp
 )
+set(MVP_SOURCES 
+    src/mvp/shared.cpp
+    src/mvp/objects/Sprite.cpp
+    src/mvp/objects/Background.cpp
+    src/mvp/objects/Grid.cpp
+)
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
 
@@ -65,6 +71,14 @@ add_library(engine SHARED ${SOURCES})
 target_link_libraries(engine vk2d)
 target_include_directories(engine PRIVATE 
     "src/engine/" 
+)
+
+# Create mvp executable
+add_executable(mvp src/mvp/main.cpp ${MVP_SOURCES})
+target_link_libraries(mvp engine)
+target_include_directories(mvp PRIVATE 
+    "src/engine/"
+    "src/mvp/"
 )
 
 # Create test executable

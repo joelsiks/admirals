@@ -63,6 +63,12 @@ void Renderer::render(const DrawableCollection &drawable) {
     vk2dRendererEndFrame();
 }
 
+void Renderer::drawLine(const Vector2 &p1, const Vector2 &p2, const Color &color) {
+    vk2dRendererSetColourMod(color.data());
+    vk2dRendererDrawLine(p1[0], p1[1], p2[0], p2[1]);
+    vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
 void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
                              const Color &color) {
     vk2dRendererSetColourMod(color.data());
@@ -76,4 +82,9 @@ void Renderer::drawText(const VK2DTexture font, const Vector2 &position,
     vk2dRendererSetColourMod(color.data());
     RenderFont(font, position, text.c_str());
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::drawTexture(const VK2DTexture texture, const Vector2 &position, const Vector2 &orgSize, const Vector2 &drawSize) {
+    Vector2 scale = Vector2(drawSize.x() / orgSize.x(), drawSize.y() / orgSize.y());
+    vk2dRendererDrawTexture(texture, position.x(), position.y(), scale.x(), scale.y(), 0, 0, 0, 0, 0, orgSize.x(), orgSize.y());
 }

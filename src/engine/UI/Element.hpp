@@ -9,8 +9,7 @@
 
 #include "DataObjects.hpp"
 
-namespace admirals {
-namespace UI {
+namespace admirals::UI {
 
 enum DisplayPosition {
     UpperLeft = 0,
@@ -68,5 +67,4 @@ protected:
     DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
 };
 
-} // namespace UI
-} // namespace admirals
+} // namespace admirals::UI

@@ -7,8 +7,7 @@
 
 #include "Element.hpp"
 
-namespace admirals {
-namespace UI {
+namespace admirals::UI {
 
 class Button;
 
@@ -32,5 +31,4 @@ private:
     Color m_bgColor, m_fgColor;
 };
 
-} // namespace UI
-} // namespace admirals
+} // namespace admirals::UI

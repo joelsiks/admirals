@@ -33,7 +33,7 @@ public:
 
     void onUpdate() {}
 
-    void render() {
+    void render() const {
         vk2dRendererDrawTexture(m_texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0,
                                 m_width, m_height);
     }
