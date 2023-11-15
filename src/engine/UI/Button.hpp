@@ -20,9 +20,9 @@ public:
            const Vector2 &size, const Color &bgColor, const Color &fgColor,
            ButtonOnClickHandler onClick);
 
-    virtual void Render(const VK2DTexture font);
+    void Render(const VK2DTexture font) override;
 
-    virtual bool HandleEvent(const SDL_Event &event) override;
+    bool HandleEvent(const SDL_Event &event) override;
 
     inline void SetBackgroundColor(const Color color) { m_bgColor = color; }
     inline void SetForegroundColor(const Color color) { m_fgColor = color; }

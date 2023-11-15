@@ -15,9 +15,9 @@ public:
 
     void SetText(const std::string &text);
 
-    virtual void Render(const VK2DTexture font);
+    void Render(const VK2DTexture font) override;
 
-    virtual bool HandleEvent(const SDL_Event &event) override;
+    bool HandleEvent(const SDL_Event &event) override;
 
 private:
     Color m_textColor;
