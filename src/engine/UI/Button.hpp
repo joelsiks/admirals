@@ -16,7 +16,7 @@ typedef std::function<void(Button *, const SDL_Event &)> ButtonOnClickHandler;
 
 class Button : public Element {
 public:
-    Button(const std::string &name, const std::string &text, vec2 size,
+    Button(const std::string &name, const std::string &text, const vec2 size, const vec4 backgroundColor, const vec4 foregroundColor,
            ButtonOnClickHandler onClick);
 
     virtual void Render(const VK2DTexture font);
@@ -27,6 +27,7 @@ public:
 
 private:
     ButtonOnClickHandler m_onClick;
+    vec4 m_bgColor, m_fgColor;
 };
 
 } // namespace UI

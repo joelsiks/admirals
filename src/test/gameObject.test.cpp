@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
         new UI::DisplayLayout(WINDOW_WIDTH, WINDOW_HEIGHT);
     vec2 elementSize = {150, 40};
 
-    UI::TextElement fpsText("Fps TextElement", "", elementSize);
+    UI::TextElement fpsText("Fps TextElement", "", elementSize, VK2D_BLACK);
     fpsText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     auto sharedFpsText = UI::Element::createFromDerived(fpsText);
 

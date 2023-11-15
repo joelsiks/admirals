@@ -6,15 +6,18 @@
 using namespace admirals::UI;
 
 TextElement::TextElement(const std::string &name, const std::string &text,
-                         vec2 size)
-    : Element(name, text, size) {}
+                         const vec2 size, const vec4 color)
+    : Element(name, text, size) {
+
+    for (int i = 0; i < 4; i++) {
+        m_textColor[i] = color[i];
+    }
+}
 
 void TextElement::SetText(const std::string &text) { this->m_text = text; }
 
 void TextElement::Render(const VK2DTexture font) {
-    // TODO: Use Element colors here (m_fgColor).
-    // Draw foreground (text).
-    renderer::Renderer::drawText(font, m_displayOrigin, VK2D_BLACK,
+    renderer::Renderer::drawText(font, m_displayOrigin, m_textColor,
                                  this->m_text.c_str());
 }
 

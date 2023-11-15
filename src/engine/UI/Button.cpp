@@ -5,16 +5,18 @@
 
 using namespace admirals::UI;
 
-Button::Button(const std::string &name, const std::string &text, vec2 size,
+Button::Button(const std::string &name, const std::string &text, const vec2 size, const vec4 backgroundColor, const vec4 foregroundColor,
                ButtonOnClickHandler onClick)
-    : Element(name, text, size), m_onClick(onClick) {}
+    : Element(name, text, size), m_onClick(onClick) {
+    for (int i = 0; i < 4; i++) {
+        m_bgColor[i] = backgroundColor[i];
+        m_fgColor[i] = foregroundColor[i];
+    }
+}
 
 void Button::Render(const VK2DTexture font) {
-    // TODO: Use Element colors here (m_bgColor, m_fgColor).
-    renderer::Renderer::drawRectangle(m_displayOrigin, m_displaySize,
-                                      VK2D_BLACK);
-    renderer::Renderer::drawText(font, m_displayOrigin, VK2D_WHITE,
-                                 m_text.c_str());
+    renderer::Renderer::drawRectangle(m_displayOrigin, m_displaySize, m_bgColor);
+    renderer::Renderer::drawText(font, m_displayOrigin, m_fgColor, m_text.c_str());
 }
 
 bool Button::HandleEvent(const SDL_Event &event) {

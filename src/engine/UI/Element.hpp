@@ -20,7 +20,7 @@ enum DisplayPosition {
 // General UI element that can be rendered.
 class Element {
 public:
-    Element(const std::string &name, const std::string &text, vec2 size);
+    Element(const std::string &name, const std::string &text, const vec2 size);
     virtual ~Element(){};
 
     // Getters and setters
@@ -61,9 +61,6 @@ protected:
 
     // Text to be displayed on the Element.
     std::string m_text;
-
-    // Colors for rendering.
-    vec4 m_fgColor, m_bgColor;
 
     // Origin and size and for displaying/rendering the element to the screen.
     vec2 m_displayOrigin;
