@@ -1,26 +1,18 @@
 #pragma once
 
+#include "DataObjects.hpp"
 #include <memory>
-
-#include "Model.hpp"
-#include "VK2D/Renderer.h"
 
 namespace admirals {
 namespace scene {
 
 class GameObject {
-private:
-    // Used to sort objects.
-    float m_index;
-
-protected:
-    vec2 position;
 
 public:
-    GameObject(const vec2 &position, float index);
+    GameObject(const Vector3 &position);
     ~GameObject();
 
-    float index() const;
+    Vector3 position() const;
 
     virtual void onUpdate() = 0;
     virtual void onStart() = 0;
@@ -34,6 +26,12 @@ public:
             std::make_shared<T>(derivedObject);
         return gameObject;
     }
+
+private:
+    Vector3 m_position;
+
+protected:
+    void setPosition(const Vector3 &pos);
 };
 
 } // namespace scene

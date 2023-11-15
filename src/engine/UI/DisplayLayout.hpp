@@ -19,7 +19,7 @@ public:
     void AddElement(std::shared_ptr<Element> element);
 
     float GetHeightFromDisplayPosition(DisplayPosition pos,
-                                       const vec2 &displaySize) const;
+                                       const Vector2 &displaySize) const;
 
     void render() const;
     void handleEvent(SDL_Event &e);

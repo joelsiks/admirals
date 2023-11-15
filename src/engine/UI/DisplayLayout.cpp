@@ -14,7 +14,7 @@ void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
 }
 
 float DisplayLayout::GetHeightFromDisplayPosition(
-    DisplayPosition pos, const vec2 &displaySize) const {
+    DisplayPosition pos, const Vector2 &displaySize) const {
     float height = 0;
 
     switch (pos) {
@@ -37,11 +37,10 @@ void DisplayLayout::render() const {
 
     for (const auto &element : m_elements) {
         DisplayPosition pos = element->GetDisplayPosition();
-        const vec2 &displaySize = element->GetDisplaySize();
+        Vector2 displaySize = element->GetDisplaySize();
 
         float startHeight = GetHeightFromDisplayPosition(pos, displaySize);
-        vec2 renderPosition = {positionOffsets[pos], startHeight};
-        element->SetDisplayOrigin(renderPosition);
+        element->SetDisplayOrigin(Vector2(positionOffsets[pos], startHeight));
         element->Render(this->m_font);
 
         positionOffsets[pos] += displaySize[0];

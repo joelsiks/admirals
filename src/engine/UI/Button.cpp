@@ -1,4 +1,5 @@
-#include <VK2D/VK2D.h>
+
+#include <iostream>
 
 #include "Button.hpp"
 #include "Renderer.hpp"
@@ -6,20 +7,15 @@
 using namespace admirals::UI;
 
 Button::Button(const std::string &name, const std::string &text,
-               const vec2 size, const vec4 backgroundColor,
-               const vec4 foregroundColor, ButtonOnClickHandler onClick)
-    : Element(name, text, size), m_onClick(onClick) {
-    for (int i = 0; i < 4; i++) {
-        m_bgColor[i] = backgroundColor[i];
-        m_fgColor[i] = foregroundColor[i];
-    }
-}
+               const Vector2 &size, const Color &bgColor, const Color &fgColor,
+               ButtonOnClickHandler onClick)
+    : Element(name, text, size), m_bgColor(bgColor), m_fgColor(fgColor),
+      m_onClick(onClick) {}
 
 void Button::Render(const VK2DTexture font) {
     renderer::Renderer::drawRectangle(m_displayOrigin, m_displaySize,
                                       m_bgColor);
-    renderer::Renderer::drawText(font, m_displayOrigin, m_fgColor,
-                                 m_text.c_str());
+    renderer::Renderer::drawText(font, m_displayOrigin, m_fgColor, m_text);
 }
 
 bool Button::HandleEvent(const SDL_Event &event) {

@@ -27,6 +27,7 @@ message("Vulkan_INCLUDE_DIR: ${Vulkan_INCLUDE_DIR}")
 message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
 
 set(SOURCES 
+    src/engine/DataObjects.cpp
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
     src/engine/UI/Button.cpp
@@ -70,7 +71,7 @@ target_include_directories(engine PRIVATE
 add_executable(renderer_test src/test/renderer.test.cpp)
 target_link_libraries(renderer_test engine)
 target_include_directories(renderer_test PRIVATE 
-    "src/engine"
+    "src/engine/"
     "src/test/"
 )
 
@@ -78,8 +79,8 @@ target_include_directories(renderer_test PRIVATE
 add_executable(gameObject_test src/test/gameObject.test.cpp)
 target_link_libraries(gameObject_test engine)
 target_include_directories(gameObject_test PRIVATE 
-    "src/test/"
     "src/engine/"
+    "src/test/"
 )
 
 # Copy SDL2.dll to the output directory after the executable is built

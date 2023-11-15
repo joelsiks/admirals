@@ -7,6 +7,8 @@
 #include <SDL_events.h>
 #include <VK2D/Structs.h>
 
+#include "DataObjects.hpp"
+
 namespace admirals {
 namespace UI {
 
@@ -20,23 +22,20 @@ enum DisplayPosition {
 // General UI element that can be rendered.
 class Element {
 public:
-    Element(const std::string &name, const std::string &text, const vec2 size);
+    Element(const std::string &name, const std::string &text,
+            const Vector2 &size);
     virtual ~Element(){};
 
     // Getters and setters
     virtual const std::string &GetName() const { return m_name; }
     virtual void SetName(const std::string &name) { m_name = name; }
 
-    virtual const vec2 &GetDisplaySize() const { return m_displaySize; }
-    virtual void SetDisplaySize(const vec2 size) {
-        m_displaySize[0] = size[0];
-        m_displaySize[1] = size[1];
-    }
+    virtual const Vector2 &GetDisplaySize() const { return m_displaySize; }
+    virtual void SetDisplaySize(const Vector2 size) { m_displaySize = size; }
 
-    virtual const vec2 &GetDisplayOrigin() const { return m_displayOrigin; }
-    virtual void SetDisplayOrigin(const vec2 origin) {
-        m_displayOrigin[0] = origin[0];
-        m_displayOrigin[1] = origin[1];
+    virtual const Vector2 &GetDisplayOrigin() const { return m_displayOrigin; }
+    virtual void SetDisplayOrigin(const Vector2 origin) {
+        m_displayOrigin = origin;
     }
 
     virtual DisplayPosition GetDisplayPosition() const { return m_displayPos; }
@@ -63,8 +62,8 @@ protected:
     std::string m_text;
 
     // Origin and size and for displaying/rendering the element to the screen.
-    vec2 m_displayOrigin;
-    vec2 m_displaySize;
+    Vector2 m_displayOrigin;
+    Vector2 m_displaySize;
 
     DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
 };

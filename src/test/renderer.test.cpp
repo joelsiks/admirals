@@ -17,6 +17,8 @@ using namespace admirals;
 const int WINDOW_WIDTH = 550;
 const int WINDOW_HEIGHT = 550;
 
+using namespace admirals;
+
 struct AssetStore {
     VK2DTexture texture;
 };
@@ -25,8 +27,8 @@ void render_frame(const AssetStore assets) {}
 
 class TextureObject : public scene::GameObject {
 public:
-    TextureObject(const vec2 &pos, const float &index, const char *texturePath)
-        : scene::GameObject(pos, index) {
+    TextureObject(const Vector3 &pos, const char *texturePath)
+        : scene::GameObject(pos) {
         m_texture = vk2dTextureLoad(texturePath);
     }
 
@@ -60,17 +62,17 @@ int main(int argc, char *argv[]) {
     admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
     // Create texture object.
-    vec2 texturePosition = {0, 0};
-    TextureObject textureObject(texturePosition, 0, "assets/test.jpg");
+    Vector3 texturePosition = Vector3(0, 0, 0);
+    TextureObject textureObject(texturePosition, "assets/test.jpg");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
-    vec2 elementSize = {150, 40};
+    Vector2 elementSize = Vector2(150, 40);
     admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
-                                 VK2D_BLACK, VK2D_WHITE, OnButtonClick);
+                                 Color::BLACK, Color::WHITE, OnButtonClick);
     engine.AddUIElement(UI::Element::createFromDerived(testBtn));
 
     admirals::UI::TextElement testText(
-        "Text Element1", "This is a text element.", elementSize, VK2D_WHITE);
+        "Text Element1", "This is a text element.", elementSize, Color::WHITE);
     testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
     engine.AddUIElement(std::make_shared<admirals::UI::TextElement>(testText));
 
