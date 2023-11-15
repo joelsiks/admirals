@@ -5,18 +5,16 @@ using namespace admirals;
 
 Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
                bool debug) {
-    std::shared_ptr<renderer::Renderer> renderer =
-        std::make_shared<renderer::Renderer>(gameName, windowWidth,
-                                             windowHeight);
-    renderer->init(debug);
-    m_renderer = renderer;
+    m_renderer = std::make_shared<renderer::Renderer>(gameName, windowWidth,
+                                                      windowHeight);
+    // Initialize the renderer right after creating it. Necessary in cases where
+    // DisplayLayout requires vk2d to be initialized.
+    m_renderer->init(debug);
 
-    std::shared_ptr<UI::DisplayLayout> displayLayout =
+    m_displayLayout =
         std::make_shared<UI::DisplayLayout>(windowWidth, windowHeight);
-    m_displayLayout = displayLayout;
 
-    std::shared_ptr<scene::Scene> scene = std::make_shared<scene::Scene>();
-    m_scene = scene;
+    m_scene = std::make_shared<scene::Scene>();
 }
 
 Engine::~Engine(){};
