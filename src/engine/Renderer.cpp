@@ -1,6 +1,6 @@
 #include "Renderer.hpp"
 #include "DataObjects.hpp"
-#include "cmath"
+#include <cmath>
 
 using namespace admirals::renderer;
 
@@ -70,8 +70,8 @@ void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
 }
 
 void Renderer::drawText(const VK2DTexture font, const Vector2 &position,
-                        const Color &color, const char *text) {
+                        const Color &color, const std::string &text) {
     vk2dRendererSetColourMod(color.data());
-    RenderFont(font, position, text);
+    RenderFont(font, position, text.c_str());
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }

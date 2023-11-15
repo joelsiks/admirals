@@ -18,6 +18,8 @@ public:
     float y() const;
     void setY(float value);
 
+    float *data() const;
+
     void operator=(float &in);
     void operator=(const Vector2 &in);
     float operator[](int i) const;
@@ -72,7 +74,6 @@ public:
     void setB(float value);
     float a() const;
     void setA(float value);
-    float *data() const;
 
     static Color fromHEX(const char *hex);
 

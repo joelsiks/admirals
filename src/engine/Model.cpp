@@ -1,4 +1,3 @@
-
 #include "Model.hpp"
 
 using namespace admirals;

@@ -1,10 +1,12 @@
 #pragma once
 
-#include "DataObjects.hpp"
-#include "IDrawable.hpp"
-#include <VK2D/VK2D.h>
 #include <memory>
 #include <vector>
+
+#include <VK2D/VK2D.h>
+
+#include "DataObjects.hpp"
+#include "IDrawable.hpp"
 
 namespace admirals {
 namespace renderer {
@@ -23,7 +25,7 @@ public:
                               const Color &color);
 
     static void drawText(const VK2DTexture font, const Vector2 &position,
-                         const Color &color, const char *text);
+                         const Color &color, const std::string &text);
 
 private:
     int m_windowWidth;

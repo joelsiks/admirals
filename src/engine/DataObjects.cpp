@@ -1,5 +1,5 @@
 #include "DataObjects.hpp"
-#include <stdexcept>
+#include <VK2D/Renderer.h>
 
 using namespace admirals;
 
@@ -21,6 +21,13 @@ void Vector2::setX(float value) { this->m_0 = value; }
 float Vector2::y() const { return this->m_1; }
 void Vector2::setY(float value) { this->m_1 = value; }
 
+float *Vector2::data() const {
+    // This is a hack that might not work on all architectures
+    // It assumes that all floating point values are stored consecutively,
+    // and in the right order.
+    return (float *)&this->m_0;
+}
+
 void Vector2::operator=(float &in) {
     this->m_0 = in;
     this->m_1 = in;
@@ -31,19 +38,9 @@ void Vector2::operator=(const Vector2 &in) {
     this->m_1 = in.m_1;
 }
 
-float Vector2::operator[](int i) const {
-    // This is a hack that might not work on all architectures
-    // It assumes that all floating point values are stored consecutively,
-    // and in the right order.
-    return ((float *)&this->m_0)[i];
-}
+float Vector2::operator[](int i) const { return this->data()[i]; }
 
-float &Vector2::operator[](int i) {
-    // This is a hack that might not work on all architectures
-    // It assumes that all floating point values are stored consecutively,
-    // and in the right order.
-    return ((float *)&this->m_0)[i];
-}
+float &Vector2::operator[](int i) { return this->data()[i]; }
 
 // Vector 3
 
@@ -117,14 +114,11 @@ void Color::setB(float value) { this->m_2 = value; }
 float Color::a() const { return this->m_3; }
 void Color::setA(float value) { this->m_3 = value; }
 
-float *Color::data() const {
-    // This is a hack that might not work on all architectures
-    // It assumes that all floating point values are stored consecutively,
-    // and in the right order.
-    return (float *)&this->m_0;
+Color admirals::Color::fromHEX(const char *hex) {
+    Color c = Color();
+    vk2dColourHex(c.data(), hex);
+    return c;
 }
-
-Color admirals::Color::fromHEX(const char *hex) { return Color::WHITE; }
 
 const Color Color::RED = Color(1, 0, 0, 1);
 const Color Color::GREEN = Color(0, 1, 0, 1);
