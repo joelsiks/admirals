@@ -24,7 +24,8 @@ public:
 
     virtual bool HandleEvent(const SDL_Event &event) override;
 
-    void SetBackgroundColor(const vec4 color);
+    inline void SetBackgroundColor(const Color color) { m_bgColor = color; }
+    inline void SetForegroundColor(const Color color) { m_fgColor = color; }
 
 private:
     ButtonOnClickHandler m_onClick;

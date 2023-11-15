@@ -37,9 +37,3 @@ bool Button::HandleEvent(const SDL_Event &event) {
 
     return false;
 }
-
-void Button::SetBackgroundColor(const vec4 color) {
-    for (int i = 0; i < 4; i++) {
-        m_bgColor[i] = color[i];
-    }
-}

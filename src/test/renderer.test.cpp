@@ -19,12 +19,6 @@ const int WINDOW_HEIGHT = 550;
 
 using namespace admirals;
 
-struct AssetStore {
-    VK2DTexture texture;
-};
-
-void render_frame(const AssetStore assets) {}
-
 class TextureObject : public scene::GameObject {
 public:
     TextureObject(const Vector3 &pos, const char *texturePath)
@@ -49,10 +43,9 @@ private:
 
 void OnButtonClick(UI::Button *button, const SDL_Event &event) {
     if (event.type == SDL_MOUSEBUTTONUP) {
-        button->SetBackgroundColor(VK2D_BLACK);
+        button->SetBackgroundColor(Color::BLACK);
     } else if (event.type == SDL_MOUSEBUTTONDOWN) {
-        vec4 grey;
-        vk2dColourRGBA(grey, 50, 50, 50, 255);
+        Color grey = Color::fromRGBA(50, 50, 50, 255);
         button->SetBackgroundColor(grey);
     }
 }
@@ -63,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     // Create texture object.
     Vector3 texturePosition = Vector3(0, 0, 0);
-    TextureObject textureObject(texturePosition, "assets/test.jpg");
+    TextureObject textureObject(texturePosition, "assets/admirals.png");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(150, 40);
@@ -72,7 +65,7 @@ int main(int argc, char *argv[]) {
     engine.AddUIElement(UI::Element::createFromDerived(testBtn));
 
     admirals::UI::TextElement testText(
-        "Text Element1", "This is a text element.", elementSize, Color::WHITE);
+        "Text Element1", "This is a text element.", elementSize, Color::BLACK);
     testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
     engine.AddUIElement(std::make_shared<admirals::UI::TextElement>(testText));
 
