@@ -5,9 +5,7 @@ using namespace admirals::UI;
 
 TextElement::TextElement(const std::string &name, const std::string &text,
                          const Vector2 &size, const Color &color)
-    : Element(name, text, size) {
-    m_textColor = color;
-}
+    : Element(name, text, size), m_textColor(color) { }
 
 void TextElement::SetText(const std::string &text) { this->m_text = text; }
 
