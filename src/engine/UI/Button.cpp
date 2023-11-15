@@ -5,8 +5,9 @@
 
 using namespace admirals::UI;
 
-Button::Button(const std::string &name, const std::string &text, const vec2 size, const vec4 backgroundColor, const vec4 foregroundColor,
-               ButtonOnClickHandler onClick)
+Button::Button(const std::string &name, const std::string &text,
+               const vec2 size, const vec4 backgroundColor,
+               const vec4 foregroundColor, ButtonOnClickHandler onClick)
     : Element(name, text, size), m_onClick(onClick) {
     for (int i = 0; i < 4; i++) {
         m_bgColor[i] = backgroundColor[i];
@@ -15,23 +16,23 @@ Button::Button(const std::string &name, const std::string &text, const vec2 size
 }
 
 void Button::Render(const VK2DTexture font) {
-    renderer::Renderer::drawRectangle(m_displayOrigin, m_displaySize, m_bgColor);
-    renderer::Renderer::drawText(font, m_displayOrigin, m_fgColor, m_text.c_str());
+    renderer::Renderer::drawRectangle(m_displayOrigin, m_displaySize,
+                                      m_bgColor);
+    renderer::Renderer::drawText(font, m_displayOrigin, m_fgColor,
+                                 m_text.c_str());
 }
 
 bool Button::HandleEvent(const SDL_Event &event) {
     if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-        // Check if the mouse click event occurred within the button's area
         int mouseX = event.button.x;
         int mouseY = event.button.y;
 
-        // Assuming buttonRect is the SDL_Rect representing the button's area
         if (mouseX >= m_displayOrigin[0] &&
             mouseX <= m_displayOrigin[0] + m_displaySize[0] &&
             mouseY >= m_displayOrigin[1] &&
             mouseY <= m_displayOrigin[1] + m_displaySize[1]) {
-            // Mouse click happened within the button's area
-            SetBackgroundColor(VK2D_GREEN);
+
+            // Call click handler.
             m_onClick(this, event);
 
             return true;
