@@ -35,6 +35,7 @@ set(SOURCES
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
+    src/engine/Engine.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
