@@ -39,9 +39,9 @@ public:
     int sizeObjects();
     void setDupsAllowed(bool statement);
 
-    //bool collisionObject(std::shared_ptr<GameObject> object);
-    //std::vector<GameObject> detectObject(std::shared_ptr<GameObject>, int range);
-    
+    // bool collisionObject(std::shared_ptr<GameObject> object);
+    // std::vector<GameObject> detectObject(std::shared_ptr<GameObject>, int
+    // range);
 };
 
 } // namespace scene

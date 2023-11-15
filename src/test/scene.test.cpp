@@ -44,7 +44,6 @@ public:
     }
 };
 
-
 int test_add() {
 
     scene::Scene *scene = new scene::Scene();
@@ -65,21 +64,31 @@ int test_add() {
     scene->addObject(go2);
     scene->addObject(go3);
 
-    if (scene->sizeObjects() != 3) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 3) {
+        return EXIT_FAILURE;
+    }
 
     scene->addObject(go1);
-    if (scene->sizeObjects() != 3) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 3) {
+        return EXIT_FAILURE;
+    }
     scene->addObject(go1_1);
-    if (scene->sizeObjects() != 3) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 3) {
+        return EXIT_FAILURE;
+    }
 
     scene->setDupsAllowed(true);
 
     scene->addObject(go1);
-    if (scene->sizeObjects() != 4) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 4) {
+        return EXIT_FAILURE;
+    }
 
     scene->addObject(go1_1);
-    if (scene->sizeObjects() != 5) { return EXIT_FAILURE; }
-    
+    if (scene->sizeObjects() != 5) {
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -107,23 +116,33 @@ int test_remove() {
     scene->addObject(go2);
     scene->addObject(go3);
 
-    if (scene->sizeObjects() != 7) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 7) {
+        return EXIT_FAILURE;
+    }
 
     scene->removeOneObject(go1);
-    if (scene->sizeObjects() != 6) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 6) {
+        return EXIT_FAILURE;
+    }
 
     scene->removeAllObject(go1);
-    if (scene->sizeObjects() != 2) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 2) {
+        return EXIT_FAILURE;
+    }
 
     scene->addObject(go1);
     scene->addObject(go1);
     scene->addObject(go1_1);
     scene->addObject(go1_1);
-    if (scene->sizeObjects() != 6) { return EXIT_FAILURE; }
+    if (scene->sizeObjects() != 6) {
+        return EXIT_FAILURE;
+    }
 
     scene->removeAllObject(go1);
-    if (scene->sizeObjects() != 2) { return EXIT_FAILURE; }
-    
+    if (scene->sizeObjects() != 2) {
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -141,18 +160,26 @@ int test_exist() {
     auto go2 = scene::GameObject::createFromDerived(cell2);
     scene->addObject(go1);
     scene->setDupsAllowed(false);
-    
+
     bool exist = scene->existObject(go1);
-    if (exist != true) { return EXIT_FAILURE; }
+    if (exist != true) {
+        return EXIT_FAILURE;
+    }
     exist = scene->existObject(go1_1);
-    if (exist != true) { return EXIT_FAILURE; }
+    if (exist != true) {
+        return EXIT_FAILURE;
+    }
 
     exist = scene->existObject(go2);
-    if (exist != false) { return EXIT_FAILURE; }
+    if (exist != false) {
+        return EXIT_FAILURE;
+    }
 
     scene->removeOneObject(go1);
     exist = scene->existObject(go1);
-    if (exist != false) { return EXIT_FAILURE; }
+    if (exist != false) {
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -165,7 +192,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     printf("test_add SUCCESS\n");
-    
+
     res = test_remove();
     if (res) {
         printf("test_remove FAILURE\n");
