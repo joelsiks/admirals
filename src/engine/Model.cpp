@@ -1,9 +1,7 @@
 #include "Model.hpp"
 
-namespace admirals {
+using namespace admirals;
 
 Model::Model() {}
 
 Model::~Model() {}
-
-} // namespace admirals

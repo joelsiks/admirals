@@ -5,10 +5,13 @@
 
 #include <VK2D/VK2D.h>
 
+#include "DataObjects.hpp"
 #include "IDrawable.hpp"
 
 namespace admirals {
 namespace renderer {
+
+typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
 
 class Renderer {
 public:
@@ -16,13 +19,13 @@ public:
     ~Renderer();
 
     int init(bool debug);
-    void render(const std::vector<std::shared_ptr<IDrawable>> &drawable);
+    void render(const DrawableCollection &drawable);
 
-    static void drawRectangle(const vec2 position, const vec2 size,
-                              const vec4 color);
+    static void drawRectangle(const Vector2 &position, const Vector2 &size,
+                              const Color &color);
 
-    static void drawText(const VK2DTexture font, const vec2 position,
-                         const vec4 color, const char *text);
+    static void drawText(const VK2DTexture font, const Vector2 &position,
+                         const Color &color, const std::string &text);
 
 private:
     int m_windowWidth;

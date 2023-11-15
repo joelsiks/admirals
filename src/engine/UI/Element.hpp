@@ -7,6 +7,8 @@
 #include <SDL_events.h>
 #include <VK2D/Structs.h>
 
+#include "DataObjects.hpp"
+
 namespace admirals {
 namespace UI {
 
@@ -20,24 +22,22 @@ enum DisplayPosition {
 // General UI element that can be rendered.
 class Element {
 public:
-    Element(const std::string &name, const std::string &text, const vec2 size);
+    Element(const std::string &name, const std::string &text,
+            const Vector2 &size);
     virtual ~Element(){};
 
     // Getters and setters
     virtual const std::string &GetName() const { return m_name; }
     virtual void SetName(const std::string &name) { m_name = name; }
 
-    virtual const vec2 &GetDisplaySize() const { return m_displaySize; }
-    virtual void SetDisplaySize(const vec2 size) {
-        m_displaySize[0] = size[0];
-        m_displaySize[1] = size[1];
-    }
+    virtual const Vector2 &GetDisplaySize() const { return m_displaySize; }
+    virtual void SetDisplaySize(const Vector2 size) { m_displaySize = size; }
 
     virtual DisplayPosition GetDisplayPosition() const { return m_displayPos; }
     virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
 
     // Pure virtual function for rendering the UI element
-    virtual void Render(const VK2DTexture font, const vec2 startPos) = 0;
+    virtual void Render(const VK2DTexture font, const Vector2 &startPos) = 0;
 
     // Input handling
     virtual bool HandleEvent(const SDL_Event &event) { return false; }
@@ -57,7 +57,7 @@ protected:
     std::string m_text;
 
     // Size for displaying/rendering the element to the screen.
-    vec2 m_displaySize;
+    Vector2 m_displaySize;
 
     DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
 };

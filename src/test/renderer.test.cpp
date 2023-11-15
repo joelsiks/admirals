@@ -13,6 +13,8 @@
 const int WINDOW_WIDTH = 550;
 const int WINDOW_HEIGHT = 550;
 
+using namespace admirals;
+
 struct AssetStore {
     VK2DTexture texture;
 };
@@ -53,21 +55,19 @@ int main(int argc, char *argv[]) {
 
     // Load assets
     VK2DTexture texture = vk2dTextureLoad("assets/test.jpg");
-    vec4 clear = {1, 1, 1, 1};
     AssetStore assets = {texture};
 
-    admirals::UI::DisplayLayout layout(WINDOW_WIDTH, WINDOW_HEIGHT);
+    UI::DisplayLayout layout(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    vec2 elementSize = {150, 40};
+    Vector2 elementSize = Vector2(150, 40);
 
-    vec4 grey;
-    vk2dColourRGBA(grey, 54, 54, 54, 255);
+    Color grey = Color::fromRGBA(54, 54, 54, 255);
     admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
-                                 VK2D_WHITE, grey);
+                                 Color::WHITE, grey);
     layout.AddElement(std::make_unique<admirals::UI::Button>(testBtn));
 
     admirals::UI::TextElement testText(
-        "Text Element1", "This is a text element.", elementSize, VK2D_WHITE);
+        "Text Element1", "This is a text element.", elementSize, Color::WHITE);
     testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
     layout.AddElement(std::make_unique<admirals::UI::TextElement>(testText));
 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     SDL_Event e;
     while (!quit) {
         quit = check_quit();
-        vk2dRendererStartFrame(clear);
+        vk2dRendererStartFrame(Color::WHITE.data());
         render_frame(assets);
         layout.render();
         vk2dRendererEndFrame();
