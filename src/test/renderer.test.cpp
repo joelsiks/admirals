@@ -46,17 +46,12 @@ private:
 };
 
 void OnButtonClick(UI::Button *button, const SDL_Event &event) {
-    // Your handling logic for button click event
-    // For example:
-
     if (event.type == SDL_MOUSEBUTTONUP) {
         button->SetBackgroundColor(VK2D_BLACK);
-        printf("Button was clicked! (mu)\n");
     } else if (event.type == SDL_MOUSEBUTTONDOWN) {
         vec4 grey;
         vk2dColourRGBA(grey, 50, 50, 50, 255);
         button->SetBackgroundColor(grey);
-        printf("Button was clicked! (md)\n");
     }
 }
 
@@ -70,10 +65,8 @@ int main(int argc, char *argv[]) {
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     vec2 elementSize = {150, 40};
-    vec4 grey;
-    vk2dColourRGBA(grey, 54, 54, 54, 255);
-    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize, VK2D_WHITE, grey,
-                                 OnButtonClick);
+    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
+                                 VK2D_BLACK, VK2D_WHITE, OnButtonClick);
     engine.AddUIElement(UI::Element::createFromDerived(testBtn));
 
     admirals::UI::TextElement testText(
