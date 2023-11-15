@@ -40,9 +40,15 @@ void DisplayLayout::render() const {
         Vector2 displaySize = element->GetDisplaySize();
 
         float startHeight = GetHeightFromDisplayPosition(pos, displaySize);
-        Vector2 renderPosition(positionOffsets[pos], startHeight);
-        element->Render(this->m_font, renderPosition);
+        element->SetDisplayOrigin(Vector2(positionOffsets[pos], startHeight));
+        element->Render(this->m_font);
 
         positionOffsets[pos] += displaySize[0];
+    }
+}
+
+void DisplayLayout::handleEvent(SDL_Event &e) {
+    for (const auto &element : m_elements) {
+        element->HandleEvent(e);
     }
 }

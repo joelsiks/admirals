@@ -9,8 +9,8 @@ TextElement::TextElement(const std::string &name, const std::string &text,
 
 void TextElement::SetText(const std::string &text) { this->m_text = text; }
 
-void TextElement::Render(const VK2DTexture font, const Vector2 &startPos) {
-    renderer::Renderer::drawText(font, startPos, m_textColor,
+void TextElement::Render(const VK2DTexture font) {
+    renderer::Renderer::drawText(font, m_displayOrigin, m_textColor,
                                  this->m_text.c_str());
 }
 

@@ -1,89 +1,78 @@
-#include <SDL_vulkan.h>
-#include <VK2D/VK2D.h>
-#include <VK2D/Validation.h>
 #include <memory>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
 
+#include <SDL_vulkan.h>
+#include <VK2D/VK2D.h>
+#include <VK2D/Validation.h>
+
+#include "Engine.hpp"
+#include "GameObject.hpp"
 #include "UI/Button.hpp"
-#include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
+
+using namespace admirals;
 
 const int WINDOW_WIDTH = 550;
 const int WINDOW_HEIGHT = 550;
 
 using namespace admirals;
 
-struct AssetStore {
-    VK2DTexture texture;
+class TextureObject : public scene::GameObject {
+public:
+    TextureObject(const Vector3 &pos, const char *texturePath, float width,
+                  float height)
+        : scene::GameObject(pos), m_width(width), m_height(height) {
+        m_texture = vk2dTextureLoad(texturePath);
+    }
+
+    ~TextureObject() { vk2dTextureFree(m_texture); }
+
+    void onStart() {}
+
+    void onUpdate() {}
+
+    void render() {
+        vk2dRendererDrawTexture(m_texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0,
+                                m_width, m_height);
+    }
+
+private:
+    VK2DTexture m_texture;
+    float m_width, m_height;
 };
 
-void render_frame(const AssetStore assets) {
-    vk2dRendererDrawTexture(assets.texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0, 1400,
-                            1400);
-}
-
-int check_quit() {
-    bool quit = false;
-    SDL_Event e;
-    while (SDL_PollEvent(&e)) {
-        if (e.type == SDL_QUIT) {
-            quit = true;
-        }
+void OnButtonClick(UI::Button *button, const SDL_Event &event) {
+    if (event.type == SDL_MOUSEBUTTONUP) {
+        button->SetBackgroundColor(Color::BLACK);
+    } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        Color grey = Color::fromRGBA(50, 50, 50, 255);
+        button->SetBackgroundColor(grey);
     }
-    SDL_PumpEvents();
-    return quit;
 }
 
 int main(int argc, char *argv[]) {
-    SDL_Window *window = SDL_CreateWindow(
-        "VK2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH,
-        WINDOW_HEIGHT, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 
-    VK2DRendererConfig config = {VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE,
-                                 VK2D_FILTER_TYPE_NEAREST};
-    VK2DStartupOptions options = {true, true, true, "error.txt", false};
+    admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
-    if (vk2dRendererInit(window, config, &options) < 0) {
-        return -1;
-    }
-
-    VK2DCameraSpec camera = {
-        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 1, 0};
-    vk2dRendererSetCamera(camera);
-
-    // Load assets
-    VK2DTexture texture = vk2dTextureLoad("assets/test.jpg");
-    AssetStore assets = {texture};
-
-    UI::DisplayLayout layout(WINDOW_WIDTH, WINDOW_HEIGHT);
+    // Create texture object.
+    Vector3 texturePosition = Vector3(0, 0, 0);
+    TextureObject textureObject(texturePosition, "assets/admirals.png", 1024.0,
+                                1024.0);
+    engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(150, 40);
-
-    Color grey = Color::fromRGBA(54, 54, 54, 255);
     admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
-                                 Color::WHITE, grey);
-    layout.AddElement(std::make_unique<admirals::UI::Button>(testBtn));
+                                 Color::BLACK, Color::WHITE, OnButtonClick);
+    engine.AddUIElement(UI::Element::createFromDerived(testBtn));
 
     admirals::UI::TextElement testText(
-        "Text Element1", "This is a text element.", elementSize, Color::WHITE);
+        "Text Element1", "This is a text element.", elementSize, Color::BLACK);
     testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
-    layout.AddElement(std::make_unique<admirals::UI::TextElement>(testText));
+    engine.AddUIElement(std::make_shared<admirals::UI::TextElement>(testText));
 
-    // Start render loop
-    bool quit = false;
-    SDL_Event e;
-    while (!quit) {
-        quit = check_quit();
-        vk2dRendererStartFrame(Color::WHITE.data());
-        render_frame(assets);
-        layout.render();
-        vk2dRendererEndFrame();
-    }
+    engine.StartGameLoop();
 
-    // Free resources
-    vk2dRendererWait();
-    vk2dTextureFree(texture);
     return EXIT_SUCCESS;
 }

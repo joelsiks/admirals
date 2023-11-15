@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <VK2D/VK2D.h>
@@ -15,7 +16,7 @@ typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
 
 class Renderer {
 public:
-    Renderer(const char *name, int width, int height);
+    Renderer(const std::string &name, int width, int height);
     ~Renderer();
 
     int init(bool debug);

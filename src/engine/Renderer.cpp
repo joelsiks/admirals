@@ -24,10 +24,10 @@ void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
     }
 }
 
-Renderer::Renderer(const char *name, int width, int height) {
+Renderer::Renderer(const std::string &name, int width, int height) {
     this->m_windowWidth = width;
     this->m_windowHeight = height;
-    this->m_window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED,
+    this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED, width, height,
                                       SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 }

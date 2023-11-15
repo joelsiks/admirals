@@ -15,7 +15,7 @@ public:
 
     void SetText(const std::string &text);
 
-    void Render(const VK2DTexture font, const Vector2 &startPos);
+    void Render(const VK2DTexture font) override;
 
     bool HandleEvent(const SDL_Event &event) override;
 
