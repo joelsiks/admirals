@@ -9,8 +9,7 @@
 #include "Element.hpp"
 #include "InteractiveDrawable.hpp"
 
-namespace admirals {
-namespace UI {
+namespace admirals::UI {
 
 class DisplayLayout : public InteractiveDrawable {
 public:
@@ -31,5 +30,4 @@ private:
     std::vector<std::shared_ptr<Element>> m_elements;
 };
 
-} // namespace UI
-} // namespace admirals
+} // namespace admirals::UI

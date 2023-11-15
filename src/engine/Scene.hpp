@@ -7,8 +7,7 @@
 #include "GameObject.hpp"
 #include "IDrawable.hpp"
 
-namespace admirals {
-namespace scene {
+namespace admirals::scene {
 
 class Scene : public renderer::IDrawable {
 private:
@@ -30,5 +29,4 @@ public:
     void addObject(std::shared_ptr<GameObject> object);
 };
 
-} // namespace scene
-} // namespace admirals
+} // namespace admirals::scene

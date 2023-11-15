@@ -1,7 +1,6 @@
 #pragma once
 
-namespace admirals {
-namespace renderer {
+namespace admirals::renderer {
 
 class IDrawable {
 public:
@@ -11,5 +10,4 @@ public:
     virtual void render() const = 0;
 };
 
-} // namespace renderer
-} // namespace admirals
+} // namespace admirals::renderer

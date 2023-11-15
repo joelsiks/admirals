@@ -12,8 +12,6 @@
 #include "UI/Button.hpp"
 #include "UI/TextElement.hpp"
 
-using namespace admirals;
-
 const int WINDOW_WIDTH = 550;
 const int WINDOW_HEIGHT = 550;
 
