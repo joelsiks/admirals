@@ -1,10 +1,5 @@
-
-#include <iostream>
-
-#include <VK2D/VK2D.h>
-
-#include "Renderer.hpp"
 #include "TextElement.hpp"
+#include "Renderer.hpp"
 
 using namespace admirals::UI;
 

@@ -32,5 +32,6 @@ private:
     int m_windowHeight;
     SDL_Window *m_window;
 };
+
 } // namespace renderer
 } // namespace admirals
