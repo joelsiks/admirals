@@ -49,9 +49,6 @@ void DisplayLayout::render() const {
 }
 
 void DisplayLayout::handleEvent(SDL_Event &e) {
-
-    float positionOffsets[4] = {0};
-
     for (const auto &element : m_elements) {
         element->HandleEvent(e);
     }
