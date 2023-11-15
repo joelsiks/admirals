@@ -14,7 +14,7 @@ public:
 
     void SetText(const std::string &text);
 
-    virtual void Render(const VK2DTexture font, const vec2 startPos);
+    virtual void Render(const VK2DTexture font);
 
     virtual bool HandleEvent(const SDL_Event &event) override;
 };

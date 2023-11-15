@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <VK2D/VK2D.h>
@@ -12,7 +13,7 @@ namespace renderer {
 
 class Renderer {
 public:
-    Renderer(const char *name, int width, int height);
+    Renderer(const std::string &name, int width, int height);
     ~Renderer();
 
     int init(bool debug);

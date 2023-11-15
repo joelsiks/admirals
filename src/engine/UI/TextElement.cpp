@@ -11,10 +11,10 @@ TextElement::TextElement(const std::string &name, const std::string &text,
 
 void TextElement::SetText(const std::string &text) { this->m_text = text; }
 
-void TextElement::Render(const VK2DTexture font, const vec2 startPos) {
+void TextElement::Render(const VK2DTexture font) {
     // TODO: Use Element colors here (m_fgColor).
     // Draw foreground (text).
-    renderer::Renderer::drawText(font, startPos, VK2D_BLACK,
+    renderer::Renderer::drawText(font, m_displayOrigin, VK2D_BLACK,
                                  this->m_text.c_str());
 }
 

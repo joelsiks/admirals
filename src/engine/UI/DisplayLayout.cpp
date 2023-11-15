@@ -41,8 +41,18 @@ void DisplayLayout::render() const {
 
         float startHeight = GetHeightFromDisplayPosition(pos, displaySize);
         vec2 renderPosition = {positionOffsets[pos], startHeight};
-        element->Render(this->m_font, renderPosition);
+        element->SetDisplayOrigin(renderPosition);
+        element->Render(this->m_font);
 
         positionOffsets[pos] += displaySize[0];
+    }
+}
+
+void DisplayLayout::handleEvent(SDL_Event &e) {
+
+    float positionOffsets[4] = {0};
+
+    for (const auto &element : m_elements) {
+        element->HandleEvent(e);
     }
 }

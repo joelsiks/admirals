@@ -33,11 +33,17 @@ public:
         m_displaySize[1] = size[1];
     }
 
+    virtual const vec2 &GetDisplayOrigin() const { return m_displayOrigin; }
+    virtual void SetDisplayOrigin(const vec2 origin) {
+        m_displayOrigin[0] = origin[0];
+        m_displayOrigin[1] = origin[1];
+    }
+
     virtual DisplayPosition GetDisplayPosition() const { return m_displayPos; }
     virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
 
     // Pure virtual function for rendering the UI element
-    virtual void Render(const VK2DTexture font, const vec2 startPos) = 0;
+    virtual void Render(const VK2DTexture font) = 0;
 
     // Input handling
     virtual bool HandleEvent(const SDL_Event &event) { return false; }
@@ -59,7 +65,8 @@ protected:
     // Colors for rendering.
     vec4 m_fgColor, m_bgColor;
 
-    // Size for displaying/rendering the element to the screen.
+    // Origin and size and for displaying/rendering the element to the screen.
+    vec2 m_displayOrigin;
     vec2 m_displaySize;
 
     DisplayPosition m_displayPos = DisplayPosition::UpperLeft;

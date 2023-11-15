@@ -7,12 +7,12 @@
 #include <VK2D/VK2D.h>
 
 #include "Element.hpp"
-#include "IDrawable.hpp"
+#include "InteractiveDrawable.hpp"
 
 namespace admirals {
 namespace UI {
 
-class DisplayLayout : public renderer::IDrawable {
+class DisplayLayout : public InteractiveDrawable {
 public:
     DisplayLayout(int windowWidth, int windowHeight);
 
@@ -22,6 +22,7 @@ public:
                                        const vec2 &displaySize) const;
 
     void render() const;
+    void handleEvent(SDL_Event &e);
 
 private:
     VK2DTexture m_font;
