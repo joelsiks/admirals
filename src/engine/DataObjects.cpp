@@ -1,0 +1,133 @@
+#include "DataObjects.hpp"
+#include <stdexcept>
+
+using namespace admirals;
+
+// Vector 2
+
+Vector2::Vector2() {}
+
+Vector2::Vector2(float v) : Vector2(v, v) {}
+
+Vector2::Vector2(float x, float y) {
+    this->m_0 = x;
+    this->m_1 = y;
+}
+Vector2::~Vector2() {}
+
+float Vector2::x() const { return this->m_0; }
+void Vector2::setX(float value) { this->m_0 = value; }
+
+float Vector2::y() const { return this->m_1; }
+void Vector2::setY(float value) { this->m_1 = value; }
+
+void Vector2::operator=(float &in) {
+    this->m_0 = in;
+    this->m_1 = in;
+}
+
+void Vector2::operator=(const Vector2 &in) {
+    this->m_0 = in.m_0;
+    this->m_1 = in.m_1;
+}
+
+float Vector2::operator[](int i) const {
+    // This is a hack that might not work on all architectures
+    // It assumes that all floating point values are stored consecutively,
+    // and in the right order.
+    return ((float *)&this->m_0)[i];
+}
+
+float &Vector2::operator[](int i) {
+    // This is a hack that might not work on all architectures
+    // It assumes that all floating point values are stored consecutively,
+    // and in the right order.
+    return ((float *)&this->m_0)[i];
+}
+
+// Vector 3
+
+Vector3::Vector3() {}
+
+Vector3::Vector3(float v) : Vector3(v, v, v) {}
+
+Vector3::Vector3(float x, float y, float z) : Vector2(x, y) { this->m_2 = z; }
+
+Vector3::~Vector3() {}
+
+float Vector3::z() const { return this->m_2; }
+void Vector3::setZ(float value) { this->m_2 = value; }
+
+void Vector3::operator=(float &in) {
+    this->m_0 = in;
+    this->m_1 = in;
+    this->m_2 = in;
+}
+
+void Vector3::operator=(const Vector3 &in) {
+    this->m_0 = in.m_0;
+    this->m_1 = in.m_1;
+    this->m_2 = in.m_2;
+}
+
+// Vector 4
+
+Vector4::Vector4() {}
+
+Vector4::Vector4(float v) : Vector4(v, v, v, v) {}
+
+Vector4::Vector4(float x, float y, float z, float w) : Vector3(x, y, z) {
+    this->m_3 = w;
+}
+
+Vector4::~Vector4() {}
+
+float Vector4::w() const { return this->m_3; }
+void Vector4::setW(float value) { this->m_3 = value; }
+
+void Vector4::operator=(float &in) {
+    this->m_0 = in;
+    this->m_1 = in;
+    this->m_2 = in;
+    this->m_3 = in;
+}
+
+void Vector4::operator=(const Vector4 &in) {
+    this->m_0 = in.m_0;
+    this->m_1 = in.m_1;
+    this->m_2 = in.m_2;
+    this->m_3 = in.m_3;
+}
+
+Color::Color() {}
+
+Color::Color(float r, float g, float b, float a) : Vector4(r, g, b, a) {}
+
+Color::~Color() {}
+
+float Color::r() const { return this->m_0; }
+void Color::setR(float value) { this->m_0 = value; }
+
+float Color::g() const { return this->m_1; }
+void Color::setG(float value) { this->m_1 = value; }
+
+float Color::b() const { return this->m_2; }
+void Color::setB(float value) { this->m_2 = value; }
+
+float Color::a() const { return this->m_3; }
+void Color::setA(float value) { this->m_3 = value; }
+
+float *Color::data() const {
+    // This is a hack that might not work on all architectures
+    // It assumes that all floating point values are stored consecutively,
+    // and in the right order.
+    return (float *)&this->m_0;
+}
+
+Color admirals::Color::fromHEX(const char *hex) { return Color::WHITE; }
+
+const Color Color::RED = Color(1, 0, 0, 1);
+const Color Color::GREEN = Color(0, 1, 0, 1);
+const Color Color::BLUE = Color(0, 0, 1, 1);
+const Color Color::WHITE = Color(1, 1, 1, 1);
+const Color Color::BLACK = Color(0, 0, 0, 1);

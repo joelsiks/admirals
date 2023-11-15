@@ -1,17 +1,14 @@
 #include "GameObject.hpp"
 
-namespace admirals {
-namespace scene {
+using namespace admirals::scene;
 
-GameObject::GameObject(const vec2 &pos, float index) {
-    this->position[0] = pos[0];
-    this->position[1] = pos[1];
-    this->m_index = index;
-}
+GameObject::GameObject(const Vector3 &pos) : m_position(pos) {}
 
 GameObject::~GameObject() {}
 
-float GameObject::index() const { return this->m_index; }
+admirals::Vector3 GameObject::position() const {
+    Vector3 position = m_position; // A copy
+    return position;
+}
 
-} // namespace scene
-} // namespace admirals
+void GameObject::setPosition(const Vector3 &pos) { this->m_position = pos; }

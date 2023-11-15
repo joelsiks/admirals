@@ -1,27 +1,29 @@
 #pragma once
 
+#include "DataObjects.hpp"
+#include "IDrawable.hpp"
+#include <VK2D/VK2D.h>
 #include <memory>
 #include <vector>
 
-#include <VK2D/VK2D.h>
-
-#include "IDrawable.hpp"
-
 namespace admirals {
 namespace renderer {
+
+typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
+
 class Renderer {
 public:
     Renderer(const char *name, int width, int height);
     ~Renderer();
 
     int init(bool debug);
-    void render(const std::vector<std::shared_ptr<IDrawable>> &drawable);
+    void render(const DrawableCollection &drawable);
 
-    static void drawRectangle(const vec2 position, const vec2 size,
-                              const vec4 color);
+    static void drawRectangle(const Vector2 &position, const Vector2 &size,
+                              const Color &color);
 
-    static void drawText(const VK2DTexture font, const vec2 position,
-                         const vec4 color, const char *text);
+    static void drawText(const VK2DTexture font, const Vector2 &position,
+                         const Color &color, const char *text);
 
 private:
     int m_windowWidth;

@@ -10,13 +10,14 @@ namespace UI {
 
 class TextElement : public Element {
 public:
-    TextElement(const std::string &name, const std::string &text, vec2 size);
+    TextElement(const std::string &name, const std::string &text,
+                const Vector2 &size);
 
     void SetText(const std::string &text);
 
-    virtual void Render(const VK2DTexture font, const vec2 startPos);
+    void Render(const VK2DTexture font, const Vector2 &startPos);
 
-    virtual bool HandleEvent(const SDL_Event &event) override;
+    bool HandleEvent(const SDL_Event &event) override;
 };
 
 } // namespace UI

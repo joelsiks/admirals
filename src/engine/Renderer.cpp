@@ -1,13 +1,13 @@
 #include "Renderer.hpp"
+#include "DataObjects.hpp"
 #include "cmath"
 
-namespace admirals {
-namespace renderer {
+using namespace admirals::renderer;
 
-static void RenderFont(const VK2DTexture font, const vec2 postion,
-                       const char *text) {
-    float x = postion[0];
-    float y = postion[1];
+void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
+                const char *text) {
+    float x = postion.x();
+    float y = postion.y();
     float ox = x;
     for (int i = 0; i < (int)strlen(text); i++) {
         if (text[i] != '\n') {
@@ -53,7 +53,7 @@ int Renderer::init(bool debug) {
     return code;
 }
 
-void Renderer::render(const std::vector<std::shared_ptr<IDrawable>> &drawable) {
+void Renderer::render(const DrawableCollection &drawable) {
     vk2dRendererStartFrame(VK2D_WHITE);
     for (const auto &d : drawable) {
         d->render();
@@ -61,20 +61,17 @@ void Renderer::render(const std::vector<std::shared_ptr<IDrawable>> &drawable) {
     vk2dRendererEndFrame();
 }
 
-void Renderer::drawRectangle(const vec2 position, const vec2 size,
-                             const vec4 color) {
-    vk2dRendererSetColourMod(color);
+void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
+                             const Color &color) {
+    vk2dRendererSetColourMod(color.data());
     vk2dRendererDrawRectangle(position[0], position[1], size[0], size[1], 0, 0,
                               0);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
-void Renderer::drawText(const VK2DTexture font, const vec2 position,
-                        const vec4 color, const char *text) {
-    vk2dRendererSetColourMod(color);
+void Renderer::drawText(const VK2DTexture font, const Vector2 &position,
+                        const Color &color, const char *text) {
+    vk2dRendererSetColourMod(color.data());
     RenderFont(font, position, text);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
-
-} // namespace renderer
-} // namespace admirals
