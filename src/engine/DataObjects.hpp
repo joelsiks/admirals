@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 namespace admirals {
 
@@ -76,6 +77,7 @@ public:
     void setA(float value);
 
     static Color fromHEX(const char *hex);
+    static Color fromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
     const static Color RED;
     const static Color GREEN;

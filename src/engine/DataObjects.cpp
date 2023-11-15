@@ -114,9 +114,14 @@ void Color::setB(float value) { this->m_2 = value; }
 float Color::a() const { return this->m_3; }
 void Color::setA(float value) { this->m_3 = value; }
 
-Color admirals::Color::fromHEX(const char *hex) {
+Color Color::fromHEX(const char *hex) {
     Color c = Color();
     vk2dColourHex(c.data(), hex);
+    return c;
+}
+Color Color::fromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    Color c = Color();
+    vk2dColourRGBA(c.data(), r, g, b, a);
     return c;
 }
 

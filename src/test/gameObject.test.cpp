@@ -85,7 +85,8 @@ int main(int argc, char *argv[]) {
 
     UI::DisplayLayout *layout =
         new UI::DisplayLayout(WINDOW_WIDTH, WINDOW_HEIGHT);
-    UI::TextElement fpsText("Fps TextElement", "", Vector2(150, 40));
+    UI::TextElement fpsText("Fps TextElement", "", Vector2(150, 40),
+                            Color::BLACK);
     fpsText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     auto sharedFpsText = UI::Element::createFromDerived(fpsText);
 

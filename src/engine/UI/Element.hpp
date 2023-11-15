@@ -56,9 +56,6 @@ protected:
     // Text to be displayed on the Element.
     std::string m_text;
 
-    // Colors for rendering.
-    Color m_fgColor, m_bgColor;
-
     // Size for displaying/rendering the element to the screen.
     Vector2 m_displaySize;
 

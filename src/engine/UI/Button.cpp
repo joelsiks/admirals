@@ -6,13 +6,17 @@
 
 using namespace admirals::UI;
 
-Button::Button(const std::string &name, const std::string &text, Vector2 size)
-    : Element(name, text, size) {}
+Button::Button(const std::string &name, const std::string &text,
+               const Vector2 &size, const Color &bgColor, const Color &fgColor)
+    : Element(name, text, size) {
+    m_bgColor = bgColor;
+    m_fgColor = fgColor;
+}
 
 void Button::Render(const VK2DTexture font, const Vector2 &startPos) {
     // TODO: Use Element colors here (m_bgColor, m_fgColor).
-    renderer::Renderer::drawRectangle(startPos, m_displaySize, Color::BLACK);
-    renderer::Renderer::drawText(font, startPos, Color::WHITE, m_text);
+    renderer::Renderer::drawRectangle(startPos, m_displaySize, m_bgColor);
+    renderer::Renderer::drawText(font, startPos, m_fgColor, m_text);
 }
 
 bool Button::HandleEvent(const SDL_Event &event) { return false; }

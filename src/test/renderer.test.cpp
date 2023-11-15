@@ -61,13 +61,15 @@ int main(int argc, char *argv[]) {
 
     Vector2 elementSize = Vector2(150, 40);
 
-    UI::Button testBtn("Test Button1", "Click Me!", elementSize);
-    layout.AddElement(std::make_unique<UI::Button>(testBtn));
+    Color grey = Color::fromRGBA(54, 54, 54, 255);
+    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
+                                 Color::WHITE, grey);
+    layout.AddElement(std::make_unique<admirals::UI::Button>(testBtn));
 
-    UI::TextElement testText("Text Element1", "This is a text element.",
-                             elementSize);
-    testText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
-    layout.AddElement(std::make_unique<UI::TextElement>(testText));
+    admirals::UI::TextElement testText(
+        "Text Element1", "This is a text element.", elementSize, Color::WHITE);
+    testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
+    layout.AddElement(std::make_unique<admirals::UI::TextElement>(testText));
 
     // Start render loop
     bool quit = false;
