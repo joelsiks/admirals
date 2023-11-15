@@ -60,11 +60,14 @@ int main(int argc, char *argv[]) {
 
     vec2 elementSize = {150, 40};
 
-    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize);
+    vec4 grey;
+    vk2dColourRGBA(grey, 54, 54, 54, 255);
+    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
+                                 VK2D_WHITE, grey);
     layout.AddElement(std::make_unique<admirals::UI::Button>(testBtn));
 
-    admirals::UI::TextElement testText("Text Element1",
-                                       "This is a text element.", elementSize);
+    admirals::UI::TextElement testText(
+        "Text Element1", "This is a text element.", elementSize, VK2D_WHITE);
     testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
     layout.AddElement(std::make_unique<admirals::UI::TextElement>(testText));
 
