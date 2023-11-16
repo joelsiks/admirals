@@ -18,8 +18,9 @@ using namespace admirals;
 
 class TextureObject : public scene::GameObject {
 public:
-    TextureObject(const Vector3 &pos, const char *texturePath, bool keepAspectRatio = true)
-        : scene::GameObject(pos), m_keepAspectRatio(keepAspectRatio) ,
+    TextureObject(const Vector3 &pos, const char *texturePath,
+                  bool keepAspectRatio = true)
+        : scene::GameObject(pos), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::loadFromPath(texturePath)) {}
 
     void onStart() {}
@@ -33,7 +34,7 @@ public:
             x = std::min(x, y);
             y = x;
         }
-        
+
         renderer::Renderer::drawTexture(m_texture, position(), Vector2(x, y));
     }
 
@@ -56,7 +57,8 @@ int main(int argc, char *argv[]) {
     admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
     // Create texture object.
-    TextureObject textureObject = TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
+    TextureObject textureObject =
+        TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(150, 40);

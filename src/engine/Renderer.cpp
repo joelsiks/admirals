@@ -78,7 +78,8 @@ void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
-void Renderer::drawTexture(const Texture &texture, const Vector2 &position, const Vector2 &scale) {
+void Renderer::drawTexture(const Texture &texture, const Vector2 &position,
+                           const Vector2 &scale) {
     vk2dRendererDrawTexture(texture.data(), position.x(), position.y(),
                             scale.x(), scale.y(), 0, 0, 0, 0, 0,
                             texture.width(), texture.height());

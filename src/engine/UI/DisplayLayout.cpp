@@ -4,7 +4,8 @@
 using namespace admirals;
 using namespace admirals::UI;
 
-DisplayLayout::DisplayLayout() : m_font(Texture::loadFromPath("assets/font.png")) {}
+DisplayLayout::DisplayLayout()
+    : m_font(Texture::loadFromPath("assets/font.png")) {}
 
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     m_elements.push_back(std::move(element));
