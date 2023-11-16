@@ -61,15 +61,24 @@ int main(int argc, char *argv[]) {
         TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
-    Vector2 elementSize = Vector2(150, 40);
-    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
-                                 Color::BLACK, Color::WHITE, OnButtonClick);
-    engine.AddUIElement(UI::Element::createFromDerived(testBtn));
+    Vector2 elementSize = Vector2(140, 40);
+    admirals::UI::Button testBtn("btn1", "Button 1", elementSize, Color::BLACK,
+                                 Color::WHITE, OnButtonClick);
 
-    admirals::UI::TextElement testText(
-        "Text Element1", "This is a text element.", elementSize, Color::BLACK);
-    testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
-    engine.AddUIElement(std::make_shared<admirals::UI::TextElement>(testText));
+    admirals::UI::Button testBtn2("btn2", "Button 2", elementSize, Color::BLACK,
+                                  Color::WHITE, OnButtonClick);
+    engine.AddUIElement(UI::Element::createFromDerived(testBtn));
+    engine.AddUIElement(UI::Element::createFromDerived(testBtn2));
+
+    admirals::UI::TextElement testText1("textel1", "Left aligned",
+                                        Vector2(200, 40), Color::BLACK);
+    testText1.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
+    engine.AddUIElement(UI::Element::createFromDerived(testText1));
+
+    admirals::UI::TextElement testText2("textel2", "Right aligned",
+                                        Vector2(210, 40), Color::BLACK);
+    testText2.SetDisplayPosition(admirals::UI::DisplayPosition::LowerRight);
+    engine.AddUIElement(UI::Element::createFromDerived(testText2));
 
     engine.StartGameLoop();
 

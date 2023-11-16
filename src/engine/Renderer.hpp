@@ -17,7 +17,8 @@ typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
 
 class Renderer {
 public:
-    Renderer(const std::string &name, int width, int height);
+    Renderer(const std::string &name, int width, int height,
+             bool debugRendering);
     ~Renderer();
 
     int init(bool debug);
@@ -26,6 +27,11 @@ public:
 
     static void drawRectangle(const Vector2 &position, const Vector2 &size,
                               const Color &color);
+
+    static void drawRectangleOutline(const Vector2 &position,
+                                     const Vector2 &size,
+                                     const float outlineWidth,
+                                     const Color &color);
 
     static void drawTexture(const Texture &texture, const Vector2 &position,
                             const Vector2 &scale);

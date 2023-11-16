@@ -6,7 +6,7 @@ using namespace admirals;
 Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
                bool debug) {
     m_renderer = std::make_shared<renderer::Renderer>(gameName, windowWidth,
-                                                      windowHeight);
+                                                      windowHeight, debug);
     // Initialize the renderer right after creating it. Necessary in cases where
     // DisplayLayout requires vk2d to be initialized.
     m_renderer->init(debug);
