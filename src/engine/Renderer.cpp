@@ -78,9 +78,16 @@ void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
-void Renderer::drawText(const VK2DTexture font, const Vector2 &position,
+void Renderer::drawTexture(const Texture &texture, const Vector2 &position,
+                           const Vector2 &scale) {
+    vk2dRendererDrawTexture(texture.data(), position.x(), position.y(),
+                            scale.x(), scale.y(), 0, 0, 0, 0, 0,
+                            texture.width(), texture.height());
+}
+
+void Renderer::drawText(const Texture &font, const Vector2 &position,
                         const Color &color, const std::string &text) {
     vk2dRendererSetColourMod(color.data());
-    RenderFont(font, position, text.c_str());
+    RenderFont(font.data(), position, text.c_str());
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }

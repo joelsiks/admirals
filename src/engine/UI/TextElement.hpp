@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <SDL_rect.h>
-
 #include "Element.hpp"
 
 namespace admirals {
@@ -15,7 +13,7 @@ public:
 
     void SetText(const std::string &text);
 
-    void Render(const VK2DTexture font) override;
+    void Render(const Texture &font) override;
 
     bool HandleEvent(const SDL_Event &event) override;
 

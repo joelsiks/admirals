@@ -27,7 +27,10 @@ public:
     static void drawRectangle(const Vector2 &position, const Vector2 &size,
                               const Color &color);
 
-    static void drawText(const VK2DTexture font, const Vector2 &position,
+    static void drawTexture(const Texture &texture, const Vector2 &position,
+                            const Vector2 &scale);
+
+    static void drawText(const Texture &font, const Vector2 &position,
                          const Color &color, const std::string &text);
 
 private:

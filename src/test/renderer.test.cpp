@@ -4,10 +4,6 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <SDL_vulkan.h>
-#include <VK2D/VK2D.h>
-#include <VK2D/Validation.h>
-
 #include "Engine.hpp"
 #include "GameObject.hpp"
 #include "UI/Button.hpp"
@@ -22,34 +18,28 @@ using namespace admirals;
 
 class TextureObject : public scene::GameObject {
 public:
-    TextureObject(const Vector3 &pos, const char *texturePath, float width,
-                  float height, bool keepAspectRatio = true)
-        : scene::GameObject(pos), m_width(width), m_height(height),
-          m_keepAspectRatio(keepAspectRatio) {
-        m_texture = vk2dTextureLoad(texturePath);
-    }
-
-    ~TextureObject() { vk2dTextureFree(m_texture); }
+    TextureObject(const Vector3 &pos, const char *texturePath,
+                  bool keepAspectRatio = true)
+        : scene::GameObject(pos), m_keepAspectRatio(keepAspectRatio),
+          m_texture(Texture::loadFromPath(texturePath)) {}
 
     void onStart() {}
 
     void onUpdate() {}
 
     void render(const renderer::RendererContext &r) {
-        float x = r.windowWidth / m_width;
-        float y = r.windowHeight / m_height;
+        float x = r.windowWidth / static_cast<float>(m_texture.width());
+        float y = r.windowHeight / static_cast<float>(m_texture.height());
         if (m_keepAspectRatio) {
             x = std::min(x, y);
             y = x;
         }
 
-        vk2dRendererDrawTexture(m_texture, 0, 0, x, y, 0, 0, 0, 0, 0, m_width,
-                                m_height);
+        renderer::Renderer::drawTexture(m_texture, position(), Vector2(x, y));
     }
 
 private:
-    VK2DTexture m_texture;
-    float m_width, m_height;
+    Texture m_texture;
     bool m_keepAspectRatio;
 };
 
@@ -67,9 +57,8 @@ int main(int argc, char *argv[]) {
     admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
     // Create texture object.
-    Vector3 texturePosition = Vector3(0, 0, 0);
-    TextureObject textureObject(texturePosition, "assets/admirals.png", 1024.0,
-                                1024.0);
+    TextureObject textureObject =
+        TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(150, 40);

@@ -4,10 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <SDL_vulkan.h>
-#include <VK2D/Constants.h>
-#include <VK2D/VK2D.h>
-
 #include "Engine.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
@@ -21,7 +17,6 @@ using namespace admirals;
 class CellObject : public scene::GameObject {
 private:
     Color m_color;
-    int m_windowWidth, m_windowHeight;
 
 public:
     CellObject(const Vector3 &pos, const Color &color)
