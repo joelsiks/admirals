@@ -113,7 +113,8 @@ class TestTypedObjects : public TestCaseBase {
 public:
     TestTypedObjects() : TestCaseBase("typed objects") {}
     void test() override {
-        DepthOrderedCollection collection = DepthOrderedCollection<scene::GameObject>();
+        DepthOrderedCollection collection =
+            DepthOrderedCollection<scene::GameObject>();
         Vector3 pos = Vector3(0);
         TestObject t1 = TestObject("a", pos);
         collection.insert(scene::GameObject::createFromDerived(t1));

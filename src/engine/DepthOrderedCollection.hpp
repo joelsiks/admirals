@@ -9,16 +9,17 @@
 
 namespace admirals {
 
-template <typename T = IOrderedObject> 
-class DepthOrderedCollection {
+template <typename T = IOrderedObject> class DepthOrderedCollection {
 private:
     // Should be sorted with respect to game object index, lower first.
     struct Comparator {
         Comparator(const DepthOrderedCollection &c) : m_collection(c) {}
 
         bool operator()(const std::string &l, const std::string &r) const {
-            const std::shared_ptr<IOrderedObject> a = m_collection.m_objects.at(l);
-            const std::shared_ptr<IOrderedObject> b = m_collection.m_objects.at(r);
+            const std::shared_ptr<IOrderedObject> a =
+                m_collection.m_objects.at(l);
+            const std::shared_ptr<IOrderedObject> b =
+                m_collection.m_objects.at(r);
             return a->m_order < b->m_order;
         }
 

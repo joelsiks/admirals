@@ -38,8 +38,8 @@ void Vector2::operator=(const Vector2 &in) {
     this->m_1 = in.m_1;
 }
 
-bool Vector2::operator==(const Vector2 &r) { 
-    return r.m_0 == m_0 && r.m_1 == m_1; 
+bool Vector2::operator==(const Vector2 &r) {
+    return r.m_0 == m_0 && r.m_1 == m_1;
 }
 
 float Vector2::operator[](int i) const { return this->data()[i]; }
@@ -79,8 +79,8 @@ void Vector3::operator=(const Vector3 &in) {
     this->m_2 = in.m_2;
 }
 
-bool Vector3::operator==(const Vector3 &r) { 
-    return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2; 
+bool Vector3::operator==(const Vector3 &r) {
+    return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2;
 }
 
 // Vector 4
@@ -123,8 +123,8 @@ void Vector4::operator=(const Vector4 &in) {
     this->m_3 = in.m_3;
 }
 
-bool admirals::Vector4::operator==(const Vector4 &r) { 
-    return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2 && r.m_3 == m_3; 
+bool admirals::Vector4::operator==(const Vector4 &r) {
+    return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2 && r.m_3 == m_3;
 }
 
 Color::Color() {}
