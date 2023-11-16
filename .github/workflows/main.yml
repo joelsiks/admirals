@@ -26,6 +26,7 @@ jobs:
     # Check formatting
     - name: check_code_formatted
       run: |
+          find src -name '*.cpp' -o -name '*.hpp' | xargs clang-format --style=file -i
           if [[ -n $(git diff) ]]; then
             echo "You must run make format before submitting a pull request"
             echo ""
