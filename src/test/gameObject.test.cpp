@@ -34,10 +34,16 @@ public:
         this->setPosition(position);
     }
 
-    void render() {
-        Vector2 size(100, 100);
-        renderer::Renderer::drawRectangle(this->position(), size,
-                                          this->m_color);
+    void render(const renderer::RendererContext &r) {
+        Vector2 pos = this->position();
+        // Calculate scaling
+        float x = r.windowWidth / static_cast<float>(WINDOW_WIDTH);
+        float y = r.windowHeight / static_cast<float>(WINDOW_HEIGHT);
+
+        Vector2 size(100.f * x, 100.f * y);
+        pos[0] *= x;
+        pos[1] *= y;
+        renderer::Renderer::drawRectangle(pos, size, this->m_color);
     }
 };
 
@@ -79,8 +85,7 @@ int main(int argc, char *argv[]) {
     CellObject cell6 = CellObject(Vector3(200, 200, 0), Color::GREEN);
     scene->addObject(scene::GameObject::createFromDerived(cell6));
 
-    UI::DisplayLayout *layout =
-        new UI::DisplayLayout(WINDOW_WIDTH, WINDOW_HEIGHT);
+    UI::DisplayLayout *layout = new UI::DisplayLayout();
     UI::TextElement fpsText("Fps TextElement", "", Vector2(150, 40),
                             Color::BLACK);
     fpsText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);

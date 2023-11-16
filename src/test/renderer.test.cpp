@@ -1,3 +1,4 @@
+#include <cmath>
 #include <memory>
 #include <stdbool.h>
 #include <stdio.h>
@@ -17,21 +18,28 @@ using namespace admirals;
 
 class TextureObject : public scene::GameObject {
 public:
-    TextureObject(const Vector3 &pos, const char *texturePath)
-        : scene::GameObject(pos),
+    TextureObject(const Vector3 &pos, const char *texturePath, bool keepAspectRatio = true)
+        : scene::GameObject(pos), m_keepAspectRatio(keepAspectRatio) ,
           m_texture(Texture::loadFromPath(texturePath)) {}
 
     void onStart() {}
 
     void onUpdate() {}
 
-    void render() {
-        renderer::Renderer::drawTexture(m_texture, position(),
-                                        Vector2(WINDOW_WIDTH, WINDOW_HEIGHT));
+    void render(const renderer::RendererContext &r) {
+        float x = r.windowWidth / static_cast<float>(m_texture.width());
+        float y = r.windowHeight / static_cast<float>(m_texture.height());
+        if (m_keepAspectRatio) {
+            x = std::min(x, y);
+            y = x;
+        }
+        
+        renderer::Renderer::drawTexture(m_texture, position(), Vector2(x, y));
     }
 
 private:
     Texture m_texture;
+    bool m_keepAspectRatio;
 };
 
 void OnButtonClick(UI::Button *button, const SDL_Event &event) {
@@ -48,8 +56,7 @@ int main(int argc, char *argv[]) {
     admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
     // Create texture object.
-    TextureObject textureObject =
-        TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
+    TextureObject textureObject = TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(150, 40);
