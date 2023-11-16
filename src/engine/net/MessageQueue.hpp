@@ -5,24 +5,23 @@
 namespace admirals {
 namespace net {
 
-template <typename T>
-class MessageQueue {
-   private:
+template <typename T> class MessageQueue {
+private:
     std::deque<T> m_queue;
     std::mutex m_mutex;
 
-   public:
+public:
     MessageQueue() = default;
-    MessageQueue(const MessageQueue<T>&) = delete;
+    MessageQueue(const MessageQueue<T> &) = delete;
     virtual ~MessageQueue() = default;
 
-    const T& Front();
+    const T &Front();
 
     // Returns and maintains item at back of queue
-    const T& Back();
+    const T &Back();
 
     // Adds an item to the back of the queue
-    void PushBack(const T& msg);
+    void PushBack(const T &msg);
 
     // Removes an item from the front of the queue
     void PopFront();
@@ -39,7 +38,7 @@ class MessageQueue {
     size_t Size();
 };
 
-}  // namespace net
-}  // namespace admirals
+} // namespace net
+} // namespace admirals
 
 #include "MessageQueue.tpp"

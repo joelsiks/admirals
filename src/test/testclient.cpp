@@ -25,10 +25,10 @@ struct GameState {
 };
 
 class TestClient : public admirals::net::Client<TestEnum> {
-   private:
+private:
     GameState state;
 
-   public:
+public:
     void SpawnShip(uint8_t x, uint8_t y) {
         admirals::net::Message<TestEnum> msg;
         msg.header.id = TestEnum::SPAWN_SHIP;
@@ -92,22 +92,22 @@ int main() {
             break;
         }
 
-            if (GetAsyncKeyState('Q') & 0x8000) {
-                std::cout << "Spawning ship" << std::endl;
-                client.SpawnShip(0, 0);
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
-            if (GetAsyncKeyState('W') & 0x8000) {
-                std::cout << "Moving ship" << std::endl;
-                uint8_t new_x = rand() % 8;
-                uint8_t new_y = rand() % 8;
-                client.MoveShip(0, 0, new_x, new_y);
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
-            if (GetAsyncKeyState('E') & 0x8000) {
-                std::cout << "Disconnecting" << std::endl;
-                break;
-            }
+        if (GetAsyncKeyState('Q') & 0x8000) {
+            std::cout << "Spawning ship" << std::endl;
+            client.SpawnShip(0, 0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        if (GetAsyncKeyState('W') & 0x8000) {
+            std::cout << "Moving ship" << std::endl;
+            uint8_t new_x = rand() % 8;
+            uint8_t new_y = rand() % 8;
+            client.MoveShip(0, 0, new_x, new_y);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        if (GetAsyncKeyState('E') & 0x8000) {
+            std::cout << "Disconnecting" << std::endl;
+            break;
+        }
 
         size_t size = client.Incoming().Size();
         for (int i = 0; i < size; i++) {
@@ -115,14 +115,15 @@ int main() {
             client.Incoming().PopFront();
 
             switch (msg.header.id) {
-                case TestEnum::BOARD_UPDATE: {
-                    client.UpdateBoard(msg);
-                    break;
-                }
-                default: {
-                    std::cout << "Unknown message id: " << static_cast<int>(msg.header.id) << std::endl;
-                    break;
-                }
+            case TestEnum::BOARD_UPDATE: {
+                client.UpdateBoard(msg);
+                break;
+            }
+            default: {
+                std::cout << "Unknown message id: "
+                          << static_cast<int>(msg.header.id) << std::endl;
+                break;
+            }
             }
         }
 

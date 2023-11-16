@@ -9,9 +9,8 @@
 namespace admirals {
 namespace net {
 
-template <typename T>
-class Server {
-   public:
+template <typename T> class Server {
+public:
     Server(uint16_t port);
     virtual ~Server();
 
@@ -25,31 +24,37 @@ class Server {
     void WaitForClientConnection();
 
     // Sends a message to a client
-    void MessageClient(std::shared_ptr<Connection<T>> client, const Message<T>& message);
+    void MessageClient(std::shared_ptr<Connection<T>> client,
+                       const Message<T> &message);
 
     // Sends a message to all clients, except the one specified
-    void MessageAllClients(const Message<T>& message, std::shared_ptr<Connection<T>> ignore_client = nullptr);
+    void
+    MessageAllClients(const Message<T> &message,
+                      std::shared_ptr<Connection<T>> ignore_client = nullptr);
 
     // Empties the incoming message queue, calling OnMessage on each message
     void Update(size_t max_messages = -1);
 
-   protected:
-   // Called when a client connects
-    virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client) { return false; }
+protected:
+    // Called when a client connects
+    virtual bool OnClientConnect(std::shared_ptr<Connection<T>> client) {
+        return false;
+    }
     // Called when a client disconnects
     virtual void OnClientDisconnect(std::shared_ptr<Connection<T>> client) {}
     // Called when a message is received
-    virtual void OnMessage(std::shared_ptr<Connection<T>> client, Message<T>& message) {}
+    virtual void OnMessage(std::shared_ptr<Connection<T>> client,
+                           Message<T> &message) {}
 
-   public:
+public:
     // Called when a client is validated
     virtual void OnClientValidated(std::shared_ptr<Connection<T>> client) {}
 
-   public:
+public:
     MessageQueue<OwnedMessage<T>> incoming_messages;
     std::vector<std::shared_ptr<Connection<T>>> connections;
 
-   private:
+private:
     asio::io_context io_context;
     std::thread context_thread;
 
@@ -58,7 +63,7 @@ class Server {
     // Start ID
     uint32_t id_counter = 1;
 };
-}  // namespace net
-}  // namespace admirals
+} // namespace net
+} // namespace admirals
 
 #include "Server.tpp"

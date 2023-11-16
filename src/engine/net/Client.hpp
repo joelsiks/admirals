@@ -10,15 +10,14 @@
 namespace admirals {
 namespace net {
 
-template <typename T>
-class Client {
+template <typename T> class Client {
 
-   public:
+public:
     Client();
     virtual ~Client();
 
     // Connects to the server
-    bool Connect(const std::string& host, const std::string& port);
+    bool Connect(const std::string &host, const std::string &port);
 
     // Disconnect from the server
     void Disconnect();
@@ -27,19 +26,19 @@ class Client {
     bool IsConnected() const;
 
     // Sends a message to the server
-    void Send(const Message<T>& message);
+    void Send(const Message<T> &message);
 
     // Returns the incoming message queue
-    MessageQueue<OwnedMessage<T>>& Incoming();
+    MessageQueue<OwnedMessage<T>> &Incoming();
 
-   private:
+private:
     asio::io_context m_io_context;
     std::thread m_context_thread;
     std::unique_ptr<Connection<T>> m_connection;
     MessageQueue<OwnedMessage<T>> m_incoming_messages;
 };
 
-}  // namespace net
-}  // namespace admirals
+} // namespace net
+} // namespace admirals
 
 #include "Client.tpp"
