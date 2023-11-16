@@ -26,7 +26,8 @@ void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
     }
 }
 
-Renderer::Renderer(const std::string &name, int width, int height) : m_context({ width, height }) {
+Renderer::Renderer(const std::string &name, int width, int height)
+    : m_context({width, height}) {
     this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED, width, height,
                                       SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
@@ -47,7 +48,9 @@ int Renderer::init(bool debug) {
         return code;
     }
 
-    VK2DCameraSpec camera = { VK2D_CAMERA_TYPE_DEFAULT, 0, 0, m_context.windowWidth, m_context.windowHeight, 1, 0};
+    VK2DCameraSpec camera = {
+        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, m_context.windowWidth,
+        m_context.windowHeight,   1, 0};
 
     vk2dRendererSetCamera(camera);
     return code;
@@ -55,7 +58,8 @@ int Renderer::init(bool debug) {
 
 void Renderer::render(const DrawableCollection &drawable) {
     vk2dRendererStartFrame(Color::WHITE.data());
-    SDL_GetWindowSize(m_window, &m_context.windowWidth, &m_context.windowHeight);
+    SDL_GetWindowSize(m_window, &m_context.windowWidth,
+                      &m_context.windowHeight);
     for (const auto &d : drawable) {
         d->render(m_context);
     }

@@ -44,7 +44,7 @@ public:
         // Calculate scaling
         float x = r.windowWidth / ((float)WINDOW_WIDTH);
         float y = r.windowHeight / ((float)WINDOW_HEIGHT);
-        
+
         Vector2 size(100.f * x, 100.f * y);
         pos[0] *= x;
         pos[1] *= y;

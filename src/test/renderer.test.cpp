@@ -1,8 +1,8 @@
+#include <cmath>
 #include <memory>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
-#include <cmath>
 
 #include <SDL_vulkan.h>
 #include <VK2D/VK2D.h>
@@ -24,7 +24,8 @@ class TextureObject : public scene::GameObject {
 public:
     TextureObject(const Vector3 &pos, const char *texturePath, float width,
                   float height, bool keepAspectRatio = true)
-        : scene::GameObject(pos), m_width(width), m_height(height), m_keepAspectRatio(keepAspectRatio) {
+        : scene::GameObject(pos), m_width(width), m_height(height),
+          m_keepAspectRatio(keepAspectRatio) {
         m_texture = vk2dTextureLoad(texturePath);
     }
 
