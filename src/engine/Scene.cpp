@@ -1,22 +1,18 @@
 #include "Scene.hpp"
 
-namespace admirals {
-namespace scene {
+using namespace admirals::scene;
 
-void Scene::render() const {
-    for (auto &object : this->objects) {
+void Scene::render(const renderer::RendererContext &r) const {
+    for (auto &object : this->m_objects) {
         object->onUpdate();
-        object->render();
+        object->render(r);
     }
 }
 
 void Scene::addObject(std::shared_ptr<GameObject> object) {
-    this->objects.insert(object);
+    this->m_objects.insert(object);
 }
 
-Scene::Scene() { this->objects = {}; }
+Scene::Scene() { this->m_objects = {}; }
 
 Scene::~Scene() {}
-
-} // namespace scene
-} // namespace admirals

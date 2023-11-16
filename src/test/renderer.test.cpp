@@ -1,66 +1,86 @@
-#include <SDL_vulkan.h>
-#include <VK2D/VK2D.h>
-#include <VK2D/Validation.h>
+#include <cmath>
+#include <memory>
 #include <stdbool.h>
+#include <stdio.h>
+#include <time.h>
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+#include "Engine.hpp"
+#include "GameObject.hpp"
+#include "UI/Button.hpp"
+#include "UI/TextElement.hpp"
 
-struct AssetStore {
-    VK2DTexture texture;
+using namespace admirals;
+
+const int WINDOW_WIDTH = 550;
+const int WINDOW_HEIGHT = 550;
+
+using namespace admirals;
+
+class TextureObject : public scene::GameObject {
+public:
+    TextureObject(const Vector3 &pos, const char *texturePath,
+                  bool keepAspectRatio = true)
+        : scene::GameObject(pos), m_keepAspectRatio(keepAspectRatio),
+          m_texture(Texture::loadFromPath(texturePath)) {}
+
+    void onStart() {}
+
+    void onUpdate() {}
+
+    void render(const renderer::RendererContext &r) {
+        float x = r.windowWidth / static_cast<float>(m_texture.width());
+        float y = r.windowHeight / static_cast<float>(m_texture.height());
+        if (m_keepAspectRatio) {
+            x = std::min(x, y);
+            y = x;
+        }
+
+        renderer::Renderer::drawTexture(m_texture, position(), Vector2(x, y));
+    }
+
+private:
+    Texture m_texture;
+    bool m_keepAspectRatio;
 };
 
-void render_frame(const AssetStore assets) {
-    vk2dRendererDrawTexture(assets.texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0, 1400,
-                            1400);
-}
-
-int check_quit() {
-    bool quit = false;
-    SDL_Event e;
-    while (SDL_PollEvent(&e)) {
-        if (e.type == SDL_QUIT) {
-            quit = true;
-        }
+void OnButtonClick(UI::Button *button, const SDL_Event &event) {
+    if (event.type == SDL_MOUSEBUTTONUP) {
+        button->SetBackgroundColor(Color::BLACK);
+    } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        Color grey = Color::fromRGBA(50, 50, 50, 255);
+        button->SetBackgroundColor(grey);
     }
-    SDL_PumpEvents();
-    return quit;
 }
 
 int main(int argc, char *argv[]) {
-    SDL_Window *window = SDL_CreateWindow(
-        "VK2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH,
-        WINDOW_HEIGHT, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 
-    VK2DRendererConfig config = {VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE,
-                                 VK2D_FILTER_TYPE_NEAREST};
-    VK2DStartupOptions options = {true, true, true, "error.txt", false};
+    admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
-    if (vk2dRendererInit(window, config, &options) < 0) {
-        return -1;
-    }
+    // Create texture object.
+    TextureObject textureObject =
+        TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
+    engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
-    VK2DCameraSpec camera = {
-        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 1, 0};
-    vk2dRendererSetCamera(camera);
+    Vector2 elementSize = Vector2(140, 40);
+    admirals::UI::Button testBtn("btn1", "Button 1", elementSize, Color::BLACK,
+                                 Color::WHITE, OnButtonClick);
 
-    // Load assets
-    VK2DTexture texture = vk2dTextureLoad("assets/test.jpg");
-    vec4 clear = {1, 1, 1, 1};
-    AssetStore assets = {texture};
+    admirals::UI::Button testBtn2("btn2", "Button 2", elementSize, Color::BLACK,
+                                  Color::WHITE, OnButtonClick);
+    engine.AddUIElement(UI::Element::createFromDerived(testBtn));
+    engine.AddUIElement(UI::Element::createFromDerived(testBtn2));
 
-    // Start render loop
-    bool quit = false;
-    SDL_Event e;
-    while (!quit) {
-        quit = check_quit();
-        vk2dRendererStartFrame(clear);
-        render_frame(assets);
-        vk2dRendererEndFrame();
-    }
+    admirals::UI::TextElement testText1("textel1", "Left aligned",
+                                        Vector2(200, 40), Color::BLACK);
+    testText1.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
+    engine.AddUIElement(UI::Element::createFromDerived(testText1));
 
-    // Free resources
-    vk2dRendererWait();
-    vk2dTextureFree(texture);
+    admirals::UI::TextElement testText2("textel2", "Right aligned",
+                                        Vector2(210, 40), Color::BLACK);
+    testText2.SetDisplayPosition(admirals::UI::DisplayPosition::LowerRight);
+    engine.AddUIElement(UI::Element::createFromDerived(testText2));
+
+    engine.StartGameLoop();
+
     return EXIT_SUCCESS;
 }
