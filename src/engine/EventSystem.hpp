@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <map>
+#include <set>
 
 namespace admirals::events {
 
@@ -22,12 +23,12 @@ public:
     EventSystem();
     ~EventSystem();
 
-    void invoke(const char *type, void *sender);
+    void invoke(const char *type, void *sender, Event &event);
     void subscribe(const char *type, const EventHandler &handler);
     void unsubscribe(const char *type, const EventHandler &handler);
 
 private:
-    std::multimap<const char *, const EventHandler &> m_handlers;
+    std::map<const char *, std::set<size_t>> m_handlers;
 };
 
 }
