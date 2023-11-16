@@ -10,6 +10,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 # Set SDL2_DIR to the path of your SDL2 directory
 set(SDL2_DIR include/SDL2)
 set(VK2D_DIR include/Vulkan2D)
+set(ASIO_DIR include/asio)
 
 # Find Vulkan and SDL2
 find_package(Vulkan REQUIRED)
@@ -45,13 +46,19 @@ file(COPY ${ASSETS} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 # Create a library with the sources
 add_library(admirals ${SOURCES} ${VMA_FILES} ${VK2D_C} ${VK2D_H})
 target_link_libraries(admirals m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
+if(WIN32)
+    target_link_libraries(admirals wsock32 ws2_32)
+endif()
 target_include_directories(admirals PRIVATE 
     "src/engine" 
+    "src/engine/net"
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
+    ${ASIO_DIR}/asio/include
+    ${ASIO_DIR}/asio/include/asio
 )
-
+    
 # Create test executable
 add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} ${VK2D_H})
 target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
@@ -60,6 +67,24 @@ target_include_directories(renderer_test PRIVATE
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
+)
+    
+# Test client
+add_executable(test_client src/test/testclient.cpp)
+target_link_libraries(test_client admirals)
+target_include_directories(test_client PRIVATE 
+    ${ASIO_DIR}/asio/include
+    "src/test/"
+    "src/engine/net/"
+)
+
+# Test server
+add_executable(test_server src/test/testserver.cpp)
+target_link_libraries(test_server admirals)
+target_include_directories(test_server PRIVATE 
+    ${ASIO_DIR}/asio/include
+    "src/test/"
+    "src/engine/net/"
 )
 
 # Copy SDL2.dll to the output directory after the executable is built
