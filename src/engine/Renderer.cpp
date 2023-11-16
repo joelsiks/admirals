@@ -26,8 +26,9 @@ void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
     }
 }
 
-Renderer::Renderer(const std::string &name, int width, int height)
-    : m_context({width, height}) {
+Renderer::Renderer(const std::string &name, int width, int height,
+                   bool debugRendering)
+    : m_context({width, height, debugRendering}) {
     this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED, width, height,
                                       SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
@@ -75,6 +76,16 @@ void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
     vk2dRendererSetColourMod(color.data());
     vk2dRendererDrawRectangle(position[0], position[1], size[0], size[1], 0, 0,
                               0);
+    vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::drawRectangleOutline(const Vector2 &position,
+                                    const Vector2 &size,
+                                    const float outlineWidth,
+                                    const Color &color) {
+    vk2dRendererSetColourMod(color.data());
+    vk2dRendererDrawRectangleOutline(position[0], position[1], size[0], size[1],
+                                     0, 0, 0, outlineWidth);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 

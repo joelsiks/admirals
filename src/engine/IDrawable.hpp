@@ -6,6 +6,9 @@ namespace renderer {
 struct RendererContext {
     int windowWidth;
     int windowHeight;
+
+    // Indicates whether to draw outlines of elements for debugging purposes.
+    bool renderDebugOutlines;
 };
 
 class IDrawable {

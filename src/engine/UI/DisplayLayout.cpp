@@ -38,12 +38,21 @@ void DisplayLayout::render(const renderer::RendererContext &r) const {
         DisplayPosition pos = element->GetDisplayPosition();
         Vector2 displaySize = element->GetDisplaySize();
 
+        // Calculate the origin with respect to the matching positionOffset.
         Vector2 origin = GetOriginFromDisplayPosition(pos, displaySize, r);
         origin[0] += positionOffsets[pos];
 
         element->SetDisplayOrigin(origin);
+
+        // If debugging, render an outline around the UI Element.
+        if (r.renderDebugOutlines) {
+            renderer::Renderer::drawRectangleOutline(origin, displaySize, 2,
+                                                     Color::RED);
+        }
+
         element->Render(this->m_font);
 
+        // Update the matching positionOffset.
         if (pos == DisplayPosition::UpperRight ||
             pos == DisplayPosition::LowerRight) {
             positionOffsets[pos] -= displaySize[0];
