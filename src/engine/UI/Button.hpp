@@ -3,8 +3,6 @@
 
 #include <functional>
 
-#include <SDL_rect.h>
-
 #include "Element.hpp"
 
 namespace admirals {
@@ -20,7 +18,7 @@ public:
            const Vector2 &size, const Color &bgColor, const Color &fgColor,
            ButtonOnClickHandler onClick);
 
-    void Render(const VK2DTexture font) override;
+    void Render(const Texture &font) override;
 
     bool HandleEvent(const SDL_Event &event) override;
 

@@ -130,3 +130,27 @@ const Color Color::GREEN = Color(0, 1, 0, 1);
 const Color Color::BLUE = Color(0, 0, 1, 1);
 const Color Color::WHITE = Color(1, 1, 1, 1);
 const Color Color::BLACK = Color(0, 0, 0, 1);
+
+Texture::Texture(VK2DTexture &m_texture) : m_texture(m_texture) {}
+
+Texture::~Texture() { vk2dTextureFree(m_texture); }
+
+unsigned int admirals::Texture::width() const {
+    if (m_texture == NULL) {
+        return 0;
+    }
+    return vk2dTextureWidth(m_texture);
+}
+unsigned int admirals::Texture::height() const {
+    if (m_texture == NULL) {
+        return 0;
+    }
+    return vk2dTextureHeight(m_texture);
+}
+
+VK2DTexture admirals::Texture::data() const { return m_texture; }
+
+Texture Texture::loadFromPath(const std::string &path) {
+    auto result = vk2dTextureLoad(path.c_str());
+    return Texture(result);
+}

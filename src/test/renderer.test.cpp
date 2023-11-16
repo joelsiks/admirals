@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <SDL_vulkan.h>
-#include <VK2D/VK2D.h>
-#include <VK2D/Validation.h>
-
 #include "Engine.hpp"
 #include "GameObject.hpp"
 #include "UI/Button.hpp"
@@ -21,26 +17,21 @@ using namespace admirals;
 
 class TextureObject : public scene::GameObject {
 public:
-    TextureObject(const Vector3 &pos, const char *texturePath, float width,
-                  float height)
-        : scene::GameObject(pos), m_width(width), m_height(height) {
-        m_texture = vk2dTextureLoad(texturePath);
-    }
-
-    ~TextureObject() { vk2dTextureFree(m_texture); }
+    TextureObject(const Vector3 &pos, const char *texturePath)
+        : scene::GameObject(pos),
+          m_texture(Texture::loadFromPath(texturePath)) {}
 
     void onStart() {}
 
     void onUpdate() {}
 
     void render() {
-        vk2dRendererDrawTexture(m_texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0,
-                                m_width, m_height);
+        renderer::Renderer::drawTexture(m_texture, position(),
+                                        Vector2(WINDOW_WIDTH, WINDOW_HEIGHT));
     }
 
 private:
-    VK2DTexture m_texture;
-    float m_width, m_height;
+    Texture m_texture;
 };
 
 void OnButtonClick(UI::Button *button, const SDL_Event &event) {
@@ -57,9 +48,8 @@ int main(int argc, char *argv[]) {
     admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
     // Create texture object.
-    Vector3 texturePosition = Vector3(0, 0, 0);
-    TextureObject textureObject(texturePosition, "assets/admirals.png", 1024.0,
-                                1024.0);
+    TextureObject textureObject =
+        TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(150, 40);

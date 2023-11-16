@@ -5,7 +5,6 @@
 #include <string>
 
 #include <SDL_events.h>
-#include <VK2D/Structs.h>
 
 #include "DataObjects.hpp"
 
@@ -42,7 +41,7 @@ public:
     virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
 
     // Pure virtual function for rendering the UI element
-    virtual void Render(const VK2DTexture font) = 0;
+    virtual void Render(const Texture &font) = 0;
 
     // Input handling
     virtual bool HandleEvent(const SDL_Event &event) { return false; }

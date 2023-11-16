@@ -3,11 +3,8 @@
 using namespace admirals::UI;
 
 DisplayLayout::DisplayLayout(int windowWidth, int windowHeight)
-    : m_windowWidth(windowWidth), m_windowHeight(windowHeight) {
-
-    // TODO: This path should probably be configured someplace else.
-    m_font = vk2dTextureLoad("assets/font.png");
-}
+    : m_windowWidth(windowWidth), m_windowHeight(windowHeight),
+      m_font(Texture::loadFromPath("assets/font.png")) {}
 
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     m_elements.push_back(std::move(element));

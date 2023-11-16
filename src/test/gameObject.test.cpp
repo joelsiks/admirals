@@ -4,10 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <SDL_vulkan.h>
-#include <VK2D/Constants.h>
-#include <VK2D/VK2D.h>
-
 #include "Engine.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"

@@ -4,8 +4,6 @@
 #include <memory>
 #include <vector>
 
-#include <VK2D/VK2D.h>
-
 #include "Element.hpp"
 #include "InteractiveDrawable.hpp"
 
@@ -25,7 +23,7 @@ public:
     void handleEvent(SDL_Event &e);
 
 private:
-    VK2DTexture m_font;
+    Texture m_font;
 
     int m_windowWidth, m_windowHeight;
     std::vector<std::shared_ptr<Element>> m_elements;
