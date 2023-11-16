@@ -10,7 +10,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 # Set SDL2_DIR to the path of your SDL2 directory
 set(SDL2_DIR include/SDL2)
 set(VK2D_DIR include/Vulkan2D)
-set(ASIO_DIR include/asio)
+set(ASIO_DIR include/asio/asio/include)
 
 # Find Vulkan and SDL2
 find_package(Vulkan REQUIRED)
@@ -28,7 +28,10 @@ message("Vulkan_INCLUDE_DIR: ${Vulkan_INCLUDE_DIR}")
 message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
 
 set(SOURCES 
-    src/engine/Engine.cpp
+    src/engine/Model.cpp
+    src/engine/GameObject.cpp
+    src/engine/Scene.cpp
+    src/engine/Renderer.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -43,46 +46,61 @@ file(COPY ${ASSETS} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 
 # -----------------------------------------------------------------------------
 
-# Create a library with the sources
-add_library(admirals ${SOURCES} ${VMA_FILES} ${VK2D_C} ${VK2D_H})
-target_link_libraries(admirals m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
-if(WIN32)
-    target_link_libraries(admirals wsock32 ws2_32)
-endif()
-target_include_directories(admirals PRIVATE 
-    "src/engine" 
-    "src/engine/net"
+add_library(vk2d SHARED ${VMA_FILES} ${VK2D_C} ${VK2D_H})
+target_link_libraries(vk2d m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
+target_include_directories(vk2d 
+    PUBLIC 
     ${SDL2_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
-    ${ASIO_DIR}/asio/include
-    ${ASIO_DIR}/asio/include/asio
 )
-    
+
+add_library(asio INTERFACE)
+target_include_directories(asio 
+    INTERFACE
+    ${ASIO_DIR}
+    ${ASIO_DIR}/asio
+)
+
+# Create a library with the sources
+add_library(engine SHARED ${SOURCES})
+if(WIN32)
+    target_link_libraries(engine wsock32 ws2_32)
+endif()
+target_link_libraries(engine vk2d)
+target_link_libraries(engine asio)
+target_include_directories(engine PRIVATE 
+    "src/engine/" 
+    "src/engine/net/"
+)
+
 # Create test executable
-add_executable(renderer_test src/test/renderer.test.cpp ${VMA_FILES} ${VK2D_C} ${VK2D_H})
-target_link_libraries(renderer_test m ${SDL2_LIBRARIES} ${Vulkan_LIBRARY})
+add_executable(renderer_test src/test/renderer.test.cpp)
+target_link_libraries(renderer_test vk2d)
 target_include_directories(renderer_test PRIVATE 
     "src/test/"
-    ${SDL2_INCLUDE_DIRS}
-    ${Vulkan_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
+)
+
+# Create test executable
+add_executable(gameObject_test src/test/gameObject.test.cpp)
+target_link_libraries(gameObject_test engine)
+target_include_directories(gameObject_test PRIVATE 
+    "src/test/"
+    "src/engine/"
 )
     
 # Test client
 add_executable(test_client src/test/testclient.cpp)
-target_link_libraries(test_client admirals)
+target_link_libraries(test_client engine)
 target_include_directories(test_client PRIVATE 
-    ${ASIO_DIR}/asio/include
     "src/test/"
     "src/engine/net/"
 )
 
 # Test server
 add_executable(test_server src/test/testserver.cpp)
-target_link_libraries(test_server admirals)
+target_link_libraries(test_server engine)
 target_include_directories(test_server PRIVATE 
-    ${ASIO_DIR}/asio/include
     "src/test/"
     "src/engine/net/"
 )
