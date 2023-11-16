@@ -11,23 +11,24 @@ void DisplayLayout::AddElement(const std::shared_ptr<Element> &element) {
     this->m_collection.insert(element);
 }
 
-static float GetHeightFromDisplayPosition(DisplayPosition pos,
-                                          const Vector2 &displaySize,
-                                          const Vector2 &windowSize) {
-    float height = 0;
+static Vector2
+GetOriginFromDisplayPosition(DisplayPosition pos, const Vector2 &displaySize,
+                             const renderer::RendererContext &r) {
+    Vector2 origin(0, 0);
 
-    switch (pos) {
-    case DisplayPosition::UpperLeft:
-    case DisplayPosition::UpperRight:
-        height = 0;
-        break;
-    case DisplayPosition::LowerLeft:
-    case DisplayPosition::LowerRight:
-        height = windowSize[1] - displaySize[1];
-        break;
+    // Fix right offset.
+    if (pos == DisplayPosition::UpperRight ||
+        pos == DisplayPosition::LowerRight) {
+        origin[0] = r.windowWidth - displaySize[0];
     }
 
-    return height;
+    // Fix lower offset.
+    if (pos == DisplayPosition::LowerLeft ||
+        pos == DisplayPosition::LowerRight) {
+        origin[1] = r.windowHeight - displaySize[1];
+    }
+
+    return origin;
 }
 
 void DisplayLayout::render(const renderer::RendererContext &r) const {
@@ -37,12 +38,27 @@ void DisplayLayout::render(const renderer::RendererContext &r) const {
         DisplayPosition pos = element->GetDisplayPosition();
         Vector2 displaySize = element->GetDisplaySize();
 
-        float startHeight = GetHeightFromDisplayPosition(
-            pos, displaySize, Vector2(r.windowWidth, r.windowHeight));
-        element->SetDisplayOrigin(Vector2(positionOffsets[pos], startHeight));
+        // Calculate the origin with respect to the matching positionOffset.
+        Vector2 origin = GetOriginFromDisplayPosition(pos, displaySize, r);
+        origin[0] += positionOffsets[pos];
+
+        element->SetDisplayOrigin(origin);
+
         element->Render(this->m_font);
 
-        positionOffsets[pos] += displaySize[0];
+        // If debugging, render an outline around the UI Element.
+        if (r.renderDebugOutlines) {
+            renderer::Renderer::drawRectangleOutline(origin, displaySize, 2,
+                                                     Color::RED);
+        }
+
+        // Update the matching positionOffset.
+        if (pos == DisplayPosition::UpperRight ||
+            pos == DisplayPosition::LowerRight) {
+            positionOffsets[pos] -= displaySize[0];
+        } else {
+            positionOffsets[pos] += displaySize[0];
+        }
     }
 }
 

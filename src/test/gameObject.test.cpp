@@ -63,7 +63,7 @@ int check_quit() {
 
 int main(int argc, char *argv[]) {
     renderer::Renderer renderer =
-        renderer::Renderer("Admirals", WINDOW_WIDTH, WINDOW_HEIGHT);
+        renderer::Renderer("Admirals", WINDOW_WIDTH, WINDOW_HEIGHT, true);
     renderer.init(true);
 
     scene::Scene *scene = new scene::Scene();
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     scene->addObject(scene::GameObject::createFromDerived(cell6));
 
     UI::DisplayLayout *layout = new UI::DisplayLayout();
-    UI::TextElement fpsText("Fps TextElement", 0, "", Vector2(150, 40),
+    UI::TextElement fpsText("Fps TextElement", 0, "", Vector2(500, 40),
                             Color::BLACK);
     fpsText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     auto sharedFpsText = UI::Element::createFromDerived(fpsText);
