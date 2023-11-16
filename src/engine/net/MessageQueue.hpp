@@ -5,8 +5,7 @@
 
 namespace admirals::net {
 
-template <typename T> 
-class MessageQueue {
+template <typename T> class MessageQueue {
 private:
     std::deque<T> m_queue;
     std::mutex m_mutex;
