@@ -7,7 +7,7 @@
 #include <SDL_events.h>
 
 #include "DataObjects.hpp"
-#include "IOrderedObject.hpp"
+#include "IOrdered.hpp"
 
 namespace admirals {
 namespace UI {
@@ -20,10 +20,13 @@ enum DisplayPosition {
 };
 
 // General UI element that can be rendered.
-class Element : public IOrderedObject {
+class Element : public IOrdered {
 public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);
+
+    std::string name() const { return m_name; };
+    float order() const { return m_order; };
 
     // Getters and setters
     virtual const Vector2 &GetDisplaySize() const { return m_displaySize; }
@@ -51,6 +54,8 @@ public:
     }
 
 protected:
+    const std::string m_name;
+    const float m_order;
     // Text to be displayed on the Element.
     std::string m_text;
 

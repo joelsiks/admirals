@@ -9,6 +9,6 @@ void Scene::render(const renderer::RendererContext &r) const {
     }
 }
 
-void Scene::addObject(const std::shared_ptr<GameObject> &object) {
-    this->m_collection.insert(object);
+void Scene::addObject(const std::shared_ptr<GameObject> object) {
+    this->m_collection.insert(std::move(object));
 }

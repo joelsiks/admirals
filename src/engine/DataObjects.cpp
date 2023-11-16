@@ -123,7 +123,7 @@ void Vector4::operator=(const Vector4 &in) {
     this->m_3 = in.m_3;
 }
 
-bool admirals::Vector4::operator==(const Vector4 &r) {
+bool Vector4::operator==(const Vector4 &r) {
     return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2 && r.m_3 == m_3;
 }
 

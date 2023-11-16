@@ -4,9 +4,9 @@
 #include <set>
 #include <vector>
 
-#include "DepthOrderedCollection.hpp"
 #include "GameObject.hpp"
 #include "IDrawable.hpp"
+#include "OrderedCollection.hpp"
 
 namespace admirals {
 namespace scene {
@@ -14,10 +14,10 @@ namespace scene {
 class Scene : public renderer::IDrawable {
 public:
     void render(const renderer::RendererContext &r) const;
-    void addObject(const std::shared_ptr<GameObject> &object);
+    void addObject(const std::shared_ptr<GameObject> object);
 
 private:
-    DepthOrderedCollection<GameObject> m_collection;
+    OrderedCollection<GameObject> m_collection;
 };
 
 } // namespace scene

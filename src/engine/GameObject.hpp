@@ -3,12 +3,12 @@
 
 #include "DataObjects.hpp"
 #include "IDrawable.hpp"
-#include "IOrderedObject.hpp"
+#include "IOrdered.hpp"
 
 namespace admirals {
 namespace scene {
 
-class GameObject : public IOrderedObject {
+class GameObject : public IOrdered {
 
 public:
     GameObject(const std::string &name, const Vector3 &position);
@@ -16,6 +16,9 @@ public:
 
     Vector2 position() const;
     void setPosition(const Vector2 &pos);
+
+    std::string name() const;
+    float order() const;
 
     virtual void onUpdate() = 0;
     virtual void onStart() = 0;
@@ -33,6 +36,7 @@ public:
 
 private:
     Vector3 m_position;
+    const std::string m_name;
 };
 
 } // namespace scene

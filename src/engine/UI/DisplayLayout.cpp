@@ -7,8 +7,8 @@ using namespace admirals::UI;
 DisplayLayout::DisplayLayout()
     : m_font(Texture::loadFromPath("assets/font.png")) {}
 
-void DisplayLayout::AddElement(const std::shared_ptr<Element> &element) {
-    this->m_collection.insert(element);
+void DisplayLayout::AddElement(const std::shared_ptr<Element> element) {
+    this->m_collection.insert(std::move(element));
 }
 
 static Vector2

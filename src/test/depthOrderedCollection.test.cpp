@@ -19,7 +19,7 @@ class TestInitialSize : public TestCaseBase {
 public:
     TestInitialSize() : TestCaseBase("initial size") {}
     void test() override {
-        DepthOrderedCollection collection = DepthOrderedCollection();
+        OrderedCollection collection = OrderedCollection();
         size_t size = collection.size();
         assert(size == 0,
                "collection size not initially 0, was: " + std::to_string(size));
@@ -30,7 +30,7 @@ class TestInsertSize : public TestCaseBase {
 public:
     TestInsertSize() : TestCaseBase("insert size") {}
     void test() override {
-        DepthOrderedCollection collection = DepthOrderedCollection();
+        OrderedCollection collection = OrderedCollection();
         TestObject t1 = TestObject("a", Vector3(0, 0, 0));
         collection.insert(scene::GameObject::createFromDerived(t1));
         size_t size = collection.size();
@@ -43,7 +43,7 @@ class TestInsertSameName : public TestCaseBase {
 public:
     TestInsertSameName() : TestCaseBase("insert same name") {}
     void test() override {
-        DepthOrderedCollection collection = DepthOrderedCollection();
+        OrderedCollection collection = OrderedCollection();
         TestObject t1 = TestObject("a", Vector3(0, 0, 0));
         TestObject t2 = TestObject("a", Vector3(1, 1, 1));
         collection.insert(scene::GameObject::createFromDerived(t1));
@@ -58,7 +58,7 @@ class TestInsertSameZIndex : public TestCaseBase {
 public:
     TestInsertSameZIndex() : TestCaseBase("insert same z-index") {}
     void test() override {
-        DepthOrderedCollection collection = DepthOrderedCollection();
+        OrderedCollection collection = OrderedCollection();
         TestObject t1 = TestObject("a", Vector3(0, 0, 0));
         TestObject t2 = TestObject("b", Vector3(1, 1, 0));
         collection.insert(scene::GameObject::createFromDerived(t1));
@@ -73,7 +73,7 @@ class TestInsertMultiple : public TestCaseBase {
 public:
     TestInsertMultiple() : TestCaseBase("insert multiple") {}
     void test() override {
-        DepthOrderedCollection collection = DepthOrderedCollection();
+        OrderedCollection collection = OrderedCollection();
         TestObject t1 = TestObject("a", Vector3(0));
         TestObject t2 = TestObject("b", Vector3(1));
         TestObject t3 = TestObject("c", Vector3(2));
@@ -90,7 +90,7 @@ class TestOrderedZIndex : public TestCaseBase {
 public:
     TestOrderedZIndex() : TestCaseBase("ordered by z-index") {}
     void test() override {
-        DepthOrderedCollection collection = DepthOrderedCollection();
+        OrderedCollection collection = OrderedCollection();
         TestObject t1 = TestObject("a", Vector3(2));
         TestObject t2 = TestObject("b", Vector3(0));
         TestObject t3 = TestObject("c", Vector3(1));
@@ -100,7 +100,7 @@ public:
 
         float prev = -1;
         for (const auto &o : collection) {
-            float order = o->m_order;
+            float order = o->order();
             assert(prev <= order,
                    "object out of order, index " + std::to_string(order) +
                        " appeared after " + std::to_string(prev));
@@ -113,8 +113,7 @@ class TestTypedObjects : public TestCaseBase {
 public:
     TestTypedObjects() : TestCaseBase("typed objects") {}
     void test() override {
-        DepthOrderedCollection collection =
-            DepthOrderedCollection<scene::GameObject>();
+        OrderedCollection collection = OrderedCollection<scene::GameObject>();
         Vector3 pos = Vector3(0);
         TestObject t1 = TestObject("a", pos);
         collection.insert(scene::GameObject::createFromDerived(t1));

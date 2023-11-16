@@ -4,7 +4,10 @@ using namespace admirals;
 using namespace admirals::scene;
 
 GameObject::GameObject(const std::string &name, const Vector3 &pos)
-    : IOrderedObject(name, pos.z()), m_position(pos) {}
+    : m_name(name), m_position(pos) {}
+
+std::string GameObject::name() const { return m_name; }
+float GameObject::order() const { return m_position.z(); }
 
 GameObject::~GameObject() {}
 
