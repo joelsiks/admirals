@@ -56,22 +56,22 @@ private:
     void ReadValidation(admirals::net::Server *server = nullptr);
 
 private:
-    asio::io_context &m_io_context;
+    asio::io_context &m_ioContext;
     asio::ip::tcp::socket m_socket;
 
-    MessageQueue<Message> m_outgoing_messages;
-    MessageQueue<OwnedMessage> &m_incoming_messages;
-    Message m_message_buffer;
+    MessageQueue<Message> m_outgoingMessages;
+    MessageQueue<OwnedMessage> &m_incomingMessages;
+    Message m_messageBuffer;
 
-    Owner m_owner_type = Owner::SERVER;
+    Owner m_ownerType = Owner::SERVER;
     uint32_t m_id = 0;
 
-    uint64_t m_validation_out = 0;
-    uint64_t m_validation_in = 0;
+    uint64_t m_validationOut = 0;
+    uint64_t m_validationIn = 0;
 
     // Used when validating a connection
     Server *m_server = nullptr;
-    void (Server::*m_validation_function)(std::shared_ptr<Connection>) =
+    void (Server::*m_validationFunction)(std::shared_ptr<Connection>) =
         nullptr;
 };
 

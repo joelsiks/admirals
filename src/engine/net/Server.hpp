@@ -49,17 +49,17 @@ public:
     virtual void OnClientValidated(std::shared_ptr<Connection> client) {}
 
 public:
-    MessageQueue<OwnedMessage> incoming_messages;
-    std::vector<std::shared_ptr<Connection>> connections;
+    MessageQueue<OwnedMessage> m_incomingMessages;
+    std::vector<std::shared_ptr<Connection>> m_connections;
 
 private:
-    asio::io_context io_context;
-    std::thread context_thread;
+    asio::io_context m_ioContext;
+    std::thread m_contextThread;
 
-    asio::ip::tcp::acceptor acceptor;
+    asio::ip::tcp::acceptor m_acceptor;
 
     // Start ID
-    uint32_t id_counter = 1;
+    uint32_t m_idCounter = 1;
 };
 
 } // namespace admirals::net

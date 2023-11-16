@@ -9,16 +9,16 @@ Client::~Client() { Disconnect(); }
 
 bool Client::Connect(const std::string &host, const std::string &port) {
     try {
-        asio::ip::tcp::resolver resolver(m_io_context);
+        asio::ip::tcp::resolver resolver(m_ioContext);
         asio::ip::tcp::resolver::results_type endpoints =
             resolver.resolve(host, port);
 
         m_connection = std::make_unique<Connection>(
-            Connection::Owner::CLIENT, m_io_context,
-            asio::ip::tcp::socket(m_io_context), m_incoming_messages);
+            Connection::Owner::CLIENT, m_ioContext,
+            asio::ip::tcp::socket(m_ioContext), m_incomingMessages);
         m_connection->ConnectToServer(endpoints);
 
-        m_context_thread = std::thread([this]() { m_io_context.run(); });
+        m_contextThread = std::thread([this]() { m_ioContext.run(); });
 
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
@@ -32,9 +32,9 @@ void Client::Disconnect() {
         m_connection->Disconnect();
     }
 
-    m_io_context.stop();
-    if (m_context_thread.joinable())
-        m_context_thread.join();
+    m_ioContext.stop();
+    if (m_contextThread.joinable())
+        m_contextThread.join();
     m_connection.release();
 }
 
@@ -52,4 +52,4 @@ void Client::Send(const Message &message) {
     }
 }
 
-MessageQueue<OwnedMessage> &Client::Incoming() { return m_incoming_messages; }
+MessageQueue<OwnedMessage> &Client::Incoming() { return m_incomingMessages; }

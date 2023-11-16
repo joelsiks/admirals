@@ -31,10 +31,10 @@ public:
     MessageQueue<OwnedMessage> &Incoming();
 
 private:
-    asio::io_context m_io_context;
-    std::thread m_context_thread;
+    asio::io_context m_ioContext;
+    std::thread m_contextThread;
     std::unique_ptr<Connection> m_connection;
-    MessageQueue<OwnedMessage> m_incoming_messages;
+    MessageQueue<OwnedMessage> m_incomingMessages;
 };
 
 } // namespace admirals::net

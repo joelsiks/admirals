@@ -7,12 +7,12 @@ Connection::Connection(
     Owner parent, asio::io_context &io_context, asio::ip::tcp::socket socket,
     MessageQueue<OwnedMessage> &incoming_messages, Server *server,
     void (Server::*validation_function)(std::shared_ptr<Connection>))
-    : m_io_context(io_context), m_socket(std::move(socket)),
-      m_incoming_messages(incoming_messages), m_owner_type(parent),
-      m_server(server), m_validation_function(validation_function) {
-    if (m_owner_type == Owner::SERVER) {
+    : m_ioContext(io_context), m_socket(std::move(socket)),
+      m_incomingMessages(incoming_messages), m_ownerType(parent),
+      m_server(server), m_validationFunction(validation_function) {
+    if (m_ownerType == Owner::SERVER) {
         // Uses the current time as the validation number
-        m_validation_out = uint64_t(
+        m_validationOut = uint64_t(
             std::chrono::system_clock::now().time_since_epoch().count());
     }
 }
@@ -46,7 +46,7 @@ void Connection::ConnectToServer(
 
 bool Connection::Disconnect() {
     if (IsConnected()) {
-        asio::post(m_io_context, [this]() { m_socket.close(); });
+        asio::post(m_ioContext, [this]() { m_socket.close(); });
         return true;
     }
     return false;
@@ -55,10 +55,10 @@ bool Connection::Disconnect() {
 bool Connection::IsConnected() const { return m_socket.is_open(); }
 
 void Connection::Send(const Message &message) {
-    asio::post(m_io_context, [this, message]() {
+    asio::post(m_ioContext, [this, message]() {
         // Check if asio is already writing messages
-        bool writing_message = !m_outgoing_messages.Empty();
-        m_outgoing_messages.PushBack(message);
+        bool writing_message = !m_outgoingMessages.Empty();
+        m_outgoingMessages.PushBack(message);
         // If asio is not writing messages, start writing
         if (!writing_message) {
             WriteHeader();
@@ -71,13 +71,13 @@ uint32_t Connection::GetID() const { return m_id; }
 // Reads the header of the message to determine type and the size of the body
 void Connection::ReadHeader() {
     asio::async_read(
-        m_socket, asio::buffer(&m_message_buffer.header, sizeof(MessageHeader)),
+        m_socket, asio::buffer(&m_messageBuffer.header, sizeof(MessageHeader)),
         [this](std::error_code ec, std::size_t length) {
             if (!ec) {
-                if (m_message_buffer.header.size > 0) {
+                if (m_messageBuffer.header.size > 0) {
                     // If the message has a body, resize the buffer and read the
                     // body
-                    m_message_buffer.body.resize(m_message_buffer.header.size);
+                    m_messageBuffer.body.resize(m_messageBuffer.header.size);
                     ReadBody();
                 } else {
                     // If the message does not have a body, add the message to
@@ -96,8 +96,8 @@ void Connection::ReadHeader() {
 // Reads the full body of the message
 void Connection::ReadBody() {
     asio::async_read(m_socket,
-                     asio::buffer(m_message_buffer.body.data(),
-                                  m_message_buffer.body.size()),
+                     asio::buffer(m_messageBuffer.body.data(),
+                                  m_messageBuffer.body.size()),
                      [this](std::error_code ec, std::size_t length) {
                          if (!ec) {
                              AddToIncomingMessageQueue();
@@ -114,11 +114,11 @@ void Connection::ReadBody() {
 void Connection::AddToIncomingMessageQueue() {
     // For the server, tag the message with the connection to distinguish
     // between clients
-    if (m_owner_type == Owner::SERVER) {
-        m_incoming_messages.PushBack(
-            {this->shared_from_this(), m_message_buffer});
+    if (m_ownerType == Owner::SERVER) {
+        m_incomingMessages.PushBack(
+            {this->shared_from_this(), m_messageBuffer});
     } else {
-        m_incoming_messages.PushBack({nullptr, m_message_buffer});
+        m_incomingMessages.PushBack({nullptr, m_messageBuffer});
     }
     // Return to reading the next header
     ReadHeader();
@@ -127,18 +127,18 @@ void Connection::AddToIncomingMessageQueue() {
 // Writes the header of the first message in the outgoing queue
 void Connection::WriteHeader() {
     asio::async_write(m_socket,
-                      asio::buffer(&m_outgoing_messages.Front().header,
+                      asio::buffer(&m_outgoingMessages.Front().header,
                                    sizeof(MessageHeader)),
                       [this](std::error_code ec, std::size_t length) {
                           if (!ec) {
-                              if (m_outgoing_messages.Front().body.size() > 0) {
+                              if (m_outgoingMessages.Front().body.size() > 0) {
                                   // If the message has a body, write the body
                                   WriteBody();
                               } else {
                                   // If the message does not have a body, pop
                                   // the message and write the next header
-                                  m_outgoing_messages.PopFront();
-                                  if (!m_outgoing_messages.Empty()) {
+                                  m_outgoingMessages.PopFront();
+                                  if (!m_outgoingMessages.Empty()) {
                                       WriteHeader();
                                   }
                               }
@@ -155,14 +155,14 @@ void Connection::WriteHeader() {
 // Writes the body of the first message in the outgoing queue
 void Connection::WriteBody() {
     asio::async_write(m_socket,
-                      asio::buffer(m_outgoing_messages.Front().body.data(),
-                                   m_outgoing_messages.Front().body.size()),
+                      asio::buffer(m_outgoingMessages.Front().body.data(),
+                                   m_outgoingMessages.Front().body.size()),
                       [this](std::error_code ec, std::size_t length) {
                           if (!ec) {
                               // Pop the current message and continue writing if
                               // there are more messages
-                              m_outgoing_messages.PopFront();
-                              if (!m_outgoing_messages.Empty()) {
+                              m_outgoingMessages.PopFront();
+                              if (!m_outgoingMessages.Empty()) {
                                   WriteHeader();
                               }
                           } else {
@@ -191,12 +191,12 @@ uint64_t Connection::HashValidation(uint64_t unhashed) {
 // Writes the (either generated or received) validation number
 void Connection::WriteValidation() {
     asio::async_write(m_socket,
-                      asio::buffer(&m_validation_out, sizeof(uint64_t)),
+                      asio::buffer(&m_validationOut, sizeof(uint64_t)),
                       [this](std::error_code ec, std::size_t length) {
                           if (!ec) {
                               // If the connection is a client, continue to
                               // normal message reading
-                              if (m_owner_type == Owner::CLIENT) {
+                              if (m_ownerType == Owner::CLIENT) {
                                   ReadHeader();
                               }
                           } else {
@@ -209,24 +209,24 @@ void Connection::WriteValidation() {
 // the connection is a server)
 void Connection::ReadValidation(admirals::net::Server *server) {
     asio::async_read(
-        m_socket, asio::buffer(&m_validation_in, sizeof(uint64_t)),
+        m_socket, asio::buffer(&m_validationIn, sizeof(uint64_t)),
         [this, server](std::error_code ec, std::size_t length) {
             if (!ec) {
-                uint64_t validation_hash = HashValidation(m_validation_in);
-                if (m_owner_type == Owner::CLIENT) {
+                uint64_t validation_hash = HashValidation(m_validationIn);
+                if (m_ownerType == Owner::CLIENT) {
                     // If the connection is a client, send the validation number
                     // back to the server
-                    m_validation_out = HashValidation(m_validation_in);
+                    m_validationOut = HashValidation(m_validationIn);
                     WriteValidation();
                 } else {
                     // If the connection is a server, check if the validation
                     // number is correct
-                    if (m_validation_in == HashValidation(m_validation_out)) {
+                    if (m_validationIn == HashValidation(m_validationOut)) {
                         std::cout << "[" << m_id << "] Client validated"
                                   << std::endl;
                         // If the validation number is correct, continue to
                         // normal message reading
-                        (m_server->*m_validation_function)(
+                        (m_server->*m_validationFunction)(
                             this->shared_from_this());
                         ReadHeader();
                     } else {
