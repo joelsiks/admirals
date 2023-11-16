@@ -17,7 +17,7 @@ public:
     DisplayLayout();
 
     void AddElement(std::shared_ptr<Element> element);
-    void render(const renderer::Renderer *r) const;
+    void render(const renderer::RendererContext &r) const;
     void handleEvent(SDL_Event &e);
 
 private:

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <SDL2/SDL_video.h>
+#include <SDL_video.h>
 #include <VK2D/Texture.h>
 
 #include "DataObjects.hpp"
@@ -22,8 +22,7 @@ public:
 
     int init(bool debug);
     void render(const DrawableCollection &drawable);
-    int windowWidth() const;
-    int windowHeight() const;
+    inline RendererContext context() const { return m_context; }
 
     static void drawRectangle(const Vector2 &position, const Vector2 &size,
                               const Color &color);
@@ -32,8 +31,7 @@ public:
                          const Color &color, const std::string &text);
 
 private:
-    int m_windowWidth;
-    int m_windowHeight;
+    RendererContext m_context;
     SDL_Window *m_window;
 };
 

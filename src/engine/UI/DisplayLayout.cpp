@@ -13,7 +13,7 @@ void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     m_elements.push_back(std::move(element));
 }
 
-float GetHeightFromDisplayPosition(DisplayPosition pos,
+static float GetHeightFromDisplayPosition(DisplayPosition pos,
                                    const Vector2 &displaySize,
                                    const Vector2 &windowSize) {
     float height = 0;
@@ -32,15 +32,14 @@ float GetHeightFromDisplayPosition(DisplayPosition pos,
     return height;
 }
 
-void DisplayLayout::render(const renderer::Renderer *r) const {
+void DisplayLayout::render(const renderer::RendererContext &r) const {
     Vector4 positionOffsets = Vector4(0);
 
     for (const auto &element : m_elements) {
         DisplayPosition pos = element->GetDisplayPosition();
         Vector2 displaySize = element->GetDisplaySize();
 
-        float startHeight = GetHeightFromDisplayPosition(
-            pos, displaySize, Vector2(r->windowWidth(), r->windowHeight()));
+        float startHeight = GetHeightFromDisplayPosition(pos, displaySize, Vector2(r.windowWidth, r.windowHeight));
         element->SetDisplayOrigin(Vector2(positionOffsets[pos], startHeight));
         element->Render(this->m_font);
 
