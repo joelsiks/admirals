@@ -48,9 +48,13 @@ int Renderer::init(bool debug) {
         return code;
     }
 
-    VK2DCameraSpec camera = {
-        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, m_context.windowWidth,
-        m_context.windowHeight,   1, 0};
+    VK2DCameraSpec camera = {VK2D_CAMERA_TYPE_DEFAULT,
+                             0,
+                             0,
+                             static_cast<float>(m_context.windowWidth),
+                             static_cast<float>(m_context.windowHeight),
+                             1,
+                             0};
 
     vk2dRendererSetCamera(camera);
     return code;
