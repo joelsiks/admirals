@@ -92,6 +92,7 @@ int main() {
             break;
         }
 
+        #ifdef _WIN32
         if (GetAsyncKeyState('Q') & 0x8000) {
             std::cout << "Spawning ship" << std::endl;
             client.SpawnShip(0, 0);
@@ -108,6 +109,7 @@ int main() {
             std::cout << "Disconnecting" << std::endl;
             break;
         }
+        #endif
 
         size_t size = client.Incoming().Size();
         for (int i = 0; i < size; i++) {
