@@ -3,16 +3,12 @@
 using namespace admirals::scene;
 
 void Scene::render(const renderer::RendererContext &r) const {
-    for (auto &object : this->m_objects) {
+    for (const auto &object : this->m_collection) {
         object->onUpdate();
         object->render(r);
     }
 }
 
-void Scene::addObject(std::shared_ptr<GameObject> object) {
-    this->m_objects.insert(object);
+void Scene::addObject(const std::shared_ptr<GameObject> &object) {
+    this->m_collection.insert(object);
 }
-
-Scene::Scene() { this->m_objects = {}; }
-
-Scene::~Scene() {}

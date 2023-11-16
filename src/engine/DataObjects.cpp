@@ -38,6 +38,10 @@ void Vector2::operator=(const Vector2 &in) {
     this->m_1 = in.m_1;
 }
 
+bool Vector2::operator==(const Vector2 &r) { 
+    return r.m_0 == m_0 && r.m_1 == m_1; 
+}
+
 float Vector2::operator[](int i) const { return this->data()[i]; }
 
 float &Vector2::operator[](int i) { return this->data()[i]; }
@@ -53,6 +57,9 @@ Vector3::Vector3(float x, float y, float z) : Vector2(x, y) { this->m_2 = z; }
 Vector3::~Vector3() {}
 
 float Vector3::z() const { return this->m_2; }
+
+Vector2 Vector3::xy() const { return *this; }
+
 void Vector3::setZ(float value) { this->m_2 = value; }
 
 void Vector3::operator=(float &in) {
@@ -61,10 +68,19 @@ void Vector3::operator=(float &in) {
     this->m_2 = in;
 }
 
+void Vector3::operator=(const Vector2 &in) {
+    this->m_0 = in.x();
+    this->m_1 = in.y();
+}
+
 void Vector3::operator=(const Vector3 &in) {
     this->m_0 = in.m_0;
     this->m_1 = in.m_1;
     this->m_2 = in.m_2;
+}
+
+bool Vector3::operator==(const Vector3 &r) { 
+    return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2; 
 }
 
 // Vector 4
@@ -89,11 +105,26 @@ void Vector4::operator=(float &in) {
     this->m_3 = in;
 }
 
+void Vector4::operator=(const Vector2 &in) {
+    this->m_0 = in.x();
+    this->m_1 = in.y();
+}
+
+void Vector4::operator=(const Vector3 &in) {
+    this->m_0 = in.x();
+    this->m_1 = in.y();
+    this->m_2 = in.z();
+}
+
 void Vector4::operator=(const Vector4 &in) {
     this->m_0 = in.m_0;
     this->m_1 = in.m_1;
     this->m_2 = in.m_2;
     this->m_3 = in.m_3;
+}
+
+bool admirals::Vector4::operator==(const Vector4 &r) { 
+    return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2 && r.m_3 == m_3; 
 }
 
 Color::Color() {}

@@ -83,6 +83,14 @@ target_include_directories(gameObject_test PRIVATE
     "src/test/"
 )
 
+# Create test executable
+add_executable(depthOrderedCollection_text src/test/depthOrderedCollection.test.cpp)
+target_link_libraries(depthOrderedCollection_text engine)
+target_include_directories(depthOrderedCollection_text PRIVATE 
+    "src/engine/"
+    "src/test/"
+)
+
 # Copy SDL2.dll to the output directory after the executable is built
 add_custom_command(TARGET renderer_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

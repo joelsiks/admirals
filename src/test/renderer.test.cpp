@@ -18,9 +18,9 @@ using namespace admirals;
 
 class TextureObject : public scene::GameObject {
 public:
-    TextureObject(const Vector3 &pos, const char *texturePath,
-                  bool keepAspectRatio = true)
-        : scene::GameObject(pos), m_keepAspectRatio(keepAspectRatio),
+    TextureObject(const std::string &name, const Vector3 &pos,
+                  const char *texturePath, bool keepAspectRatio = true)
+        : scene::GameObject(name, pos), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::loadFromPath(texturePath)) {}
 
     void onStart() {}
@@ -58,16 +58,17 @@ int main(int argc, char *argv[]) {
 
     // Create texture object.
     TextureObject textureObject =
-        TextureObject(Vector3(0, 0, 0), "assets/admirals.png");
+        TextureObject("image", Vector3(0, 0, 0), "assets/admirals.png");
     engine.AddGameObject(scene::GameObject::createFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(150, 40);
-    admirals::UI::Button testBtn("Test Button1", "Click Me!", elementSize,
+    admirals::UI::Button testBtn("Test Button1", 0, "Click Me!", elementSize,
                                  Color::BLACK, Color::WHITE, OnButtonClick);
     engine.AddUIElement(UI::Element::createFromDerived(testBtn));
 
-    admirals::UI::TextElement testText(
-        "Text Element1", "This is a text element.", elementSize, Color::BLACK);
+    admirals::UI::TextElement testText("Text Element1", 0,
+                                       "This is a text element.", elementSize,
+                                       Color::BLACK);
     testText.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
     engine.AddUIElement(std::make_shared<admirals::UI::TextElement>(testText));
 

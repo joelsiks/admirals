@@ -19,13 +19,13 @@ private:
     Color m_color;
 
 public:
-    CellObject(const Vector3 &pos, const Color &color)
-        : scene::GameObject(pos), m_color(color) {}
+    CellObject(const std::string &name, const Vector3 &pos, const Color &color)
+        : scene::GameObject(name, pos), m_color(color) {}
 
     void onStart() {}
 
     void onUpdate() {
-        Vector3 position = this->position();
+        Vector2 position = this->position();
         float x = position.x() + 1000.f * deltaT;
         while (x > WINDOW_WIDTH) {
             x = -100 + (x - WINDOW_WIDTH);
@@ -67,26 +67,26 @@ int main(int argc, char *argv[]) {
     renderer.init(true);
 
     scene::Scene *scene = new scene::Scene();
-    CellObject cell1 = CellObject(Vector3(0, 0, 2), Color::BLUE);
+    CellObject cell1 = CellObject("1", Vector3(0, 0, 2), Color::BLUE);
     scene->addObject(scene::GameObject::createFromDerived(cell1));
 
-    CellObject cell2 = CellObject(Vector3(50, 50, 3), Color::RED);
+    CellObject cell2 = CellObject("2", Vector3(50, 50, 3), Color::RED);
     scene->addObject(scene::GameObject::createFromDerived(cell2));
 
-    CellObject cell3 = CellObject(Vector3(100, 100, 1), Color::BLACK);
+    CellObject cell3 = CellObject("3", Vector3(100, 100, 1), Color::BLACK);
     scene->addObject(scene::GameObject::createFromDerived(cell3));
 
-    CellObject cell4 = CellObject(Vector3(100, 200, 0), Color::BLUE);
+    CellObject cell4 = CellObject("4", Vector3(100, 200, 0), Color::BLUE);
     scene->addObject(scene::GameObject::createFromDerived(cell4));
 
-    CellObject cell5 = CellObject(Vector3(200, 100, 0), Color::RED);
+    CellObject cell5 = CellObject("5", Vector3(200, 100, 0), Color::RED);
     scene->addObject(scene::GameObject::createFromDerived(cell5));
 
-    CellObject cell6 = CellObject(Vector3(200, 200, 0), Color::GREEN);
+    CellObject cell6 = CellObject("6", Vector3(200, 200, 0), Color::GREEN);
     scene->addObject(scene::GameObject::createFromDerived(cell6));
 
     UI::DisplayLayout *layout = new UI::DisplayLayout();
-    UI::TextElement fpsText("Fps TextElement", "", Vector2(150, 40),
+    UI::TextElement fpsText("Fps TextElement", 0, "", Vector2(150, 40),
                             Color::BLACK);
     fpsText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     auto sharedFpsText = UI::Element::createFromDerived(fpsText);

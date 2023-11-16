@@ -25,6 +25,7 @@ public:
 
     void operator=(float &in);
     void operator=(const Vector2 &in);
+    bool operator==(const Vector2 &r);
     float operator[](int i) const;
     float &operator[](int i);
 };
@@ -40,10 +41,13 @@ public:
     ~Vector3();
 
     float z() const;
+    Vector2 xy() const;
     void setZ(float value);
 
     void operator=(float &in);
+    void operator=(const Vector2 &in);
     void operator=(const Vector3 &in);
+    bool operator==(const Vector3 &r);
 };
 
 class Vector4 : public Vector3 {
@@ -60,7 +64,10 @@ public:
     void setW(float value);
 
     void operator=(float &in);
+    void operator=(const Vector2 &in);
+    void operator=(const Vector3 &in);
     void operator=(const Vector4 &in);
+    bool operator==(const Vector4 &r);
 };
 
 class Color : public Vector4 {

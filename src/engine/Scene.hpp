@@ -4,6 +4,7 @@
 #include <set>
 #include <vector>
 
+#include "DepthOrderedCollection.hpp"
 #include "GameObject.hpp"
 #include "IDrawable.hpp"
 
@@ -11,23 +12,12 @@ namespace admirals {
 namespace scene {
 
 class Scene : public renderer::IDrawable {
-private:
-    // Should be sorted with respect to game object index, lower first.
-    struct GameObjectComparator {
-        bool operator()(const std::shared_ptr<GameObject> l,
-                        const std::shared_ptr<GameObject> r) const {
-            return l->position().z() < r->position().z();
-        }
-    };
-
-    std::multiset<std::shared_ptr<GameObject>, GameObjectComparator> m_objects;
-
 public:
-    Scene();
-    ~Scene();
-
     void render(const renderer::RendererContext &r) const;
-    void addObject(std::shared_ptr<GameObject> object);
+    void addObject(const std::shared_ptr<GameObject> &object);
+
+private:
+    DepthOrderedCollection<GameObject> m_collection;
 };
 
 } // namespace scene

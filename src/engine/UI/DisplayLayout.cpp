@@ -7,8 +7,8 @@ using namespace admirals::UI;
 DisplayLayout::DisplayLayout()
     : m_font(Texture::loadFromPath("assets/font.png")) {}
 
-void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
-    m_elements.push_back(std::move(element));
+void DisplayLayout::AddElement(const std::shared_ptr<Element> &element) {
+    this->m_collection.insert(element);
 }
 
 static float GetHeightFromDisplayPosition(DisplayPosition pos,
@@ -33,7 +33,7 @@ static float GetHeightFromDisplayPosition(DisplayPosition pos,
 void DisplayLayout::render(const renderer::RendererContext &r) const {
     Vector4 positionOffsets = Vector4(0);
 
-    for (const auto &element : m_elements) {
+    for (const auto &element : m_collection) {
         DisplayPosition pos = element->GetDisplayPosition();
         Vector2 displaySize = element->GetDisplaySize();
 
@@ -47,7 +47,7 @@ void DisplayLayout::render(const renderer::RendererContext &r) const {
 }
 
 void DisplayLayout::handleEvent(SDL_Event &e) {
-    for (const auto &element : m_elements) {
+    for (const auto &element : m_collection) {
         element->HandleEvent(e);
     }
 }
