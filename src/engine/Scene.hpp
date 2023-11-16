@@ -19,12 +19,7 @@ private:
             return l->index() < r->index();
         }
     };
-
     std::multiset<std::shared_ptr<GameObject>, GameObjectComparator> objects;
-
-    int gridLenght;
-    int gridHeight;
-    bool dupsAllowed;
 
 public:
     Scene();
@@ -32,16 +27,10 @@ public:
 
     void render() const;
     void addObject(std::shared_ptr<GameObject> object);
-    void removeOneObject(std::shared_ptr<GameObject> object);
-    void removeAllObject(std::shared_ptr<GameObject> object);
+    void removeObject(std::shared_ptr<GameObject> object);
     bool existObject(std::shared_ptr<GameObject> object);
 
-    int sizeObjects();
-    void setDupsAllowed(bool statement);
-
-    // bool collisionObject(std::shared_ptr<GameObject> object);
-    // std::vector<GameObject> detectObject(std::shared_ptr<GameObject>, int
-    // range);
+    int numObjectsInScene();
 };
 
 } // namespace scene

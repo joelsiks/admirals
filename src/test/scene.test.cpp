@@ -56,39 +56,15 @@ int test_add() {
     CellObject cell3 = CellObject(pos3, 1, VK2D_BLACK);
 
     auto go1 = scene::GameObject::createFromDerived(cell1);
-    auto go1_1 = scene::GameObject::createFromDerived(cell1);
     auto go2 = scene::GameObject::createFromDerived(cell2);
     auto go3 = scene::GameObject::createFromDerived(cell3);
-    scene->setDupsAllowed(false);
     scene->addObject(go1);
     scene->addObject(go2);
     scene->addObject(go3);
 
-    if (scene->sizeObjects() != 3) {
+    if (scene->numObjectsInScene() != 3) {
         return EXIT_FAILURE;
     }
-
-    scene->addObject(go1);
-    if (scene->sizeObjects() != 3) {
-        return EXIT_FAILURE;
-    }
-    scene->addObject(go1_1);
-    if (scene->sizeObjects() != 3) {
-        return EXIT_FAILURE;
-    }
-
-    scene->setDupsAllowed(true);
-
-    scene->addObject(go1);
-    if (scene->sizeObjects() != 4) {
-        return EXIT_FAILURE;
-    }
-
-    scene->addObject(go1_1);
-    if (scene->sizeObjects() != 5) {
-        return EXIT_FAILURE;
-    }
-
     return EXIT_SUCCESS;
 }
 
@@ -98,51 +74,30 @@ int test_remove() {
 
     vec2 pos1 = {0, 0};
     CellObject cell1 = CellObject(pos1, 2, VK2D_BLUE);
+    CellObject cell1_1 = CellObject(pos1, 3, VK2D_BLUE);
     vec2 pos2 = {50, 50};
     CellObject cell2 = CellObject(pos2, 3, VK2D_RED);
     vec2 pos3 = {100, 100};
     CellObject cell3 = CellObject(pos3, 1, VK2D_BLACK);
 
     auto go1 = scene::GameObject::createFromDerived(cell1);
-    auto go1_1 = scene::GameObject::createFromDerived(cell1);
+    auto go1_1 = scene::GameObject::createFromDerived(cell1_1);
     auto go2 = scene::GameObject::createFromDerived(cell2);
     auto go3 = scene::GameObject::createFromDerived(cell3);
-    scene->setDupsAllowed(true);
     scene->addObject(go1);
-    scene->addObject(go1);
-    scene->addObject(go1);
-    scene->addObject(go1);
+    scene->addObject(go1_1);
     scene->addObject(go1);
     scene->addObject(go2);
     scene->addObject(go3);
 
-    if (scene->sizeObjects() != 7) {
+    if (scene->numObjectsInScene() != 5) {
         return EXIT_FAILURE;
     }
-
-    scene->removeOneObject(go1);
-    if (scene->sizeObjects() != 6) {
+    scene->removeObject(go1_1);
+    scene->removeObject(go1_1);
+    if (scene->numObjectsInScene() != 4) {
         return EXIT_FAILURE;
     }
-
-    scene->removeAllObject(go1);
-    if (scene->sizeObjects() != 2) {
-        return EXIT_FAILURE;
-    }
-
-    scene->addObject(go1);
-    scene->addObject(go1);
-    scene->addObject(go1_1);
-    scene->addObject(go1_1);
-    if (scene->sizeObjects() != 6) {
-        return EXIT_FAILURE;
-    }
-
-    scene->removeAllObject(go1);
-    if (scene->sizeObjects() != 2) {
-        return EXIT_FAILURE;
-    }
-
     return EXIT_SUCCESS;
 }
 
@@ -152,61 +107,53 @@ int test_exist() {
 
     vec2 pos1 = {0, 0};
     CellObject cell1 = CellObject(pos1, 2, VK2D_BLUE);
+    CellObject cell1_1 = CellObject(pos1, 3, VK2D_BLUE);
     vec2 pos2 = {50, 50};
     CellObject cell2 = CellObject(pos2, 3, VK2D_RED);
 
     auto go1 = scene::GameObject::createFromDerived(cell1);
-    auto go1_1 = scene::GameObject::createFromDerived(cell1);
+    auto go1_1 = scene::GameObject::createFromDerived(cell1_1);
     auto go2 = scene::GameObject::createFromDerived(cell2);
     scene->addObject(go1);
-    scene->setDupsAllowed(false);
 
     bool exist = scene->existObject(go1);
     if (exist != true) {
         return EXIT_FAILURE;
     }
     exist = scene->existObject(go1_1);
-    if (exist != true) {
+    if (exist != false) {
         return EXIT_FAILURE;
     }
-
     exist = scene->existObject(go2);
     if (exist != false) {
         return EXIT_FAILURE;
     }
-
-    scene->removeOneObject(go1);
-    exist = scene->existObject(go1);
-    if (exist != false) {
-        return EXIT_FAILURE;
-    }
-
     return EXIT_SUCCESS;
 }
 
 int main(int argc, char *argv[]) {
 
-    int res = test_add();
-    if (res) {
-        printf("test_add FAILURE\n");
+    int res[3];
+    const char* test_names[3] = {
+        "test_add", 
+        "test_remove", 
+        "test_exist"};
+
+    int tot_res = 0;
+
+    res[0] = test_add();
+    res[1] = test_remove();
+    res[2] = test_exist();
+    for (int res_value : res) {
+        tot_res += res_value;
+        if (res_value) {
+            printf("%d failed\n", test_names[res_value]);
+        }
+    }
+    printf("all test done, %d tests failed\n", tot_res);
+
+    if (tot_res > 0) {
         return EXIT_FAILURE;
     }
-    printf("test_add SUCCESS\n");
-
-    res = test_remove();
-    if (res) {
-        printf("test_remove FAILURE\n");
-        return EXIT_FAILURE;
-    }
-    printf("test_remove SUCCESS\n");
-
-    res = test_exist();
-    if (res) {
-        printf("test_exist FAILURE\n");
-        return EXIT_FAILURE;
-    }
-    printf("test_exist SUCCESS\n");
-
-    printf("all complete\n");
     return EXIT_SUCCESS;
 }

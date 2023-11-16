@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include <stdio.h>
 
 namespace admirals {
 namespace scene {
@@ -11,55 +12,55 @@ void Scene::render() const {
 }
 
 /**
- * recieves a pointer to a gamObject and insert it to the multiset.
- * If the 'dupsAllowed' varaible is true multiple pointers to the same object
- * can be stored. otherwise only one pointer is allowed per object.
+ * recieves a shared pointer to a gamObject and insert it to the multiset.
  */
 void Scene::addObject(std::shared_ptr<GameObject> object) {
-    if ((!this->dupsAllowed) && existObject(object)) {
-        return;
-    }
     this->objects.insert(object);
 }
 
 /**
- * recieves a pointer to a gameObject and removes all from the multiset
+ * recieves a shared pointer to a gameObject and removes one from the multiset
  */
-void Scene::removeAllObject(std::shared_ptr<GameObject> object) {
-    this->objects.erase(object);
+void Scene::removeObject(std::shared_ptr<GameObject> object) {
+    auto it = this->objects.begin();
+    bool found = false;
+    for (it; it != this->objects.end(); it++) {
+        std::shared_ptr<GameObject> obj = *it;
+        if (obj.get() == object.get()) {
+            if (obj.get()->index() == object.get()->index()) {
+                found = true;
+                break;
+            }
+        }
+    }
+    if (found) {
+        this->objects.erase(it);
+    }
 }
 
 /**
- * recieves a pointer to a gameObject and deletes the first instance it sees.
- * Will not remove all pointers if multiple are present
- */
-void Scene::removeOneObject(std::shared_ptr<GameObject> object) {
-    this->objects.erase(this->objects.find(object));
-}
-
-/**
- * recieves a pointer to a gameObject and checks if it exist in the multiset
+ * recieves a shared pointer to a gameObject and checks if it exist in the multiset
  */
 bool Scene::existObject(std::shared_ptr<GameObject> object) {
-    return (this->objects.find(object) != this->objects.end());
+    for (auto it = this->objects.begin(); it != this->objects.end(); it++) {
+        std::shared_ptr<GameObject> obj = *it;
+        if (obj.get() == object.get()) {
+            if (obj.get()->index() == object.get()->index()) {
+                return true;
+            }
+        }
+    }
+    return false;
+    
 }
 
 /**
- * returns the total amount of pointers to objects currently in the multiset
+ * returns the total amount of shared pointers to objects currently in the multiset
  */
-int Scene::sizeObjects() { return this->objects.size(); }
-
-/**
- * set if the multiset will allow multiple of the same pointer for an object.
- * If set to 'false' will not apply retroactivly.
- */
-void Scene::setDupsAllowed(bool statement) { this->dupsAllowed = statement; }
+int Scene::numObjectsInScene() { return this->objects.size(); }
 
 Scene::Scene() {
     this->objects = {};
-    this->gridLenght = 20;
-    this->gridHeight = 20;
-    this->dupsAllowed = false;
 }
 
 Scene::~Scene() {}
