@@ -1,3 +1,5 @@
+#include <VK2D/Constants.h>
+#include <VK2D/Renderer.h>
 #include <cmath>
 
 #include "DataObjects.hpp"
@@ -55,10 +57,14 @@ int Renderer::init(bool debug) {
     return code;
 }
 
+int Renderer::windowWidth() const { return m_windowWidth; }
+int Renderer::windowHeight() const { return m_windowHeight; }
+
 void Renderer::render(const DrawableCollection &drawable) {
-    vk2dRendererStartFrame(VK2D_WHITE);
+    vk2dRendererStartFrame(Color::WHITE.data());
+    SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
     for (const auto &d : drawable) {
-        d->render();
+        d->render(this);
     }
     vk2dRendererEndFrame();
 }

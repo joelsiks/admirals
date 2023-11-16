@@ -11,9 +11,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     // DisplayLayout requires vk2d to be initialized.
     m_renderer->init(debug);
 
-    m_displayLayout =
-        std::make_shared<UI::DisplayLayout>(windowWidth, windowHeight);
-
+    m_displayLayout = std::make_shared<UI::DisplayLayout>();
     m_scene = std::make_shared<scene::Scene>();
 }
 

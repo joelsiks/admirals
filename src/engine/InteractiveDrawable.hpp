@@ -10,7 +10,7 @@ public:
     InteractiveDrawable(){};
     ~InteractiveDrawable(){};
 
-    virtual void render() const = 0;
+    virtual void render(const renderer::Renderer *r) const = 0;
     virtual void handleEvent(SDL_Event &e) = 0;
 };
 

@@ -33,9 +33,11 @@ public:
 
     void onUpdate() {}
 
-    void render() {
-        vk2dRendererDrawTexture(m_texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0,
-                                m_width, m_height);
+    void render(const renderer::Renderer *r) {
+        float x = r->windowWidth() / m_width;
+        float y = r->windowHeight() / m_height;
+        vk2dRendererDrawTexture(m_texture, 0, 0, x, y, 0, 0, 0, 0, 0, m_width,
+                                m_height);
     }
 
 private:

@@ -2,13 +2,14 @@
 
 namespace admirals {
 namespace renderer {
+class Renderer;
 
 class IDrawable {
 public:
     IDrawable(){};
     ~IDrawable(){};
 
-    virtual void render() const = 0;
+    virtual void render(const renderer::Renderer *r) const = 0;
 };
 
 } // namespace renderer

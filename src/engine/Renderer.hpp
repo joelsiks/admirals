@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 
-#include <VK2D/VK2D.h>
+#include <SDL2/SDL_video.h>
+#include <VK2D/Texture.h>
 
 #include "DataObjects.hpp"
 #include "IDrawable.hpp"
@@ -21,6 +22,8 @@ public:
 
     int init(bool debug);
     void render(const DrawableCollection &drawable);
+    int windowWidth() const;
+    int windowHeight() const;
 
     static void drawRectangle(const Vector2 &position, const Vector2 &size,
                               const Color &color);

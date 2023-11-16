@@ -2,10 +2,10 @@
 
 using namespace admirals::scene;
 
-void Scene::render() const {
+void Scene::render(const renderer::Renderer *r) const {
     for (auto &object : this->m_objects) {
         object->onUpdate();
-        object->render();
+        object->render(r);
     }
 }
 
