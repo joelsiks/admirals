@@ -32,6 +32,9 @@ set(SOURCES
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
+    src/engine/net/Connection.cpp
+    src/engine/net/Client.cpp
+    src/engine/net/Server.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -59,19 +62,18 @@ add_library(asio INTERFACE)
 target_include_directories(asio 
     INTERFACE
     ${ASIO_DIR}
-    ${ASIO_DIR}/asio
 )
 
 # Create a library with the sources
 add_library(engine SHARED ${SOURCES})
 if(WIN32)
-    target_link_libraries(engine wsock32 ws2_32)
+    target_link_libraries(engine wsock32)
+    target_link_libraries(engine ws2_32)
 endif()
 target_link_libraries(engine vk2d)
 target_link_libraries(engine asio)
 target_include_directories(engine PRIVATE 
     "src/engine/" 
-    "src/engine/net/"
 )
 
 # Create test executable

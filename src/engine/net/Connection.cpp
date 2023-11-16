@@ -1,13 +1,12 @@
-#pragma once
+#include "Connection.hpp"
+#include <iostream>
 
-namespace admirals {
-namespace net {
+using namespace admirals::net;
 
-template <typename T>
-Connection<T>::Connection(
+Connection::Connection(
     Owner parent, asio::io_context &io_context, asio::ip::tcp::socket socket,
-    MessageQueue<OwnedMessage<T>> &incoming_messages, Server<T> *server,
-    void (Server<T>::*validation_function)(std::shared_ptr<Connection<T>>))
+    MessageQueue<OwnedMessage> &incoming_messages, Server *server,
+    void (Server::*validation_function)(std::shared_ptr<Connection>))
     : m_io_context(io_context), m_socket(std::move(socket)),
       m_incoming_messages(incoming_messages), m_owner_type(parent),
       m_server(server), m_validation_function(validation_function) {
@@ -18,11 +17,9 @@ Connection<T>::Connection(
     }
 }
 
-template <typename T> Connection<T>::~Connection() {}
+Connection::~Connection() {}
 
-template <typename T>
-void Connection<T>::ConnectToClient(admirals::net::Server<T> *server,
-                                    uint32_t uid) {
+void Connection::ConnectToClient(admirals::net::Server *server, uint32_t uid) {
     if (m_socket.is_open()) {
         m_id = uid;
         // Send the validation number to the client and wait for the client to
@@ -32,8 +29,7 @@ void Connection<T>::ConnectToClient(admirals::net::Server<T> *server,
     }
 }
 
-template <typename T>
-void Connection<T>::ConnectToServer(
+void Connection::ConnectToServer(
     const asio::ip::tcp::resolver::results_type &endpoints) {
     asio::async_connect(
         m_socket, endpoints,
@@ -48,7 +44,7 @@ void Connection<T>::ConnectToServer(
         });
 }
 
-template <typename T> bool Connection<T>::Disconnect() {
+bool Connection::Disconnect() {
     if (IsConnected()) {
         asio::post(m_io_context, [this]() { m_socket.close(); });
         return true;
@@ -56,11 +52,9 @@ template <typename T> bool Connection<T>::Disconnect() {
     return false;
 }
 
-template <typename T> bool Connection<T>::IsConnected() const {
-    return m_socket.is_open();
-}
+bool Connection::IsConnected() const { return m_socket.is_open(); }
 
-template <typename T> void Connection<T>::Send(const Message<T> &message) {
+void Connection::Send(const Message &message) {
     asio::post(m_io_context, [this, message]() {
         // Check if asio is already writing messages
         bool writing_message = !m_outgoing_messages.Empty();
@@ -72,13 +66,12 @@ template <typename T> void Connection<T>::Send(const Message<T> &message) {
     });
 }
 
-template <typename T> uint32_t Connection<T>::GetID() const { return m_id; }
+uint32_t Connection::GetID() const { return m_id; }
 
 // Reads the header of the message to determine type and the size of the body
-template <typename T> void Connection<T>::ReadHeader() {
+void Connection::ReadHeader() {
     asio::async_read(
-        m_socket,
-        asio::buffer(&m_message_buffer.header, sizeof(MessageHeader<T>)),
+        m_socket, asio::buffer(&m_message_buffer.header, sizeof(MessageHeader)),
         [this](std::error_code ec, std::size_t length) {
             if (!ec) {
                 if (m_message_buffer.header.size > 0) {
@@ -101,7 +94,7 @@ template <typename T> void Connection<T>::ReadHeader() {
 }
 
 // Reads the full body of the message
-template <typename T> void Connection<T>::ReadBody() {
+void Connection::ReadBody() {
     asio::async_read(m_socket,
                      asio::buffer(m_message_buffer.body.data(),
                                   m_message_buffer.body.size()),
@@ -118,7 +111,7 @@ template <typename T> void Connection<T>::ReadBody() {
 }
 
 // Adds incoming messages to the queue to be processed later
-template <typename T> void Connection<T>::AddToIncomingMessageQueue() {
+void Connection::AddToIncomingMessageQueue() {
     // For the server, tag the message with the connection to distinguish
     // between clients
     if (m_owner_type == Owner::SERVER) {
@@ -132,10 +125,10 @@ template <typename T> void Connection<T>::AddToIncomingMessageQueue() {
 }
 
 // Writes the header of the first message in the outgoing queue
-template <typename T> void Connection<T>::WriteHeader() {
+void Connection::WriteHeader() {
     asio::async_write(m_socket,
                       asio::buffer(&m_outgoing_messages.Front().header,
-                                   sizeof(MessageHeader<T>)),
+                                   sizeof(MessageHeader)),
                       [this](std::error_code ec, std::size_t length) {
                           if (!ec) {
                               if (m_outgoing_messages.Front().body.size() > 0) {
@@ -160,7 +153,7 @@ template <typename T> void Connection<T>::WriteHeader() {
 }
 
 // Writes the body of the first message in the outgoing queue
-template <typename T> void Connection<T>::WriteBody() {
+void Connection::WriteBody() {
     asio::async_write(m_socket,
                       asio::buffer(m_outgoing_messages.Front().body.data(),
                                    m_outgoing_messages.Front().body.size()),
@@ -184,8 +177,7 @@ template <typename T> void Connection<T>::WriteBody() {
 
 // Hashes the validation number with "random" numbers and operations
 // Used to determine if a connection is valid and from a client
-template <typename T>
-uint64_t Connection<T>::HashValidation(uint64_t unhashed) {
+uint64_t Connection::HashValidation(uint64_t unhashed) {
     uint64_t hash_with_version = unhashed ^ CONNECTION_VERSON;
     // Hash with random numbers and operations
     hash_with_version += 0x1d2b711cd3e5ad3d;
@@ -197,7 +189,7 @@ uint64_t Connection<T>::HashValidation(uint64_t unhashed) {
 }
 
 // Writes the (either generated or received) validation number
-template <typename T> void Connection<T>::WriteValidation() {
+void Connection::WriteValidation() {
     asio::async_write(m_socket,
                       asio::buffer(&m_validation_out, sizeof(uint64_t)),
                       [this](std::error_code ec, std::size_t length) {
@@ -215,8 +207,7 @@ template <typename T> void Connection<T>::WriteValidation() {
 
 // Reads the (either hashed or generated) validation number and validates it (if
 // the connection is a server)
-template <typename T>
-void Connection<T>::ReadValidation(admirals::net::Server<T> *server) {
+void Connection::ReadValidation(admirals::net::Server *server) {
     asio::async_read(
         m_socket, asio::buffer(&m_validation_in, sizeof(uint64_t)),
         [this, server](std::error_code ec, std::size_t length) {
@@ -251,6 +242,3 @@ void Connection<T>::ReadValidation(admirals::net::Server<T> *server) {
             }
         });
 }
-
-} // namespace net
-} // namespace admirals

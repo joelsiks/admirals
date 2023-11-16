@@ -7,10 +7,9 @@
 #include "Message.hpp"
 #include "MessageQueue.hpp"
 
-namespace admirals {
-namespace net {
+namespace admirals::net {
 
-template <typename T> class Client {
+class Client {
 
 public:
     Client();
@@ -26,19 +25,16 @@ public:
     bool IsConnected() const;
 
     // Sends a message to the server
-    void Send(const Message<T> &message);
+    void Send(const Message &message);
 
     // Returns the incoming message queue
-    MessageQueue<OwnedMessage<T>> &Incoming();
+    MessageQueue<OwnedMessage> &Incoming();
 
 private:
     asio::io_context m_io_context;
     std::thread m_context_thread;
-    std::unique_ptr<Connection<T>> m_connection;
-    MessageQueue<OwnedMessage<T>> m_incoming_messages;
+    std::unique_ptr<Connection> m_connection;
+    MessageQueue<OwnedMessage> m_incoming_messages;
 };
 
-} // namespace net
-} // namespace admirals
-
-#include "Client.tpp"
+} // namespace admirals::net

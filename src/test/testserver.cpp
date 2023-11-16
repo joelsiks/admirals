@@ -1,29 +1,11 @@
 #include <iostream>
 
+#include "NetworkTestData.hpp"
 #include "Server.hpp"
 
-enum class TestEnum : uint32_t {
-    GAME_START,
-    BOARD_UPDATE,
-    SPAWN_SHIP,
-    MOVE_SHIP
-};
+using namespace admirals::net;
 
-struct GameState {
-    uint32_t turn;
-    uint8_t board[8][8];
-
-    GameState() {
-        turn = 0;
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = 0;
-            }
-        }
-    }
-};
-
-class TestServer : public admirals::net::Server<TestEnum> {
+class TestServer : public Server {
 private:
     GameState state;
 
@@ -31,10 +13,10 @@ public:
     bool game_started = false;
 
 public:
-    TestServer(uint16_t port) : admirals::net::Server<TestEnum>(port) {}
+    TestServer(uint16_t port) : Server(port) {}
 
     void BroadcastState() {
-        admirals::net::Message<TestEnum> msg;
+        Message msg;
         msg.header.id = TestEnum::BOARD_UPDATE;
         msg << state;
         MessageAllClients(msg);
@@ -42,17 +24,15 @@ public:
     }
 
 protected:
-    virtual bool OnClientConnect(
-        std::shared_ptr<admirals::net::Connection<TestEnum>> client) override {
+    virtual bool OnClientConnect(std::shared_ptr<Connection> client) override {
         return true;
     }
 
-    virtual void OnClientDisconnect(
-        std::shared_ptr<admirals::net::Connection<TestEnum>> client) override {}
-
     virtual void
-    OnMessage(std::shared_ptr<admirals::net::Connection<TestEnum>> client,
-              admirals::net::Message<TestEnum> &message) override {
+    OnClientDisconnect(std::shared_ptr<Connection> client) override {}
+
+    virtual void OnMessage(std::shared_ptr<Connection> client,
+                           Message &message) override {
         switch (message.header.id) {
         case TestEnum::SPAWN_SHIP: {
             uint8_t x, y;
@@ -82,8 +62,8 @@ protected:
         }
     }
 
-    virtual void OnClientValidated(
-        std::shared_ptr<admirals::net::Connection<TestEnum>> client) override {
+    virtual void
+    OnClientValidated(std::shared_ptr<Connection> client) override {
         uint32_t players = 0;
         for (auto &client : connections) {
             if (client && client->IsConnected()) {
@@ -92,7 +72,7 @@ protected:
         }
         if (players == 2 && !game_started) {
             std::cout << "Starting game" << std::endl;
-            admirals::net::Message<TestEnum> msg;
+            Message msg;
             msg.header.id = TestEnum::GAME_START;
             MessageAllClients(msg);
             game_started = true;

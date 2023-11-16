@@ -2,42 +2,24 @@
 #include <string>
 
 #include "Client.hpp"
+#include "NetworkTestData.hpp"
 
-enum class TestEnum : uint32_t {
-    GAME_START,
-    BOARD_UPDATE,
-    SPAWN_SHIP,
-    MOVE_SHIP
-};
+using namespace admirals::net;
 
-struct GameState {
-    uint32_t turn;
-    uint8_t board[8][8];
-
-    GameState() {
-        turn = 0;
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = 0;
-            }
-        }
-    }
-};
-
-class TestClient : public admirals::net::Client<TestEnum> {
+class TestClient : public admirals::net::Client {
 private:
     GameState state;
 
 public:
     void SpawnShip(uint8_t x, uint8_t y) {
-        admirals::net::Message<TestEnum> msg;
+        admirals::net::Message msg;
         msg.header.id = TestEnum::SPAWN_SHIP;
         msg << x << y;
         Send(msg);
     }
 
     void MoveShip(uint8_t x, uint8_t y, uint8_t new_x, uint8_t new_y) {
-        admirals::net::Message<TestEnum> msg;
+        admirals::net::Message msg;
         msg.header.id = TestEnum::MOVE_SHIP;
         msg << x << y << new_x << new_y;
         Send(msg);
@@ -55,9 +37,7 @@ public:
         }
     }
 
-    void UpdateBoard(admirals::net::Message<TestEnum> message) {
-        message >> state;
-    }
+    void UpdateBoard(admirals::net::Message message) { message >> state; }
 };
 
 int main() {

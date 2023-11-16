@@ -1,20 +1,20 @@
-#pragma once
+#include "Client.hpp"
+#include <iostream>
 
-namespace admirals {
-namespace net {
-template <typename T> Client<T>::Client() {}
+using namespace admirals::net;
 
-template <typename T> Client<T>::~Client() { Disconnect(); }
+Client::Client() {}
 
-template <typename T>
-bool Client<T>::Connect(const std::string &host, const std::string &port) {
+Client::~Client() { Disconnect(); }
+
+bool Client::Connect(const std::string &host, const std::string &port) {
     try {
         asio::ip::tcp::resolver resolver(m_io_context);
         asio::ip::tcp::resolver::results_type endpoints =
             resolver.resolve(host, port);
 
-        m_connection = std::make_unique<Connection<T>>(
-            Connection<T>::Owner::CLIENT, m_io_context,
+        m_connection = std::make_unique<Connection>(
+            Connection::Owner::CLIENT, m_io_context,
             asio::ip::tcp::socket(m_io_context), m_incoming_messages);
         m_connection->ConnectToServer(endpoints);
 
@@ -27,7 +27,7 @@ bool Client<T>::Connect(const std::string &host, const std::string &port) {
     return true;
 }
 
-template <typename T> void Client<T>::Disconnect() {
+void Client::Disconnect() {
     if (IsConnected()) {
         m_connection->Disconnect();
     }
@@ -38,7 +38,7 @@ template <typename T> void Client<T>::Disconnect() {
     m_connection.release();
 }
 
-template <typename T> bool Client<T>::IsConnected() const {
+bool Client::IsConnected() const {
     if (m_connection) {
         return m_connection->IsConnected();
     } else {
@@ -46,15 +46,10 @@ template <typename T> bool Client<T>::IsConnected() const {
     }
 }
 
-template <typename T> void Client<T>::Send(const Message<T> &message) {
+void Client::Send(const Message &message) {
     if (IsConnected()) {
         m_connection->Send(message);
     }
 }
 
-template <typename T> MessageQueue<OwnedMessage<T>> &Client<T>::Incoming() {
-    return m_incoming_messages;
-}
-
-} // namespace net
-} // namespace admirals
+MessageQueue<OwnedMessage> &Client::Incoming() { return m_incoming_messages; }

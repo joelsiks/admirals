@@ -1,16 +1,15 @@
-#pragma once
+#include "Server.hpp"
+#include <iostream>
 
-namespace admirals {
-namespace net {
+using namespace admirals::net;
 
-template <typename T>
-Server<T>::Server(uint16_t port)
+Server::Server(uint16_t port)
     : acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
 }
 
-template <typename T> Server<T>::~Server() { Stop(); }
+Server::~Server() { Stop(); }
 
-template <typename T> bool Server<T>::Start() {
+bool Server::Start() {
     try {
         // Start accepting connections
         WaitForClientConnection();
@@ -23,7 +22,7 @@ template <typename T> bool Server<T>::Start() {
     return true;
 }
 
-template <typename T> void Server<T>::Stop() {
+void Server::Stop() {
     // Stop accepting connections
     io_context.stop();
     if (context_thread.joinable())
@@ -31,7 +30,7 @@ template <typename T> void Server<T>::Stop() {
     std::cout << "Server stopped" << std::endl;
 }
 
-template <typename T> void Server<T>::WaitForClientConnection() {
+void Server::WaitForClientConnection() {
     acceptor.async_accept([this](std::error_code ec,
                                  asio::ip::tcp::socket socket) {
         if (!ec) {
@@ -39,10 +38,10 @@ template <typename T> void Server<T>::WaitForClientConnection() {
                       << std::endl;
 
             // Create a new connection object for the client
-            std::shared_ptr<Connection<T>> new_connection =
-                std::make_shared<Connection<T>>(
-                    Connection<T>::Owner::SERVER, io_context, std::move(socket),
-                    incoming_messages, this, &Server<T>::OnClientValidated);
+            std::shared_ptr<Connection> new_connection =
+                std::make_shared<Connection>(
+                    Connection::Owner::SERVER, io_context, std::move(socket),
+                    incoming_messages, this, &Server::OnClientValidated);
             // Verify that the client is allowed to connect
             if (OnClientConnect(new_connection)) {
                 // Add the new connection to the list of connections
@@ -60,9 +59,8 @@ template <typename T> void Server<T>::WaitForClientConnection() {
     });
 }
 
-template <typename T>
-void Server<T>::MessageClient(std::shared_ptr<Connection<T>> client,
-                              const Message<T> &message) {
+void Server::MessageClient(std::shared_ptr<Connection> client,
+                           const Message &message) {
     if (client && client->IsConnected()) {
         // If the client is connected, send the message
         client->Send(message);
@@ -76,9 +74,8 @@ void Server<T>::MessageClient(std::shared_ptr<Connection<T>> client,
     }
 }
 
-template <typename T>
-void Server<T>::MessageAllClients(
-    const Message<T> &message, std::shared_ptr<Connection<T>> ignore_client) {
+void Server::MessageAllClients(const Message &message,
+                               std::shared_ptr<Connection> ignore_client) {
     bool client_disconnected = false;
     for (auto &connection : connections) {
         // Send the message to all connected clients
@@ -104,7 +101,7 @@ void Server<T>::MessageAllClients(
     }
 }
 
-template <typename T> void Server<T>::Update(size_t max_messages) {
+void Server::Update(size_t max_messages) {
     size_t message_count = 0;
     while (message_count < max_messages && !incoming_messages.Empty()) {
         // Process all messages in the queue
@@ -114,5 +111,3 @@ template <typename T> void Server<T>::Update(size_t max_messages) {
         message_count++;
     }
 }
-} // namespace net
-} // namespace admirals

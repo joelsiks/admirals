@@ -1,15 +1,14 @@
 #pragma once
 
-namespace admirals {
-namespace net {
+namespace admirals::net {
 
-template <typename T> struct MessageHeader {
-    T id{};
+struct MessageHeader {
+    uint32_t id = 0;
     uint32_t size = 0;
 };
 
-template <typename T> struct Message {
-    MessageHeader<T> header{};
+struct Message {
+    MessageHeader header{};
     std::vector<uint8_t> body;
 
     // Returns the size of the message body in bytes
@@ -17,7 +16,7 @@ template <typename T> struct Message {
 
     // Overload for the << operator for adding data to the message buffer
     template <typename DataType>
-    friend Message<T> &operator<<(Message<T> &msg, const DataType &data) {
+    friend Message &operator<<(Message &msg, const DataType &data) {
         // Check that the data type is trivially copyable
         static_assert(std::is_standard_layout<DataType>::value,
                       "Data is too complex to be pushed into vector");
@@ -33,7 +32,7 @@ template <typename T> struct Message {
 
     // Overload for the >> operator for pulling data from the message buffer
     template <typename DataType>
-    friend Message<T> &operator>>(Message<T> &msg, DataType &data) {
+    friend Message &operator>>(Message &msg, DataType &data) {
         // Check that the data type is trivially copyable
         static_assert(std::is_standard_layout<DataType>::value,
                       "Data is too complex to be pulled from vector");
@@ -49,12 +48,11 @@ template <typename T> struct Message {
 };
 
 // Forward declaration of Connection class to use in OwnedMessage
-template <typename T> class Connection;
+class Connection;
 
-template <typename T> struct OwnedMessage {
-    std::shared_ptr<Connection<T>> remote = nullptr;
-    Message<T> message;
+struct OwnedMessage {
+    std::shared_ptr<Connection> remote = nullptr;
+    Message message;
 };
 
-} // namespace net
-} // namespace admirals
+} // namespace admirals::net
