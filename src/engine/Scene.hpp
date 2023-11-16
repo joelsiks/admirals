@@ -26,7 +26,7 @@ public:
     Scene();
     ~Scene();
 
-    void render() const;
+    void render(const renderer::RendererContext &r) const;
     void addObject(std::shared_ptr<GameObject> object);
 };
 

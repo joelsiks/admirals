@@ -1,3 +1,4 @@
+#include <cmath>
 #include <memory>
 #include <stdbool.h>
 #include <stdio.h>
@@ -22,8 +23,9 @@ using namespace admirals;
 class TextureObject : public scene::GameObject {
 public:
     TextureObject(const Vector3 &pos, const char *texturePath, float width,
-                  float height)
-        : scene::GameObject(pos), m_width(width), m_height(height) {
+                  float height, bool keepAspectRatio = true)
+        : scene::GameObject(pos), m_width(width), m_height(height),
+          m_keepAspectRatio(keepAspectRatio) {
         m_texture = vk2dTextureLoad(texturePath);
     }
 
@@ -33,14 +35,22 @@ public:
 
     void onUpdate() {}
 
-    void render() {
-        vk2dRendererDrawTexture(m_texture, 0, 0, 0.4, 0.4, 0, 0, 0, 0, 0,
-                                m_width, m_height);
+    void render(const renderer::RendererContext &r) {
+        float x = r.windowWidth / m_width;
+        float y = r.windowHeight / m_height;
+        if (m_keepAspectRatio) {
+            x = std::min(x, y);
+            y = x;
+        }
+
+        vk2dRendererDrawTexture(m_texture, 0, 0, x, y, 0, 0, 0, 0, 0, m_width,
+                                m_height);
     }
 
 private:
     VK2DTexture m_texture;
     float m_width, m_height;
+    bool m_keepAspectRatio;
 };
 
 void OnButtonClick(UI::Button *button, const SDL_Event &event) {
