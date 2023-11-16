@@ -39,14 +39,18 @@ protected:
         return false;
     }
     // Called when a client disconnects
-    virtual void OnClientDisconnect(std::shared_ptr<Connection> client) {}
+    virtual void OnClientDisconnect(std::shared_ptr<Connection> client) = 0;
     // Called when a message is received
     virtual void OnMessage(std::shared_ptr<Connection> client,
-                           Message &message) {}
+                           Message &message) = 0;
 
 public:
     // Called when a client is validated
-    virtual void OnClientValidated(std::shared_ptr<Connection> client) {}
+    virtual void OnClientValidated(std::shared_ptr<Connection> client) = 0;
+
+private:
+    void HandleAcceptedConnection(std::error_code ec,
+                                  asio::ip::tcp::socket socket);
 
 public:
     MessageQueue<OwnedMessage> m_incomingMessages;

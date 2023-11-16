@@ -10,6 +10,8 @@
 
 namespace admirals::net {
 
+using ValidationFunction = std::function<void(std::shared_ptr<Connection>)>;
+
 class Server;
 
 class Connection : public std::enable_shared_from_this<Connection> {
@@ -21,8 +23,7 @@ public:
                asio::ip::tcp::socket socket,
                MessageQueue<OwnedMessage> &incoming_messages,
                Server *server = nullptr,
-               void (Server::*validation_function)(
-                   std::shared_ptr<Connection>) = nullptr);
+               ValidationFunction validation_function = nullptr);
     virtual ~Connection();
 
     // Connects to a client from the server
@@ -53,7 +54,14 @@ private:
     void WriteBody();
     uint64_t HashValidation(uint64_t hash);
     void WriteValidation();
-    void ReadValidation(admirals::net::Server *server = nullptr);
+    void ReadValidation();
+
+    void HandleReadHeader(std::error_code ec);
+    void HandleReadBody(std::error_code ec);
+    void HandleWriteHeader(std::error_code ec);
+    void HandleWriteBody(std::error_code ec);
+    void HandleWriteValidation(std::error_code ec);
+    void HandleReadValidation(std::error_code ec);
 
 private:
     asio::io_context &m_ioContext;
@@ -71,8 +79,9 @@ private:
 
     // Used when validating a connection
     Server *m_server = nullptr;
-    void (Server::*m_validationFunction)(std::shared_ptr<Connection>) =
-        nullptr;
+    // void (Server::*m_validationFunction)(std::shared_ptr<Connection>) =
+    // nullptr;
+    ValidationFunction m_validationFunction = nullptr;
 };
 
 } // namespace admirals::net

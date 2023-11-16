@@ -4,8 +4,8 @@
 using namespace admirals::net;
 
 Server::Server(uint16_t port)
-    : m_acceptor(m_ioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
-}
+    : m_acceptor(m_ioContext,
+                 asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {}
 
 Server::~Server() { Stop(); }
 
@@ -30,33 +30,41 @@ void Server::Stop() {
     std::cout << "Server stopped" << std::endl;
 }
 
-void Server::WaitForClientConnection() {
-    m_acceptor.async_accept([this](std::error_code ec,
-                                 asio::ip::tcp::socket socket) {
-        if (!ec) {
-            std::cout << "New connection: " << socket.remote_endpoint()
-                      << std::endl;
+void Server::HandleAcceptedConnection(std::error_code ec,
+                                      asio::ip::tcp::socket socket) {
+    if (!ec) {
+        std::cout << "New connection: " << socket.remote_endpoint()
+                  << std::endl;
 
-            // Create a new connection object for the client
-            std::shared_ptr<Connection> new_connection =
-                std::make_shared<Connection>(
-                    Connection::Owner::SERVER, m_ioContext, std::move(socket),
-                    m_incomingMessages, this, &Server::OnClientValidated);
-            // Verify that the client is allowed to connect
-            if (OnClientConnect(new_connection)) {
-                // Add the new connection to the list of connections
-                m_connections.push_back(std::move(new_connection));
-                m_connections.back()->ConnectToClient(this, m_idCounter++);
-                std::cout << "[" << m_connections.back()->GetID()
-                          << "] Connection approved" << std::endl;
-            } else {
-                std::cout << "Connection denied" << std::endl;
-            }
+        // Create a new connection object for the client
+        std::shared_ptr<Connection> new_connection =
+            std::make_shared<Connection>(
+                Connection::Owner::SERVER, m_ioContext, std::move(socket),
+                m_incomingMessages, this,
+                [this](std::shared_ptr<Connection> connection) {
+                    this->OnClientValidated(connection);
+                });
+        // Verify that the client is allowed to connect
+        if (OnClientConnect(new_connection)) {
+            // Add the new connection to the list of connections
+            m_connections.push_back(std::move(new_connection));
+            m_connections.back()->ConnectToClient(this, m_idCounter++);
+            std::cout << "[" << m_connections.back()->GetID()
+                      << "] Connection approved" << std::endl;
         } else {
-            std::cout << "Connection error: " << ec.message() << std::endl;
+            std::cout << "Connection denied" << std::endl;
         }
-        WaitForClientConnection();
-    });
+    } else {
+        std::cout << "Connection error: " << ec.message() << std::endl;
+    }
+    WaitForClientConnection();
+}
+
+void Server::WaitForClientConnection() {
+    m_acceptor.async_accept(
+        [this](std::error_code ec, asio::ip::tcp::socket socket) {
+            HandleAcceptedConnection(ec, std::move(socket));
+        });
 }
 
 void Server::MessageClient(std::shared_ptr<Connection> client,
