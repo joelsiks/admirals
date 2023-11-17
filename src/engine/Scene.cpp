@@ -17,23 +17,12 @@ void Scene::Render(const renderer::RendererContext &r) const {
  * recieves a shared pointer to a gameObject and removes one from the multiset
  */
 void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
-    this->m_objects.Erase(object->name());
-    /*
-    auto it = this->m_objects.begin();
-    bool found = false;
-    for (it; it != this->m_objects.end(); it++) {
-        std::shared_ptr<GameObject> obj = *it;
-        if (obj.get() == object.get()) {
-            if (obj.get()->position().z() == object.get()->position().z()) {
-                found = true;
-                break;
-            }
-        }
+    if (ExistObject(object)) {
+        this->m_objects.Erase(object->name());
     }
-    if (found) {
-        this->m_objects.erase(it);
-    }
-    */
+}
+void Scene::RemoveObject(const std::string &key) {
+    this->m_objects.Erase(key);
 }
 
 /**
@@ -41,20 +30,32 @@ void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
  * multiset
  */
 bool Scene::ExistObject(std::shared_ptr<GameObject> object) {
-    return (this->m_objects.Find(object->name()) != nullptr);
-    /*
-    
-    for (auto it = this->m_objects.begin(); it != this->m_objects.end(); it++) {
-        std::shared_ptr<GameObject> obj = *it;
-        if (obj.get() == object.get()) {
-            if (obj.get()->position().z() == object.get()->position().z()) {
-                return true;
-            }
+    auto obj = this->m_objects.Find(object->name());
+    if (obj != nullptr) {
+        // if another that doesn't exist in m_objects have an identical name to on e that does.
+        // check if the pointer is the same as the desired value.
+        if (obj == object) {
+            return true;
         }
     }
     return false;
-    */
 }
+bool Scene::ExistObject(const std::string &key) {
+    return (this->m_objects.Find(key) != nullptr);
+}
+
+int Scene::NumObjectsInScene() {
+    return this->m_objects.Size();
+}
+
+std::vector<std::string> Scene::GetSceneObjectNames() {
+    std::vector<std::string> vec = {};
+    for (const auto& value : this->m_objects) {
+        vec.emplace_back(value->name());
+    }
+    return vec;
+}
+
 
 void Scene::OnStart() {
     for (const auto &object : this->m_objects) {
@@ -67,7 +68,3 @@ void Scene::OnUpdate() {
         object->OnUpdate();
     }
 }
-
-Scene::Scene() { this->m_objects = {}; }
-
-Scene::~Scene() {}

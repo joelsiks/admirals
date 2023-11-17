@@ -12,14 +12,14 @@ using namespace admirals;
 class CellObject : public scene::GameObject {
 
 public:
-    CellObject(const Vector3 &pos)
-        : scene::GameObject(pos) {}
+    CellObject(const std::string &name, const Vector3 &pos)
+        : scene::GameObject(name, pos) {}
 
-    void onStart() {}
+    void OnStart() {}
 
-    void onUpdate() {}
+    void OnUpdate() {}
 
-    void render(const renderer::RendererContext &r) {}
+    void Render(const renderer::RendererContext &r) const {}
 };
 
 int test_add() {
@@ -27,22 +27,28 @@ int test_add() {
     scene::Scene *scene = new scene::Scene();
 
     Vector3 pos1 = {0, 0, 2};
-    CellObject cell1 = CellObject(pos1);
+    CellObject cell1 = CellObject("a", pos1);
     Vector3 pos2 = {50, 50, 3};
-    CellObject cell2 = CellObject(pos2);
+    CellObject cell2 = CellObject("b", pos2);
     Vector3 pos3 = {100, 100, 1};
-    CellObject cell3 = CellObject(pos3);
+    CellObject cell3 = CellObject("b", pos3);
 
-    auto go1 = scene::GameObject::createFromDerived(cell1);
-    auto go2 = scene::GameObject::createFromDerived(cell2);
-    auto go3 = scene::GameObject::createFromDerived(cell3);
-    scene->addObject(go1);
-    scene->addObject(go2);
-    scene->addObject(go3);
-
-    if (scene->numObjectsInScene() != 3) {
+    auto go1 = scene::GameObject::CreateFromDerived(cell1);
+    auto go2 = scene::GameObject::CreateFromDerived(cell2);
+    auto go3 = scene::GameObject::CreateFromDerived(cell3);
+    scene->AddObject(go1);
+    scene->AddObject(go2);
+    if (scene->NumObjectsInScene() != 2) {
         return EXIT_FAILURE;
     }
+    //try adding duplicate item
+    scene->AddObject(go1);
+    //try adding new object with the same name as one already existing in the list
+    scene->AddObject(go3);
+    if (scene->NumObjectsInScene() != 2) {
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -51,29 +57,44 @@ int test_remove() {
     scene::Scene *scene = new scene::Scene();
 
     Vector3 pos1 = {0, 0, 2};
-    CellObject cell1 = CellObject(pos1);
-    CellObject cell1_1 = CellObject(pos1);
+    CellObject cell1 = CellObject("a", pos1);
+    CellObject cell1_1 = CellObject("a_1", pos1);
     Vector3 pos2 = {50, 50, 3};
-    CellObject cell2 = CellObject(pos2);
+    CellObject cell2 = CellObject("b", pos2);
+    CellObject cell2_1 = CellObject("b", pos2);
     Vector3 pos3 = {100, 100, 1};
-    CellObject cell3 = CellObject(pos3);
+    CellObject cell3 = CellObject("c", pos3);
 
-    auto go1 = scene::GameObject::createFromDerived(cell1);
-    auto go1_1 = scene::GameObject::createFromDerived(cell1_1);
-    auto go2 = scene::GameObject::createFromDerived(cell2);
-    auto go3 = scene::GameObject::createFromDerived(cell3);
-    scene->addObject(go1);
-    scene->addObject(go1_1);
-    scene->addObject(go1);
-    scene->addObject(go2);
-    scene->addObject(go3);
+    auto go1 = scene::GameObject::CreateFromDerived(cell1);
+    auto go1_1 = scene::GameObject::CreateFromDerived(cell1_1);
+    auto go2 = scene::GameObject::CreateFromDerived(cell2);
+    auto go2_1 = scene::GameObject::CreateFromDerived(cell2_1);
+    auto go3 = scene::GameObject::CreateFromDerived(cell3);
+    scene->AddObject(go1);
+    scene->AddObject(go1_1);
+    scene->AddObject(go2);
+    scene->AddObject(go3);
 
-    if (scene->numObjectsInScene() != 5) {
+    std::vector<std::string> str = {"c", "a", "a_1", "b"};
+    if (scene->GetSceneObjectNames() != str) {
         return EXIT_FAILURE;
     }
-    scene->removeObject(go1_1);
-    scene->removeObject(go1_1);
-    if (scene->numObjectsInScene() != 4) {
+    if (scene->NumObjectsInScene() != 4) {
+        return EXIT_FAILURE;
+    }
+    scene->RemoveObject(go1_1);
+    scene->RemoveObject(go1_1);
+
+    str = {"c", "a", "b"};
+    if (scene->GetSceneObjectNames() != str) {
+        return EXIT_FAILURE;
+    }
+    if (scene->NumObjectsInScene() != 3) {
+        return EXIT_FAILURE;
+    }
+
+    scene->RemoveObject(go2_1);
+    if (scene->NumObjectsInScene() != 3) {
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
@@ -84,27 +105,36 @@ int test_exist() {
     scene::Scene *scene = new scene::Scene();
 
     Vector3 pos1 = {0, 0, 2};
-    CellObject cell1 = CellObject(pos1);
-    CellObject cell1_1 = CellObject(pos1);
+    CellObject cell1 = CellObject("a", pos1);
+    CellObject cell1_1 = CellObject("a", pos1);
     Vector3 pos2 = {50, 50, 3};
-    CellObject cell2 = CellObject(pos2);
+    CellObject cell2 = CellObject("b", pos2);
     Vector3 pos3 = {100, 100, 1};
-    CellObject cell3 = CellObject(pos3);
+    CellObject cell3 = CellObject("c", pos3);
 
-    auto go1 = scene::GameObject::createFromDerived(cell1);
-    auto go1_1 = scene::GameObject::createFromDerived(cell1_1);
-    auto go2 = scene::GameObject::createFromDerived(cell2);
-    scene->addObject(go1);
+    auto go1 = scene::GameObject::CreateFromDerived(cell1);
+    auto go1_1 = scene::GameObject::CreateFromDerived(cell1_1);
+    auto go2 = scene::GameObject::CreateFromDerived(cell2);
+    scene->AddObject(go1);
 
-    bool exist = scene->existObject(go1);
+    bool exist = scene->ExistObject(go1);
     if (exist != true) {
         return EXIT_FAILURE;
     }
-    exist = scene->existObject(go1_1);
+    exist = scene->ExistObject(go1_1); 
     if (exist != false) {
         return EXIT_FAILURE;
     }
-    exist = scene->existObject(go2);
+    exist = scene->ExistObject(go2);
+    if (exist != false) {
+        return EXIT_FAILURE;
+    }
+
+    exist = scene->ExistObject("a"); 
+    if (exist != true) {
+        return EXIT_FAILURE;
+    }
+    exist = scene->ExistObject("b"); 
     if (exist != false) {
         return EXIT_FAILURE;
     }
@@ -114,20 +144,21 @@ int test_exist() {
 int main(int argc, char *argv[]) {
 
     int res[3];
-    const char *test_names[3] = {"test_add", "test_remove", "test_exist"};
+    const char* test_names[3] = {"test_add", "test_remove", "test_exist"};
 
     int tot_res = 0;
-
     res[0] = test_add();
     res[1] = test_remove();
     res[2] = test_exist();
+    int index = 0;
     for (int res_value : res) {
         tot_res += res_value;
         if (res_value) {
-            printf("%d failed\n", test_names[res_value]);
+            std::cout << test_names[index] << " failed\n";
         }
+        index++;
     }
-    printf("all test done, %d tests failed\n", tot_res);
+    std::cout << "all test done, " << tot_res << " tests failed\n";
 
     if (tot_res > 0) {
         return EXIT_FAILURE;
