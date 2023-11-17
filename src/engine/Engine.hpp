@@ -24,14 +24,14 @@ public:
     }
 
     template <typename T, typename... _Args>
-    inline std::shared_ptr<std::_NonArray<T>> MakeUIElement(_Args &&..._args) {
+    inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {
         auto object = std::make_shared<T>(_args...);
         AddUIElement(object);
         return object;
     }
 
     template <typename T, typename... _Args>
-    inline std::shared_ptr<std::_NonArray<T>> MakeGameObject(_Args &&..._args) {
+    inline std::shared_ptr<T> MakeGameObject(_Args &&..._args) {
         auto object = std::make_shared<T>(_args...);
         AddGameObject(object);
         return object;
