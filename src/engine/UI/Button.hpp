@@ -3,8 +3,6 @@
 
 #include <functional>
 
-#include <SDL_rect.h>
-
 #include "Element.hpp"
 
 namespace admirals::UI {
@@ -15,11 +13,11 @@ typedef std::function<void(Button *, const SDL_Event &)> ButtonOnClickHandler;
 
 class Button : public Element {
 public:
-    Button(const std::string &name, const std::string &text,
+    Button(const std::string &name, float order, const std::string &text,
            const Vector2 &size, const Color &bgColor, const Color &fgColor,
            ButtonOnClickHandler onClick);
 
-    void Render(const VK2DTexture font) override;
+    void Render(const Texture &font) override;
 
     bool HandleEvent(const SDL_Event &event) override;
 

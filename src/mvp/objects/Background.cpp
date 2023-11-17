@@ -5,17 +5,17 @@
 using namespace admirals;
 using namespace admirals::mvp::objects;
 
-Background::Background(const Color &color)
-    : scene::GameObject(Vector3(0)), m_color(color) {}
+Background::Background(const std::string &name, const Color &color)
+    : scene::GameObject(name, 0, Vector2(0)), m_color(color) {}
 
 Background::~Background() {}
 
-void Background::onStart() {}
+void Background::OnStart() {}
 
-void Background::onUpdate() {}
+void Background::OnUpdate() {}
 
-void Background::render() const {
-    renderer::Renderer::drawRectangle(
-        Vector3(0), Vector2(GameData::WindowWidth, GameData::WindowHeight),
+void Background::Render(const renderer::RendererContext &r) const {
+    renderer::Renderer::DrawRectangle(
+        Vector3(0), Vector2(r.windowWidth, r.windowHeight),
         m_color);
 }

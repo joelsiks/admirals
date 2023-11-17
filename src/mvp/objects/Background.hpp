@@ -5,12 +5,12 @@ namespace admirals::mvp::objects {
 
 class Background : public scene::GameObject {
 public:
-    Background(const Color &color);
+    Background(const std::string &name, const Color &color);
     ~Background();
 
-    void onUpdate() override;
-    void onStart() override;
-    void render() const override;
+    void OnStart() override;
+    void OnUpdate() override;
+    void Render(const renderer::RendererContext &r) const override;
 
 private:
     Color m_color;

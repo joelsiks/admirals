@@ -5,12 +5,12 @@ namespace admirals::mvp::objects {
 
 class Grid : public scene::GameObject {
 public:
-    Grid(const Color &color);
+    Grid(const std::string &name, const Color &color);
     ~Grid();
 
-    void onUpdate() override;
-    void onStart() override;
-    void render() const override;
+    void OnStart() override;
+    void OnUpdate() override;
+    void Render(const renderer::RendererContext &r) const override;
 
 private:
     Color m_color;
