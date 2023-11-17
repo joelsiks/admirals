@@ -14,10 +14,30 @@ class Engine {
 public:
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
-    ~Engine();
 
-    void AddUIElement(std::shared_ptr<UI::Element> element);
-    void AddGameObject(std::shared_ptr<scene::GameObject> object);
+    inline void AddUIElement(std::shared_ptr<UI::Element> element) {
+        m_displayLayout->AddElement(element);
+    }
+
+    inline void AddGameObject(std::shared_ptr<scene::GameObject> object) {
+        m_scene->AddObject(object);
+    }
+
+    template <typename T, typename... _Args>
+    inline std::shared_ptr<std::_NonArray<T>>
+    EmplaceUIElement(_Args &&..._args) {
+        auto object = std::make_shared<T>(_args...);
+        AddUIElement(object);
+        return object;
+    }
+
+    template <typename T, typename... _Args>
+    inline std::shared_ptr<std::_NonArray<T>>
+    EmplaceGameObject(_Args &&..._args) {
+        auto object = std::make_shared<T>(_args...);
+        AddGameObject(object);
+        return object;
+    }
 
     void StartGameLoop();
 

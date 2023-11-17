@@ -27,7 +27,6 @@ private:
     struct Comparator {
         bool operator()(const EventHandler &l, const EventHandler &r) const {
             return l.target_type().hash_code() < r.target_type().hash_code();
-            ;
         }
     };
 

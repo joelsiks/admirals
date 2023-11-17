@@ -79,27 +79,23 @@ int main(int argc, char *argv[]) {
     Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
     // Create texture object.
-    engine.AddGameObject(std::make_shared<TextureObject>(
-        "image", Vector3(0, 0, 0), "assets/admirals.png"));
+    engine.EmplaceGameObject<TextureObject>("image", Vector3(0, 0, 0),
+                                            "assets/admirals.png");
 
     Vector2 elementSize = Vector2(300, 40);
-    UI::Button testBtn2("btn2", 0, "Button 2", elementSize, Color::BLACK,
-                        Color::WHITE, OnButtonClick);
-    engine.AddUIElement(std::make_shared<UI::Button>(
-        "btn1", 0, "Move Image Left", elementSize, Color::BLACK, Color::WHITE,
-        OnButtonClick));
-    engine.AddUIElement(std::make_shared<UI::Button>(
-        "btn2", 0, "Move Image Right", elementSize, Color::BLACK, Color::WHITE,
-        OnButtonClick));
-    auto testText1 = std::make_shared<UI::TextElement>(
-        "textel1", 0, "Left aligned", Vector2(200, 40), Color::BLACK);
-    testText1->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
-    engine.AddUIElement(testText1);
+    engine.EmplaceUIElement<UI::Button>("btn1", 0, "Move Image Left",
+                                        elementSize, Color::BLACK, Color::WHITE,
+                                        OnButtonClick);
+    engine.EmplaceUIElement<UI::Button>("btn2", 0, "Move Image Right",
+                                        elementSize, Color::BLACK, Color::WHITE,
+                                        OnButtonClick);
+    auto testText1 = engine.EmplaceUIElement<UI::TextElement>(
+        "text1", 0, "Left aligned", (200, 40), Color::BLACK);
 
-    auto testText2 = std::make_shared<UI::TextElement>(
-        "textel2", 0, "Right aligned", Vector2(210, 40), Color::BLACK);
+    auto testText2 = engine.EmplaceUIElement<UI::TextElement>(
+        "text2", 0, "Right aligned", (210, 40), Color::BLACK);
+    testText1->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     testText2->SetDisplayPosition(UI::DisplayPosition::LowerRight);
-    engine.AddUIElement(testText2);
 
     engine.StartGameLoop();
 
