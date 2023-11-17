@@ -58,7 +58,7 @@ public:
 
     void OnUpdate() override {
         auto time = std::chrono::high_resolution_clock::now();
-        float dt =
+        deltaT =
             std::chrono::duration_cast<std::chrono::microseconds>(time - m_time)
                 .count() /
             1000000.f;

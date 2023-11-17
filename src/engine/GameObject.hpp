@@ -17,8 +17,8 @@ public:
     inline Vector2 GetPosition() const { return m_position; }
     inline void SetPosition(const Vector2 &pos) { m_position = pos; }
 
-    virtual void OnUpdate() = 0;
     virtual void OnStart() = 0;
+    virtual void OnUpdate() = 0;
 
     virtual void Render(const renderer::RendererContext &r) const = 0;
 

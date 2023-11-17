@@ -25,7 +25,7 @@ void Engine::AddGameObject(std::shared_ptr<scene::GameObject> object) {
     m_scene->AddObject(object);
 }
 
-bool Engine::CheckQuit() {
+bool Engine::PollAndHandleEvent() {
     bool quit = false;
     SDL_Event e;
 
@@ -42,6 +42,8 @@ bool Engine::CheckQuit() {
 }
 
 void Engine::StartGameLoop() {
+    m_scene->OnStart();
+
     std::vector<std::shared_ptr<renderer::IDrawable>> layers;
     layers.emplace_back(m_scene);
     layers.emplace_back(m_displayLayout);
@@ -50,7 +52,8 @@ void Engine::StartGameLoop() {
     bool quit = false;
     SDL_Event e;
     while (!quit) {
-        quit = CheckQuit();
+        quit = PollAndHandleEvent();
+        m_scene->OnUpdate();
         m_renderer->Render(layers);
     }
 }
