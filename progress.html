@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,60 +10,92 @@
     <!-- Add Bootstrap CSS link -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+
 <body style="display: flex; flex-direction: column; min-height: 100vh">
 
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">Admirals</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/progress.html">Progress</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/members.html">Members</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<!-- Hero Section -->
-<div class="jumbotron text-center">
-    <h1>Progress</h1>
-    <p>This page details the weekly progress we have made towards implementing the game engine.</p>
-</div>
-
-<!-- Features Section -->
-<section id="features" class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h2 id="progress-week-45">Week 45</h2>
-            <ul>
-                <li>Initial design and deployment of project website.</li>
-                <li>Created module and engine design.</li>
-                <li>Setup of build scripts.</li>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Admirals</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/progress.html">Progress</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/members.html">Members</a>
+                </li>
             </ul>
         </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="jumbotron text-center">
+        <h1>Progress</h1>
+        <p>This page details the weekly progress we have made towards implementing the game engine.</p>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h2 id="progress-week-46">Week 46</h2>
-            <p></p>
+
+    <!-- Features Section -->
+    <section id="features" class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 id="progress-week-45">Week 45</h2>
+                <ul>
+                    <li>Initial design and deployment of project website</li>
+                    <li>Created a general design for the Engine with desired modules and classes</li>
+                    <li>Setup of development environment (<a href="https://github.com/joelsiks/admirals/pull/5">#5</a>)
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</section>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 id="progress-week-46">Week 46</h2>
+                <ul>
+                    <li>Initial UI design/implementation with DisplayLayout, Elements (TextElement/Button), Depth sorted
+                        rendering, Debug rendering (<a href="https://github.com/joelsiks/admirals/pull/13">#13</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/17">#17</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/28">#28</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/35">#35</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/37">#37</a>)</li>
+                    <li>Project/code meta functionality (code formatting <a
+                            href="https://github.com/joelsiks/admirals/pull/14">#14</a>, CI <a
+                            href="https://github.com/joelsiks/admirals/pull/29">#29</a>)</li>
+                    <li>Initial GameObject design/implementation (<a
+                            href="https://github.com/joelsiks/admirals/pull/15">#15</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/21">#21</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/22">#22</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/25">#25</a> )</li>
+                    <li>Implementation of network connection for client/server (<a
+                            href="https://github.com/joelsiks/admirals/pull/36">#36</a>, <a
+                            href="https://github.com/joelsiks/admirals/pull/40">#40</a>)</li>
+                    <li>Start of MVP implementation (<a href="https://github.com/joelsiks/admirals/pull/24">#24</a>)
+                    <li>Fix bug in Vulkan2D dependency 🥳(<a
+                            href="https://github.com/PaoloMazzon/Vulkan2D/pull/10">PaoloMazzon/Vulkan2D/pull/10</a>)
+                    </li>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 id="progress-week-47">Week 47</h2>
+            </div>
+        </div>
+    </section>
 
 
-<!-- Add Bootstrap JS and jQuery links -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Add Bootstrap JS and jQuery links -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
+
 </html>
