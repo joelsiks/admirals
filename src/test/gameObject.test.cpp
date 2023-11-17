@@ -7,12 +7,11 @@
 #include "Engine.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
+using namespace admirals;
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
 float deltaT = 0;
-
-using namespace admirals;
 
 class CellObject : public scene::GameObject {
 private:
@@ -49,7 +48,8 @@ public:
 
 class FpsTextElementController : public scene::GameObject {
 public:
-    FpsTextElementController(const std::string &name, std::shared_ptr<UI::TextElement> textElement)
+    FpsTextElementController(const std::string &name,
+                             std::shared_ptr<UI::TextElement> textElement)
         : scene::GameObject(name, -1, Vector2(0)), m_textElement(textElement) {}
 
     void OnStart() override {
@@ -58,14 +58,17 @@ public:
 
     void OnUpdate() override {
         auto time = std::chrono::high_resolution_clock::now();
-        float dt = std::chrono::duration_cast<std::chrono::microseconds>(time - m_time).count() / 1000000.f;
+        float dt =
+            std::chrono::duration_cast<std::chrono::microseconds>(time - m_time)
+                .count() /
+            1000000.f;
         char fpsString[100];
         sprintf(fpsString, "DT = %f, FPS: %f", deltaT, 1.f / deltaT);
         m_textElement->SetText(std::string(fpsString));
         m_time = time;
     }
 
-    void Render(const renderer::RendererContext &r) const override { }
+    void Render(const renderer::RendererContext &r) const override {}
 
 private:
     std::chrono::_V2::system_clock::time_point m_time;
@@ -74,16 +77,24 @@ private:
 
 int main(int argc, char *argv[]) {
     Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(CellObject("2", Vector3(50, 50, 3), Color::RED)));
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(CellObject("3", Vector3(100, 100, 1), Color::BLACK)));
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(CellObject("4", Vector3(100, 200, 0), Color::BLUE)));
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(CellObject("5", Vector3(200, 100, 0), Color::RED)));
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(CellObject("6", Vector3(200, 200, 0), Color::GREEN)));
-    auto fpsText = UI::Element::CreateFromDerived(UI::TextElement("Fps TextElement", 0, "", Vector2(500, 40), Color::BLACK));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("2", Vector3(50, 50, 3), Color::RED)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("3", Vector3(100, 100, 1), Color::BLACK)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("4", Vector3(100, 200, 0), Color::BLUE)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("5", Vector3(200, 100, 0), Color::RED)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("6", Vector3(200, 200, 0), Color::GREEN)));
+    auto fpsText = UI::Element::CreateFromDerived(UI::TextElement(
+        "Fps TextElement", 0, "", Vector2(500, 40), Color::BLACK));
     auto textPtr = std::static_pointer_cast<UI::TextElement>(fpsText);
     textPtr->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(FpsTextElementController("controller", textPtr)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        FpsTextElementController("controller", textPtr)));
     engine.AddUIElement(fpsText);
     engine.StartGameLoop();
 
