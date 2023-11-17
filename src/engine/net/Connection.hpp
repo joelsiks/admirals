@@ -2,10 +2,8 @@
 #ifndef ASIO_STANDALONE
 #define ASIO_STANDALONE 1
 #endif
-#ifndef _WIN32_WINNT 
-#ifdef WIN32
+#if !defined(_WIN32_WINNT) && (defined(WIN32) || defined(_WIN32))
 #define _WIN32_WINNT 0x0A00 // Windows 10
-#endif
 #endif
 #include <asio.hpp>
 
