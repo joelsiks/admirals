@@ -61,6 +61,7 @@ private:
     void WriteValidation();
     void ReadValidation();
 
+    void HandleConnectToserver(std::error_code ec);
     void HandleReadHeader(std::error_code ec);
     void HandleReadBody(std::error_code ec);
     void HandleWriteHeader(std::error_code ec);
@@ -84,8 +85,6 @@ private:
 
     // Used when validating a connection
     Server *m_server = nullptr;
-    // void (Server::*m_validationFunction)(std::shared_ptr<Connection>) =
-    // nullptr;
     ValidationFunction m_validationFunction = nullptr;
 };
 
