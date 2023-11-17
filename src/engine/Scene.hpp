@@ -12,9 +12,12 @@ namespace admirals::scene {
 
 class Scene : public renderer::IDrawable {
 public:
+    void AddObject(std::shared_ptr<GameObject> object);
+
     void Render(const renderer::RendererContext &r) const override;
 
-    void AddObject(std::shared_ptr<GameObject> object);
+    void OnStart();
+    void OnUpdate();
 
 private:
     OrderedCollection<GameObject> m_objects;
