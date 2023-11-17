@@ -46,6 +46,8 @@ set(MVP_SOURCES
     src/mvp/objects/Sprite.cpp
     src/mvp/objects/Background.cpp
     src/mvp/objects/Grid.cpp
+    src/mvp/objects/Quad.cpp
+    src/mvp/objects/Ship.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)

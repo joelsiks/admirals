@@ -39,6 +39,10 @@ public:
     static void DrawTexture(const Texture &texture, const Vector2 &position,
                             const Vector2 &scale);
 
+    static void DrawSprite(const Texture &texture, const Vector2 &position,
+                           const Vector2 &texOffset, const Vector2 &texSize,
+                           const Vector2 &scale);
+
     static void DrawText(const Texture &font, const Vector2 &position,
                          const Color &color, const std::string &text);
 

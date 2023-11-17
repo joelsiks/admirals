@@ -6,7 +6,6 @@ namespace admirals::mvp::objects {
 class Background : public scene::GameObject {
 public:
     Background(const std::string &name, const Color &color);
-    ~Background();
 
     void OnStart() override;
     void OnUpdate() override;

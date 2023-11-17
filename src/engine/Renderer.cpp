@@ -103,6 +103,14 @@ void Renderer::DrawTexture(const Texture &texture, const Vector2 &position,
                             texture.Width(), texture.Height());
 }
 
+void Renderer::DrawSprite(const Texture &texture, const Vector2 &position,
+                          const Vector2 &texOffset, const Vector2 &texSize,
+                          const Vector2 &scale) {
+    vk2dRendererDrawTexture(texture.Data(), position.x(), position.y(),
+                            scale.x(), scale.y(), 0, 0, 0, texOffset.x(),
+                            texOffset.y(), texSize.x(), texSize.y());
+}
+
 void Renderer::DrawText(const Texture &font, const Vector2 &position,
                         const Color &color, const std::string &text) {
     vk2dRendererSetColourMod(color.Data());
