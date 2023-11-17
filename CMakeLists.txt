@@ -10,6 +10,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 # Set SDL2_DIR to the path of your SDL2 directory
 set(SDL2_DIR include/SDL2)
 set(VK2D_DIR include/Vulkan2D)
+set(ASIO_DIR include/asio/asio/include)
 
 # Find Vulkan and SDL2
 find_package(Vulkan REQUIRED)
@@ -37,6 +38,9 @@ set(SOURCES
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
     src/engine/Engine.cpp
+    src/engine/net/Connection.cpp
+    src/engine/net/Client.cpp
+    src/engine/net/Server.cpp
 )
 set(MVP_SOURCES 
     src/mvp/shared.cpp
@@ -66,9 +70,20 @@ target_include_directories(vk2d
     ${CMAKE_CURRENT_SOURCE_DIR}/${VK2D_DIR}
 )
 
+add_library(asio INTERFACE)
+target_include_directories(asio 
+    INTERFACE
+    ${ASIO_DIR}
+)
+
 # Create a library with the sources
 add_library(engine SHARED ${SOURCES})
+if(WIN32)
+    target_link_libraries(engine wsock32)
+    target_link_libraries(engine ws2_32)
+endif()
 target_link_libraries(engine vk2d)
+target_link_libraries(engine asio)
 target_include_directories(engine PRIVATE 
     "src/engine/" 
 )
@@ -95,6 +110,22 @@ target_link_libraries(gameObject_test engine)
 target_include_directories(gameObject_test PRIVATE 
     "src/engine/"
     "src/test/"
+)
+    
+# Test client
+add_executable(test_client src/test/testclient.cpp)
+target_link_libraries(test_client engine)
+target_include_directories(test_client PRIVATE 
+    "src/test/"
+    "src/engine/net/"
+)
+
+# Test server
+add_executable(test_server src/test/testserver.cpp)
+target_link_libraries(test_server engine)
+target_include_directories(test_server PRIVATE 
+    "src/test/"
+    "src/engine/net/"
 )
 
 # Copy SDL2.dll to the output directory after the executable is built

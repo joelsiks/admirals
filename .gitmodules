@@ -1,3 +1,6 @@
 [submodule "include/Vulkan2D"]
 	path = include/Vulkan2D
 	url = https://github.com/PaoloMazzon/Vulkan2D.git
+[submodule "include/asio"]
+	path = include/asio
+	url = https://github.com/chriskohlhoff/asio.git

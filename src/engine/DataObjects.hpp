@@ -1,5 +1,7 @@
 #pragma once
+#include <VK2D/Texture.h>
 #include <stdint.h>
+#include <string>
 
 namespace admirals {
 
@@ -85,4 +87,22 @@ public:
     const static Color WHITE;
     const static Color BLACK;
 };
+
+class Texture {
+public:
+    // Do not initialize to NULL, deconstructor will break renderer as the next
+    // texture is not loaded before the next frame.
+    Texture(VK2DTexture &m_texture);
+    ~Texture();
+
+    unsigned int width() const;
+    unsigned int height() const;
+    VK2DTexture data() const;
+
+    static Texture loadFromPath(const std::string &path);
+
+private:
+    VK2DTexture m_texture;
+};
+
 } // namespace admirals

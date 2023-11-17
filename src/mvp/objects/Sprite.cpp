@@ -13,7 +13,7 @@ void Sprite::onUpdate() {}
 
 void Sprite::onStart() {}
 
-void Sprite::render() const {
+void Sprite::render(const renderer::RendererContext &r) {
     Vector2 pos = this->position();
     renderer::Renderer::drawRectangle(pos, m_size, m_color);
 }

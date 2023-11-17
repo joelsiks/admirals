@@ -10,7 +10,7 @@ public:
 
     void onUpdate() override;
     void onStart() override;
-    void render() const override;
+    void render(const renderer::RendererContext &r) override;
 
 private:
     Color m_color;

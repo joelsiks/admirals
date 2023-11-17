@@ -14,8 +14,8 @@ void Background::onStart() {}
 
 void Background::onUpdate() {}
 
-void Background::render() const {
+void Background::render(const renderer::RendererContext &r) {
     renderer::Renderer::drawRectangle(
-        Vector3(0), Vector2(GameData::WindowWidth, GameData::WindowHeight),
+        Vector2(0), Vector2(GameData::WindowWidth, GameData::WindowHeight),
         m_color);
 }

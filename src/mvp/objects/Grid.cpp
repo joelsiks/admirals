@@ -14,7 +14,7 @@ void Grid::onStart() {}
 
 void Grid::onUpdate() {}
 
-void Grid::render() const {
+void Grid::render(const renderer::RendererContext &r) {
     for (int i = 1; i < 10; i++) {
         float x = i * 100;
         float y = x + 100;

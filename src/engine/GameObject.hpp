@@ -1,7 +1,8 @@
 #pragma once
+#include <memory>
 
 #include "DataObjects.hpp"
-#include <memory>
+#include "IDrawable.hpp"
 
 namespace admirals::scene {
 
@@ -15,7 +16,8 @@ public:
 
     virtual void onUpdate() = 0;
     virtual void onStart() = 0;
-    virtual void render() const = 0; // Should not be part of GameObject...
+    // Should not be part of GameObject...
+    virtual void render(const renderer::RendererContext &r) = 0;
 
     template <typename T>
     static std::shared_ptr<GameObject>
