@@ -19,7 +19,7 @@ private:
             return l->position().z() < r->position().z();
         }
     };
-  
+
     std::multiset<std::shared_ptr<GameObject>, GameObjectComparator> m_objects;
 
 public:

@@ -134,10 +134,7 @@ int test_exist() {
 int main(int argc, char *argv[]) {
 
     int res[3];
-    const char* test_names[3] = {
-        "test_add", 
-        "test_remove", 
-        "test_exist"};
+    const char *test_names[3] = {"test_add", "test_remove", "test_exist"};
 
     int tot_res = 0;
 
