@@ -3,6 +3,10 @@
 
 using namespace admirals::net;
 
+#define BIND_HANDLER(handler) std::bind(&handler, this, std::placeholders::_1)
+#define BIND_HANDLER_2ARGS(handler)                                            \
+    std::bind(&handler, this, std::placeholders::_1, std::placeholders::_2)
+
 Server::Server(uint16_t port)
     : m_acceptor(m_ioContext,
                  asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {}
@@ -38,12 +42,9 @@ void Server::HandleAcceptedConnection(std::error_code ec,
 
         // Create a new connection object for the client
         std::shared_ptr<Connection> new_connection =
-            std::make_shared<Connection>(
-                Connection::Owner::SERVER, m_ioContext, std::move(socket),
-                m_incomingMessages, this,
-                [this](std::shared_ptr<Connection> connection) {
-                    this->OnClientValidated(connection);
-                });
+            std::make_shared<Connection>(Connection::Owner::SERVER, m_ioContext,
+                                         std::move(socket), m_incomingMessages,
+                                         this, BIND_HANDLER(OnClientValidated));
         // Verify that the client is allowed to connect
         if (OnClientConnect(new_connection)) {
             // Add the new connection to the list of connections
@@ -61,10 +62,7 @@ void Server::HandleAcceptedConnection(std::error_code ec,
 }
 
 void Server::WaitForClientConnection() {
-    m_acceptor.async_accept(
-        [this](std::error_code ec, asio::ip::tcp::socket socket) {
-            HandleAcceptedConnection(ec, std::move(socket));
-        });
+    m_acceptor.async_accept(BIND_HANDLER_2ARGS(HandleAcceptedConnection));
 }
 
 void Server::MessageClient(std::shared_ptr<Connection> client,
