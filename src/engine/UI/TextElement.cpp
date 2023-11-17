@@ -11,7 +11,7 @@ TextElement::TextElement(const std::string &name, float order,
 void TextElement::SetText(const std::string &text) { this->m_text = text; }
 
 void TextElement::Render(const Texture &font) {
-    renderer::Renderer::drawText(font, m_displayOrigin, m_textColor,
+    renderer::Renderer::DrawText(font, m_displayOrigin, m_textColor,
                                  this->m_text.c_str());
 }
 

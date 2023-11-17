@@ -5,29 +5,26 @@
 #include "IDrawable.hpp"
 #include "IOrdered.hpp"
 
-namespace admirals {
-namespace scene {
+namespace admirals::scene {
 
-class GameObject : public IOrdered {
-
+class GameObject : public IOrdered, public renderer::IDrawable {
 public:
+    GameObject(const std::string &name, float order, const Vector2 &position);
+
+    /// @brief This expands to `GameObject(name, position.z(), position.xy())`;
     GameObject(const std::string &name, const Vector3 &position);
-    ~GameObject();
 
-    Vector2 position() const;
-    void setPosition(const Vector2 &pos);
+    inline Vector2 GetPosition() const { return m_position; }
+    inline void SetPosition(const Vector2 &pos) { m_position = pos; }
 
-    std::string name() const;
-    float order() const;
+    virtual void OnUpdate() = 0;
+    virtual void OnStart() = 0;
 
-    virtual void onUpdate() = 0;
-    virtual void onStart() = 0;
-    // Should not be part of GameObject...
-    virtual void render(const renderer::RendererContext &r) = 0;
+    virtual void Render(const renderer::RendererContext &r) const = 0;
 
     template <typename T>
     static std::shared_ptr<GameObject>
-    createFromDerived(const T &derivedObject) {
+    CreateFromDerived(const T &derivedObject) {
         // Assuming T is derived from GameObject
         std::shared_ptr<GameObject> gameObject =
             std::make_shared<T>(derivedObject);
@@ -35,9 +32,7 @@ public:
     }
 
 private:
-    Vector3 m_position;
-    const std::string m_name;
+    Vector2 m_position;
 };
 
-} // namespace scene
-} // namespace admirals
+} // namespace admirals::scene

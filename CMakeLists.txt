@@ -32,7 +32,6 @@ set(SOURCES
     src/engine/UI/Element.cpp
     src/engine/UI/Button.cpp
     src/engine/UI/TextElement.cpp
-    src/engine/Model.cpp
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
     src/engine/Renderer.cpp

@@ -10,9 +10,9 @@ Button::Button(const std::string &name, float order, const std::string &text,
       m_onClick(onClick) {}
 
 void Button::Render(const Texture &font) {
-    renderer::Renderer::drawRectangle(m_displayOrigin, m_displaySize,
+    renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
                                       m_bgColor);
-    renderer::Renderer::drawText(font, m_displayOrigin, m_fgColor, m_text);
+    renderer::Renderer::DrawText(font, m_displayOrigin, m_fgColor, m_text);
 }
 
 bool Button::HandleEvent(const SDL_Event &event) {

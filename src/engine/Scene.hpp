@@ -13,11 +13,12 @@ namespace scene {
 
 class Scene : public renderer::IDrawable {
 public:
-    void render(const renderer::RendererContext &r) const;
-    void addObject(const std::shared_ptr<GameObject> object);
+    void Render(const renderer::RendererContext &r) const override;
+
+    void AddObject(std::shared_ptr<GameObject> object);
 
 private:
-    OrderedCollection<GameObject> m_collection;
+    OrderedCollection<GameObject> m_objects;
 };
 
 } // namespace scene

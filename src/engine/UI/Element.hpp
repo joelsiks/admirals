@@ -25,9 +25,6 @@ public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);
 
-    std::string name() const { return m_name; };
-    float order() const { return m_order; };
-
     // Getters and setters
     virtual const Vector2 &GetDisplaySize() const { return m_displaySize; }
     virtual void SetDisplaySize(const Vector2 size) { m_displaySize = size; }
@@ -47,15 +44,13 @@ public:
     virtual bool HandleEvent(const SDL_Event &event) { return false; }
 
     template <typename T>
-    static std::shared_ptr<Element> createFromDerived(const T &derivedObject) {
+    static std::shared_ptr<Element> CreateFromDerived(const T &derivedObject) {
         // Assuming T is derived from Element
         std::shared_ptr<Element> element = std::make_shared<T>(derivedObject);
         return element;
     }
 
 protected:
-    const std::string m_name;
-    const float m_order;
     // Text to be displayed on the Element.
     std::string m_text;
 

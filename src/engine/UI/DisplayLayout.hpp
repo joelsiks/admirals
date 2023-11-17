@@ -14,13 +14,14 @@ class DisplayLayout : public InteractiveDrawable {
 public:
     DisplayLayout();
 
-    void AddElement(const std::shared_ptr<Element> element);
-    void render(const renderer::RendererContext &r) const;
-    void handleEvent(SDL_Event &e);
+    void Render(const renderer::RendererContext &r) const override;
+    void HandleEvent(SDL_Event &e) override;
+
+    void AddElement(std::shared_ptr<Element> element);
 
 private:
     Texture m_font;
-    OrderedCollection<Element> m_collection;
+    OrderedCollection<Element> m_elements;
 };
 
 } // namespace admirals::UI

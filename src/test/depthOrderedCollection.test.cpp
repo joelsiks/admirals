@@ -8,11 +8,11 @@ using namespace admirals::test;
 
 class TestObject : public scene::GameObject {
 public:
-    TestObject(const std::string &name, const Vector3 &pos)
-        : scene::GameObject(name, pos) {}
-    void onStart() {}
-    void onUpdate() {}
-    void render(const renderer::RendererContext &r) {}
+    TestObject(const std::string &name, float order, const Vector2 &pos)
+        : scene::GameObject(name, order, pos) {}
+    void OnStart() {}
+    void OnUpdate() {}
+    void Render(const renderer::RendererContext &r) const {}
 };
 
 class TestInitialSize : public TestCaseBase {
@@ -20,7 +20,7 @@ public:
     TestInitialSize() : TestCaseBase("initial size") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        size_t size = collection.size();
+        size_t size = collection.Size();
         assert(size == 0,
                "collection size not initially 0, was: " + std::to_string(size));
     }
@@ -31,9 +31,9 @@ public:
     TestInsertSize() : TestCaseBase("insert size") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", Vector3(0, 0, 0));
-        collection.insert(scene::GameObject::createFromDerived(t1));
-        size_t size = collection.size();
+        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
+        collection.Insert(scene::GameObject::CreateFromDerived(t1));
+        size_t size = collection.Size();
         assert(size == 1, "collection size not 1 after insert, was: " +
                               std::to_string(size));
     }
@@ -44,11 +44,11 @@ public:
     TestInsertSameName() : TestCaseBase("insert same name") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", Vector3(0, 0, 0));
-        TestObject t2 = TestObject("a", Vector3(1, 1, 1));
-        collection.insert(scene::GameObject::createFromDerived(t1));
-        collection.insert(scene::GameObject::createFromDerived(t2));
-        size_t size = collection.size();
+        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
+        TestObject t2 = TestObject("a", 1, Vector2(1, 1));
+        collection.Insert(scene::GameObject::CreateFromDerived(t1));
+        collection.Insert(scene::GameObject::CreateFromDerived(t2));
+        size_t size = collection.Size();
         assert(size == 1, "collection size not 1 after insert, was: " +
                               std::to_string(size));
     }
@@ -59,11 +59,11 @@ public:
     TestInsertSameZIndex() : TestCaseBase("insert same z-index") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", Vector3(0, 0, 0));
-        TestObject t2 = TestObject("b", Vector3(1, 1, 0));
-        collection.insert(scene::GameObject::createFromDerived(t1));
-        collection.insert(scene::GameObject::createFromDerived(t2));
-        size_t size = collection.size();
+        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
+        TestObject t2 = TestObject("b", 0, Vector2(1, 1));
+        collection.Insert(scene::GameObject::CreateFromDerived(t1));
+        collection.Insert(scene::GameObject::CreateFromDerived(t2));
+        size_t size = collection.Size();
         assert(size == 2, "collection size not 2 after insert, was: " +
                               std::to_string(size));
     }
@@ -74,13 +74,13 @@ public:
     TestInsertMultiple() : TestCaseBase("insert multiple") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", Vector3(0));
-        TestObject t2 = TestObject("b", Vector3(1));
-        TestObject t3 = TestObject("c", Vector3(2));
-        collection.insert(scene::GameObject::createFromDerived(t1));
-        collection.insert(scene::GameObject::createFromDerived(t2));
-        collection.insert(scene::GameObject::createFromDerived(t3));
-        size_t size = collection.size();
+        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
+        TestObject t2 = TestObject("b", 1, Vector2(1, 1));
+        TestObject t3 = TestObject("c", 2, Vector2(2, 2));
+        collection.Insert(scene::GameObject::CreateFromDerived(t1));
+        collection.Insert(scene::GameObject::CreateFromDerived(t2));
+        collection.Insert(scene::GameObject::CreateFromDerived(t3));
+        size_t size = collection.Size();
         assert(size == 3, "collection size not 3 after insert, was: " +
                               std::to_string(size));
     }
@@ -91,12 +91,12 @@ public:
     TestOrderedZIndex() : TestCaseBase("ordered by z-index") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", Vector3(2));
-        TestObject t2 = TestObject("b", Vector3(0));
-        TestObject t3 = TestObject("c", Vector3(1));
-        collection.insert(scene::GameObject::createFromDerived(t1));
-        collection.insert(scene::GameObject::createFromDerived(t2));
-        collection.insert(scene::GameObject::createFromDerived(t3));
+        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
+        TestObject t2 = TestObject("b", 1, Vector2(1, 1));
+        TestObject t3 = TestObject("c", 2, Vector2(2, 2));
+        collection.Insert(scene::GameObject::CreateFromDerived(t1));
+        collection.Insert(scene::GameObject::CreateFromDerived(t2));
+        collection.Insert(scene::GameObject::CreateFromDerived(t3));
 
         float prev = -1;
         for (const auto &o : collection) {
@@ -114,13 +114,13 @@ public:
     TestTypedObjects() : TestCaseBase("typed objects") {}
     void test() override {
         OrderedCollection collection = OrderedCollection<scene::GameObject>();
-        Vector3 pos = Vector3(0);
-        TestObject t1 = TestObject("a", pos);
-        collection.insert(scene::GameObject::createFromDerived(t1));
+        Vector2 pos = Vector2(0);
+        TestObject t1 = TestObject("a", 0, pos);
+        collection.Insert(scene::GameObject::CreateFromDerived(t1));
 
         for (const auto &o : collection) {
-            const Vector2 p = o->position();
-            assert(pos.xy() == p, "object position not as expected");
+            const Vector2 p = o->GetPosition();
+            assert(pos == p, "object position not as expected");
         }
     }
 };

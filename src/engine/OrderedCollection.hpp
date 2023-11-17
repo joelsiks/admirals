@@ -89,7 +89,7 @@ public:
     /// other contained object has the same`IOrdered::name` property.
     /// @param object The `IOrdered` object pointer to insert into the
     /// collection.
-    inline void insert(const std::shared_ptr<T> object) {
+    inline void Insert(const std::shared_ptr<T> object) {
         const std::string key = object->name();
         if (!m_objects.contains(key)) {
             m_objects[key] = std::move(object); // object stored in m_objects
@@ -101,14 +101,14 @@ public:
     /// the same `IOrdered::name` value as the given identifier `key`
     /// @param key The identifier (`IOrdered::name`) of the contained
     /// object to erase from the collection
-    inline void erase(const std::string &key) {
+    inline void Erase(const std::string &key) {
         m_objects.erase(key);
         m_ordered.erase(key);
     }
 
     /// @brief Get the number of `IOrdered` objects contained in the collection.
     /// @return The number of `IOrdered` objects contained in the collection.
-    inline size_t size() const { return m_objects.size(); }
+    inline size_t Size() const { return m_objects.size(); }
 
     /// @brief Gets an `IOrdered` object pointer from the collection if some
     /// contained object has the same`IOrdered::name` property as the given
@@ -118,7 +118,7 @@ public:
     /// @return The pointer to the `IOrdered` object with the same
     /// `IOrdered::name` property as the given identifier `key`. If no matching
     /// object is found, `nullptr` is returned.
-    inline Iterator find(const std::string &key) {
+    inline Iterator Find(const std::string &key) {
         if (auto res = m_objects.find(key) && res != m_objects.end()) {
             return res->second;
         }
