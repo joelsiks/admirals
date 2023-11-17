@@ -6,28 +6,19 @@
 
 #include "GameObject.hpp"
 #include "IDrawable.hpp"
+#include "OrderedCollection.hpp"
 
 namespace admirals {
 namespace scene {
 
 class Scene : public renderer::IDrawable {
-private:
-    // Should be sorted with respect to game object index, lower first.
-    struct GameObjectComparator {
-        bool operator()(const std::shared_ptr<GameObject> l,
-                        const std::shared_ptr<GameObject> r) const {
-            return l->position().z() < r->position().z();
-        }
-    };
-
-    std::multiset<std::shared_ptr<GameObject>, GameObjectComparator> m_objects;
-
 public:
-    Scene();
-    ~Scene();
+    void Render(const renderer::RendererContext &r) const override;
 
-    void render() const;
-    void addObject(std::shared_ptr<GameObject> object);
+    void AddObject(std::shared_ptr<GameObject> object);
+
+private:
+    OrderedCollection<GameObject> m_objects;
 };
 
 } // namespace scene

@@ -1,53 +1,68 @@
 #include "DisplayLayout.hpp"
+#include "Renderer.hpp"
 
+using namespace admirals;
 using namespace admirals::UI;
 
-DisplayLayout::DisplayLayout(int windowWidth, int windowHeight)
-    : m_windowWidth(windowWidth), m_windowHeight(windowHeight) {
-
-    // TODO: This path should probably be configured someplace else.
-    m_font = vk2dTextureLoad("assets/font.png");
-}
+DisplayLayout::DisplayLayout()
+    : m_font(Texture::LoadFromPath("assets/font.png")) {}
 
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
-    m_elements.push_back(std::move(element));
+    this->m_elements.Insert(std::move(element));
 }
 
-float DisplayLayout::GetHeightFromDisplayPosition(
-    DisplayPosition pos, const Vector2 &displaySize) const {
-    float height = 0;
+static Vector2
+GetOriginFromDisplayPosition(DisplayPosition pos, const Vector2 &displaySize,
+                             const renderer::RendererContext &r) {
+    Vector2 origin(0, 0);
 
-    switch (pos) {
-    case DisplayPosition::UpperLeft:
-    case DisplayPosition::UpperRight:
-        height = 0;
-        break;
-    case DisplayPosition::LowerLeft:
-    case DisplayPosition::LowerRight:
-        height = (float)m_windowHeight - displaySize[1];
-        break;
+    // Fix right offset.
+    if (pos == DisplayPosition::UpperRight ||
+        pos == DisplayPosition::LowerRight) {
+        origin[0] = r.windowWidth - displaySize[0];
     }
 
-    return height;
+    // Fix lower offset.
+    if (pos == DisplayPosition::LowerLeft ||
+        pos == DisplayPosition::LowerRight) {
+        origin[1] = r.windowHeight - displaySize[1];
+    }
+
+    return origin;
 }
 
-void DisplayLayout::render() const {
-
-    float positionOffsets[4] = {0};
+void DisplayLayout::Render(const renderer::RendererContext &r) const {
+    Vector4 positionOffsets = Vector4(0);
 
     for (const auto &element : m_elements) {
         DisplayPosition pos = element->GetDisplayPosition();
         Vector2 displaySize = element->GetDisplaySize();
 
-        float startHeight = GetHeightFromDisplayPosition(pos, displaySize);
-        element->SetDisplayOrigin(Vector2(positionOffsets[pos], startHeight));
+        // Calculate the origin with respect to the matching positionOffset.
+        Vector2 origin = GetOriginFromDisplayPosition(pos, displaySize, r);
+        origin[0] += positionOffsets[pos];
+
+        element->SetDisplayOrigin(origin);
+
         element->Render(this->m_font);
 
-        positionOffsets[pos] += displaySize[0];
+        // If debugging, render an outline around the UI Element.
+        if (r.renderDebugOutlines) {
+            renderer::Renderer::DrawRectangleOutline(origin, displaySize, 2,
+                                                     Color::RED);
+        }
+
+        // Update the matching positionOffset.
+        if (pos == DisplayPosition::UpperRight ||
+            pos == DisplayPosition::LowerRight) {
+            positionOffsets[pos] -= displaySize[0];
+        } else {
+            positionOffsets[pos] += displaySize[0];
+        }
     }
 }
 
-void DisplayLayout::handleEvent(SDL_Event &e) {
+void DisplayLayout::HandleEvent(SDL_Event &e) {
     for (const auto &element : m_elements) {
         element->HandleEvent(e);
     }

@@ -1,3 +1,5 @@
+#include <VK2D/Constants.h>
+#include <VK2D/Renderer.h>
 #include <cmath>
 
 #include "DataObjects.hpp"
@@ -24,9 +26,9 @@ void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
     }
 }
 
-Renderer::Renderer(const std::string &name, int width, int height) {
-    this->m_windowWidth = width;
-    this->m_windowHeight = height;
+Renderer::Renderer(const std::string &name, int width, int height,
+                   bool debugRendering)
+    : m_context({width, height, debugRendering}) {
     this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED, width, height,
                                       SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
@@ -37,7 +39,7 @@ Renderer::~Renderer() {
     SDL_DestroyWindow(this->m_window);
 }
 
-int Renderer::init(bool debug) {
+int Renderer::Init(bool debug) {
     VK2DRendererConfig config = {VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE,
                                  VK2D_FILTER_TYPE_NEAREST};
     VK2DStartupOptions options = {debug, debug, debug, "error.txt", false};
@@ -47,33 +49,56 @@ int Renderer::init(bool debug) {
         return code;
     }
 
-    VK2DCameraSpec camera = {
-        VK2D_CAMERA_TYPE_DEFAULT,    0, 0, (float)this->m_windowWidth,
-        (float)this->m_windowHeight, 1, 0};
+    VK2DCameraSpec camera = {VK2D_CAMERA_TYPE_DEFAULT,
+                             0,
+                             0,
+                             static_cast<float>(m_context.windowWidth),
+                             static_cast<float>(m_context.windowHeight),
+                             1,
+                             0};
 
     vk2dRendererSetCamera(camera);
     return code;
 }
 
-void Renderer::render(const DrawableCollection &drawable) {
-    vk2dRendererStartFrame(VK2D_WHITE);
+void Renderer::Render(const DrawableCollection &drawable) {
+    vk2dRendererStartFrame(Color::WHITE.Data());
+    SDL_GetWindowSize(m_window, &m_context.windowWidth,
+                      &m_context.windowHeight);
     for (const auto &d : drawable) {
-        d->render();
+        d->Render(m_context);
     }
     vk2dRendererEndFrame();
 }
 
-void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
+void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,
                              const Color &color) {
-    vk2dRendererSetColourMod(color.data());
+    vk2dRendererSetColourMod(color.Data());
     vk2dRendererDrawRectangle(position[0], position[1], size[0], size[1], 0, 0,
                               0);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
-void Renderer::drawText(const VK2DTexture font, const Vector2 &position,
+void Renderer::DrawRectangleOutline(const Vector2 &position,
+                                    const Vector2 &size,
+                                    const float outlineWidth,
+                                    const Color &color) {
+    vk2dRendererSetColourMod(color.Data());
+    vk2dRendererDrawRectangleOutline(position[0], position[1], size[0], size[1],
+                                     0, 0, 0, outlineWidth);
+    vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::DrawTexture(const Texture &texture, const Vector2 &position,
+                           const Vector2 &scale) {
+    vk2dRendererDrawTexture(texture.Data(), position.x(), position.y(),
+                            scale.x(), scale.y(), 0, 0, 0, 0, 0,
+                            texture.Width(), texture.Height());
+}
+
+void Renderer::DrawText(const Texture &font, const Vector2 &position,
                         const Color &color, const std::string &text) {
-    vk2dRendererSetColourMod(color.data());
-    RenderFont(font, position, text.c_str());
+    vk2dRendererSetColourMod(color.Data());
+    RenderFont(font.Data(), position, text.c_str());
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
