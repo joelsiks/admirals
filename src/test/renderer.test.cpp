@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
         "text1", 0, "Left aligned", Vector2(220, 40), Color::BLACK);
     auto testText2 = engine.MakeUIElement<UI::TextElement>(
         "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
-    
+
     testText1->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     testText2->SetDisplayPosition(UI::DisplayPosition::LowerRight);
 
