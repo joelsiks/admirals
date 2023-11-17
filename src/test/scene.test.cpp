@@ -41,9 +41,10 @@ int test_add() {
     if (scene->NumObjectsInScene() != 2) {
         return EXIT_FAILURE;
     }
-    //try adding duplicate item
+    // try adding duplicate item
     scene->AddObject(go1);
-    //try adding new object with the same name as one already existing in the list
+    // try adding new object with the same name as one already existing in the
+    // list
     scene->AddObject(go3);
     if (scene->NumObjectsInScene() != 2) {
         return EXIT_FAILURE;
@@ -121,7 +122,7 @@ int test_exist() {
     if (exist != true) {
         return EXIT_FAILURE;
     }
-    exist = scene->ExistObject(go1_1); 
+    exist = scene->ExistObject(go1_1);
     if (exist != false) {
         return EXIT_FAILURE;
     }
@@ -130,11 +131,11 @@ int test_exist() {
         return EXIT_FAILURE;
     }
 
-    exist = scene->ExistObject("a"); 
+    exist = scene->ExistObject("a");
     if (exist != true) {
         return EXIT_FAILURE;
     }
-    exist = scene->ExistObject("b"); 
+    exist = scene->ExistObject("b");
     if (exist != false) {
         return EXIT_FAILURE;
     }
@@ -144,7 +145,7 @@ int test_exist() {
 int main(int argc, char *argv[]) {
 
     int res[3];
-    const char* test_names[3] = {"test_add", "test_remove", "test_exist"};
+    const char *test_names[3] = {"test_add", "test_remove", "test_exist"};
 
     int tot_res = 0;
     res[0] = test_add();

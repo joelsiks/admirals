@@ -1,10 +1,10 @@
 #pragma once
+#include <iostream>
 #include <iterator>
 #include <map>
 #include <memory>
 #include <set>
 #include <vector>
-#include <iostream>
 
 #include "IOrdered.hpp"
 
@@ -104,7 +104,7 @@ public:
     /// object to erase from the collection
     inline void Erase(const std::string &key) {
         m_objects.erase(key);
-        
+
         auto it = this->m_ordered.begin();
         bool found = false;
         for (it; it != this->m_ordered.end(); it++) {
