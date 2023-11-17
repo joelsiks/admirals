@@ -22,7 +22,7 @@ public:
     void StartGameLoop();
 
 private:
-    bool CheckQuit();
+    bool PollAndHandleEvent();
 
     std::string m_gameName;
 
