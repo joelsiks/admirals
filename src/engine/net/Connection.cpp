@@ -3,6 +3,8 @@
 
 using namespace admirals::net;
 
+#define BIND_HANDLER(handler) std::bind(&handler, this, std::placeholders::_1)
+
 Connection::Connection(Owner parent, asio::io_context &io_context,
                        asio::ip::tcp::socket socket,
                        MessageQueue<OwnedMessage> &incoming_messages,
@@ -96,9 +98,7 @@ void Connection::HandleReadHeader(std::error_code ec) {
 void Connection::ReadHeader() {
     asio::async_read(
         m_socket, asio::buffer(&m_messageBuffer.header, sizeof(MessageHeader)),
-        [this](std::error_code ec, std::size_t length) {
-            HandleReadHeader(ec);
-        });
+        BIND_HANDLER(Connection::HandleReadHeader));
 }
 
 // Handles reading the body of the message
@@ -117,7 +117,7 @@ void Connection::ReadBody() {
     asio::async_read(
         m_socket,
         asio::buffer(m_messageBuffer.body.data(), m_messageBuffer.body.size()),
-        [this](std::error_code ec, std::size_t length) { HandleReadBody(ec); });
+        BIND_HANDLER(Connection::HandleReadBody));
 }
 
 // Adds incoming messages to the queue to be processed later
@@ -160,9 +160,7 @@ void Connection::WriteHeader() {
     asio::async_write(
         m_socket,
         asio::buffer(&m_outgoingMessages.Front().header, sizeof(MessageHeader)),
-        [this](std::error_code ec, std::size_t length) {
-            HandleWriteHeader(ec);
-        });
+        BIND_HANDLER(Connection::HandleWriteHeader));
 }
 
 // Handles writing the body of the first message in the outgoing queue
@@ -186,9 +184,7 @@ void Connection::WriteBody() {
     asio::async_write(m_socket,
                       asio::buffer(m_outgoingMessages.Front().body.data(),
                                    m_outgoingMessages.Front().body.size()),
-                      [this](std::error_code ec, std::size_t length) {
-                          HandleWriteBody(ec);
-                      });
+                      BIND_HANDLER(Connection::HandleWriteBody));
 }
 
 // Hashes the validation number with "random" numbers and operations
@@ -221,9 +217,7 @@ void Connection::HandleWriteValidation(std::error_code ec) {
 void Connection::WriteValidation() {
     asio::async_write(m_socket,
                       asio::buffer(&m_validationOut, sizeof(uint64_t)),
-                      [this](std::error_code ec, std::size_t length) {
-                          HandleWriteValidation(ec);
-                      });
+                      BIND_HANDLER(Connection::HandleWriteValidation));
 }
 
 // Handles reading the validation number
@@ -260,7 +254,5 @@ void Connection::HandleReadValidation(std::error_code ec) {
 // the connection is a server)
 void Connection::ReadValidation() {
     asio::async_read(m_socket, asio::buffer(&m_validationIn, sizeof(uint64_t)),
-                     [this](std::error_code ec, std::size_t length) {
-                         HandleReadValidation(ec);
-                     });
+                     BIND_HANDLER(Connection::HandleReadValidation));
 }

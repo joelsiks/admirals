@@ -1,5 +1,4 @@
 #pragma once
-#define ASIO_STANDALONE
 #include <deque>
 #include <mutex>
 

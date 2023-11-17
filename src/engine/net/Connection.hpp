@@ -1,5 +1,10 @@
 #pragma once
-#define ASIO_STANDALONE
+#ifndef ASIO_STANDALONE
+#define ASIO_STANDALONE 1
+#endif
+#if !defined(_WIN32_WINNT) && (defined(WIN32) || defined(_WIN32))
+#define _WIN32_WINNT 0x0A00 // Windows 10
+#endif
 #include <asio.hpp>
 
 #include "Message.hpp"
