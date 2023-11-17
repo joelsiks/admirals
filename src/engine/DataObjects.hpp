@@ -77,9 +77,19 @@ public:
         return Vector2(m_0 * r.m_0, m_1 * r.m_1);
     }
 
+    inline Vector2 operator*(float r) const {
+        return Vector2(m_0 * r, m_1 * r);
+    }
+
     inline Vector2 &operator*=(const Vector2 &r) {
         m_0 *= r.m_0;
         m_1 *= r.m_1;
+        return *this;
+    }
+
+    inline Vector2 &operator*=(float r) {
+        m_0 *= r;
+        m_1 *= r;
         return *this;
     }
 
@@ -87,9 +97,19 @@ public:
         return Vector2(m_0 / r.m_0, m_1 / r.m_1);
     }
 
+    inline Vector2 operator/(float r) const {
+        return Vector2(m_0 / r, m_1 / r);
+    }
+
     inline Vector2 &operator/=(const Vector2 &r) {
         m_0 /= r.m_0;
         m_1 /= r.m_1;
+        return *this;
+    }
+
+    inline Vector2 &operator/=(float r) {
+        m_0 /= r;
+        m_1 /= r;
         return *this;
     }
 
@@ -177,6 +197,10 @@ public:
         return Vector3(m_0 * r.m_0, m_1 * r.m_1, m_2 * r.m_2);
     }
 
+    inline Vector3 operator*(float r) const {
+        return Vector3(m_0 * r, m_1 * r, m_2 * r);
+    }
+
     inline Vector3 &operator*=(const Vector3 &r) {
         m_0 *= r.m_0;
         m_1 *= r.m_1;
@@ -184,14 +208,32 @@ public:
         return *this;
     }
 
+    inline Vector3 &operator*=(float r) {
+        m_0 *= r;
+        m_1 *= r;
+        m_2 *= r;
+        return *this;
+    }
+
     inline Vector3 operator/(const Vector3 &r) const {
         return Vector3(m_0 / r.m_0, m_1 / r.m_1, m_2 / r.m_2);
+    }
+
+    inline Vector3 operator/(float r) const {
+        return Vector3(m_0 / r, m_1 / r, m_2 / r);
     }
 
     inline Vector3 &operator/=(const Vector3 &r) {
         m_0 /= r.m_0;
         m_1 /= r.m_1;
         m_2 /= r.m_2;
+        return *this;
+    }
+
+    inline Vector3 &operator/=(float r) {
+        m_0 /= r;
+        m_1 /= r;
+        m_2 /= r;
         return *this;
     }
 
@@ -285,6 +327,10 @@ public:
         return Vector4(m_0 * r.m_0, m_1 * r.m_1, m_2 * r.m_2, m_3 * r.m_3);
     }
 
+    inline Vector4 operator*(float r) const {
+        return Vector4(m_0 * r, m_1 * r, m_2 * r, m_3 * r);
+    }
+
     inline Vector4 &operator*=(const Vector4 &r) {
         m_0 *= r.m_0;
         m_1 *= r.m_1;
@@ -293,8 +339,20 @@ public:
         return *this;
     }
 
+    inline Vector4 &operator*=(float r) {
+        m_0 *= r;
+        m_1 *= r;
+        m_2 *= r;
+        m_3 *= r;
+        return *this;
+    }
+
     inline Vector4 operator/(const Vector4 &r) const {
         return Vector4(m_0 / r.m_0, m_1 / r.m_1, m_2 / r.m_2, m_3 / r.m_3);
+    }
+
+    inline Vector4 operator/(float r) const {
+        return Vector4(m_0 / r, m_1 / r, m_2 / r, m_3 / r);
     }
 
     inline Vector4 &operator/=(const Vector4 &r) {
@@ -302,6 +360,14 @@ public:
         m_1 /= r.m_1;
         m_2 /= r.m_2;
         m_3 /= r.m_3;
+        return *this;
+    }
+
+    inline Vector4 &operator/=(float r) {
+        m_0 /= r;
+        m_1 /= r;
+        m_2 /= r;
+        m_3 /= r;
         return *this;
     }
 
