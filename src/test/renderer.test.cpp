@@ -90,10 +90,10 @@ int main(int argc, char *argv[]) {
                                         elementSize, Color::BLACK, Color::WHITE,
                                         OnButtonClick);
     auto testText1 = engine.EmplaceUIElement<UI::TextElement>(
-        "text1", 0, "Left aligned", (200, 40), Color::BLACK);
+        "text1", 0, "Left aligned", Vector2(220, 40), Color::BLACK);
 
     auto testText2 = engine.EmplaceUIElement<UI::TextElement>(
-        "text2", 0, "Right aligned", (210, 40), Color::BLACK);
+        "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
     testText1->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     testText2->SetDisplayPosition(UI::DisplayPosition::LowerRight);
 
