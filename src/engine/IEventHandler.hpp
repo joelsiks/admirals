@@ -9,7 +9,7 @@ public:
     IEventHandler(){};
     ~IEventHandler(){};
 
-    virtual void handleEvent(SDL_Event &e) = 0;
+    virtual void HandleEvent(SDL_Event &e) = 0;
 };
 
 } // namespace admirals

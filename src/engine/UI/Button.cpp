@@ -3,16 +3,16 @@
 
 using namespace admirals::UI;
 
-Button::Button(const std::string &name, const std::string &text,
+Button::Button(const std::string &name, float order, const std::string &text,
                const Vector2 &size, const Color &bgColor, const Color &fgColor,
                ButtonOnClickHandler onClick)
-    : Element(name, text, size), m_bgColor(bgColor), m_fgColor(fgColor),
+    : Element(name, order, text, size), m_bgColor(bgColor), m_fgColor(fgColor),
       m_onClick(onClick) {}
 
 void Button::Render(const Texture &font) {
-    renderer::Renderer::drawRectangle(m_displayOrigin, m_displaySize,
+    renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
                                       m_bgColor);
-    renderer::Renderer::drawText(font, m_displayOrigin, m_fgColor, m_text);
+    renderer::Renderer::DrawText(font, m_displayOrigin, m_fgColor, m_text);
 }
 
 bool Button::HandleEvent(const SDL_Event &event) {

@@ -10,8 +10,9 @@ public:
     InteractiveDrawable(){};
     ~InteractiveDrawable(){};
 
-    virtual void render(const renderer::RendererContext &r) const = 0;
-    virtual void handleEvent(SDL_Event &e) = 0;
+    virtual void Render(const renderer::RendererContext &r) const = 0;
+
+    virtual void HandleEvent(SDL_Event &e) = 0;
 };
 
 } // namespace admirals

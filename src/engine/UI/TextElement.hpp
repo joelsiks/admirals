@@ -8,7 +8,7 @@ namespace UI {
 
 class TextElement : public Element {
 public:
-    TextElement(const std::string &name, const std::string &text,
+    TextElement(const std::string &name, float order, const std::string &text,
                 const Vector2 &size, const Color &color);
 
     void SetText(const std::string &text);

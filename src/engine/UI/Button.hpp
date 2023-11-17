@@ -14,7 +14,7 @@ typedef std::function<void(Button *, const SDL_Event &)> ButtonOnClickHandler;
 
 class Button : public Element {
 public:
-    Button(const std::string &name, const std::string &text,
+    Button(const std::string &name, float order, const std::string &text,
            const Vector2 &size, const Color &bgColor, const Color &fgColor,
            ButtonOnClickHandler onClick);
 

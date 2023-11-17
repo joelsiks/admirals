@@ -33,7 +33,6 @@ set(SOURCES
     src/engine/UI/Element.cpp
     src/engine/UI/Button.cpp
     src/engine/UI/TextElement.cpp
-    src/engine/Model.cpp
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
@@ -112,6 +111,14 @@ target_link_libraries(test_server engine)
 target_include_directories(test_server PRIVATE 
     "src/test/"
     "src/engine/net/"
+)
+
+# Create test executable
+add_executable(depthOrderedCollection_text src/test/depthOrderedCollection.test.cpp)
+target_link_libraries(depthOrderedCollection_text engine)
+target_include_directories(depthOrderedCollection_text PRIVATE 
+    "src/engine/"
+    "src/test/"
 )
 
 # Copy SDL2.dll to the output directory after the executable is built
