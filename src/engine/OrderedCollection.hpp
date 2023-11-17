@@ -43,24 +43,18 @@ public:
     /// the same order as the `IOrdered::name` values are sorted in the ordered
     /// multiset.
     struct Iterator {
-        using iterator_category = std::forward_iterator_tag;
-        using difference_type = std::ptrdiff_t;
-        using value_type = const std::shared_ptr<T>;
-        using pointer = const std::shared_ptr<T> *;
-        using reference = const std::shared_ptr<T> &;
-
         Iterator(OrderedKeySet::iterator i, const KeyToPointerMap &m_objects)
             : m_iter(i), m_objects(m_objects) {}
 
-        reference operator*() const {
+        const std::shared_ptr<T> operator*() const {
             auto v = (m_iter.operator*)();
             return m_objects.at(v);
         }
 
-        pointer operator->() {
-            auto v = (m_iter.operator*)();
-            return &m_objects.at(v);
-        }
+        // std::shared_ptr<T> operator->() {
+        //     auto v = (m_iter.operator*)();
+        //     return m_objects.at(v);
+        // }
 
         Iterator &operator++() {
             m_iter++;
