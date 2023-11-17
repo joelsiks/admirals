@@ -3,7 +3,7 @@
 #define ASIO_STANDALONE 1
 #endif
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0A00
+#define _WIN32_WINNT 0x0A00 // Windows 10
 #endif
 #include <asio.hpp>
 
