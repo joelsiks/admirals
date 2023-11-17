@@ -42,9 +42,10 @@ void Server::HandleAcceptedConnection(std::error_code ec,
 
         // Create a new connection object for the client
         std::shared_ptr<Connection> new_connection =
-            std::make_shared<Connection>(Connection::Owner::SERVER, m_ioContext,
-                                         std::move(socket), m_incomingMessages,
-                                         this, BIND_HANDLER(OnClientValidated));
+            std::make_shared<Connection>(
+                Connection::Owner::SERVER, m_ioContext, std::move(socket),
+                m_incomingMessages, this,
+                BIND_HANDLER(Server::OnClientValidated));
         // Verify that the client is allowed to connect
         if (OnClientConnect(new_connection)) {
             // Add the new connection to the list of connections
@@ -62,7 +63,8 @@ void Server::HandleAcceptedConnection(std::error_code ec,
 }
 
 void Server::WaitForClientConnection() {
-    m_acceptor.async_accept(BIND_HANDLER_2ARGS(HandleAcceptedConnection));
+    m_acceptor.async_accept(
+        BIND_HANDLER_2ARGS(Server::HandleAcceptedConnection));
 }
 
 void Server::MessageClient(std::shared_ptr<Connection> client,
