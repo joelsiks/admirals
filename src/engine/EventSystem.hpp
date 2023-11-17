@@ -20,12 +20,9 @@ typedef std::function<void(void *, Event &)> EventHandler;
 class EventSystem
 {
 public:
-    EventSystem();
-    ~EventSystem();
-
-    void invoke(const char *type, void *sender, Event &event);
-    void subscribe(const char *type, const EventHandler &handler);
-    void unsubscribe(const char *type, const EventHandler &handler);
+    void Invoke(const char *type, void *sender, Event &event);
+    void Subscribe(const char *type, const EventHandler &handler);
+    void Unsubscribe(const char *type, const EventHandler &handler);
 
 private:
     std::map<const char *, std::set<size_t>> m_handlers;

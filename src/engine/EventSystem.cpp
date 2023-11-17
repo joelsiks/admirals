@@ -5,17 +5,14 @@ using namespace admirals::events;
 Event::Event(const char *type) : m_type(type) {}
 Event::~Event() {}
 
-EventSystem::EventSystem() {}
-EventSystem::~EventSystem() {}
-
-void EventSystem::invoke(const char *type, void *sender, Event &event) {
+void EventSystem::Invoke(const char *type, void *sender, Event &event) {
     for (const auto &h : m_handlers[type]) {
         if (event.handled) { return; }
         ((const EventHandler &) h)(sender, event);
     }
 }
 
-void EventSystem::subscribe(const char *type, const EventHandler &handler) {
+void EventSystem::Subscribe(const char *type, const EventHandler &handler) {
     size_t value = (size_t) handler.target<void(*)>();
     auto match = m_handlers.find(type);
     if (match != m_handlers.end()) {
@@ -27,7 +24,7 @@ void EventSystem::subscribe(const char *type, const EventHandler &handler) {
     }
 }
 
-void EventSystem::unsubscribe(const char *type, const EventHandler &handler) {
+void EventSystem::Unsubscribe(const char *type, const EventHandler &handler) {
     size_t value = (size_t) handler.target<void(*)>();
     auto match = m_handlers.find(type);
     if (match != m_handlers.end()) {

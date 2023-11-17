@@ -53,7 +53,7 @@ void OnButtonClick(UI::Button *button, const SDL_Event &event) {
 
 int main(int argc, char *argv[]) {
 
-    admirals::Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
+    Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
 
     // Create texture object.
     TextureObject textureObject =
@@ -61,22 +61,22 @@ int main(int argc, char *argv[]) {
     engine.AddGameObject(scene::GameObject::CreateFromDerived(textureObject));
 
     Vector2 elementSize = Vector2(140, 40);
-    admirals::UI::Button testBtn("btn1", 0, "Button 1", elementSize,
+    UI::Button testBtn("btn1", 0, "Button 1", elementSize,
                                  Color::BLACK, Color::WHITE, OnButtonClick);
 
-    admirals::UI::Button testBtn2("btn2", 0, "Button 2", elementSize,
+    UI::Button testBtn2("btn2", 0, "Button 2", elementSize,
                                   Color::BLACK, Color::WHITE, OnButtonClick);
     engine.AddUIElement(UI::Element::CreateFromDerived(testBtn));
     engine.AddUIElement(UI::Element::CreateFromDerived(testBtn2));
 
-    admirals::UI::TextElement testText1("textel1", 0, "Left aligned",
+    UI::TextElement testText1("textel1", 0, "Left aligned",
                                         Vector2(200, 40), Color::BLACK);
-    testText1.SetDisplayPosition(admirals::UI::DisplayPosition::LowerLeft);
+    testText1.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     engine.AddUIElement(UI::Element::CreateFromDerived(testText1));
 
-    admirals::UI::TextElement testText2("textel2", 0, "Right aligned",
+    UI::TextElement testText2("textel2", 0, "Right aligned",
                                         Vector2(210, 40), Color::BLACK);
-    testText2.SetDisplayPosition(admirals::UI::DisplayPosition::LowerRight);
+    testText2.SetDisplayPosition(UI::DisplayPosition::LowerRight);
     engine.AddUIElement(UI::Element::CreateFromDerived(testText2));
 
     engine.StartGameLoop();
