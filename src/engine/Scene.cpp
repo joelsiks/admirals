@@ -21,9 +21,9 @@ void Scene::addObject(std::shared_ptr<GameObject> object) {
  * recieves a shared pointer to a gameObject and removes one from the multiset
  */
 void Scene::removeObject(std::shared_ptr<GameObject> object) {
-    auto it = this->objects.begin();
+    auto it = this->m_objects.begin();
     bool found = false;
-    for (it; it != this->objects.end(); it++) {
+    for (it; it != this->m_objects.end(); it++) {
         std::shared_ptr<GameObject> obj = *it;
         if (obj.get() == object.get()) {
             if (obj.get()->index() == object.get()->index()) {
@@ -33,7 +33,7 @@ void Scene::removeObject(std::shared_ptr<GameObject> object) {
         }
     }
     if (found) {
-        this->objects.erase(it);
+        this->m_objects.erase(it);
     }
 }
 
@@ -41,7 +41,7 @@ void Scene::removeObject(std::shared_ptr<GameObject> object) {
  * recieves a shared pointer to a gameObject and checks if it exist in the multiset
  */
 bool Scene::existObject(std::shared_ptr<GameObject> object) {
-    for (auto it = this->objects.begin(); it != this->objects.end(); it++) {
+    for (auto it = this->m_objects.begin(); it != this->m_objects.end(); it++) {
         std::shared_ptr<GameObject> obj = *it;
         if (obj.get() == object.get()) {
             if (obj.get()->index() == object.get()->index()) {
@@ -56,7 +56,7 @@ bool Scene::existObject(std::shared_ptr<GameObject> object) {
 /**
  * returns the total amount of shared pointers to objects currently in the multiset
  */
-int Scene::numObjectsInScene() { return this->objects.size(); }
+int Scene::numObjectsInScene() { return this->m_objects.size(); }
 
 Scene::Scene() { this->m_objects = {}; }
 
