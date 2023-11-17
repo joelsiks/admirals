@@ -1,0 +1,41 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        
+    - name: update-pkg-db
+      run: sudo apt-get update
+    - name: install_deps
+      run: sudo apt-get install libvulkan1 libvulkan-dev vulkan-tools libsdl2-dev ninja-build
+    - name: install_clang-format
+      run: sudo apt-get install clang-format
+
+    # Check formatting
+    - name: check_code_formatted
+      run: |
+          find src -name '*.cpp' -o -name '*.hpp' | xargs clang-format --style=file -i
+          if [[ -n $(git diff) ]]; then
+            echo "You must run make format before submitting a pull request"
+            echo ""
+            git diff
+            exit -1
+          fi
+
+    # Build
+    - name: generate_build_files
+      run: cmake -S . -B build -G Ninja
+    - name: build
+      run: cd build && ninja

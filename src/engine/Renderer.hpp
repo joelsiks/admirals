@@ -1,28 +1,48 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include <SDL_video.h>
+#include <VK2D/Texture.h>
+
+#include "DataObjects.hpp"
 #include "IDrawable.hpp"
-#include <VK2D/VK2D.h>
 
 namespace admirals {
 namespace renderer {
-class Renderer {
-private:
-    int m_windowWidth;
-    int m_windowHeight;
-    SDL_Window *m_window;
 
+typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
+
+class Renderer {
 public:
-    Renderer(const char *name, int width, int height);
+    Renderer(const std::string &name, int width, int height,
+             bool debugRendering);
     ~Renderer();
 
     int init(bool debug);
-    void render(const std::vector<std::shared_ptr<IDrawable>> &drawable);
+    void render(const DrawableCollection &drawable);
+    inline RendererContext context() const { return m_context; }
 
-    static void drawRectangle(const vec2 position, const vec2 size,
-                              const vec4 color);
+    static void drawRectangle(const Vector2 &position, const Vector2 &size,
+                              const Color &color);
+
+    static void drawRectangleOutline(const Vector2 &position,
+                                     const Vector2 &size,
+                                     const float outlineWidth,
+                                     const Color &color);
+
+    static void drawTexture(const Texture &texture, const Vector2 &position,
+                            const Vector2 &scale);
+
+    static void drawText(const Texture &font, const Vector2 &position,
+                         const Color &color, const std::string &text);
+
+private:
+    RendererContext m_context;
+    SDL_Window *m_window;
 };
+
 } // namespace renderer
 } // namespace admirals

@@ -1,12 +1,35 @@
+#include <VK2D/Constants.h>
+#include <VK2D/Renderer.h>
+#include <cmath>
+
+#include "DataObjects.hpp"
 #include "Renderer.hpp"
+#include <cmath>
 
-namespace admirals {
-namespace renderer {
+using namespace admirals::renderer;
 
-Renderer::Renderer(const char *name, int width, int height) {
-    this->m_windowWidth = width;
-    this->m_windowHeight = height;
-    this->m_window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED,
+void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
+                const char *text) {
+    float x = postion.x();
+    float y = postion.y();
+    float ox = x;
+    for (int i = 0; i < (int)strlen(text); i++) {
+        if (text[i] != '\n') {
+            vk2dRendererDrawTexture(font, x, y, 2, 2, 0, 0, 0,
+                                    (text[i] * 8) % 128,
+                                    floorf(text[i] / 16) * 16, 8, 16);
+            x += 8 * 2;
+        } else {
+            x = ox;
+            y += 16 * 2;
+        }
+    }
+}
+
+Renderer::Renderer(const std::string &name, int width, int height,
+                   bool debugRendering)
+    : m_context({width, height, debugRendering}) {
+    this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED, width, height,
                                       SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
 }
@@ -26,29 +49,56 @@ int Renderer::init(bool debug) {
         return code;
     }
 
-    VK2DCameraSpec camera = {
-        VK2D_CAMERA_TYPE_DEFAULT,    0, 0, (float)this->m_windowWidth,
-        (float)this->m_windowHeight, 1, 0};
+    VK2DCameraSpec camera = {VK2D_CAMERA_TYPE_DEFAULT,
+                             0,
+                             0,
+                             static_cast<float>(m_context.windowWidth),
+                             static_cast<float>(m_context.windowHeight),
+                             1,
+                             0};
 
     vk2dRendererSetCamera(camera);
     return code;
 }
 
-void Renderer::render(const std::vector<std::shared_ptr<IDrawable>> &drawable) {
-    vk2dRendererStartFrame(VK2D_WHITE);
+void Renderer::render(const DrawableCollection &drawable) {
+    vk2dRendererStartFrame(Color::WHITE.data());
+    SDL_GetWindowSize(m_window, &m_context.windowWidth,
+                      &m_context.windowHeight);
     for (const auto &d : drawable) {
-        d->render();
+        d->render(m_context);
     }
     vk2dRendererEndFrame();
 }
 
-void Renderer::drawRectangle(const vec2 position, const vec2 size,
-                             const vec4 color) {
-    vk2dRendererSetColourMod(color);
+void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
+                             const Color &color) {
+    vk2dRendererSetColourMod(color.data());
     vk2dRendererDrawRectangle(position[0], position[1], size[0], size[1], 0, 0,
                               0);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
-} // namespace renderer
-} // namespace admirals
+void Renderer::drawRectangleOutline(const Vector2 &position,
+                                    const Vector2 &size,
+                                    const float outlineWidth,
+                                    const Color &color) {
+    vk2dRendererSetColourMod(color.data());
+    vk2dRendererDrawRectangleOutline(position[0], position[1], size[0], size[1],
+                                     0, 0, 0, outlineWidth);
+    vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::drawTexture(const Texture &texture, const Vector2 &position,
+                           const Vector2 &scale) {
+    vk2dRendererDrawTexture(texture.data(), position.x(), position.y(),
+                            scale.x(), scale.y(), 0, 0, 0, 0, 0,
+                            texture.width(), texture.height());
+}
+
+void Renderer::drawText(const Texture &font, const Vector2 &position,
+                        const Color &color, const std::string &text) {
+    vk2dRendererSetColourMod(color.data());
+    RenderFont(font.data(), position, text.c_str());
+    vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}

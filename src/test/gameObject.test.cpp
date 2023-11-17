@@ -1,14 +1,12 @@
-#include <Engine.hpp>
-#include <SDL_vulkan.h>
-#include <VK2D/Constants.h>
-#include <VK2D/VK2D.h>
 #include <chrono>
 #include <cmath>
+#include <memory>
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <memory>
-#include <thread>
+#include "Engine.hpp"
+#include "UI/DisplayLayout.hpp"
+#include "UI/TextElement.hpp"
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
@@ -18,29 +16,34 @@ using namespace admirals;
 
 class CellObject : public scene::GameObject {
 private:
-    vec4 color;
+    Color m_color;
 
 public:
-    CellObject(const vec2 &pos, const float &index, const vec4 &color)
-        : scene::GameObject(pos, index) {
-        this->color[0] = color[0];
-        this->color[1] = color[1];
-        this->color[2] = color[2];
-        this->color[3] = color[3];
-    }
+    CellObject(const Vector3 &pos, const Color &color)
+        : scene::GameObject(pos), m_color(color) {}
 
     void onStart() {}
 
     void onUpdate() {
-        this->position[0] = (this->position[0] + 1000.f * deltaT);
-        if (this->position[0] > WINDOW_WIDTH) {
-            this->position[0] = -100 + this->position[0] - WINDOW_WIDTH;
+        Vector3 position = this->position();
+        float x = position.x() + 1000.f * deltaT;
+        while (x > WINDOW_WIDTH) {
+            x = -100 + (x - WINDOW_WIDTH);
         }
+        position.setX(x);
+        this->setPosition(position);
     }
 
-    void render() {
-        vec2 size = {100, 100};
-        renderer::Renderer::drawRectangle(this->position, size, this->color);
+    void render(const renderer::RendererContext &r) {
+        Vector2 pos = this->position();
+        // Calculate scaling
+        float x = r.windowWidth / static_cast<float>(WINDOW_WIDTH);
+        float y = r.windowHeight / static_cast<float>(WINDOW_HEIGHT);
+
+        Vector2 size(100.f * x, 100.f * y);
+        pos[0] *= x;
+        pos[1] *= y;
+        renderer::Renderer::drawRectangle(pos, size, this->m_color);
     }
 };
 
@@ -54,46 +57,50 @@ int check_quit() {
         }
     }
 
-    SDL_PumpEvents();
+    SDL_PumpEvents(); // clears and gathers events for next loop
     return quit;
 }
 
 int main(int argc, char *argv[]) {
     renderer::Renderer renderer =
-        renderer::Renderer("Admirals", WINDOW_WIDTH, WINDOW_HEIGHT);
+        renderer::Renderer("Admirals", WINDOW_WIDTH, WINDOW_HEIGHT, true);
     renderer.init(true);
 
     scene::Scene *scene = new scene::Scene();
-    vec2 pos1 = {0, 0};
-    CellObject cell1 = CellObject(pos1, 2, VK2D_BLUE);
+    CellObject cell1 = CellObject(Vector3(0, 0, 2), Color::BLUE);
     scene->addObject(scene::GameObject::createFromDerived(cell1));
 
-    vec2 pos2 = {50, 50};
-    CellObject cell2 = CellObject(pos2, 3, VK2D_RED);
+    CellObject cell2 = CellObject(Vector3(50, 50, 3), Color::RED);
     scene->addObject(scene::GameObject::createFromDerived(cell2));
 
-    vec2 pos3 = {100, 100};
-    CellObject cell3 = CellObject(pos3, 1, VK2D_BLACK);
+    CellObject cell3 = CellObject(Vector3(100, 100, 1), Color::BLACK);
     scene->addObject(scene::GameObject::createFromDerived(cell3));
 
-    vec2 pos4 = {100, 200};
-    CellObject cell4 = CellObject(pos4, 0, VK2D_BLUE);
+    CellObject cell4 = CellObject(Vector3(100, 200, 0), Color::BLUE);
     scene->addObject(scene::GameObject::createFromDerived(cell4));
 
-    vec2 pos5 = {200, 100};
-    CellObject cell5 = CellObject(pos5, 0, VK2D_RED);
+    CellObject cell5 = CellObject(Vector3(200, 100, 0), Color::RED);
     scene->addObject(scene::GameObject::createFromDerived(cell5));
 
-    vec2 pos6 = {200, 200};
-    CellObject cell6 = CellObject(pos6, 0, VK2D_GREEN);
+    CellObject cell6 = CellObject(Vector3(200, 200, 0), Color::GREEN);
     scene->addObject(scene::GameObject::createFromDerived(cell6));
 
-    std::vector<std::shared_ptr<renderer::IDrawable>> layers;
+    UI::DisplayLayout *layout = new UI::DisplayLayout();
+    UI::TextElement fpsText("Fps TextElement", "", Vector2(500, 40),
+                            Color::BLACK);
+    fpsText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
+    auto sharedFpsText = UI::Element::createFromDerived(fpsText);
+
+    layout->AddElement(sharedFpsText);
+
+    renderer::DrawableCollection layers;
     layers.emplace_back(scene);
+    layers.emplace_back(layout);
 
     // Start render loop
     bool quit = false;
     SDL_Event e;
+    char fpsString[100];
     auto t1 = std::chrono::high_resolution_clock::now();
     while (!quit) {
         quit = check_quit();
@@ -104,7 +111,11 @@ int main(int argc, char *argv[]) {
                      .count() /
                  1000000.f;
         t1 = t2;
-        printf("\rDT = %f, FPS: %f", deltaT, 1.f / deltaT);
+
+        sprintf(fpsString, "DT = %f, FPS: %f", deltaT, 1.f / deltaT);
+
+        std::static_pointer_cast<UI::TextElement>(sharedFpsText)
+            ->SetText(std::string(fpsString));
     }
 
     return EXIT_SUCCESS;

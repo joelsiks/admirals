@@ -16,16 +16,17 @@ private:
     struct GameObjectComparator {
         bool operator()(const std::shared_ptr<GameObject> l,
                         const std::shared_ptr<GameObject> r) const {
-            return l->index() < r->index();
+            return l->position().z() < r->position().z();
         }
     };
-    std::multiset<std::shared_ptr<GameObject>, GameObjectComparator> objects;
+  
+    std::multiset<std::shared_ptr<GameObject>, GameObjectComparator> m_objects;
 
 public:
     Scene();
     ~Scene();
 
-    void render() const;
+    void render(const renderer::RendererContext &r) const;
     void addObject(std::shared_ptr<GameObject> object);
     void removeObject(std::shared_ptr<GameObject> object);
     bool existObject(std::shared_ptr<GameObject> object);

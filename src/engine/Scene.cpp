@@ -1,13 +1,12 @@
 #include "Scene.hpp"
 #include <stdio.h>
 
-namespace admirals {
-namespace scene {
+using namespace admirals::scene;
 
-void Scene::render() const {
-    for (auto &object : this->objects) {
+void Scene::render(const renderer::RendererContext &r) const {
+    for (auto &object : this->m_objects) {
         object->onUpdate();
-        object->render();
+        object->render(r);
     }
 }
 
@@ -15,7 +14,7 @@ void Scene::render() const {
  * recieves a shared pointer to a gamObject and insert it to the multiset.
  */
 void Scene::addObject(std::shared_ptr<GameObject> object) {
-    this->objects.insert(object);
+    this->m_objects.insert(object);
 }
 
 /**
@@ -59,11 +58,6 @@ bool Scene::existObject(std::shared_ptr<GameObject> object) {
  */
 int Scene::numObjectsInScene() { return this->objects.size(); }
 
-Scene::Scene() {
-    this->objects = {};
-}
+Scene::Scene() { this->m_objects = {}; }
 
 Scene::~Scene() {}
-
-} // namespace scene
-} // namespace admirals
