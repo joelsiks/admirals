@@ -39,7 +39,7 @@ Renderer::~Renderer() {
     SDL_DestroyWindow(this->m_window);
 }
 
-int Renderer::init(bool debug) {
+int Renderer::Init(bool debug) {
     VK2DRendererConfig config = {VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE,
                                  VK2D_FILTER_TYPE_NEAREST};
     VK2DStartupOptions options = {debug, debug, debug, "error.txt", false};
@@ -61,44 +61,44 @@ int Renderer::init(bool debug) {
     return code;
 }
 
-void Renderer::render(const DrawableCollection &drawable) {
-    vk2dRendererStartFrame(Color::WHITE.data());
+void Renderer::Render(const DrawableCollection &drawable) {
+    vk2dRendererStartFrame(Color::WHITE.Data());
     SDL_GetWindowSize(m_window, &m_context.windowWidth,
                       &m_context.windowHeight);
     for (const auto &d : drawable) {
-        d->render(m_context);
+        d->Render(m_context);
     }
     vk2dRendererEndFrame();
 }
 
-void Renderer::drawRectangle(const Vector2 &position, const Vector2 &size,
+void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,
                              const Color &color) {
-    vk2dRendererSetColourMod(color.data());
+    vk2dRendererSetColourMod(color.Data());
     vk2dRendererDrawRectangle(position[0], position[1], size[0], size[1], 0, 0,
                               0);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
-void Renderer::drawRectangleOutline(const Vector2 &position,
+void Renderer::DrawRectangleOutline(const Vector2 &position,
                                     const Vector2 &size,
                                     const float outlineWidth,
                                     const Color &color) {
-    vk2dRendererSetColourMod(color.data());
+    vk2dRendererSetColourMod(color.Data());
     vk2dRendererDrawRectangleOutline(position[0], position[1], size[0], size[1],
                                      0, 0, 0, outlineWidth);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
-void Renderer::drawTexture(const Texture &texture, const Vector2 &position,
+void Renderer::DrawTexture(const Texture &texture, const Vector2 &position,
                            const Vector2 &scale) {
-    vk2dRendererDrawTexture(texture.data(), position.x(), position.y(),
+    vk2dRendererDrawTexture(texture.Data(), position.x(), position.y(),
                             scale.x(), scale.y(), 0, 0, 0, 0, 0,
-                            texture.width(), texture.height());
+                            texture.Width(), texture.Height());
 }
 
-void Renderer::drawText(const Texture &font, const Vector2 &position,
+void Renderer::DrawText(const Texture &font, const Vector2 &position,
                         const Color &color, const std::string &text) {
-    vk2dRendererSetColourMod(color.data());
-    RenderFont(font.data(), position, text.c_str());
+    vk2dRendererSetColourMod(color.Data());
+    RenderFont(font.Data(), position, text.c_str());
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }

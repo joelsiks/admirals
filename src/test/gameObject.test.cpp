@@ -19,23 +19,23 @@ private:
     Color m_color;
 
 public:
-    CellObject(const Vector3 &pos, const Color &color)
-        : scene::GameObject(pos), m_color(color) {}
+    CellObject(const std::string &name, const Vector3 &pos, const Color &color)
+        : scene::GameObject(name, pos), m_color(color) {}
 
-    void onStart() {}
+    void OnStart() override {}
 
-    void onUpdate() {
-        Vector3 position = this->position();
+    void OnUpdate() override {
+        Vector2 position = this->GetPosition();
         float x = position.x() + 1000.f * deltaT;
         while (x > WINDOW_WIDTH) {
             x = -100 + (x - WINDOW_WIDTH);
         }
-        position.setX(x);
-        this->setPosition(position);
+        position.SetX(x);
+        this->SetPosition(position);
     }
 
-    void render(const renderer::RendererContext &r) {
-        Vector2 pos = this->position();
+    void Render(const renderer::RendererContext &r) const override {
+        Vector2 pos = this->GetPosition();
         // Calculate scaling
         float x = r.windowWidth / static_cast<float>(WINDOW_WIDTH);
         float y = r.windowHeight / static_cast<float>(WINDOW_HEIGHT);
@@ -43,80 +43,61 @@ public:
         Vector2 size(100.f * x, 100.f * y);
         pos[0] *= x;
         pos[1] *= y;
-        renderer::Renderer::drawRectangle(pos, size, this->m_color);
+        renderer::Renderer::DrawRectangle(pos, size, this->m_color);
     }
 };
 
-int check_quit() {
-    bool quit = false;
-    SDL_Event e;
+class FpsTextElementController : public scene::GameObject {
+public:
+    FpsTextElementController(const std::string &name,
+                             std::shared_ptr<UI::TextElement> textElement)
+        : scene::GameObject(name, -1, Vector2(0)), m_textElement(textElement) {}
 
-    while (SDL_PollEvent(&e)) {
-        if (e.type == SDL_QUIT) {
-            quit = true;
-        }
+    void OnStart() override {
+        m_time = std::chrono::high_resolution_clock::now();
     }
 
-    SDL_PumpEvents(); // clears and gathers events for next loop
-    return quit;
-}
+    void OnUpdate() override {
+        auto time = std::chrono::high_resolution_clock::now();
+        deltaT =
+            std::chrono::duration_cast<std::chrono::microseconds>(time - m_time)
+                .count() /
+            1000000.f;
+        char fpsString[100];
+        sprintf(fpsString, "DT = %f, FPS: %f", deltaT, 1.f / deltaT);
+        m_textElement->SetText(std::string(fpsString));
+        m_time = time;
+    }
+
+    void Render(const renderer::RendererContext &r) const override {}
+
+private:
+    std::chrono::_V2::system_clock::time_point m_time;
+    std::shared_ptr<UI::TextElement> m_textElement;
+};
 
 int main(int argc, char *argv[]) {
-    renderer::Renderer renderer =
-        renderer::Renderer("Admirals", WINDOW_WIDTH, WINDOW_HEIGHT, true);
-    renderer.init(true);
-
-    scene::Scene *scene = new scene::Scene();
-    CellObject cell1 = CellObject(Vector3(0, 0, 2), Color::BLUE);
-    scene->addObject(scene::GameObject::createFromDerived(cell1));
-
-    CellObject cell2 = CellObject(Vector3(50, 50, 3), Color::RED);
-    scene->addObject(scene::GameObject::createFromDerived(cell2));
-
-    CellObject cell3 = CellObject(Vector3(100, 100, 1), Color::BLACK);
-    scene->addObject(scene::GameObject::createFromDerived(cell3));
-
-    CellObject cell4 = CellObject(Vector3(100, 200, 0), Color::BLUE);
-    scene->addObject(scene::GameObject::createFromDerived(cell4));
-
-    CellObject cell5 = CellObject(Vector3(200, 100, 0), Color::RED);
-    scene->addObject(scene::GameObject::createFromDerived(cell5));
-
-    CellObject cell6 = CellObject(Vector3(200, 200, 0), Color::GREEN);
-    scene->addObject(scene::GameObject::createFromDerived(cell6));
-
-    UI::DisplayLayout *layout = new UI::DisplayLayout();
-    UI::TextElement fpsText("Fps TextElement", "", Vector2(500, 40),
-                            Color::BLACK);
-    fpsText.SetDisplayPosition(UI::DisplayPosition::LowerLeft);
-    auto sharedFpsText = UI::Element::createFromDerived(fpsText);
-
-    layout->AddElement(sharedFpsText);
-
-    renderer::DrawableCollection layers;
-    layers.emplace_back(scene);
-    layers.emplace_back(layout);
-
-    // Start render loop
-    bool quit = false;
-    SDL_Event e;
-    char fpsString[100];
-    auto t1 = std::chrono::high_resolution_clock::now();
-    while (!quit) {
-        quit = check_quit();
-        renderer.render(layers);
-
-        auto t2 = std::chrono::high_resolution_clock::now();
-        deltaT = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)
-                     .count() /
-                 1000000.f;
-        t1 = t2;
-
-        sprintf(fpsString, "DT = %f, FPS: %f", deltaT, 1.f / deltaT);
-
-        std::static_pointer_cast<UI::TextElement>(sharedFpsText)
-            ->SetText(std::string(fpsString));
-    }
+    Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("2", Vector3(50, 50, 3), Color::RED)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("3", Vector3(100, 100, 1), Color::BLACK)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("4", Vector3(100, 200, 0), Color::BLUE)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("5", Vector3(200, 100, 0), Color::RED)));
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        CellObject("6", Vector3(200, 200, 0), Color::GREEN)));
+    auto fpsText = UI::Element::CreateFromDerived(UI::TextElement(
+        "Fps TextElement", 0, "", Vector2(500, 40), Color::BLACK));
+    auto textPtr = std::static_pointer_cast<UI::TextElement>(fpsText);
+    textPtr->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
+    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+        FpsTextElementController("controller", textPtr)));
+    engine.AddUIElement(fpsText);
+    engine.StartGameLoop();
 
     return EXIT_SUCCESS;
 }

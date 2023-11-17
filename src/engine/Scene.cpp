@@ -3,24 +3,22 @@
 
 using namespace admirals::scene;
 
-void Scene::render(const renderer::RendererContext &r) const {
-    for (auto &object : this->m_objects) {
-        object->onUpdate();
-        object->render(r);
-    }
+void Scene::AddObject(std::shared_ptr<GameObject> object) {
+    this->m_objects.Insert(std::move(object));
 }
 
-/**
- * recieves a shared pointer to a gamObject and insert it to the multiset.
- */
-void Scene::addObject(std::shared_ptr<GameObject> object) {
-    this->m_objects.insert(object);
+void Scene::Render(const renderer::RendererContext &r) const {
+    for (const auto &object : this->m_objects) {
+        object->Render(r);
+    }
 }
 
 /**
  * recieves a shared pointer to a gameObject and removes one from the multiset
  */
-void Scene::removeObject(std::shared_ptr<GameObject> object) {
+void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
+    this->m_objects.Erase(object->name());
+    /*
     auto it = this->m_objects.begin();
     bool found = false;
     for (it; it != this->m_objects.end(); it++) {
@@ -35,13 +33,17 @@ void Scene::removeObject(std::shared_ptr<GameObject> object) {
     if (found) {
         this->m_objects.erase(it);
     }
+    */
 }
 
 /**
  * recieves a shared pointer to a gameObject and checks if it exist in the
  * multiset
  */
-bool Scene::existObject(std::shared_ptr<GameObject> object) {
+bool Scene::ExistObject(std::shared_ptr<GameObject> object) {
+    return (this->m_objects.Find(object->name()) != nullptr);
+    /*
+    
     for (auto it = this->m_objects.begin(); it != this->m_objects.end(); it++) {
         std::shared_ptr<GameObject> obj = *it;
         if (obj.get() == object.get()) {
@@ -51,13 +53,20 @@ bool Scene::existObject(std::shared_ptr<GameObject> object) {
         }
     }
     return false;
+    */
 }
 
-/**
- * returns the total amount of shared pointers to objects currently in the
- * multiset
- */
-int Scene::numObjectsInScene() { return this->m_objects.size(); }
+void Scene::OnStart() {
+    for (const auto &object : this->m_objects) {
+        object->OnStart();
+    }
+}
+
+void Scene::OnUpdate() {
+    for (const auto &object : this->m_objects) {
+        object->OnUpdate();
+    }
+}
 
 Scene::Scene() { this->m_objects = {}; }
 

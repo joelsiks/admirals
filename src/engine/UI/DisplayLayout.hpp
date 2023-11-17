@@ -6,22 +6,22 @@
 
 #include "Element.hpp"
 #include "InteractiveDrawable.hpp"
+#include "OrderedCollection.hpp"
 
-namespace admirals {
-namespace UI {
+namespace admirals::UI {
 
 class DisplayLayout : public InteractiveDrawable {
 public:
     DisplayLayout();
 
+    void Render(const renderer::RendererContext &r) const override;
+    void HandleEvent(SDL_Event &e) override;
+
     void AddElement(std::shared_ptr<Element> element);
-    void render(const renderer::RendererContext &r) const;
-    void handleEvent(SDL_Event &e);
 
 private:
     Texture m_font;
-    std::vector<std::shared_ptr<Element>> m_elements;
+    OrderedCollection<Element> m_elements;
 };
 
-} // namespace UI
-} // namespace admirals
+} // namespace admirals::UI

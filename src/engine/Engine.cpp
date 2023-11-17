@@ -9,7 +9,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
                                                       windowHeight, debug);
     // Initialize the renderer right after creating it. Necessary in cases where
     // DisplayLayout requires vk2d to be initialized.
-    m_renderer->init(debug);
+    m_renderer->Init(debug);
 
     m_displayLayout = std::make_shared<UI::DisplayLayout>();
     m_scene = std::make_shared<scene::Scene>();
@@ -22,10 +22,10 @@ void Engine::AddUIElement(std::shared_ptr<UI::Element> element) {
 }
 
 void Engine::AddGameObject(std::shared_ptr<scene::GameObject> object) {
-    m_scene->addObject(object);
+    m_scene->AddObject(object);
 }
 
-bool Engine::CheckQuit() {
+bool Engine::PollAndHandleEvent() {
     bool quit = false;
     SDL_Event e;
 
@@ -34,7 +34,7 @@ bool Engine::CheckQuit() {
             quit = true;
         }
 
-        m_displayLayout->handleEvent(e);
+        m_displayLayout->HandleEvent(e);
     }
 
     SDL_PumpEvents();
@@ -42,6 +42,8 @@ bool Engine::CheckQuit() {
 }
 
 void Engine::StartGameLoop() {
+    m_scene->OnStart();
+
     std::vector<std::shared_ptr<renderer::IDrawable>> layers;
     layers.emplace_back(m_scene);
     layers.emplace_back(m_displayLayout);
@@ -50,7 +52,8 @@ void Engine::StartGameLoop() {
     bool quit = false;
     SDL_Event e;
     while (!quit) {
-        quit = CheckQuit();
-        m_renderer->render(layers);
+        quit = PollAndHandleEvent();
+        m_scene->OnUpdate();
+        m_renderer->Render(layers);
     }
 }
