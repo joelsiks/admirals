@@ -26,7 +26,7 @@ void Scene::removeObject(std::shared_ptr<GameObject> object) {
     for (it; it != this->m_objects.end(); it++) {
         std::shared_ptr<GameObject> obj = *it;
         if (obj.get() == object.get()) {
-            if (obj.get()->index() == object.get()->index()) {
+            if (obj.get()->position().z() == object.get()->position().z()) {
                 found = true;
                 break;
             }
@@ -45,7 +45,7 @@ bool Scene::existObject(std::shared_ptr<GameObject> object) {
     for (auto it = this->m_objects.begin(); it != this->m_objects.end(); it++) {
         std::shared_ptr<GameObject> obj = *it;
         if (obj.get() == object.get()) {
-            if (obj.get()->index() == object.get()->index()) {
+            if (obj.get()->position().z() == object.get()->position().z()) {
                 return true;
             }
         }

@@ -7,53 +7,31 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <memory>
-#include <thread>
-
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 1000;
-float deltaT = 0;
-
 using namespace admirals;
 
 class CellObject : public scene::GameObject {
-private:
-    vec4 color;
 
 public:
-    CellObject(const vec2 &pos, const float &index, const vec4 &color)
-        : scene::GameObject(pos, index) {
-        this->color[0] = color[0];
-        this->color[1] = color[1];
-        this->color[2] = color[2];
-        this->color[3] = color[3];
-    }
+    CellObject(const Vector3 &pos)
+        : scene::GameObject(pos) {}
 
     void onStart() {}
 
-    void onUpdate() {
-        this->position[0] = (this->position[0] + 1000.f * deltaT);
-        if (this->position[0] > WINDOW_WIDTH) {
-            this->position[0] = -100 + this->position[0] - WINDOW_WIDTH;
-        }
-    }
+    void onUpdate() {}
 
-    void render() {
-        vec2 size = {100, 100};
-        renderer::Renderer::drawRectangle(this->position, size, this->color);
-    }
+    void render(const renderer::RendererContext &r) {}
 };
 
 int test_add() {
 
     scene::Scene *scene = new scene::Scene();
 
-    vec2 pos1 = {0, 0};
-    CellObject cell1 = CellObject(pos1, 2, VK2D_BLUE);
-    vec2 pos2 = {50, 50};
-    CellObject cell2 = CellObject(pos2, 3, VK2D_RED);
-    vec2 pos3 = {100, 100};
-    CellObject cell3 = CellObject(pos3, 1, VK2D_BLACK);
+    Vector3 pos1 = {0, 0, 2};
+    CellObject cell1 = CellObject(pos1);
+    Vector3 pos2 = {50, 50, 3};
+    CellObject cell2 = CellObject(pos2);
+    Vector3 pos3 = {100, 100, 1};
+    CellObject cell3 = CellObject(pos3);
 
     auto go1 = scene::GameObject::createFromDerived(cell1);
     auto go2 = scene::GameObject::createFromDerived(cell2);
@@ -72,13 +50,13 @@ int test_remove() {
 
     scene::Scene *scene = new scene::Scene();
 
-    vec2 pos1 = {0, 0};
-    CellObject cell1 = CellObject(pos1, 2, VK2D_BLUE);
-    CellObject cell1_1 = CellObject(pos1, 3, VK2D_BLUE);
-    vec2 pos2 = {50, 50};
-    CellObject cell2 = CellObject(pos2, 3, VK2D_RED);
-    vec2 pos3 = {100, 100};
-    CellObject cell3 = CellObject(pos3, 1, VK2D_BLACK);
+    Vector3 pos1 = {0, 0, 2};
+    CellObject cell1 = CellObject(pos1);
+    CellObject cell1_1 = CellObject(pos1);
+    Vector3 pos2 = {50, 50, 3};
+    CellObject cell2 = CellObject(pos2);
+    Vector3 pos3 = {100, 100, 1};
+    CellObject cell3 = CellObject(pos3);
 
     auto go1 = scene::GameObject::createFromDerived(cell1);
     auto go1_1 = scene::GameObject::createFromDerived(cell1_1);
@@ -105,11 +83,13 @@ int test_exist() {
 
     scene::Scene *scene = new scene::Scene();
 
-    vec2 pos1 = {0, 0};
-    CellObject cell1 = CellObject(pos1, 2, VK2D_BLUE);
-    CellObject cell1_1 = CellObject(pos1, 3, VK2D_BLUE);
-    vec2 pos2 = {50, 50};
-    CellObject cell2 = CellObject(pos2, 3, VK2D_RED);
+    Vector3 pos1 = {0, 0, 2};
+    CellObject cell1 = CellObject(pos1);
+    CellObject cell1_1 = CellObject(pos1);
+    Vector3 pos2 = {50, 50, 3};
+    CellObject cell2 = CellObject(pos2);
+    Vector3 pos3 = {100, 100, 1};
+    CellObject cell3 = CellObject(pos3);
 
     auto go1 = scene::GameObject::createFromDerived(cell1);
     auto go1_1 = scene::GameObject::createFromDerived(cell1_1);
