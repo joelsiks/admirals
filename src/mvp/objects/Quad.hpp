@@ -3,16 +3,18 @@
 
 namespace admirals::mvp::objects {
 
-class Grid : public scene::GameObject {
+class Quad : public scene::GameObject {
 public:
-    Grid(const std::string &name, const Color &color);
+    Quad(const std::string &name, const Vector3 position, const Vector2 &size,
+         const Color &color);
 
-    void OnStart() override;
     void OnUpdate() override;
+    void OnStart() override;
     void Render(const renderer::RendererContext &r) const override;
 
 private:
     Color m_color;
+    Vector2 m_size;
 };
 
 } // namespace admirals::mvp::objects

@@ -5,17 +5,18 @@ namespace admirals::mvp::objects {
 
 class Sprite : public scene::GameObject {
 public:
-    // replace color with texture later
     Sprite(const std::string &name, const Vector3 position, const Vector2 &size,
-           const Color &color);
-    ~Sprite();
+           const Texture &source, const Vector2 &texOffset,
+           const Vector2 &texSize = Vector2(64));
 
-    void OnUpdate() override;
-    void OnStart() override;
+    virtual void OnUpdate() override;
+    virtual void OnStart() override;
     void Render(const renderer::RendererContext &r) const override;
 
 private:
-    Color m_color;
+    const Texture &m_source;
+    const Vector2 m_texSize;
+    const Vector2 m_texOffset;
     Vector2 m_size;
 };
 

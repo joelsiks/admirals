@@ -1,21 +1,24 @@
-
 #pragma once
 
 #include <functional>
 
 #include "Element.hpp"
+#include "EventSystem.hpp"
 
 namespace admirals::UI {
 
-class Button;
-
-typedef std::function<void(Button *, const SDL_Event &)> ButtonOnClickHandler;
+class ButtonClickEventArgs : public events::EventArgs {
+public:
+    ButtonClickEventArgs(const SDL_Event &data) : m_data(data) {}
+    const SDL_Event m_data;
+};
 
 class Button : public Element {
 public:
+    events::EventSystem<ButtonClickEventArgs> onClick;
+
     Button(const std::string &name, float order, const std::string &text,
-           const Vector2 &size, const Color &bgColor, const Color &fgColor,
-           ButtonOnClickHandler onClick);
+           const Vector2 &size, const Color &bgColor, const Color &fgColor);
 
     void Render(const Texture &font) override;
 
@@ -25,7 +28,6 @@ public:
     inline void SetForegroundColor(const Color color) { m_fgColor = color; }
 
 private:
-    ButtonOnClickHandler m_onClick;
     Color m_bgColor, m_fgColor;
 };
 

@@ -15,16 +15,6 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_scene = std::make_shared<scene::Scene>();
 }
 
-Engine::~Engine(){};
-
-void Engine::AddUIElement(std::shared_ptr<UI::Element> element) {
-    m_displayLayout->AddElement(element);
-}
-
-void Engine::AddGameObject(std::shared_ptr<scene::GameObject> object) {
-    m_scene->AddObject(object);
-}
-
 bool Engine::PollAndHandleEvent() {
     bool quit = false;
     SDL_Event e;
