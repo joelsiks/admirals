@@ -5,32 +5,46 @@
 
 namespace admirals::events {
 
-class Event {
-public:
-    Event(const char *type);
-    ~Event();
+#define BIND_HANDLER_FROM(handler, source)                                     \
+    std::bind((handler), (source), std::placeholders::_1, std::placeholders::_2)
+#define BIND_HANDLER(handler) BIND_HANDLER_FROM((&(handler), this))
 
+class EventArgs {
 public:
     bool handled = false;
-    const char *m_type;
 };
 
-typedef std::function<void(void *, Event &)> EventHandler;
-
-class EventSystem {
+template <typename T = EventArgs> class EventSystem {
 public:
-    void Invoke(const char *type, void *sender, Event &event);
-    void Subscribe(const char *type, const EventHandler &handler);
-    void Unsubscribe(const char *type, const EventHandler &handler);
+    typedef std::function<void(void *, T &)> EventHandler;
+
+    void Invoke(void *sender, T &event) const {
+        for (const auto &handler : m_handlers) {
+            if (event.handled) {
+                return;
+            }
+            handler(sender, event);
+        }
+    }
+
+    inline void operator+=(const EventHandler &handler) {
+        m_handlers.insert(handler);
+    }
+
+    inline void operator-=(const EventHandler &handler) {
+        m_handlers.erase(handler);
+    }
 
 private:
+    inline void operator=(const EventSystem<T> e) = delete;
+
     struct Comparator {
         bool operator()(const EventHandler &l, const EventHandler &r) const {
             return l.target_type().hash_code() < r.target_type().hash_code();
         }
     };
 
-    std::map<const char *, std::set<EventHandler, Comparator>> m_handlers;
+    std::set<EventHandler, Comparator> m_handlers;
 };
 
 } // namespace admirals::events

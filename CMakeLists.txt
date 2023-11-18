@@ -37,7 +37,6 @@ set(SOURCES
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
     src/engine/Engine.cpp
-    src/engine/EventSystem.cpp
     src/engine/net/Connection.cpp
     src/engine/net/Client.cpp
     src/engine/net/Server.cpp
