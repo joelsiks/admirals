@@ -1,4 +1,5 @@
 #pragma once
+
 #include <VK2D/Texture.h>
 #include <cmath>
 #include <stdint.h>

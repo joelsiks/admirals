@@ -6,9 +6,6 @@ namespace admirals {
 
 class IEventHandler {
 public:
-    IEventHandler(){};
-    ~IEventHandler(){};
-
     virtual void HandleEvent(SDL_Event &e) = 0;
 };
 

@@ -7,12 +7,11 @@
 #include "Engine.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
+using namespace admirals;
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
 float deltaT = 0;
-
-using namespace admirals;
 
 class CellObject : public scene::GameObject {
 private:
