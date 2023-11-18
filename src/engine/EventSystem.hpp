@@ -1,13 +1,15 @@
 #pragma once
+
 #include <functional>
-#include <map>
 #include <set>
 
 namespace admirals::events {
 
-#define BIND_HANDLER_FROM(handler, source)                                     \
+// These macros are for easily binding class methods or functions to an event
+// handler.
+#define BIND_EVENT_HANDLER_FROM(handler, source)                               \
     std::bind((handler), (source), std::placeholders::_1, std::placeholders::_2)
-#define BIND_HANDLER(handler) BIND_HANDLER_FROM((&(handler), this))
+#define BIND_EVENT_HANDLER(handler) BIND_EVENT_HANDLER_FROM(&(handler), this)
 
 class EventArgs {
 public:
@@ -25,6 +27,14 @@ public:
             }
             handler(sender, event);
         }
+    }
+
+    inline void Subscribe(const EventHandler &handler) {
+        m_handlers.insert(handler);
+    }
+
+    inline void Unsubscribe(const EventHandler &handler) {
+        m_handlers.erase(handler);
     }
 
     inline void operator+=(const EventHandler &handler) {

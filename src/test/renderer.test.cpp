@@ -73,21 +73,23 @@ int main(int argc, char *argv[]) {
         "image", Vector3(0, 0, 0), "assets/admirals.png");
 
     Vector2 elementSize = Vector2(300, 40);
+
     auto btn1 = engine.MakeUIElement<UI::Button>(
         "btn1", 0, "Move Image Left", elementSize, Color::BLACK, Color::WHITE);
+    btn1->onClick.Subscribe(OnButtonClick);
+    btn1->onClick.Subscribe(
+        BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, texture));
+
     auto btn2 = engine.MakeUIElement<UI::Button>(
         "btn2", 0, "Move Image Right", elementSize, Color::BLACK, Color::WHITE);
+    btn2->onClick.Subscribe(OnButtonClick);
+    btn2->onClick.Subscribe(
+        BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, texture));
+
     auto testText1 = engine.MakeUIElement<UI::TextElement>(
         "text1", 0, "Left aligned", Vector2(220, 40), Color::BLACK);
     auto testText2 = engine.MakeUIElement<UI::TextElement>(
         "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
-
-    btn1->onClick += OnButtonClick;
-    btn2->onClick += OnButtonClick;
-    btn1->onClick +=
-        BIND_HANDLER_FROM(TextureObject::ButtonClickHandler, texture);
-    btn2->onClick +=
-        BIND_HANDLER_FROM(TextureObject::ButtonClickHandler, texture);
     testText1->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     testText2->SetDisplayPosition(UI::DisplayPosition::LowerRight);
 
