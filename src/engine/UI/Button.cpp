@@ -4,10 +4,9 @@
 using namespace admirals::UI;
 
 Button::Button(const std::string &name, float order, const std::string &text,
-               const Vector2 &size, const Color &bgColor, const Color &fgColor,
-               ButtonOnClickHandler onClick)
-    : Element(name, order, text, size), m_bgColor(bgColor), m_fgColor(fgColor),
-      m_onClick(onClick) {}
+               const Vector2 &size, const Color &bgColor, const Color &fgColor)
+    : Element(name, order, text, size), m_bgColor(bgColor), m_fgColor(fgColor) {
+}
 
 void Button::Render(const Texture &font) {
     renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
@@ -26,7 +25,8 @@ bool Button::HandleEvent(const SDL_Event &event) {
             mouseY <= m_displayOrigin[1] + m_displaySize[1]) {
 
             // Call click handler.
-            m_onClick(this, event);
+            ButtonClickEventArgs e = ButtonClickEventArgs(event);
+            onClick.Invoke(this, e);
 
             return true;
         }
