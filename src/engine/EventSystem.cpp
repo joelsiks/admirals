@@ -1,21 +1,23 @@
 #include "EventSystem.hpp"
-#include <cstring>
 
 using namespace admirals::events;
 
-Event::Event(const char *type) : m_type(type) {}
-Event::~Event() {}
+EventArgs::EventArgs(const std::string &type) : m_type(type) {}
 
-void EventSystem::Invoke(const char *type, void *sender, Event &event) {
+const std::string &EventArgs::type() const { return m_type; }
+
+void EventSystem::Invoke(const std::string &type, void *sender,
+                         EventArgs &args) {
     for (const auto &handler : m_handlers[type]) {
-        if (event.handled) {
+        if (args.handled) {
             return;
         }
-        handler(sender, event);
+        handler(sender, args);
     }
 }
 
-void EventSystem::Subscribe(const char *type, const EventHandler &handler) {
+void EventSystem::Subscribe(const std::string &type,
+                            const EventHandler &handler) {
     if (auto match = m_handlers.find(type); match != m_handlers.end()) {
         auto handlers = match->second;
         handlers.insert(handler);
@@ -25,7 +27,8 @@ void EventSystem::Subscribe(const char *type, const EventHandler &handler) {
     }
 }
 
-void EventSystem::Unsubscribe(const char *type, const EventHandler &handler) {
+void EventSystem::Unsubscribe(const std::string &type,
+                              const EventHandler &handler) {
     if (auto match = m_handlers.find(type); match != m_handlers.end()) {
         auto handlers = match->second;
         handlers.erase(handler);

@@ -11,8 +11,6 @@
 #include "UI/TextElement.hpp"
 
 using namespace admirals;
-#define BIND_HANDLER(handler)                                                  \
-    std::bind(&handler, this, std::placeholders::_1, std::placeholders::_2)
 
 const int WINDOW_WIDTH = 600;
 const int WINDOW_HEIGHT = 600;
@@ -24,20 +22,20 @@ public:
                   const char *texturePath, bool keepAspectRatio = true)
         : scene::GameObject(name, pos), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {
-        eventSystem.Subscribe("btnClick",
-                              BIND_HANDLER(TextureObject::ButtonClickHandler));
+        eventSystem.Subscribe(
+            "btnClick", BIND_EVENT_HANDLER(TextureObject::ButtonClickHandler));
     }
 
     ~TextureObject() {
         eventSystem.Unsubscribe(
-            "btnClick", BIND_HANDLER(TextureObject::ButtonClickHandler));
+            "btnClick", BIND_EVENT_HANDLER(TextureObject::ButtonClickHandler));
     }
 
     void OnStart() override {}
 
     void OnUpdate() override {}
 
-    void ButtonClickHandler(void *sender, events::Event &e) {
+    void ButtonClickHandler(void *sender, events::EventArgs &e) {
         auto button = static_cast<UI::Button *>(sender);
         if (button->name() == "btn1") {
             SetPosition(Vector2(GetPosition().x() - 100, 0));
@@ -69,7 +67,7 @@ void OnButtonClick(UI::Button *button, const SDL_Event &event) {
     } else if (event.type == SDL_MOUSEBUTTONDOWN) {
         Color grey = Color::FromRGBA(50, 50, 50, 255);
         button->SetBackgroundColor(grey);
-        events::Event event("btnClick");
+        events::EventArgs event("btnClick");
         eventSystem.Invoke("btnClick", button, event);
     }
 }
