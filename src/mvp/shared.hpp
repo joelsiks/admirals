@@ -12,8 +12,9 @@ public:
     ~GameData(){};
 
     static std::unique_ptr<Engine> engine;
-    static const int WindowHeight;
-    static const int WindowWidth;
+    static const float CellSize;
+    static const float GridSize;
+    static const int GridCells;
 };
 
 } // namespace admirals::mvp

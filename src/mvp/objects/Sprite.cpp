@@ -1,5 +1,6 @@
 #include "Sprite.hpp"
 #include "Renderer.hpp"
+#include "shared.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;
@@ -16,6 +17,10 @@ void Sprite::OnStart() {}
 
 void Sprite::Render(const renderer::RendererContext &r) const {
     Vector2 pos = this->GetPosition();
-    renderer::Renderer::DrawSprite(m_source, pos, m_texOffset, m_texSize,
-                                   m_size / m_texSize);
+    Vector2 offset =
+        Vector2(r.windowWidth - GameData::GridSize,
+                r.windowHeight - GameData::GridSize - 2 * GameData::CellSize) /
+        2;
+    renderer::Renderer::DrawSprite(m_source, pos + offset, m_texOffset,
+                                   m_texSize, m_size / m_texSize);
 }

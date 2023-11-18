@@ -1,5 +1,6 @@
 #include "Quad.hpp"
 #include "Renderer.hpp"
+#include "shared.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;
@@ -14,5 +15,9 @@ void Quad::OnStart() {}
 
 void Quad::Render(const renderer::RendererContext &r) const {
     Vector2 pos = this->GetPosition();
-    renderer::Renderer::DrawRectangle(pos, m_size, m_color);
+    Vector2 offset =
+        Vector2(r.windowWidth - GameData::GridSize,
+                r.windowHeight - GameData::GridSize - 2 * GameData::CellSize) /
+        2;
+    renderer::Renderer::DrawRectangle(pos + offset, m_size, m_color);
 }

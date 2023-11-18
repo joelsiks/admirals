@@ -13,49 +13,55 @@ using namespace admirals::mvp;
 using namespace admirals::mvp::objects;
 
 int main(int argc, char *argv[]) {
-    GameData::engine = std::make_unique<Engine>(
-        "Admirals", GameData::WindowWidth, GameData::WindowHeight, true);
+    const float GridWidth = GameData::GridSize;
+    const float GridHeight = GameData::GridSize + 2 * GameData::CellSize;
+    GameData::engine =
+        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, true);
     Color blue = Color::FromHEX("#3283cf");
     Color green = Color::FromHEX("#087311");
-    Vector2 cellSize = Vector2(100, 100);
+    Vector2 cellSize = Vector2(GameData::CellSize);
     Texture atlas = Texture::LoadFromPath("assets/admirals_texture_atlas.png");
-    GameData::engine->AddGameObject(
-        scene::GameObject::CreateFromDerived(Background("background", blue)));
-    GameData::engine->AddGameObject(
-        scene::GameObject::CreateFromDerived(Grid("grid", Color::BLACK)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(Quad(
-        "overlayTop", Vector3(0, 0, 1), Vector2(1000, 100), Color::BLACK)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(
-        Quad("overlayBottom", Vector3(0, GameData::WindowHeight - 100, 1),
-             Vector2(GameData::WindowWidth, 100), Color::BLACK)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(
-        Quad("islandLeft0", Vector3(0, 100, 1), cellSize, green)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(
-        Quad("islandLeft1", Vector3(0, 200, 1), cellSize, green)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(
-        Quad("islandLeft2", Vector3(0, 300, 1), cellSize, green)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(Quad(
+    GameData::engine->MakeGameObject<Background>("background", blue);
+    GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
+    GameData::engine->MakeGameObject<Quad>(
+        "overlayTop", Vector3(0, 0, 1), Vector2(GridWidth, GameData::CellSize),
+        Color::BLACK);
+    GameData::engine->MakeGameObject<Quad>(
+        "overlayBottom", Vector3(0, GridHeight - GameData::CellSize, 1),
+        Vector2(GridWidth, GameData::CellSize), Color::BLACK);
+
+    GameData::engine->MakeGameObject<Quad>(
+        "islandLeft0", Vector3(0, GameData::CellSize, 1), cellSize, green);
+    GameData::engine->MakeGameObject<Quad>(
+        "islandLeft1", Vector3(0, 2 * GameData::CellSize, 1), cellSize, green);
+    GameData::engine->MakeGameObject<Quad>(
+        "islandLeft2", Vector3(0, 3 * GameData::CellSize, 1), cellSize, green);
+    GameData::engine->MakeGameObject<Quad>(
         "islandRight0",
-        Vector3(GameData::WindowWidth - 100, GameData::WindowHeight - 200, 1),
-        cellSize, green)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(Quad(
+        Vector3(GridWidth - GameData::CellSize,
+                GridHeight - 2 * GameData::CellSize, 1),
+        cellSize, green);
+    GameData::engine->MakeGameObject<Quad>(
         "islandRight1",
-        Vector3(GameData::WindowWidth - 100, GameData::WindowHeight - 300, 1),
-        cellSize, green)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(Quad(
+        Vector3(GridWidth - GameData::CellSize,
+                GridHeight - 3 * GameData::CellSize, 1),
+        cellSize, green);
+    GameData::engine->MakeGameObject<Quad>(
         "islandRight2",
-        Vector3(GameData::WindowWidth - 100, GameData::WindowHeight - 400, 1),
-        cellSize, green)));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(
-        Sprite("base0", Vector3(0, 200, 2), cellSize, atlas, Vector2(64, 0))));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(Sprite(
+        Vector3(GridWidth - GameData::CellSize,
+                GridHeight - 4 * GameData::CellSize, 1),
+        cellSize, green);
+    GameData::engine->MakeGameObject<Sprite>(
+        "base0", Vector3(0, 2 * GameData::CellSize, 2), cellSize, atlas,
+        Vector2(64, 0));
+    GameData::engine->MakeGameObject<Sprite>(
         "base1",
-        Vector3(GameData::WindowWidth - 100, GameData::WindowHeight - 300, 2),
-        cellSize, atlas, Vector2(64, 0))));
-    GameData::engine->AddGameObject(scene::GameObject::CreateFromDerived(Ship(
-        "ship0",
-        Vector3(100, 500, 2),
-        cellSize, atlas)));
+        Vector3(GridWidth - GameData::CellSize,
+                GridHeight - 3 * GameData::CellSize, 2),
+        cellSize, atlas, Vector2(64, 0));
+    GameData::engine->MakeGameObject<Ship>(
+        "ship0", Vector3(GameData::CellSize, 5 * GameData::CellSize, 2),
+        cellSize, atlas);
     GameData::engine->StartGameLoop();
 
     return EXIT_SUCCESS;

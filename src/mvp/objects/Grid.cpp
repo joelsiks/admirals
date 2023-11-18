@@ -13,12 +13,19 @@ void Grid::OnStart() {}
 void Grid::OnUpdate() {}
 
 void Grid::Render(const renderer::RendererContext &r) const {
-    for (int i = 1; i < 10; i++) {
-        float x = i * 100;
-        float y = x + 100;
-        renderer::Renderer::DrawLine(Vector2(x, 0), Vector2(x, r.windowHeight),
+    Vector2 offset = Vector2(r.windowWidth - GameData::GridSize,
+                             r.windowHeight - GameData::GridSize) /
+                     2;
+    for (int i = 0; i <= GameData::GridCells; i++) {
+        float x = i * GameData::CellSize;
+        renderer::Renderer::DrawLine(Vector2(x, 0) + offset,
+                                     Vector2(x, GameData::GridSize) + offset,
                                      m_color);
-        renderer::Renderer::DrawLine(Vector2(0, y), Vector2(r.windowWidth, y),
+    }
+    for (int i = 0; i <= GameData::GridCells; i++) {
+        float y = i * GameData::CellSize;
+        renderer::Renderer::DrawLine(Vector2(0, y) + offset,
+                                     Vector2(GameData::GridSize, y) + offset,
                                      m_color);
     }
 }
