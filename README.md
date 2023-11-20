@@ -64,6 +64,20 @@ find src -name '*.cpp' -o -name '*.hpp' | xargs clang-format --style=file -i
 
 Additionally, if using Visual Studio Code, you can download the C/C++ extension, set the default formatter (Ctrl+Shift+P -> Format Document With..) to C/C++ and enable format on save to format while writing code.
 
+## Linting
+
+We use `clang-tidy` for linting and code consistency. clang-tidy is also part of the clang suite but can be downloaded individually using the following commands:
+
+```bash
+# MSYS2
+pacman -S --needed mingw-w64-ucrt-x86_64-clang-tools-extra
+
+# Ubuntu
+sudo apt-get install clang-tidy
+```
+
+Depending on the development environment you are using, running clang-tidy might be different. If using VSCode, the process should be automatic if you use the `.vscode/settings.json` included in this repo.
+
 # Authors
 
 Joel Sikström, Jakob Wallén, Casper Norrbin, Oskar Gådin

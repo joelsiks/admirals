@@ -17,7 +17,6 @@ bld/
 out/
 Admirals.dir
 .vs
-.vscode
 .cache
 build
 include/*
