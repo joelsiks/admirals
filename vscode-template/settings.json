@@ -11,5 +11,5 @@
     "C_Cpp.codeAnalysis.exclude": {
         "**/include": true
     },
-    "C_Cpp.clang_format_style": "",
+    "C_Cpp.clang_format_style": ""
 }
