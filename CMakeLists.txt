@@ -26,12 +26,14 @@ message("SDL2_INCLUDE_DIRS: ${SDL2_INCLUDE_DIR}")
 message("SDL2_LIBRARIES: ${SDL2_LIBRARIES}")
 message("Vulkan_INCLUDE_DIR: ${Vulkan_INCLUDE_DIR}")
 message("Vulkan_LIBRARIES: ${Vulkan_LIBRARIES}")
+message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(SOURCES 
     src/engine/DataObjects.cpp
+    src/engine/UI/Button.cpp
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
-    src/engine/UI/Button.cpp
+    src/engine/UI/Menu.cpp
     src/engine/UI/TextElement.cpp
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
@@ -40,6 +42,12 @@ set(SOURCES
     src/engine/net/Connection.cpp
     src/engine/net/Client.cpp
     src/engine/net/Server.cpp
+)
+
+set(INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/net
+    ${Vulkan_INCLUDE_DIR}
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -77,15 +85,13 @@ if(WIN32)
 endif()
 target_link_libraries(engine vk2d)
 target_link_libraries(engine asio)
-target_include_directories(engine PRIVATE 
-    "src/engine/" 
-)
+target_include_directories(engine PRIVATE ${INCLUDE_DIRS})
 
 # Create test executable
 add_executable(renderer_test src/test/renderer.test.cpp)
 target_link_libraries(renderer_test engine)
 target_include_directories(renderer_test PRIVATE 
-    "src/engine/"
+    ${INCLUDE_DIRS}
     "src/test/"
 )
 
@@ -93,7 +99,7 @@ target_include_directories(renderer_test PRIVATE
 add_executable(gameObject_test src/test/gameObject.test.cpp)
 target_link_libraries(gameObject_test engine)
 target_include_directories(gameObject_test PRIVATE 
-    "src/engine/"
+    ${INCLUDE_DIRS}
     "src/test/"
 )
     
@@ -101,23 +107,23 @@ target_include_directories(gameObject_test PRIVATE
 add_executable(test_client src/test/testclient.cpp)
 target_link_libraries(test_client engine)
 target_include_directories(test_client PRIVATE 
+    ${INCLUDE_DIRS}
     "src/test/"
-    "src/engine/net/"
 )
 
 # Test server
 add_executable(test_server src/test/testserver.cpp)
 target_link_libraries(test_server engine)
 target_include_directories(test_server PRIVATE 
+    ${INCLUDE_DIRS}
     "src/test/"
-    "src/engine/net/"
 )
 
 # Create test executable
 add_executable(depthOrderedCollection_text src/test/depthOrderedCollection.test.cpp)
 target_link_libraries(depthOrderedCollection_text engine)
 target_include_directories(depthOrderedCollection_text PRIVATE 
-    "src/engine/"
+    ${INCLUDE_DIRS}
     "src/test/"
 )
 
@@ -125,8 +131,8 @@ target_include_directories(depthOrderedCollection_text PRIVATE
 add_executable(scene_test src/test/scene.test.cpp)
 target_link_libraries(scene_test engine)
 target_include_directories(scene_test PRIVATE 
+    ${INCLUDE_DIRS}
     "src/test/"
-    "src/engine/"
 )
 
 # Copy SDL2.dll to the output directory after the executable is built

@@ -1,4 +1,4 @@
-#include "DisplayLayout.hpp"
+#include "UI/DisplayLayout.hpp"
 #include "Renderer.hpp"
 
 using namespace admirals;
