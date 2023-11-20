@@ -1,5 +1,6 @@
 #include "Engine.hpp"
 #include "objects/Background.hpp"
+#include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
 #include "objects/Quad.hpp"
 #include "objects/Ship.hpp"
@@ -59,9 +60,11 @@ int main(int argc, char *argv[]) {
         Vector3(GridWidth - GameData::CellSize,
                 GridHeight - 3 * GameData::CellSize, 2),
         cellSize, atlas, Vector2(64, 0));
-    GameData::engine->MakeGameObject<Ship>(
-        "ship0", Vector3(GameData::CellSize, 5 * GameData::CellSize, 2),
-        cellSize, atlas);
+    // GameData::engine->MakeGameObject<Ship>(
+    //     "ship0", Vector3(GameData::CellSize * 0, 5 * GameData::CellSize, 2),
+    //     cellSize, atlas);
+    GameData::engine->MakeGameObject<GameManager>("gameManager");
+
     GameData::engine->StartGameLoop();
 
     return EXIT_SUCCESS;
