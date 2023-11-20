@@ -9,6 +9,7 @@ Checks: >
   performance-*,
   portability-*,
   readability-*,
+  readability-identifier-naming,
   -bugprone-easily-swappable-parameters,
   -bugprone-macro-parentheses,
   -bugprone-reserved-identifier,-cert-dcl37-c,-cert-dcl51-cpp,
@@ -26,3 +27,5 @@ Checks: >
   -readability-use-anyofallof,
 WarningsAsErrors: ''
 FormatStyle: none
+CheckOptions:
+  - { key: readability-identifier-naming.PrivateMemberPrefix, value: m_ }

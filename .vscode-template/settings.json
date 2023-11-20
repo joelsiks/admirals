@@ -1,8 +1,9 @@
 {
     "editor.formatOnSave": true,
-    "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
     "C_Cpp.default.compileCommands": "build/compile_commands.json",
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
+    "C_Cpp.codeAnalysis.clangTidy.headerFilter": ".*",
     "C_Cpp.codeAnalysis.clangTidy.args": [
         "-p",
         "${workspaceFolder}/build",
