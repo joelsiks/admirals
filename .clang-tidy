@@ -1,0 +1,31 @@
+---
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  concurrency-*,
+  misc-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  readability-identifier-naming,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-macro-parentheses,
+  -bugprone-reserved-identifier,-cert-dcl37-c,-cert-dcl51-cpp,
+  -cert-dcl21-cpp,
+  -misc-no-recursion,
+  -misc-include-cleaner,
+  -misc-non-private-member-variables-in-classes,
+  -misc-use-anonymous-namespace,
+  -performance-noexcept-move-constructor,
+  -performance-no-int-to-ptr,
+  -readability-braces-around-statements,
+  -readability-identifier-length,
+  -readability-named-parameter,
+  -readability-uppercase-literal-suffix,
+  -readability-use-anyofallof,
+WarningsAsErrors: ''
+FormatStyle: none
+CheckOptions:
+  - { key: readability-identifier-naming.PrivateMemberPrefix, value: m_ }
