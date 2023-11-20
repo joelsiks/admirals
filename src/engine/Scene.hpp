@@ -13,9 +13,14 @@ namespace admirals::scene {
 class Scene : public renderer::IDrawable {
 public:
     void AddObject(std::shared_ptr<GameObject> object);
-
+    void RemoveObject(std::shared_ptr<GameObject> object);
+    void RemoveObject(const std::string &key);
+    bool ExistObject(std::shared_ptr<GameObject> object);
+    bool ExistObject(const std::string &key);
     void Render(const renderer::RendererContext &r) const override;
+    int NumObjectsInScene();
 
+    std::vector<std::string> GetSceneObjectNames();
     void OnStart();
     void OnUpdate();
 

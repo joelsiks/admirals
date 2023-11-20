@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 list(APPEND CMAKE_PREFIX_PATH "include/SDL2/cmake")
-project(admirals)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+
+project(admirals)
 
 # Set SDL2_DIR to the path of your SDL2 directory
 set(SDL2_DIR include/SDL2)
@@ -18,7 +19,6 @@ find_package(SDL2 CONFIG REQUIRED)
 
 # Insert SDL2.dll location to SDL2_DLL environment variable.
 get_target_property(SDL2_DLL SDL2::SDL2 IMPORTED_LOCATION)
-
 
 message("SDL2.dll path: ${SDL2_DLL}")
 message("SDL2_DIR: ${SDL2_DIR}")
@@ -147,6 +147,14 @@ target_link_libraries(depthOrderedCollection_text engine)
 target_include_directories(depthOrderedCollection_text PRIVATE 
     "src/engine/"
     "src/test/"
+)
+
+# Create test executable
+add_executable(scene_test src/test/scene.test.cpp)
+target_link_libraries(scene_test engine)
+target_include_directories(scene_test PRIVATE 
+    "src/test/"
+    "src/engine/"
 )
 
 # Copy SDL2.dll to the output directory after the executable is built

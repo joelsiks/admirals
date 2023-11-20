@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -103,7 +104,18 @@ public:
     /// object to erase from the collection
     inline void Erase(const std::string &key) {
         m_objects.erase(key);
-        m_ordered.erase(key);
+
+        auto it = this->m_ordered.begin();
+        bool found = false;
+        for (it; it != this->m_ordered.end(); it++) {
+            if (*it == key) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            this->m_ordered.erase(it);
+        }
     }
 
     /// @brief Get the number of `IOrdered` objects contained in the collection.
@@ -118,8 +130,8 @@ public:
     /// @return The pointer to the `IOrdered` object with the same
     /// `IOrdered::name` property as the given identifier `key`. If no matching
     /// object is found, `nullptr` is returned.
-    inline Iterator Find(const std::string &key) {
-        if (auto res = m_objects.find(key) && res != m_objects.end()) {
+    inline std::shared_ptr<T> Find(const std::string &key) {
+        if (auto res = m_objects.find(key); res != m_objects.end()) {
             return res->second;
         }
         return nullptr;
