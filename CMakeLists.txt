@@ -121,6 +121,14 @@ target_include_directories(depthOrderedCollection_text PRIVATE
     "src/test/"
 )
 
+# Create test executable
+add_executable(scene_test src/test/scene.test.cpp)
+target_link_libraries(scene_test engine)
+target_include_directories(scene_test PRIVATE 
+    "src/test/"
+    "src/engine/"
+)
+
 # Copy SDL2.dll to the output directory after the executable is built
 add_custom_command(TARGET renderer_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
