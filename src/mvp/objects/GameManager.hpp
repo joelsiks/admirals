@@ -1,8 +1,8 @@
 #pragma once
-#include "CommonTypes.hpp"
 #include "GameObject.hpp"
 #include "Ship.hpp"
 #include "UI/TextElement.hpp"
+#include "commontypes.hpp"
 #include "shared.hpp"
 
 namespace admirals::mvp::objects {
@@ -29,10 +29,10 @@ public:
     void SetPlayerId(uint32_t id) { m_playerId = id; }
 
     void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,
-                     const std::vector<ShipData> &ships);
+                     const std::map<uint16_t, ShipData> &ships);
 
 private:
-    void ModifyShips(const std::vector<ShipData> &new_ships);
+    void ModifyShips(const std::map<uint16_t, ShipData> &new_ships);
 
 private:
     bool m_testActionDone = false;

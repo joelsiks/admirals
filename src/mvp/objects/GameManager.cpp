@@ -47,7 +47,7 @@ void GameManager::OnUpdate() {
 
 void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
                               int enemyBaseHealth,
-                              const std::vector<ShipData> &ships) {
+                              const std::map<uint16_t, ShipData> &ships) {
     m_turn = turn;
     m_coins = coins;
     m_baseHealth = baseHealth;
@@ -55,8 +55,8 @@ void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
     ModifyShips(ships);
 }
 
-void GameManager::ModifyShips(const std::vector<ShipData> &ships) {
-    for (auto &ship : ships) {
+void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
+    for (const auto &[_, ship] : ships) {
         if (ship.id == 0) {
             continue;
         }
@@ -85,15 +85,9 @@ void GameManager::ModifyShips(const std::vector<ShipData> &ships) {
 
     // Remove ships in m_ships that are not in ships
     for (auto it = m_ships.begin(); it != m_ships.end();) {
-        bool found = false;
-        for (auto &ship : ships) {
-            if (ship.id == it->second->GetId()) {
-                found = true;
-                break;
-            }
-        }
+        const uint16_t id = it->first;
 
-        if (!found) {
+        if (ships.find(id) == ships.end()) {
             if (m_debug)
                 printf("Removing ship %d\n", it->second->GetId());
             it = m_ships.erase(it);

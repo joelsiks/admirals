@@ -133,11 +133,11 @@ void NetworkManager::UpdateBoard(Message &msg) {
     uint8_t player1Ships, player2Ships;
     msg >> player1Ships >> player2Ships;
 
-    std::vector<ShipData> ships;
+    std::map<uint16_t, ShipData> ships;
     for (int i = 0; i < player1Ships + player2Ships; i++) {
         ShipData ship;
         msg >> ship;
-        ships.push_back(ship);
+        ships[ship.id] = ship;
     }
 
     uint16_t turn, player1Coins, player2Coins, player1BaseHealth,
