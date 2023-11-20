@@ -48,6 +48,8 @@ set(MVP_SOURCES
     src/mvp/objects/Grid.cpp
     src/mvp/objects/Quad.cpp
     src/mvp/objects/Ship.cpp
+    src/mvp/objects/GameManager.cpp
+    src/mvp/objects/NetworkManager.cpp
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -94,6 +96,16 @@ add_executable(mvp src/mvp/main.cpp ${MVP_SOURCES})
 target_link_libraries(mvp engine)
 target_include_directories(mvp PRIVATE 
     "src/engine/"
+    "src/engine/net"
+    "src/mvp/"
+)
+
+# Create mvp server
+add_executable(mvp_server src/mvp/mvpserver.cpp)
+target_link_libraries(mvp_server engine)
+target_include_directories(mvp_server PRIVATE 
+    "src/engine/"
+    "src/engine/net"
     "src/mvp/"
 )
 
