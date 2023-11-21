@@ -16,7 +16,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
 }
 
 bool Engine::PollAndHandleEvent() {
-    bool quit = false;
+    bool quit = !m_running;
     SDL_Event e;
 
     while (SDL_PollEvent(&e)) {
@@ -24,7 +24,16 @@ bool Engine::PollAndHandleEvent() {
             quit = true;
         }
 
-        m_displayLayout->HandleEvent(e);
+        // Toggle escape menu.
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
+            m_showingMenus = !m_showingMenus;
+        }
+
+        if (m_showingMenus) {
+            m_escapeMenu->HandleEvent(e);
+        } else {
+            m_displayLayout->HandleEvent(e);
+        }
     }
 
     SDL_PumpEvents();
@@ -32,7 +41,11 @@ bool Engine::PollAndHandleEvent() {
 }
 
 void Engine::StartGameLoop() {
+    m_running = true;
     m_scene->OnStart();
+
+    std::vector<std::shared_ptr<renderer::IDrawable>> menuLayers;
+    menuLayers.emplace_back(m_escapeMenu);
 
     std::vector<std::shared_ptr<renderer::IDrawable>> layers;
     layers.emplace_back(m_scene);
@@ -44,6 +57,6 @@ void Engine::StartGameLoop() {
     while (!quit) {
         quit = PollAndHandleEvent();
         m_scene->OnUpdate();
-        m_renderer->Render(layers);
+        m_renderer->Render(m_showingMenus ? menuLayers : layers);
     }
 }

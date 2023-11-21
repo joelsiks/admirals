@@ -34,6 +34,7 @@ set(SOURCES
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
     src/engine/UI/Menu.cpp
+    src/engine/UI/MenuOption.cpp
     src/engine/UI/TextElement.cpp
     src/engine/GameObject.cpp
     src/engine/Scene.cpp

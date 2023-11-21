@@ -8,6 +8,8 @@
 #include "EventSystem.hpp"
 #include "GameObject.hpp"
 #include "UI/Button.hpp"
+#include "UI/Menu.hpp"
+#include "UI/MenuOption.hpp"
 #include "UI/TextElement.hpp"
 
 using namespace admirals;
@@ -54,6 +56,49 @@ private:
     bool m_keepAspectRatio;
 };
 
+void CreateEscapeMenuOptions(std::shared_ptr<UI::Menu> escapeMenu,
+                             Engine &engine, bool initialDebugValue) {
+    UI::ClickOption exitOption("exitOption", 1.0, "Exit...");
+    exitOption.onClick.Subscribe(
+        [&engine](void *, UI::OptionClickEventArgs &args) {
+            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+                return;
+
+            engine.StopGameLoop();
+        });
+    escapeMenu->AddMenuOption(UI::MenuOption::CreateFromDerived(exitOption));
+
+    UI::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
+                                       "Debug Rendering", initialDebugValue);
+    toggleDebugOption.onClick.Subscribe(
+        [&engine](void *, UI::OptionClickEventArgs &args) {
+            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+                return;
+
+            engine.ToggleDebugRendering();
+        });
+    escapeMenu->AddMenuOption(
+        UI::MenuOption::CreateFromDerived(toggleDebugOption));
+
+    const std::vector<Color> cycleColors = {Color::RED, Color::BLACK,
+                                            Color::WHITE};
+    UI::CycleOption cycleColorOption("cycleMenuColorOption", 1.0, "Menu Color",
+                                     {"Red", "Black", "White"}, 1);
+    cycleColorOption.onClick.Subscribe(
+        [&escapeMenu, cycleColors](void *sender,
+                                   UI::OptionClickEventArgs &args) {
+            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+                return;
+
+            auto *cycleOption = static_cast<UI::CycleOption *>(sender);
+            const size_t idx =
+                (cycleOption->CurrentIndex() + 1) % cycleColors.size();
+            escapeMenu->SetTextColor(cycleColors[idx]);
+        });
+    escapeMenu->AddMenuOption(
+        UI::MenuOption::CreateFromDerived(cycleColorOption));
+}
+
 void OnButtonClick(void *object, UI::ButtonClickEventArgs &event) {
     auto button = static_cast<UI::Button *>(object);
     if (event.m_data.type == SDL_MOUSEBUTTONUP) {
@@ -64,34 +109,42 @@ void OnButtonClick(void *object, UI::ButtonClickEventArgs &event) {
     }
 }
 
-int main(int argc, char *argv[]) {
-
-    Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
-
-    // Create texture object.
-    auto texture = engine.MakeGameObject<TextureObject>(
-        "image", Vector3(0, 0, 0), "assets/admirals.png");
-
-    Vector2 elementSize = Vector2(300, 40);
+void CreateUIElements(Engine &engine,
+                      std::shared_ptr<TextureObject> textureObj) {
+    const Vector2 elementSize = Vector2(300, 40);
 
     auto btn1 = engine.MakeUIElement<UI::Button>(
         "btn1", 0, "Move Image Left", elementSize, Color::BLACK, Color::WHITE);
     btn1->onClick.Subscribe(OnButtonClick);
     btn1->onClick.Subscribe(
-        BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, texture));
+        BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, textureObj));
 
     auto btn2 = engine.MakeUIElement<UI::Button>(
         "btn2", 0, "Move Image Right", elementSize, Color::BLACK, Color::WHITE);
     btn2->onClick.Subscribe(OnButtonClick);
     btn2->onClick.Subscribe(
-        BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, texture));
+        BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, textureObj));
 
     auto testText1 = engine.MakeUIElement<UI::TextElement>(
-        "text1", 0, "Left aligned", Vector2(220, 40), Color::BLACK);
+        "text1", 0, "Le", Vector2(32, 40), Color::BLACK);
     auto testText2 = engine.MakeUIElement<UI::TextElement>(
         "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
     testText1->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
     testText2->SetDisplayPosition(UI::DisplayPosition::LowerRight);
+}
+
+int main(int argc, char *argv[]) {
+
+    const bool debug = true;
+    Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
+
+    auto escapeMenu =
+        engine.MakeAndSetEscapeMenu<UI::Menu>("Pause Menu", Color::BLACK);
+    CreateEscapeMenuOptions(escapeMenu, engine, debug);
+
+    auto texture = engine.MakeGameObject<TextureObject>(
+        "image", Vector3(0, 0, 0), "assets/admirals.png");
+    CreateUIElements(engine, texture);
 
     engine.StartGameLoop();
 
