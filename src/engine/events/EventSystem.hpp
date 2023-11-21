@@ -17,26 +17,6 @@ public:
     bool handled = false;
 };
 
-template <typename T> struct FunctionWrapper {
-    std::function<T> func;
-
-    template <typename U> static void *target_helper(void *obj, U &&func) {
-        using FuncType = std::decay_t<decltype(func)>;
-        FunctionWrapper<FuncType> *wrapper =
-            static_cast<FunctionWrapper<FuncType> *>(obj);
-        return wrapper->func.template target<void *>();
-    }
-
-    template <typename U> static FunctionWrapper wrap(U &&func) {
-        return {std::forward<U>(func)};
-    }
-
-    template <typename U> static void *target(U &&func) {
-        return target_helper(&wrap(std::forward<U>(func)),
-                             std::forward<U>(func));
-    }
-};
-
 template <typename T = EventArgs> class EventSystem {
 public:
     typedef std::function<void(void *, T &)> EventHandler;
