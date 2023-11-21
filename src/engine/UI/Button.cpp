@@ -2,6 +2,7 @@
 #include "Renderer.hpp"
 
 using namespace admirals::UI;
+using namespace admirals::events;
 
 Button::Button(const std::string &name, float order, const std::string &text,
                const Vector2 &size, const Color &bgColor, const Color &fgColor)
@@ -16,8 +17,8 @@ void Button::Render(const Texture &font) {
 
 bool Button::HandleEvent(const SDL_Event &event) {
     if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-        int mouseX = event.button.x;
-        int mouseY = event.button.y;
+        const float mouseX = static_cast<float>(event.button.x);
+        const float mouseY = static_cast<float>(event.button.y);
 
         if (mouseX >= m_displayOrigin[0] &&
             mouseX <= m_displayOrigin[0] + m_displaySize[0] &&

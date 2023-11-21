@@ -1,4 +1,5 @@
 #pragma once
+#include "EventArgs.hpp"
 
 #include <functional>
 #include <unordered_set>
@@ -11,11 +12,6 @@ namespace admirals::events {
     std::bind(std::mem_fn(&handler), source, std::placeholders::_1,            \
               std::placeholders::_2)
 #define BIND_EVENT_HANDLER(handler) BIND_EVENT_HANDLER_FROM(handler, this)
-
-class EventArgs {
-public:
-    bool handled = false;
-};
 
 template <typename T = EventArgs> class EventSystem {
 public:
