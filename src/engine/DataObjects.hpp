@@ -32,9 +32,9 @@ public:
 
     inline float Magnitude() const { return std::sqrt(m_0 * m_0 + m_1 * m_1); }
 
-    inline float Distance(const Vector2 v) const {
-        float a = m_0 - v.m_0;
-        float b = m_1 - v.m_1;
+    inline float Distance(const Vector2 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
         return std::sqrt(a * a + b * b);
     }
 
@@ -45,8 +45,10 @@ public:
     }
 
     inline Vector2 &operator=(const Vector2 &in) {
-        this->m_0 = in.m_0;
-        this->m_1 = in.m_1;
+        if (this != &in) {
+            this->m_0 = in.m_0;
+            this->m_1 = in.m_1;
+        }
         return *this;
     }
 
@@ -118,7 +120,7 @@ public:
 
     inline float &operator[](int i) { return this->Data()[i]; }
 
-    static inline float Distance(Vector2 v1, Vector2 v2) {
+    static inline float Distance(const Vector2 &v1, const Vector2 &v2) {
         return v1.Distance(v2);
     }
 };
@@ -141,10 +143,10 @@ public:
         return std::sqrt(m_0 * m_0 + m_1 * m_1 + m_2 * m_2);
     }
 
-    inline float Distance(const Vector3 v) const {
-        float a = m_0 - v.m_0;
-        float b = m_1 - v.m_1;
-        float c = m_2 - v.m_2;
+    inline float Distance(const Vector3 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        const float c = m_2 - v.m_2;
         return std::sqrt(a * a + b * b + c * c);
     }
 
@@ -162,9 +164,11 @@ public:
     }
 
     inline Vector3 &operator=(const Vector3 &in) {
-        this->m_0 = in.m_0;
-        this->m_1 = in.m_1;
-        this->m_2 = in.m_2;
+        if (this != &in) {
+            this->m_0 = in.m_0;
+            this->m_1 = in.m_1;
+            this->m_2 = in.m_2;
+        }
         return *this;
     }
 
@@ -238,7 +242,7 @@ public:
         return *this;
     }
 
-    static inline float Distance(Vector3 v1, Vector3 v2) {
+    static inline float Distance(const Vector3 &v1, const Vector3 &v2) {
         return v1.Distance(v2);
     }
 };
@@ -260,19 +264,20 @@ public:
         return std::sqrt(m_0 * m_0 + m_1 * m_1 + m_2 * m_2 + m_3 * m_3);
     }
 
-    inline float Distance(const Vector4 v) const {
-        float a = m_0 - v.m_0;
-        float b = m_1 - v.m_1;
-        float c = m_2 - v.m_2;
-        float d = m_3 - v.m_3;
+    inline float Distance(const Vector4 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        const float c = m_2 - v.m_2;
+        const float d = m_3 - v.m_3;
         return std::sqrt(a * a + b * b + c * c + d * d);
     }
 
-    inline void operator=(float &in) {
+    inline Vector4 &operator=(float &in) {
         this->m_0 = in;
         this->m_1 = in;
         this->m_2 = in;
         this->m_3 = in;
+        return *this;
     }
 
     inline Vector4 &operator=(const Vector2 &in) {
@@ -289,10 +294,12 @@ public:
     }
 
     inline Vector4 &operator=(const Vector4 &in) {
-        this->m_0 = in.m_0;
-        this->m_1 = in.m_1;
-        this->m_2 = in.m_2;
-        this->m_3 = in.m_3;
+        if (this != &in) {
+            this->m_0 = in.m_0;
+            this->m_1 = in.m_1;
+            this->m_2 = in.m_2;
+            this->m_3 = in.m_3;
+        }
         return *this;
     }
 
@@ -372,7 +379,7 @@ public:
         return *this;
     }
 
-    static inline float Distance(Vector4 v1, Vector4 v2) {
+    static inline float Distance(const Vector4 &v1, const Vector4 &v2) {
         return v1.Distance(v2);
     }
 };

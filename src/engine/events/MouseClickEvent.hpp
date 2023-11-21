@@ -1,4 +1,7 @@
 #pragma once
+
+#include "EventArgs.hpp"
+
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <cstdint>
@@ -13,7 +16,7 @@ enum MouseButton : uint8_t {
     X2 = SDL_BUTTON_X2,
 };
 
-class MouseCLickEventArgs : public events::EventArgs {
+class MouseCLickEventArgs : public EventArgs {
 public:
     MouseCLickEventArgs(const SDL_MouseButtonEvent &e)
         : button(static_cast<MouseButton>(e.button)), clicks(e.clicks),
