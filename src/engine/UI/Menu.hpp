@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "events/EventSystem.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/MenuOption.hpp"
+#include "events/EventSystem.hpp"
 
 namespace admirals::UI {
 
