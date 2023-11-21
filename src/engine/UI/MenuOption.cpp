@@ -1,5 +1,3 @@
-#include <format>
-
 #include "MenuOption.hpp"
 #include "Renderer.hpp"
 
@@ -86,7 +84,7 @@ ToggleOption::ToggleOption(const std::string &name, float order,
 }
 
 std::string ToggleOption::GetOptionText() {
-    return std::format("{} [{}]", m_text, m_toggled ? "ON" : "OFF");
+    return m_text + " [" + std::string(m_toggled ? "OF" : "OFF") + "]";
 }
 
 void ToggleOption::Toggle() { m_toggled = !m_toggled; }
@@ -109,7 +107,7 @@ CycleOption::CycleOption(const std::string &name, float order,
 }
 
 std::string CycleOption::GetOptionText() {
-    return std::format("{} [{}]", m_text, m_cycleOptions[CurrentIndex()]);
+    return m_text + " [" + std::string(m_cycleOptions[CurrentIndex()]) + "]";
 }
 
 void CycleOption::Cycle() {
