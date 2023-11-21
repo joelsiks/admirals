@@ -140,8 +140,8 @@ int main(int argc, char *argv[]) {
     const bool debug = true;
     Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
 
-    auto escapeMenu =
-        engine.MakeAndSetEscapeMenu<UI::Menu>("Pause Menu", Color::BLACK);
+    auto escapeMenu = std::make_shared<UI::Menu>("Pause Menu", Color::BLACK);
+    engine.AddMenu("escapeMenu", escapeMenu, SDLK_ESCAPE);
     CreateEscapeMenuOptions(escapeMenu, engine, debug);
 
     auto texture = engine.MakeGameObject<TextureObject>(

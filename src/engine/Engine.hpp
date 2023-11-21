@@ -9,20 +9,25 @@
 #include "UI/Element.hpp"
 #include "UI/Menu.hpp"
 #include "events/EventSystem.hpp"
+#include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
 
 namespace admirals {
 
+#define SDLK_IGNORE SDLK_SOFTRIGHT
+
 class Engine {
 public:
     events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
+    events::EventSystem<events::KeyPressEventArgs> onKeyPress;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
-    inline void SetEscapeMenu(std::shared_ptr<UI::Menu> menu) {
-        m_escapeMenu = menu;
-    }
+    void AddMenu(const std::string &menuName, std::shared_ptr<UI::Menu> menu,
+                 SDL_Keycode toggleKeyCode);
+
+    void ActivateMenu(const std::string &menuName);
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element) {
         m_displayLayout->AddElement(std::move(element));
@@ -33,13 +38,6 @@ public:
     }
 
     inline void ToggleDebugRendering() { m_renderer->ToggleDebugRendering(); }
-
-    template <typename T, typename... _Args>
-    inline std::shared_ptr<T> MakeAndSetEscapeMenu(_Args &&..._args) {
-        auto object = std::make_shared<T>(_args...);
-        SetEscapeMenu(object);
-        return object;
-    }
 
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {
@@ -65,10 +63,15 @@ private:
 
     std::string m_gameName;
 
-    bool m_showingMenus = false;
+    // The engine keeps track of a number of different menus. Only one menu is
+    // active at a time, indicated by m_activeMenu pointing to the active menu.
+    // If m_activeMenu is nullptr, there is no active menu.
+    std::unordered_map<std::string, std::shared_ptr<UI::Menu>> m_menus;
+    std::shared_ptr<UI::Menu> m_activeMenu;
+
+    inline bool hasActiveMenu() { return m_activeMenu != nullptr; }
 
     // Drawables
-    std::shared_ptr<UI::Menu> m_escapeMenu;
     std::shared_ptr<UI::DisplayLayout> m_displayLayout;
     std::shared_ptr<scene::Scene> m_scene;
 

@@ -12,7 +12,32 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_renderer->Init(debug);
 
     m_displayLayout = std::make_shared<UI::DisplayLayout>();
+
     m_scene = std::make_shared<scene::Scene>();
+}
+void Engine::AddMenu(const std::string &menuName,
+                     std::shared_ptr<UI::Menu> menu,
+                     SDL_Keycode toggleKeyCode) {
+    m_menus[menuName] = menu;
+
+    if (toggleKeyCode != SDLK_IGNORE) {
+        onKeyPress.Subscribe([this, menu, toggleKeyCode](
+                                 void *, events::KeyPressEventArgs &args) {
+            if (args.key == toggleKeyCode && args.isKeyUp) {
+                if (this->m_activeMenu == menu) {
+                    this->m_activeMenu = nullptr;
+                } else {
+                    this->m_activeMenu = menu;
+                }
+            }
+        });
+    }
+}
+
+void Engine::ActivateMenu(const std::string &menuName) {
+    if (m_menus.contains(menuName)) {
+        m_activeMenu = m_menus[menuName];
+    }
 }
 
 bool Engine::PollAndHandleEvent() {
@@ -29,17 +54,17 @@ bool Engine::PollAndHandleEvent() {
             auto args = MouseCLickEventArgs(e.button);
             onMouseClick.Invoke(this, args);
         } break;
+        case SDL_KEYDOWN:
+        case SDL_KEYUP: {
+            auto args = KeyPressEventArgs(e.key);
+            onKeyPress.Invoke(this, args);
+        } break;
         default:
             break;
         }
 
-        // Toggle escape menu.
-        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-            m_showingMenus = !m_showingMenus;
-        }
-
-        if (m_showingMenus) {
-            m_escapeMenu->HandleEvent(e);
+        if (hasActiveMenu()) {
+            m_activeMenu->HandleEvent(e);
         } else {
             m_displayLayout->HandleEvent(e);
         }
@@ -53,8 +78,7 @@ void Engine::StartGameLoop() {
     m_running = true;
     m_scene->OnStart();
 
-    std::vector<std::shared_ptr<renderer::IDrawable>> menuLayers;
-    menuLayers.emplace_back(m_escapeMenu);
+    std::vector<std::shared_ptr<renderer::IDrawable>> menuLayer;
 
     std::vector<std::shared_ptr<renderer::IDrawable>> layers;
     layers.emplace_back(m_scene);
@@ -63,8 +87,12 @@ void Engine::StartGameLoop() {
     // Start render loop
     bool quit = false;
     while (!quit) {
+        if (hasActiveMenu()) {
+            menuLayer = {m_activeMenu};
+        }
+
         quit = PollAndHandleEvent();
         m_scene->OnUpdate();
-        m_renderer->Render(m_showingMenus ? menuLayers : layers);
+        m_renderer->Render(hasActiveMenu() ? menuLayer : layers);
     }
 }
