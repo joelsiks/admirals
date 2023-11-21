@@ -1,6 +1,6 @@
+#include "UI/Menu.hpp"
 #include "DataObjects.hpp"
 #include "Renderer.hpp"
-#include "UI/Menu.hpp"
 
 using namespace admirals::UI;
 
