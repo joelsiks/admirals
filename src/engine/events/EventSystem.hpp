@@ -8,7 +8,8 @@ namespace admirals::events {
 // These macros are for easily binding class methods or functions to an event
 // handler.
 #define BIND_EVENT_HANDLER_FROM(handler, source)                               \
-    std::bind(&handler, source, std::placeholders::_1, std::placeholders::_2)
+    std::bind(std::mem_fn(&handler), source, std::placeholders::_1,            \
+              std::placeholders::_2)
 #define BIND_EVENT_HANDLER(handler) BIND_EVENT_HANDLER_FROM(handler, this)
 
 class EventArgs {
