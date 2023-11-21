@@ -12,8 +12,6 @@
 #include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
 
-#define SDLK_IGNORE SDLK_CALCULATOR
-
 namespace admirals {
 
 class Engine {
@@ -24,7 +22,16 @@ public:
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
-    void AddMenu(const std::string &menuName, std::shared_ptr<UI::Menu> menu,
+    /// @brief Adds a menu to the list of menus inside the Engine. If
+    /// toggleKeyCode is set to something other than SDLK_IGNORE, a global
+    /// listener for that key activates the menu if the key is pressed.
+    /// @param menuName name of the menu, can be used in @ref ActivateMenu to
+    /// activate it manually.
+    /// @param menu a pointer to the menu instance
+    /// @param toggleKeyCode should be set to one of SDL's SDLK_* keycodes. Use
+    /// SDLK_IGNORE if you wish to not enable a  global listener for the menu.
+    void AddMenu(const std::string &menuName,
+                 const std::shared_ptr<UI::Menu> &menu,
                  SDL_Keycode toggleKeyCode);
 
     void ActivateMenu(const std::string &menuName);

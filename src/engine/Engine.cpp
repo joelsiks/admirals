@@ -16,7 +16,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_scene = std::make_shared<scene::Scene>();
 }
 void Engine::AddMenu(const std::string &menuName,
-                     std::shared_ptr<UI::Menu> menu,
+                     const std::shared_ptr<UI::Menu> &menu,
                      SDL_Keycode toggleKeyCode) {
     m_menus[menuName] = menu;
 
