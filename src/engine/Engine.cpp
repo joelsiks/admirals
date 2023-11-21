@@ -1,7 +1,7 @@
-
 #include "Engine.hpp"
 
 using namespace admirals;
+using namespace admirals::events;
 
 Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
                bool debug) {
@@ -19,9 +19,18 @@ bool Engine::PollAndHandleEvent() {
     bool quit = false;
     SDL_Event e;
 
-    while (SDL_PollEvent(&e)) {
-        if (e.type == SDL_QUIT) {
+    while (SDL_PollEvent(&e) != 0) {
+        switch (e.type) {
+        case SDL_QUIT:
             quit = true;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP: {
+            auto args = MouseCLickEventArgs(e.button);
+            onMouseClick.Invoke(this, args);
+        } break;
+        default:
+            break;
         }
 
         m_displayLayout->HandleEvent(e);
@@ -40,7 +49,6 @@ void Engine::StartGameLoop() {
 
     // Start render loop
     bool quit = false;
-    SDL_Event e;
     while (!quit) {
         quit = PollAndHandleEvent();
         m_scene->OnUpdate();

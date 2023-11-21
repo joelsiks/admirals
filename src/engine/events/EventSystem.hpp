@@ -1,7 +1,8 @@
 #pragma once
+#include "EventArgs.hpp"
 
 #include <functional>
-#include <set>
+#include <unordered_set>
 
 namespace admirals::events {
 
@@ -11,11 +12,6 @@ namespace admirals::events {
     std::bind(std::mem_fn(&handler), source, std::placeholders::_1,            \
               std::placeholders::_2)
 #define BIND_EVENT_HANDLER(handler) BIND_EVENT_HANDLER_FROM(handler, this)
-
-class EventArgs {
-public:
-    bool handled = false;
-};
 
 template <typename T = EventArgs> class EventSystem {
 public:
@@ -49,13 +45,27 @@ public:
 private:
     inline void operator=(const EventSystem<T> e) = delete;
 
-    struct Comparator {
-        bool operator()(const EventHandler &l, const EventHandler &r) const {
-            return l.target_type().hash_code() < r.target_type().hash_code();
+    struct Hash {
+        size_t operator()(const EventHandler &e) const {
+            // Hash the type information
+            const size_t typeHash = typeid(EventHandler).hash_code();
+
+            // target function pointer
+            const size_t *functor = reinterpret_cast<const size_t *>(&e);
+            const size_t functionHash = functor[0];
+
+            // Combine the hash values
+            return typeHash ^ functionHash;
         }
     };
 
-    std::set<EventHandler, Comparator> m_handlers;
+    struct Equals {
+        bool operator()(const EventHandler &l, const EventHandler &r) const {
+            return Hash{}(l) == Hash{}(r);
+        }
+    };
+
+    std::unordered_set<EventHandler, Hash, Equals> m_handlers;
 };
 
 } // namespace admirals::events
