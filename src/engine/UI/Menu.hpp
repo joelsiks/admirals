@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "EventSystem.hpp"
+#include "events/EventSystem.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/MenuOption.hpp"
 

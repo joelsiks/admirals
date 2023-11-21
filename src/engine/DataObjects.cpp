@@ -42,13 +42,13 @@ Color::Color(float r, float g, float b, float a) : Vector4(r, g, b, a) {}
 Color::~Color() {}
 
 Color Color::FromHEX(const char *hex) {
-    Color c = Color();
+    const Color c = Color();
     vk2dColourHex(c.Data(), hex);
     return c;
 }
 
 Color Color::FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-    Color c = Color();
+    const Color c = Color();
     vk2dColourRGBA(c.Data(), r, g, b, a);
     return c;
 }
@@ -66,13 +66,13 @@ Texture::Texture(VK2DTexture &m_texture) : m_texture(m_texture) {}
 
 Texture::~Texture() { vk2dTextureFree(m_texture); }
 
-unsigned int admirals::Texture::Width() const {
+float admirals::Texture::Width() const {
     if (m_texture == NULL) {
         return 0;
     }
     return vk2dTextureWidth(m_texture);
 }
-unsigned int admirals::Texture::Height() const {
+float admirals::Texture::Height() const {
     if (m_texture == NULL) {
         return 0;
     }

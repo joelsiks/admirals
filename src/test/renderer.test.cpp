@@ -5,12 +5,12 @@
 #include <time.h>
 
 #include "Engine.hpp"
-#include "EventSystem.hpp"
 #include "GameObject.hpp"
 #include "UI/Button.hpp"
 #include "UI/Menu.hpp"
 #include "UI/MenuOption.hpp"
 #include "UI/TextElement.hpp"
+#include "events/EventSystem.hpp"
 
 using namespace admirals;
 
@@ -28,10 +28,10 @@ public:
 
     void OnUpdate() override {}
 
-    void ButtonClickHandler(void *sender, UI::ButtonClickEventArgs &e) {
+    void ButtonClickHandler(void *sender, events::ButtonClickEventArgs &e) {
         if (e.m_data.type != SDL_MOUSEBUTTONDOWN)
             return;
-        auto button = static_cast<UI::Button *>(sender);
+        auto *button = static_cast<UI::Button *>(sender);
         if (button->name() == "btn1") {
             SetPosition(Vector2(GetPosition().x() - 100, 0));
         } else if (button->name() == "btn2") {
@@ -40,8 +40,10 @@ public:
     }
 
     void Render(const renderer::RendererContext &r) const override {
-        float x = r.windowWidth / static_cast<float>(m_texture.Width());
-        float y = r.windowHeight / static_cast<float>(m_texture.Height());
+        float x = static_cast<float>(r.windowWidth) /
+                  static_cast<float>(m_texture.Width());
+        float y = static_cast<float>(r.windowHeight) /
+                  static_cast<float>(m_texture.Height());
         if (m_keepAspectRatio) {
             x = std::min(x, y);
             y = x;
@@ -99,12 +101,12 @@ void CreateEscapeMenuOptions(std::shared_ptr<UI::Menu> escapeMenu,
         UI::MenuOption::CreateFromDerived(cycleColorOption));
 }
 
-void OnButtonClick(void *object, UI::ButtonClickEventArgs &event) {
+void OnButtonClick(void *object, events::ButtonClickEventArgs &event) {
     auto button = static_cast<UI::Button *>(object);
     if (event.m_data.type == SDL_MOUSEBUTTONUP) {
         button->SetBackgroundColor(Color::BLACK);
     } else if (event.m_data.type == SDL_MOUSEBUTTONDOWN) {
-        Color grey = Color::FromRGBA(50, 50, 50, 255);
+        const Color grey = Color::FromRGBA(50, 50, 50, 255);
         button->SetBackgroundColor(grey);
     }
 }

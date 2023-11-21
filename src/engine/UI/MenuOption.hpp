@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "DataObjects.hpp"
-#include "EventSystem.hpp"
+#include "events/EventSystem.hpp"
 #include "UI/Element.hpp"
 
 namespace admirals::UI {

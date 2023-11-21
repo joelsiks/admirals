@@ -1,6 +1,7 @@
 #pragma once
 
 #include <VK2D/Texture.h>
+#include <cmath>
 #include <stdint.h>
 #include <string>
 
@@ -29,23 +30,99 @@ public:
         return (float *)&this->m_0;
     }
 
-    inline void operator=(float &in) {
+    inline float Magnitude() const { return std::sqrt(m_0 * m_0 + m_1 * m_1); }
+
+    inline float Distance(const Vector2 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        return std::sqrt(a * a + b * b);
+    }
+
+    inline Vector2 &operator=(float &in) {
         this->m_0 = in;
         this->m_1 = in;
+        return *this;
     }
 
-    inline void operator=(const Vector2 &in) {
-        this->m_0 = in.m_0;
-        this->m_1 = in.m_1;
+    inline Vector2 &operator=(const Vector2 &in) {
+        if (this != &in) {
+            this->m_0 = in.m_0;
+            this->m_1 = in.m_1;
+        }
+        return *this;
     }
 
-    inline bool operator==(const Vector2 &r) {
+    inline bool operator==(const Vector2 &r) const {
         return r.m_0 == m_0 && r.m_1 == m_1;
+    }
+
+    inline Vector2 operator+(const Vector2 &r) const {
+        return Vector2(m_0 + r.m_0, m_1 + r.m_1);
+    }
+
+    inline Vector2 &operator+=(const Vector2 &r) {
+        m_0 += r.m_0;
+        m_1 += r.m_1;
+        return *this;
+    }
+
+    inline Vector2 operator-(const Vector2 &r) const {
+        return Vector2(m_0 + r.m_0, m_1 + r.m_1);
+    }
+
+    inline Vector2 &operator-=(const Vector2 &r) {
+        m_0 -= r.m_0;
+        m_1 -= r.m_1;
+        return *this;
+    }
+
+    inline Vector2 operator*(const Vector2 &r) const {
+        return Vector2(m_0 * r.m_0, m_1 * r.m_1);
+    }
+
+    inline Vector2 operator*(float r) const {
+        return Vector2(m_0 * r, m_1 * r);
+    }
+
+    inline Vector2 &operator*=(const Vector2 &r) {
+        m_0 *= r.m_0;
+        m_1 *= r.m_1;
+        return *this;
+    }
+
+    inline Vector2 &operator*=(float r) {
+        m_0 *= r;
+        m_1 *= r;
+        return *this;
+    }
+
+    inline Vector2 operator/(const Vector2 &r) const {
+        return Vector2(m_0 / r.m_0, m_1 / r.m_1);
+    }
+
+    inline Vector2 operator/(float r) const {
+        return Vector2(m_0 / r, m_1 / r);
+    }
+
+    inline Vector2 &operator/=(const Vector2 &r) {
+        m_0 /= r.m_0;
+        m_1 /= r.m_1;
+        return *this;
+    }
+
+    inline Vector2 &operator/=(float r) {
+        m_0 /= r;
+        m_1 /= r;
+        return *this;
     }
 
     inline float operator[](int i) const { return this->Data()[i]; }
 
     inline float &operator[](int i) { return this->Data()[i]; }
+
+    static inline float Distance(const Vector2 &v1, const Vector2 &v2) {
+        return v1.Distance(v2);
+    }
 };
 
 class Vector3 : public Vector2 {
@@ -62,25 +139,111 @@ public:
     inline void setZ(float value) { this->m_2 = value; }
     inline Vector2 xy() const { return *this; }
 
-    inline void operator=(float &in) {
+    inline float Magnitude() const {
+        return std::sqrt(m_0 * m_0 + m_1 * m_1 + m_2 * m_2);
+    }
+
+    inline float Distance(const Vector3 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        const float c = m_2 - v.m_2;
+        return std::sqrt(a * a + b * b + c * c);
+    }
+
+    inline Vector3 &operator=(float &in) {
         this->m_0 = in;
         this->m_1 = in;
         this->m_2 = in;
+        return *this;
     }
 
-    inline void operator=(const Vector2 &in) {
+    inline Vector3 &operator=(const Vector2 &in) {
         this->m_0 = in.x();
         this->m_1 = in.y();
+        return *this;
     }
 
-    inline void operator=(const Vector3 &in) {
-        this->m_0 = in.m_0;
-        this->m_1 = in.m_1;
-        this->m_2 = in.m_2;
+    inline Vector3 &operator=(const Vector3 &in) {
+        if (this != &in) {
+            this->m_0 = in.m_0;
+            this->m_1 = in.m_1;
+            this->m_2 = in.m_2;
+        }
+        return *this;
     }
 
-    inline bool operator==(const Vector3 &r) {
+    inline bool operator==(const Vector3 &r) const {
         return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2;
+    }
+
+    inline Vector3 operator+(const Vector3 &r) const {
+        return Vector3(m_0 + r.m_0, m_1 + r.m_1, m_2 + r.m_2);
+    }
+
+    inline Vector3 &operator+=(const Vector3 &r) {
+        m_0 += r.m_0;
+        m_1 += r.m_1;
+        m_2 += r.m_2;
+        return *this;
+    }
+
+    inline Vector3 operator-(const Vector3 &r) const {
+        return Vector3(m_0 + r.m_0, m_1 + r.m_1, m_2 + r.m_2);
+    }
+
+    inline Vector3 &operator-=(const Vector3 &r) {
+        m_0 -= r.m_0;
+        m_1 -= r.m_1;
+        m_2 -= r.m_2;
+        return *this;
+    }
+
+    inline Vector3 operator*(const Vector3 &r) const {
+        return Vector3(m_0 * r.m_0, m_1 * r.m_1, m_2 * r.m_2);
+    }
+
+    inline Vector3 operator*(float r) const {
+        return Vector3(m_0 * r, m_1 * r, m_2 * r);
+    }
+
+    inline Vector3 &operator*=(const Vector3 &r) {
+        m_0 *= r.m_0;
+        m_1 *= r.m_1;
+        m_2 *= r.m_2;
+        return *this;
+    }
+
+    inline Vector3 &operator*=(float r) {
+        m_0 *= r;
+        m_1 *= r;
+        m_2 *= r;
+        return *this;
+    }
+
+    inline Vector3 operator/(const Vector3 &r) const {
+        return Vector3(m_0 / r.m_0, m_1 / r.m_1, m_2 / r.m_2);
+    }
+
+    inline Vector3 operator/(float r) const {
+        return Vector3(m_0 / r, m_1 / r, m_2 / r);
+    }
+
+    inline Vector3 &operator/=(const Vector3 &r) {
+        m_0 /= r.m_0;
+        m_1 /= r.m_1;
+        m_2 /= r.m_2;
+        return *this;
+    }
+
+    inline Vector3 &operator/=(float r) {
+        m_0 /= r;
+        m_1 /= r;
+        m_2 /= r;
+        return *this;
+    }
+
+    static inline float Distance(const Vector3 &v1, const Vector3 &v2) {
+        return v1.Distance(v2);
     }
 };
 
@@ -97,33 +260,127 @@ public:
     inline float w() const { return m_3; }
     inline void SetW(float value) { m_3 = value; }
 
-    inline void operator=(float &in) {
+    inline float Magnitude() const {
+        return std::sqrt(m_0 * m_0 + m_1 * m_1 + m_2 * m_2 + m_3 * m_3);
+    }
+
+    inline float Distance(const Vector4 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        const float c = m_2 - v.m_2;
+        const float d = m_3 - v.m_3;
+        return std::sqrt(a * a + b * b + c * c + d * d);
+    }
+
+    inline Vector4 &operator=(float &in) {
         this->m_0 = in;
         this->m_1 = in;
         this->m_2 = in;
         this->m_3 = in;
+        return *this;
     }
 
-    inline void operator=(const Vector2 &in) {
+    inline Vector4 &operator=(const Vector2 &in) {
         this->m_0 = in.x();
         this->m_1 = in.y();
+        return *this;
     }
 
-    inline void operator=(const Vector3 &in) {
+    inline Vector4 &operator=(const Vector3 &in) {
         this->m_0 = in.x();
         this->m_1 = in.y();
         this->m_2 = in.z();
+        return *this;
     }
 
-    inline void operator=(const Vector4 &in) {
-        this->m_0 = in.m_0;
-        this->m_1 = in.m_1;
-        this->m_2 = in.m_2;
-        this->m_3 = in.m_3;
+    inline Vector4 &operator=(const Vector4 &in) {
+        if (this != &in) {
+            this->m_0 = in.m_0;
+            this->m_1 = in.m_1;
+            this->m_2 = in.m_2;
+            this->m_3 = in.m_3;
+        }
+        return *this;
     }
 
-    inline bool operator==(const Vector4 &r) {
+    inline bool operator==(const Vector4 &r) const {
         return r.m_0 == m_0 && r.m_1 == m_1 && r.m_2 == m_2 && r.m_3 == m_3;
+    }
+
+    inline Vector4 operator+(const Vector4 &r) const {
+        return Vector4(m_0 + r.m_0, m_1 + r.m_1, m_2 + r.m_2, m_3 + r.m_3);
+    }
+
+    inline Vector4 &operator+=(const Vector4 &r) {
+        m_0 += r.m_0;
+        m_1 += r.m_1;
+        m_2 += r.m_2;
+        m_3 += r.m_3;
+        return *this;
+    }
+
+    inline Vector4 operator-(const Vector4 &r) const {
+        return Vector4(m_0 + r.m_0, m_1 + r.m_1, m_2 + r.m_2, m_3 + r.m_3);
+    }
+
+    inline Vector4 &operator-=(const Vector4 &r) {
+        m_0 -= r.m_0;
+        m_1 -= r.m_1;
+        m_2 -= r.m_2;
+        m_3 -= r.m_3;
+        return *this;
+    }
+
+    inline Vector4 operator*(const Vector4 &r) const {
+        return Vector4(m_0 * r.m_0, m_1 * r.m_1, m_2 * r.m_2, m_3 * r.m_3);
+    }
+
+    inline Vector4 operator*(float r) const {
+        return Vector4(m_0 * r, m_1 * r, m_2 * r, m_3 * r);
+    }
+
+    inline Vector4 &operator*=(const Vector4 &r) {
+        m_0 *= r.m_0;
+        m_1 *= r.m_1;
+        m_2 *= r.m_2;
+        m_3 *= r.m_3;
+        return *this;
+    }
+
+    inline Vector4 &operator*=(float r) {
+        m_0 *= r;
+        m_1 *= r;
+        m_2 *= r;
+        m_3 *= r;
+        return *this;
+    }
+
+    inline Vector4 operator/(const Vector4 &r) const {
+        return Vector4(m_0 / r.m_0, m_1 / r.m_1, m_2 / r.m_2, m_3 / r.m_3);
+    }
+
+    inline Vector4 operator/(float r) const {
+        return Vector4(m_0 / r, m_1 / r, m_2 / r, m_3 / r);
+    }
+
+    inline Vector4 &operator/=(const Vector4 &r) {
+        m_0 /= r.m_0;
+        m_1 /= r.m_1;
+        m_2 /= r.m_2;
+        m_3 /= r.m_3;
+        return *this;
+    }
+
+    inline Vector4 &operator/=(float r) {
+        m_0 /= r;
+        m_1 /= r;
+        m_2 /= r;
+        m_3 /= r;
+        return *this;
+    }
+
+    static inline float Distance(const Vector4 &v1, const Vector4 &v2) {
+        return v1.Distance(v2);
     }
 };
 
@@ -164,8 +421,9 @@ public:
     Texture(VK2DTexture &m_texture);
     ~Texture();
 
-    unsigned int Width() const;
-    unsigned int Height() const;
+    // should be uint32
+    float Width() const;
+    float Height() const;
     VK2DTexture Data() const { return m_texture; }
 
     static Texture LoadFromPath(const std::string &path);

@@ -8,11 +8,15 @@
 #include "UI/DisplayLayout.hpp"
 #include "UI/Element.hpp"
 #include "UI/Menu.hpp"
+#include "events/EventSystem.hpp"
+#include "events/MouseClickEvent.hpp"
 
 namespace admirals {
 
 class Engine {
 public:
+    events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
+
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
@@ -21,11 +25,11 @@ public:
     }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element) {
-        m_displayLayout->AddElement(element);
+        m_displayLayout->AddElement(std::move(element));
     }
 
     inline void AddGameObject(std::shared_ptr<scene::GameObject> object) {
-        m_scene->AddObject(object);
+        m_scene->AddObject(std::move(object));
     }
 
     inline void ToggleDebugRendering() { m_renderer->ToggleDebugRendering(); }
@@ -46,7 +50,7 @@ public:
 
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeGameObject(_Args &&..._args) {
-        auto object = std::make_shared<T>(_args...);
+        auto object = std::make_shared<T>(std::forward<_Args>(_args)...);
         AddGameObject(object);
         return object;
     }

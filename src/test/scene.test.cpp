@@ -1,7 +1,4 @@
 #include <Engine.hpp>
-#include <SDL_vulkan.h>
-#include <VK2D/Constants.h>
-#include <VK2D/VK2D.h>
 #include <chrono>
 #include <cmath>
 #include <stdbool.h>
