@@ -30,11 +30,9 @@ private:
     void GameStop();
     void UpdateBoard(net::Message &msg);
 
-private:
     GameManager &m_gameManager;
     uint32_t m_playerId = 0;
 
-    std::shared_ptr<admirals::UI::TextElement> m_debugText;
-    bool m_debug = true;
+    bool m_debug = false;
 };
 } // namespace admirals::mvp::objects

@@ -87,8 +87,7 @@ void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,
 }
 
 void Renderer::DrawRectangleOutline(const Vector2 &position,
-                                    const Vector2 &size,
-                                    const float outlineWidth,
+                                    const Vector2 &size, float outlineWidth,
                                     const Color &color) {
     vk2dRendererSetColourMod(color.Data());
     vk2dRendererDrawRectangleOutline(position[0], position[1], size[0], size[1],

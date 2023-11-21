@@ -47,7 +47,7 @@ public:
         Iterator(OrderedKeySet::iterator i, const KeyToPointerMap &m_objects)
             : m_iter(i), m_objects(m_objects) {}
 
-        const std::shared_ptr<T> operator*() const {
+        std::shared_ptr<T> operator*() const {
             auto v = (m_iter.operator*)();
             return m_objects.at(v);
         }

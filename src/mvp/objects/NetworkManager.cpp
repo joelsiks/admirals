@@ -13,19 +13,14 @@ NetworkManager::~NetworkManager() {}
 
 void NetworkManager::OnStart() {
     printf("NetworkManager::OnStart()\n");
-    m_debugText = GameData::engine->MakeUIElement<UI::TextElement>(
-        "networkDebug", 0, "", Vector2(220, 40), Color::RED);
-    m_debugText->SetDisplayPosition(UI::DisplayPosition::UpperRight);
 
     // Should probably be called later and not here
-    Connect("127.0.0.1", "60000");
     while (!IsConnected()) {
+        Connect("127.0.0.1", "60000");
         printf("Waiting for connection...\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     printf("Connected!\n");
-    if (m_debug)
-        m_debugText->SetText("Connected!");
 
     // Should probably be called later and not here
     ReadyUp();
@@ -66,7 +61,6 @@ void NetworkManager::AttackShip(uint16_t id, uint16_t targetId) {
 void NetworkManager::ReadyUp() {
     if (m_debug) {
         printf("NetworkManager::ReadyUp()\n");
-        m_debugText->SetText("ReadyUp!");
     }
 
     Message msg;
@@ -75,7 +69,7 @@ void NetworkManager::ReadyUp() {
 }
 
 void NetworkManager::HandleMessages() {
-    size_t size = Incoming().Size();
+    const size_t size = Incoming().Size();
     for (size_t i = 0; i < size; i++) {
         auto msg = Incoming().Front().message;
         Incoming().PopFront();
@@ -100,6 +94,8 @@ void NetworkManager::HandleMessages() {
             UpdateBoard(msg);
             break;
         }
+        default:
+            break;
         }
     }
 }
@@ -113,7 +109,6 @@ void NetworkManager::ReadyUpResponse(Message &msg) {
 
     if (m_debug) {
         printf("ReadyConfirmation: %d\n", playerId);
-        m_debugText->SetText("ID: " + std::to_string(playerId));
     }
 }
 
@@ -130,7 +125,8 @@ void NetworkManager::GameStop() {
 }
 
 void NetworkManager::UpdateBoard(Message &msg) {
-    uint8_t player1Ships, player2Ships;
+    uint8_t player1Ships;
+    uint8_t player2Ships;
     msg >> player1Ships >> player2Ships;
 
     std::map<uint16_t, ShipData> ships;
@@ -140,17 +136,19 @@ void NetworkManager::UpdateBoard(Message &msg) {
         ships[ship.id] = ship;
     }
 
-    uint16_t turn, player1Coins, player2Coins, player1BaseHealth,
-        player2BaseHealth;
-
+    uint16_t turn;
+    uint16_t player1Coins;
+    uint16_t player2Coins;
+    uint16_t player1BaseHealth;
+    uint16_t player2BaseHealth;
     msg >> player2BaseHealth >> player1BaseHealth >> player2Coins >>
         player1Coins >> turn;
 
-    int player_coins = m_playerId % 2 == 0 ? player1Coins : player2Coins;
+    const int player_coins = m_playerId % 2 == 0 ? player1Coins : player2Coins;
 
-    int base_health =
+    const int base_health =
         m_playerId % 2 == 0 ? player1BaseHealth : player2BaseHealth;
-    int enemy_base_health =
+    const int enemy_base_health =
         m_playerId % 2 == 0 ? player2BaseHealth : player1BaseHealth;
 
     if (m_debug) {

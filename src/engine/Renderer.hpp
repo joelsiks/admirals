@@ -32,8 +32,7 @@ public:
                               const Color &color);
 
     static void DrawRectangleOutline(const Vector2 &position,
-                                     const Vector2 &size,
-                                     const float outlineWidth,
+                                     const Vector2 &size, float outlineWidth,
                                      const Color &color);
 
     static void DrawTexture(const Texture &texture, const Vector2 &position,

@@ -5,8 +5,8 @@
 using namespace admirals;
 using namespace admirals::mvp::objects;
 
-Quad::Quad(const std::string &name, const Vector3 position, const Vector2 &size,
-           const Color &color)
+Quad::Quad(const std::string &name, const Vector3 &position,
+           const Vector2 &size, const Color &color)
     : scene::GameObject(name, position), m_size(size), m_color(color) {}
 
 void Quad::OnUpdate() {}

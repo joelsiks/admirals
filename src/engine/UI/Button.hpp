@@ -15,14 +15,14 @@ public:
     Button(const std::string &name, float order, const std::string &text,
            const Vector2 &size, const Color &bgColor, const Color &fgColor);
 
-    void Render(const Texture &font) override;
+    virtual void Render(const Texture &font) override;
 
     bool HandleEvent(const SDL_Event &event) override;
 
     inline void SetBackgroundColor(const Color &color) { m_bgColor = color; }
     inline void SetForegroundColor(const Color &color) { m_fgColor = color; }
 
-private:
+protected:
     Color m_bgColor, m_fgColor;
 };
 

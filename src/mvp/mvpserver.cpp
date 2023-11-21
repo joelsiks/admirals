@@ -7,8 +7,6 @@
 #define TICK_RATE 1
 
 #define BOARD_SIZE 10
-#define X_OFFSET 0
-#define Y_OFFSET 1
 
 using namespace admirals::net;
 
@@ -25,11 +23,9 @@ class MvpServer : public Server {
 public:
     MvpServer(uint16_t port) : Server(port) { m_turn = 0; }
 
-    bool OnClientConnect(std::shared_ptr<Connection> client) override {
-        return true;
-    }
+    bool OnClientConnect(std::shared_ptr<Connection>) override { return true; }
 
-    void OnClientDisconnect(std::shared_ptr<Connection> client) override {
+    void OnClientDisconnect(std::shared_ptr<Connection>) override {
         m_connectedPlayers--;
     }
 
@@ -51,7 +47,7 @@ public:
                    Message &message) override {
         switch (message.header.id) {
         case NetworkMessageTypes::PlayerReady: {
-            PlayerReady(client, message);
+            PlayerReady(client);
             break;
         }
 
@@ -74,6 +70,8 @@ public:
             AttackShip(client, message);
             break;
         }
+        default:
+            break;
         }
     }
 
@@ -124,7 +122,7 @@ private:
         MessageAllClients(msg);
     }
 
-    void PlayerReady(std::shared_ptr<Connection> client, Message &message) {
+    void PlayerReady(std::shared_ptr<Connection> client) {
         if (client->GetID() == m_player1.id) {
             m_player1Ready = true;
         } else {
@@ -141,11 +139,11 @@ private:
         }
     }
 
-    void BuyShip(std::shared_ptr<Connection> client, Message &message) {
+    void BuyShip(std::shared_ptr<Connection> &client, Message &message) {
         uint8_t type;
         message >> type;
 
-        uint32_t clientID = client->GetID();
+        const uint32_t clientID = client->GetID();
         PlayerData &player = clientID == m_player1.id ? m_player1 : m_player2;
         if (player.coins < ShipInfoMap[type].Cost) {
             return;
@@ -154,14 +152,12 @@ private:
         // Assumed that the ship is spawned besides the base
         // Could do other logic instead
         // Ship spawn location is (1, 0) or (-2, -1)
-        int x = clientID == m_player1.id ? 1 + X_OFFSET
-                                         : -1 + BOARD_SIZE - 1 + X_OFFSET;
-        int y = clientID == m_player1.id ? 0 + Y_OFFSET
-                                         : 0 + BOARD_SIZE - 1 + Y_OFFSET;
+        const int x = clientID == m_player1.id ? 1 : -1 + BOARD_SIZE - 1;
+        const int y = clientID == m_player1.id ? 0 : BOARD_SIZE - 1;
 
         if (m_debug) {
             std::cout << "Player " << clientID << " bought ship " << type
-                      << "at (" << x << ", " << y << ")" << std::endl;
+                      << "at (" << x << ", " << y << ")\n";
         }
 
         // Check if there is a ship in the way
@@ -169,8 +165,8 @@ private:
             return;
         }
 
-        ShipData ship(m_shipID++, type, x, y, ShipInfoMap[type].Health,
-                      clientID);
+        const ShipData ship(m_shipID++, type, x, y, ShipInfoMap[type].Health,
+                            clientID);
 
         player.coins -= ShipInfoMap[type].Cost;
         player.ships[ship.id] = ship;
@@ -180,7 +176,8 @@ private:
 
     void MoveShip(std::shared_ptr<Connection> client, Message &message) {
         uint16_t id;
-        uint8_t x, y;
+        uint8_t x;
+        uint8_t y;
         message >> y >> x >> id;
 
         // Ship ID 0 is invalid
@@ -189,8 +186,7 @@ private:
         }
 
         // Must be within the board
-        if (x < X_OFFSET || x >= BOARD_SIZE + X_OFFSET || y < Y_OFFSET ||
-            y >= BOARD_SIZE + Y_OFFSET) {
+        if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) {
             return;
         }
 
@@ -205,7 +201,7 @@ private:
                       << static_cast<int>(y) << ")" << std::endl;
         }
 
-        int clientID = client->GetID();
+        const int clientID = client->GetID();
         PlayerData &player = clientID == m_player1.id ? m_player1 : m_player2;
 
         // Check if the ship exists

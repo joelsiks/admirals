@@ -1,35 +1,53 @@
 #pragma once
 #include "Sprite.hpp"
+#include "commontypes.hpp"
 
 namespace admirals::mvp::objects {
 
 class Ship : public Sprite {
 public:
-    Ship(const std::string &name, const Vector3 position, const Vector2 &size,
-         const Texture &source, const Vector2 &texOffset = Vector2(0));
+    events::EventSystem<events::EventArgs> onChanged;
+
+    Ship(const ShipData &data, const Vector2 &size, const Texture &source,
+         const Vector2 &texOffset = Vector2(0));
 
     void OnUpdate() override;
     void OnStart() override;
 
-    void SetId(uint16_t id) { m_id = id; }
-    uint16_t GetId() const { return m_id; }
+    void SetHealth(uint16_t health) { m_data.health = health; }
+    uint16_t GetHealth() const { return m_data.health; }
 
-    void SetHealth(uint8_t health) { m_health = health; }
-    uint8_t GetHealth() const { return m_health; }
+    void SetID(uint16_t id) { m_data.id = id; }
+    uint16_t GetID() const { return m_data.id; }
 
-    void SetPlayerId(uint8_t playerId) { m_playerId = playerId; }
-    uint8_t GetPlayerId() const { return m_playerId; }
+    void SetPlayerId(uint8_t playerId) { m_data.owner = playerId; }
+    uint8_t GetPlayerId() const { return m_data.owner; }
 
-    void SetType(uint8_t type) { m_type = type; }
-    uint8_t GetType() const { return m_type; }
+    void SetType(uint8_t type) { m_data.type = type; }
+    uint8_t GetType() const { return m_data.type; }
 
-    void Move(int x, int y);
+    void SetAction(uint8_t action) { m_data.action = action; }
+    uint8_t GetAction() const { return m_data.action; }
+
+    void SetActionX(uint8_t actionX) { m_data.moveData.actionX = actionX; }
+    uint8_t GetActionX() const { return m_data.moveData.actionX; }
+
+    void SetActionY(uint8_t actionY) { m_data.moveData.actionY = actionY; }
+    uint8_t GetActionY() const { return m_data.moveData.actionY; }
+
+    void SetAttackID(uint16_t attackID) { m_data.attackTargetID = attackID; }
+    uint16_t GetAttackID() const { return m_data.attackTargetID; }
+
+    void SetData(const ShipData &data) { m_data = data; }
+    const ShipData &GetData() const { return m_data; }
+
+    // void Move(int x, int y);
+
+protected:
+    Vector2 CalcOrigin() const override;
 
 private:
-    uint16_t m_id;
-    uint8_t m_playerId;
-    uint8_t m_type;
-    uint8_t m_health;
+    ShipData m_data;
 };
 
 } // namespace admirals::mvp::objects

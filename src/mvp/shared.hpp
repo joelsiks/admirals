@@ -15,6 +15,7 @@ public:
     static const float CellSize;
     static const float GridSize;
     static const int GridCells;
+    static const float SpriteSize;
 };
 
 } // namespace admirals::mvp

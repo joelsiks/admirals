@@ -5,7 +5,7 @@ namespace admirals::mvp::objects {
 
 class Quad : public scene::GameObject {
 public:
-    Quad(const std::string &name, const Vector3 position, const Vector2 &size,
+    Quad(const std::string &name, const Vector3 &position, const Vector2 &size,
          const Color &color);
 
     void OnUpdate() override;

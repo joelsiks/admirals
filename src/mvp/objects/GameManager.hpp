@@ -1,40 +1,49 @@
 #pragma once
 #include "GameObject.hpp"
 #include "Ship.hpp"
-#include "UI/TextElement.hpp"
 #include "commontypes.hpp"
+#include "events/EventSystem.hpp"
 #include "shared.hpp"
 
 namespace admirals::mvp::objects {
 
 class NetworkManager;
 
+class CoinsChangesEventArgs : public events::EventArgs {
+public:
+    CoinsChangesEventArgs(int c) : coins(c) {}
+    const int coins;
+};
+
 class GameManager : public scene::GameObject {
 public:
     GameManager(const std::string &name);
     ~GameManager();
 
+    events::EventSystem<CoinsChangesEventArgs> onCoinsChanged;
+
     void OnStart() override;
     void OnUpdate() override;
     void Render(const renderer::RendererContext &r) const override {}
 
-    void StartGame() {
-        m_gameStarted = true;
-        printf("GameManager::StartGame()\n");
-    }
+    void StartGame() { m_gameStarted = true; }
     void StopGame() { m_gameStarted = false; }
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }
     void SetPlayerId(uint32_t id) { m_playerId = id; }
 
+    void BuyShip(uint8_t type);
+    void MoveShip(uint16_t id, int x, int y);
+    void AttackShip(uint16_t id, uint16_t targetId);
+
     void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,
                      const std::map<uint16_t, ShipData> &ships);
 
 private:
     void ModifyShips(const std::map<uint16_t, ShipData> &new_ships);
+    void ShipChangeEventHandler(void *sender, admirals::events::EventArgs e);
 
-private:
     bool m_testActionDone = false;
     bool m_gameStarted = false;
 
@@ -54,7 +63,6 @@ private:
 
     std::shared_ptr<NetworkManager> m_networkManager;
 
-    std::shared_ptr<admirals::UI::TextElement> m_debugText;
     bool m_debug = false;
 };
 
