@@ -5,10 +5,10 @@
 #include <time.h>
 
 #include "Engine.hpp"
-#include "EventSystem.hpp"
 #include "GameObject.hpp"
 #include "UI/Button.hpp"
 #include "UI/TextElement.hpp"
+#include "events/EventSystem.hpp"
 
 using namespace admirals;
 

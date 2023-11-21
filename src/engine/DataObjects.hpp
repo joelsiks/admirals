@@ -29,14 +29,16 @@ public:
         return (float *)&this->m_0;
     }
 
-    inline void operator=(float &in) {
+    inline Vector2 &operator=(float &in) {
         this->m_0 = in;
         this->m_1 = in;
+        return *this;
     }
 
-    inline void operator=(const Vector2 &in) {
+    inline Vector2 &operator=(const Vector2 &in) {
         this->m_0 = in.m_0;
         this->m_1 = in.m_1;
+        return *this;
     }
 
     inline bool operator==(const Vector2 &r) {

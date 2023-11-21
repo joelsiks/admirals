@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "Element.hpp"
-#include "EventSystem.hpp"
+#include "events/EventSystem.hpp"
 
 namespace admirals::UI {
 
