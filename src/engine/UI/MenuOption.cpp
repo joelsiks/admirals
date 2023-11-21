@@ -84,7 +84,7 @@ ToggleOption::ToggleOption(const std::string &name, float order,
 }
 
 std::string ToggleOption::GetOptionText() {
-    return m_text + " [" + std::string(m_toggled ? "OF" : "OFF") + "]";
+    return m_text + " [" + std::string(m_toggled ? "ON" : "OFF") + "]";
 }
 
 void ToggleOption::Toggle() { m_toggled = !m_toggled; }
