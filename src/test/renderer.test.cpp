@@ -26,10 +26,10 @@ public:
 
     void OnUpdate() override {}
 
-    void ButtonClickHandler(void *sender, UI::ButtonClickEventArgs &e) {
+    void ButtonClickHandler(void *sender, events::ButtonClickEventArgs &e) {
         if (e.m_data.type != SDL_MOUSEBUTTONDOWN)
             return;
-        auto button = static_cast<UI::Button *>(sender);
+        auto *button = static_cast<UI::Button *>(sender);
         if (button->name() == "btn1") {
             SetPosition(Vector2(GetPosition().x() - 100, 0));
         } else if (button->name() == "btn2") {
@@ -38,8 +38,10 @@ public:
     }
 
     void Render(const renderer::RendererContext &r) const override {
-        float x = r.windowWidth / static_cast<float>(m_texture.Width());
-        float y = r.windowHeight / static_cast<float>(m_texture.Height());
+        float x = static_cast<float>(r.windowWidth) /
+                  static_cast<float>(m_texture.Width());
+        float y = static_cast<float>(r.windowHeight) /
+                  static_cast<float>(m_texture.Height());
         if (m_keepAspectRatio) {
             x = std::min(x, y);
             y = x;
@@ -54,12 +56,12 @@ private:
     bool m_keepAspectRatio;
 };
 
-void OnButtonClick(void *object, UI::ButtonClickEventArgs &event) {
-    auto button = static_cast<UI::Button *>(object);
+void OnButtonClick(void *object, events::ButtonClickEventArgs &event) {
+    auto *button = static_cast<UI::Button *>(object);
     if (event.m_data.type == SDL_MOUSEBUTTONUP) {
         button->SetBackgroundColor(Color::BLACK);
     } else if (event.m_data.type == SDL_MOUSEBUTTONDOWN) {
-        Color grey = Color::FromRGBA(50, 50, 50, 255);
+        const Color grey = Color::FromRGBA(50, 50, 50, 255);
         button->SetBackgroundColor(grey);
     }
 }
@@ -72,7 +74,7 @@ int main(int argc, char *argv[]) {
     auto texture = engine.MakeGameObject<TextureObject>(
         "image", Vector3(0, 0, 0), "assets/admirals.png");
 
-    Vector2 elementSize = Vector2(300, 40);
+    const Vector2 elementSize = Vector2(300, 40);
 
     auto btn1 = engine.MakeUIElement<UI::Button>(
         "btn1", 0, "Move Image Left", elementSize, Color::BLACK, Color::WHITE);

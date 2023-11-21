@@ -419,8 +419,9 @@ public:
     Texture(VK2DTexture &m_texture);
     ~Texture();
 
-    unsigned int Width() const;
-    unsigned int Height() const;
+    // should be uint32
+    float Width() const;
+    float Height() const;
     VK2DTexture Data() const { return m_texture; }
 
     static Texture LoadFromPath(const std::string &path);

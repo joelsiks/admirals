@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "Element.hpp"
-#include "events/ButtonClickEvent.hpp"
+#include "events/ButtonCLickEvent.hpp"
 #include "events/EventSystem.hpp"
 
 namespace admirals::UI {
