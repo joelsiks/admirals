@@ -86,17 +86,17 @@ void CreateEscapeMenuOptions(std::shared_ptr<UI::Menu> escapeMenu,
                                             Color::WHITE};
     UI::CycleOption cycleColorOption("cycleMenuColorOption", 1.0, "Menu Color",
                                      {"Red", "Black", "White"}, 1);
-    cycleColorOption.onClick.Subscribe(
-        [&escapeMenu, cycleColors](void *sender,
-                                   UI::OptionClickEventArgs &args) {
-            if (args.m_data.type != SDL_MOUSEBUTTONUP)
-                return;
+    cycleColorOption.onClick.Subscribe([&escapeMenu, cycleColors](
+                                           void *sender,
+                                           UI::OptionClickEventArgs &args) {
+        if (args.m_data.type != SDL_MOUSEBUTTONUP)
+            return;
 
-            auto *cycleOption = static_cast<UI::CycleOption *>(sender);
-            const size_t idx =
-                (cycleOption->CurrentIndex() + 1) % cycleColors.size();
-            escapeMenu->SetTextColor(cycleColors[idx]);
-        });
+        auto *cycleOption = static_cast<UI::CycleOption *>(sender);
+        cycleOption->Cycle();
+        const size_t idx = (cycleOption->CurrentIndex()) % cycleColors.size();
+        escapeMenu->SetTextColor(cycleColors[idx]);
+    });
     escapeMenu->AddMenuOption(
         UI::MenuOption::CreateFromDerived(cycleColorOption));
 }

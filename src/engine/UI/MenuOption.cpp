@@ -95,16 +95,7 @@ CycleOption::CycleOption(const std::string &name, float order,
                          const std::vector<std::string> &cycleOptions,
                          size_t startIndex)
     : MenuOption(name, order, text), m_cycleOptions(cycleOptions),
-      m_currentOption(startIndex) {
-
-    onClick.Subscribe([](void *sender, OptionClickEventArgs &e) {
-        if (e.m_data.type != SDL_MOUSEBUTTONUP)
-            return;
-
-        auto *cycleOption = static_cast<CycleOption *>(sender);
-        cycleOption->Cycle();
-    });
-}
+      m_currentOption(startIndex) {}
 
 std::string CycleOption::GetOptionText() {
     return m_text + " [" + std::string(m_cycleOptions[CurrentIndex()]) + "]";

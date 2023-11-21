@@ -12,9 +12,9 @@
 #include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
 
-namespace admirals {
+#define SDLK_IGNORE SDLK_CALCULATOR
 
-#define SDLK_IGNORE SDLK_SOFTRIGHT
+namespace admirals {
 
 class Engine {
 public:

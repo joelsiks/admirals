@@ -80,6 +80,8 @@ private:
 };
 
 // Cycle Option, click and cycle through some list of states (1/2/3/4...)
+// The user is responsible for calling Cycle() when the option is pressed in
+// order for it to be predictable with other actions.
 class CycleOption : public MenuOption {
 public:
     CycleOption(const std::string &name, float order, const std::string &text,
