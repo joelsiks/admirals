@@ -33,4 +33,4 @@ private:
     std::string m_menuTitle;
 };
 
-} // namespace admirals::UI
+} // namespace admirals::UI::menu

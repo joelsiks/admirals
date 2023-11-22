@@ -98,4 +98,4 @@ private:
     std::vector<std::string> m_cycleOptions;
 };
 
-} // namespace admirals::UI
+} // namespace admirals::UI::menu
