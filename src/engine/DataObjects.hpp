@@ -410,6 +410,8 @@ public:
     const static Color BLUE;
     const static Color WHITE;
     const static Color BLACK;
+    const static Color GREY;
+    const static Color LIGHT_GREY;
 };
 
 class Texture {

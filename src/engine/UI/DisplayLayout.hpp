@@ -3,9 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include "Element.hpp"
 #include "InteractiveDrawable.hpp"
 #include "OrderedCollection.hpp"
+#include "UI/Element.hpp"
 
 namespace admirals::UI {
 
@@ -18,8 +18,20 @@ public:
 
     void AddElement(std::shared_ptr<Element> element);
 
-private:
+    static Vector2
+    GetOriginFromDisplayPosition(DisplayPosition pos,
+                                 const Vector2 &displaySize,
+                                 const renderer::RendererContext &r);
+
+    inline Vector2 TextFontSize(const std::string &text) const {
+        return Vector2(static_cast<float>(text.length()) * m_fontWidth,
+                       m_fontHeight);
+    }
+
+protected:
     Texture m_font;
+    float m_fontWidth, m_fontHeight;
+
     OrderedCollection<Element> m_elements;
 };
 

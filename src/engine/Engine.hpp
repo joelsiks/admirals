@@ -8,6 +8,7 @@
 #include "UI/DisplayLayout.hpp"
 #include "UI/Element.hpp"
 #include "events/EventSystem.hpp"
+#include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
 
 namespace admirals {
@@ -15,17 +16,44 @@ namespace admirals {
 class Engine {
 public:
     events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
+    events::EventSystem<events::KeyPressEventArgs> onKeyPress;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
+    inline std::shared_ptr<UI::DisplayLayout>
+    SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout) {
+        auto currentLayout = m_displayLayout;
+        m_displayLayout = layout;
+        return currentLayout;
+    }
+
+    inline std::shared_ptr<UI::DisplayLayout> GetDisplayLayout() {
+        return m_displayLayout;
+    }
+
+    inline std::shared_ptr<scene::Scene>
+    SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
+        auto currentScene = m_scene;
+        m_scene = scene;
+        return currentScene;
+    }
+
+    inline std::shared_ptr<scene::Scene> GetScene() { return m_scene; }
+
     inline void AddUIElement(std::shared_ptr<UI::Element> element) {
-        m_displayLayout->AddElement(std::move(element));
+        if (hasDisplayLayout()) {
+            m_displayLayout->AddElement(std::move(element));
+        }
     }
 
     inline void AddGameObject(std::shared_ptr<scene::GameObject> object) {
-        m_scene->AddObject(std::move(object));
+        if (hasScene()) {
+            m_scene->AddObject(std::move(object));
+        }
     }
+
+    inline void ToggleDebugRendering() { m_renderer->ToggleDebugRendering(); }
 
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {
@@ -42,11 +70,17 @@ public:
     }
 
     void StartGameLoop();
+    inline void StopGameLoop() { m_running = false; }
 
 private:
     bool PollAndHandleEvent();
 
+    bool m_running;
+
     std::string m_gameName;
+
+    inline bool hasDisplayLayout() { return m_displayLayout != nullptr; }
+    inline bool hasScene() { return m_scene != nullptr; }
 
     // Drawables
     std::shared_ptr<UI::DisplayLayout> m_displayLayout;

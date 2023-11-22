@@ -22,9 +22,16 @@ public:
     ~Renderer();
 
     int Init(bool debug);
-    void Render(const DrawableCollection &drawable);
+    void Render(const DrawableCollection &drawables);
+
+    inline void ToggleDebugRendering() {
+        m_context.renderDebugOutlines = !m_context.renderDebugOutlines;
+    }
 
     inline RendererContext context() const { return m_context; }
+
+    static void DrawLine(const Vector2 &p1, const Vector2 &p2,
+                         const Color &color);
 
     static void DrawRectangle(const Vector2 &position, const Vector2 &size,
                               const Color &color);

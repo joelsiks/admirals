@@ -16,6 +16,7 @@ enum DisplayPosition {
     UpperRight = 1,
     LowerLeft = 2,
     LowerRight = 3,
+    Center = 4,
 };
 
 // General UI element that can be rendered.

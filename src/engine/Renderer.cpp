@@ -1,10 +1,10 @@
+#include <cmath>
+
 #include <VK2D/Constants.h>
 #include <VK2D/Renderer.h>
-#include <cmath>
 
 #include "DataObjects.hpp"
 #include "Renderer.hpp"
-#include <cmath>
 
 using namespace admirals::renderer;
 
@@ -61,14 +61,25 @@ int Renderer::Init(bool debug) {
     return code;
 }
 
-void Renderer::Render(const DrawableCollection &drawable) {
+void Renderer::Render(const DrawableCollection &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
     SDL_GetWindowSize(m_window, &m_context.windowWidth,
                       &m_context.windowHeight);
-    for (const auto &d : drawable) {
-        d->Render(m_context);
+    for (const auto &drawable : drawables) {
+        if (drawable == nullptr) {
+            continue;
+        }
+
+        drawable->Render(m_context);
     }
     vk2dRendererEndFrame();
+}
+
+void Renderer::DrawLine(const Vector2 &p1, const Vector2 &p2,
+                        const Color &color) {
+    vk2dRendererSetColourMod(color.Data());
+    vk2dRendererDrawLine(p1[0], p1[1], p2[0], p2[1]);
+    vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
 void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,
