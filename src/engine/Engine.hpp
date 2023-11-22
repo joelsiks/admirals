@@ -36,6 +36,11 @@ public:
     SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
         auto currentScene = m_scene;
         m_scene = scene;
+
+        if (scene != nullptr && !scene->IsInitialized()) {
+            scene->OnStart();
+        }
+
         return currentScene;
     }
 
