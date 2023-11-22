@@ -12,11 +12,12 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_renderer->Init(debug);
 
     m_displayLayout = std::make_shared<UI::DisplayLayout>();
+
     m_scene = std::make_shared<scene::Scene>();
 }
 
 bool Engine::PollAndHandleEvent() {
-    bool quit = false;
+    bool quit = !m_running;
     SDL_Event e;
 
     while (SDL_PollEvent(&e) != 0) {
@@ -29,11 +30,18 @@ bool Engine::PollAndHandleEvent() {
             auto args = MouseCLickEventArgs(e.button);
             onMouseClick.Invoke(this, args);
         } break;
+        case SDL_KEYDOWN:
+        case SDL_KEYUP: {
+            auto args = KeyPressEventArgs(e.key);
+            onKeyPress.Invoke(this, args);
+        } break;
         default:
             break;
         }
 
-        m_displayLayout->HandleEvent(e);
+        if (hasDisplayLayout()) {
+            m_displayLayout->HandleEvent(e);
+        }
     }
 
     SDL_PumpEvents();
@@ -41,17 +49,23 @@ bool Engine::PollAndHandleEvent() {
 }
 
 void Engine::StartGameLoop() {
+    m_running = true;
     m_scene->OnStart();
 
-    std::vector<std::shared_ptr<renderer::IDrawable>> layers;
-    layers.emplace_back(m_scene);
-    layers.emplace_back(m_displayLayout);
+    std::vector<std::shared_ptr<renderer::IDrawable>> layers(2);
 
     // Start render loop
     bool quit = false;
     while (!quit) {
+        layers[0] = m_scene;
+        layers[1] = m_displayLayout;
+
         quit = PollAndHandleEvent();
-        m_scene->OnUpdate();
+
+        if (hasScene()) {
+            m_scene->OnUpdate();
+        }
+
         m_renderer->Render(layers);
     }
 }

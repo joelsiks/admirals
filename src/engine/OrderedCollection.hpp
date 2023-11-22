@@ -44,18 +44,13 @@ public:
     /// the same order as the `IOrdered::name` values are sorted in the ordered
     /// multiset.
     struct Iterator {
-        Iterator(OrderedKeySet::iterator i, const KeyToPointerMap &m_objects)
-            : m_iter(i), m_objects(m_objects) {}
+        Iterator(OrderedKeySet::iterator i, const KeyToPointerMap &objects)
+            : m_iter(i), m_objects(objects) {}
 
         std::shared_ptr<T> operator*() const {
             auto v = (m_iter.operator*)();
             return m_objects.at(v);
         }
-
-        // std::shared_ptr<T> operator->() {
-        //     auto v = (m_iter.operator*)();
-        //     return m_objects.at(v);
-        // }
 
         Iterator &operator++() {
             m_iter++;
@@ -81,10 +76,58 @@ public:
         const KeyToPointerMap &m_objects;
     };
 
+    /// @brief Iterates over the `IOrdered` object points in the collection in
+    /// the reverse order as the `IOrdered::name` values are sorted in the
+    /// ordered multiset.
+    struct ReverseIterator {
+        ReverseIterator(OrderedKeySet::reverse_iterator i,
+                        const KeyToPointerMap &objects)
+            : m_revIter(i), m_objects(objects) {}
+
+        const std::shared_ptr<T> operator*() const {
+            auto v = (m_revIter.operator*)();
+            return m_objects.at(v);
+        }
+
+        ReverseIterator &operator++() {
+            m_revIter++;
+            return *this;
+        }
+
+        ReverseIterator operator++(int) {
+            ReverseIterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        friend bool operator==(const ReverseIterator &a,
+                               const ReverseIterator &b) {
+            return a.m_revIter == b.m_revIter;
+        };
+
+        friend bool operator!=(const ReverseIterator &a,
+                               const ReverseIterator &b) {
+            return a.m_revIter != b.m_revIter;
+        };
+
+    private:
+        OrderedKeySet::reverse_iterator m_revIter;
+        const KeyToPointerMap &m_objects;
+    };
+
     /// @brief Iterator starting at the start of the ordered collection.
     Iterator begin() const { return Iterator(m_ordered.begin(), m_objects); }
     /// @brief Iterator at the end of the ordered collection.
     Iterator end() const { return Iterator(m_ordered.end(), m_objects); }
+
+    /// @brief Iterator starting at the end of the ordered collection.
+    ReverseIterator rbegin() const {
+        return ReverseIterator(m_ordered.rbegin(), m_objects);
+    }
+    /// @brief Iterator at the start of the ordered collection.
+    ReverseIterator rend() const {
+        return ReverseIterator(m_ordered.rend(), m_objects);
+    }
 
     /// @brief Inserts an `IOrdered` object pointer into the collection if no
     /// other contained object has the same`IOrdered::name` property.

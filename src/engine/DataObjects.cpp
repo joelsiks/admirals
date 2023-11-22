@@ -59,6 +59,8 @@ const Color Color::BLUE = Color(0, 0, 1, 1);
 const Color Color::WHITE = Color(1, 1, 1, 1);
 const Color Color::BLACK = Color(0, 0, 0, 1);
 const Color Color::TRANSPARENT = Color(0, 0, 0, 0);
+const Color Color::GREY = Color::FromRGBA(80, 80, 80, 255);
+const Color Color::LIGHT_GREY = Color::FromRGBA(180, 180, 180, 255);
 
 // Texture
 Texture::Texture(VK2DTexture &m_texture) : m_texture(m_texture) {}

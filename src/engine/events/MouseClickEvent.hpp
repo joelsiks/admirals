@@ -1,10 +1,11 @@
 #pragma once
 
-#include "EventArgs.hpp"
+#include <cstdint>
 
 #include <SDL_events.h>
 #include <SDL_mouse.h>
-#include <cstdint>
+
+#include "events/EventArgs.hpp"
 
 namespace admirals::events {
 
