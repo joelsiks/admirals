@@ -255,7 +255,7 @@ private:
         for (auto &ship : m_player1.ships) {
             if (ship.second.action == ShipAction::Move) {
                 if (m_board[ship.second.moveData.actionX]
-                          [ship.second.moveData.actionY] != 0) {
+                           [ship.second.moveData.actionY] != 0) {
                     continue;
                 }
                 m_board[ship.second.x][ship.second.y] = 0;
