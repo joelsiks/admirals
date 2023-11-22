@@ -28,6 +28,9 @@ public:
 
     void OnClientDisconnect(std::shared_ptr<Connection>) override {
         m_connectedPlayers--;
+        if (m_gameStarted) {
+            StopGame();
+        }
     }
 
     void OnClientValidated(std::shared_ptr<Connection> client) override {
@@ -115,6 +118,7 @@ private:
     }
 
     void StopGame() {
+        std::cout << "Stopping game" << std::endl;
         m_gameStarted = false;
         // TODO: Reset game
         // ResetGame();
@@ -250,6 +254,10 @@ private:
         // TODO: Process ship actions correctly
         for (auto &ship : m_player1.ships) {
             if (ship.second.action == ShipAction::Move) {
+                if (m_board[ship.second.moveData.actionX]
+                          [ship.second.moveData.actionY] != 0) {
+                    continue;
+                }
                 m_board[ship.second.x][ship.second.y] = 0;
                 ship.second.x = ship.second.moveData.actionX;
                 ship.second.y = ship.second.moveData.actionY;
@@ -259,6 +267,10 @@ private:
         }
         for (auto &ship : m_player2.ships) {
             if (ship.second.action == ShipAction::Move) {
+                if (m_board[ship.second.moveData.actionX]
+                           [ship.second.moveData.actionY] != 0) {
+                    continue;
+                }
                 m_board[ship.second.x][ship.second.y] = 0;
                 ship.second.x = ship.second.moveData.actionX;
                 ship.second.y = ship.second.moveData.actionY;

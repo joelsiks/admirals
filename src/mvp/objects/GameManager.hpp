@@ -27,7 +27,7 @@ public:
     void Render(const renderer::RendererContext &r) const override {}
 
     void StartGame() { m_gameStarted = true; }
-    void StopGame() { m_gameStarted = false; }
+    void StopGame();
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }
@@ -63,7 +63,7 @@ private:
 
     std::shared_ptr<NetworkManager> m_networkManager;
 
-    bool m_debug = false;
+    bool m_debug = true;
 };
 
 } // namespace admirals::mvp::objects

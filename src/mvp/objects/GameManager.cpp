@@ -39,6 +39,14 @@ void GameManager::OnUpdate() {
     // }
 }
 
+void GameManager::StopGame() {
+    m_gameStarted = false;
+    m_ships.clear();
+    if (m_debug) {
+        printf("Game stopped\n");
+    }
+}
+
 void GameManager::BuyShip(uint8_t type) { m_networkManager->BuyShip(type); }
 
 void GameManager::MoveShip(uint16_t id, int x, int y) {
