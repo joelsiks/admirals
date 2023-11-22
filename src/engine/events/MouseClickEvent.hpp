@@ -7,8 +7,6 @@
 
 #include "events/EventArgs.hpp"
 
-#define SDLK_IGNORE SDLK_CALCULATOR
-
 namespace admirals::events {
 
 enum MouseButton : uint8_t {
