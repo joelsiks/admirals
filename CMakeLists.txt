@@ -33,9 +33,9 @@ set(SOURCES
     src/engine/UI/Button.cpp
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
-    src/engine/UI/Menu.cpp
-    src/engine/UI/MenuOption.cpp
     src/engine/UI/TextElement.cpp
+    src/engine/UI/menu/Menu.cpp
+    src/engine/UI/menu/MenuOption.cpp
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
@@ -48,7 +48,6 @@ set(SOURCES
 set(INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/
     ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/net
-    ${Vulkan_INCLUDE_DIR}
 )
 
 set(VMA_FILES ${VK2D_DIR}/VulkanMemoryAllocator/src/VmaUsage.cpp)
@@ -84,15 +83,13 @@ if(WIN32)
     target_link_libraries(engine wsock32)
     target_link_libraries(engine ws2_32)
 endif()
-target_link_libraries(engine vk2d)
-target_link_libraries(engine asio)
-target_include_directories(engine PRIVATE ${INCLUDE_DIRS})
+target_link_libraries(engine vk2d asio)
+target_include_directories(engine PUBLIC ${INCLUDE_DIRS})
 
 # Create test executable
 add_executable(renderer_test src/test/renderer.test.cpp)
 target_link_libraries(renderer_test engine)
 target_include_directories(renderer_test PRIVATE 
-    ${INCLUDE_DIRS}
     "src/test/"
 )
 
@@ -100,7 +97,6 @@ target_include_directories(renderer_test PRIVATE
 add_executable(gameObject_test src/test/gameObject.test.cpp)
 target_link_libraries(gameObject_test engine)
 target_include_directories(gameObject_test PRIVATE 
-    ${INCLUDE_DIRS}
     "src/test/"
 )
     
@@ -108,7 +104,6 @@ target_include_directories(gameObject_test PRIVATE
 add_executable(test_client src/test/testclient.cpp)
 target_link_libraries(test_client engine)
 target_include_directories(test_client PRIVATE 
-    ${INCLUDE_DIRS}
     "src/test/"
 )
 
@@ -116,7 +111,6 @@ target_include_directories(test_client PRIVATE
 add_executable(test_server src/test/testserver.cpp)
 target_link_libraries(test_server engine)
 target_include_directories(test_server PRIVATE 
-    ${INCLUDE_DIRS}
     "src/test/"
 )
 
@@ -124,7 +118,6 @@ target_include_directories(test_server PRIVATE
 add_executable(depthOrderedCollection_text src/test/depthOrderedCollection.test.cpp)
 target_link_libraries(depthOrderedCollection_text engine)
 target_include_directories(depthOrderedCollection_text PRIVATE 
-    ${INCLUDE_DIRS}
     "src/test/"
 )
 
@@ -132,7 +125,6 @@ target_include_directories(depthOrderedCollection_text PRIVATE
 add_executable(scene_test src/test/scene.test.cpp)
 target_link_libraries(scene_test engine)
 target_include_directories(scene_test PRIVATE 
-    ${INCLUDE_DIRS}
     "src/test/"
 )
 

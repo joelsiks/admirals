@@ -1,7 +1,7 @@
-#include "MenuOption.hpp"
+#include "UI/menu/MenuOption.hpp"
 #include "Renderer.hpp"
 
-using namespace admirals::UI;
+using namespace admirals::UI::menu;
 
 void MenuOptionClickBackground(void *sender, OptionClickEventArgs &event) {
     auto *option = static_cast<MenuOption *>(sender);

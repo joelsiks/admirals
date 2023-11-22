@@ -7,7 +7,7 @@
 #include "UI/Element.hpp"
 #include "events/EventSystem.hpp"
 
-namespace admirals::UI {
+namespace admirals::UI::menu {
 
 static const char *MENU_TITLE_NAME = "__OPTION_TITLE_NAME";
 static const float MENU_TITLE_LINE_OFFSET = 10;
@@ -24,7 +24,7 @@ public:
 
     MenuOption(const std::string &name, float order, const std::string &text);
 
-    void Render(const Texture &font) override;
+    virtual void Render(const Texture &font) override;
 
     bool HandleEvent(const SDL_Event &event) override;
 

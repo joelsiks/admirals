@@ -7,7 +7,6 @@
 #include "Scene.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/Element.hpp"
-#include "UI/Menu.hpp"
 #include "events/EventSystem.hpp"
 #include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"

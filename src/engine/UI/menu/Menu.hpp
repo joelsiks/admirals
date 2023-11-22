@@ -3,10 +3,10 @@
 #include <memory>
 
 #include "UI/DisplayLayout.hpp"
-#include "UI/MenuOption.hpp"
+#include "UI/menu/MenuOption.hpp"
 #include "events/EventSystem.hpp"
 
-namespace admirals::UI {
+namespace admirals::UI::menu {
 
 class Menu : public DisplayLayout {
 public:

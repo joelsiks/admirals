@@ -1,8 +1,8 @@
-#include "UI/Menu.hpp"
+#include "UI/menu/Menu.hpp"
 #include "DataObjects.hpp"
 #include "Renderer.hpp"
 
-using namespace admirals::UI;
+using namespace admirals::UI::menu;
 
 Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
            const Color &backgroundColor)
