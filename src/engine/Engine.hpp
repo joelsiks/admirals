@@ -22,26 +22,36 @@ public:
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
-    /// @brief Adds a menu to the list of menus inside the Engine. If
-    /// toggleKeyCode is set to something other than SDLK_IGNORE, a global
-    /// listener for that key activates the menu if the key is pressed.
-    /// @param menuName name of the menu, can be used in @ref ActivateMenu to
-    /// activate it manually.
-    /// @param menu a pointer to the menu instance
-    /// @param toggleKeyCode should be set to one of SDL's SDLK_* keycodes. Use
-    /// SDLK_IGNORE if you wish to not enable a  global listener for the menu.
-    void AddMenu(const std::string &menuName,
-                 const std::shared_ptr<UI::Menu> &menu,
-                 SDL_Keycode toggleKeyCode);
+    inline std::shared_ptr<UI::DisplayLayout>
+    SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout) {
+        auto currentLayout = m_displayLayout;
+        m_displayLayout = layout;
+        return currentLayout;
+    }
 
-    void ActivateMenu(const std::string &menuName);
+    inline std::shared_ptr<UI::DisplayLayout> GetDisplayLayout() {
+        return m_displayLayout;
+    }
+
+    inline std::shared_ptr<scene::Scene>
+    SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
+        auto currentScene = m_scene;
+        m_scene = scene;
+        return currentScene;
+    }
+
+    inline std::shared_ptr<scene::Scene> GetScene() { return m_scene; }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element) {
-        m_displayLayout->AddElement(std::move(element));
+        if (hasDisplayLayout()) {
+            m_displayLayout->AddElement(std::move(element));
+        }
     }
 
     inline void AddGameObject(std::shared_ptr<scene::GameObject> object) {
-        m_scene->AddObject(std::move(object));
+        if (hasScene()) {
+            m_scene->AddObject(std::move(object));
+        }
     }
 
     inline void ToggleDebugRendering() { m_renderer->ToggleDebugRendering(); }
@@ -70,13 +80,8 @@ private:
 
     std::string m_gameName;
 
-    // The engine keeps track of a number of different menus. Only one menu is
-    // active at a time, indicated by m_activeMenu pointing to the active menu.
-    // If m_activeMenu is nullptr, there is no active menu.
-    std::unordered_map<std::string, std::shared_ptr<UI::Menu>> m_menus;
-    std::shared_ptr<UI::Menu> m_activeMenu;
-
-    inline bool hasActiveMenu() { return m_activeMenu != nullptr; }
+    inline bool hasDisplayLayout() { return m_displayLayout != nullptr; }
+    inline bool hasScene() { return m_scene != nullptr; }
 
     // Drawables
     std::shared_ptr<UI::DisplayLayout> m_displayLayout;

@@ -22,7 +22,7 @@ public:
     ~Renderer();
 
     int Init(bool debug);
-    void Render(const DrawableCollection &drawable);
+    void Render(const DrawableCollection &drawables);
 
     inline void ToggleDebugRendering() {
         m_context.renderDebugOutlines = !m_context.renderDebugOutlines;

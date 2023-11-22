@@ -33,8 +33,8 @@ void MenuOption::Render(const Texture &font) {
 bool MenuOption::HandleEvent(const SDL_Event &event) {
     if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
 
-        const float mouseX = (float)event.button.x;
-        const float mouseY = (float)event.button.y;
+        const float mouseX = static_cast<float>(event.button.x);
+        const float mouseY = static_cast<float>(event.button.y);
 
         if (mouseX >= m_displayOrigin[0] &&
             mouseX <= m_displayOrigin[0] + m_displaySize[0] &&
@@ -46,8 +46,10 @@ bool MenuOption::HandleEvent(const SDL_Event &event) {
             onClick.Invoke(this, e);
 
             return true;
-        } else if (m_clickedAndShouldDrawBackground &&
-                   event.type == SDL_MOUSEBUTTONUP) {
+        }
+
+        if (m_clickedAndShouldDrawBackground &&
+            event.type == SDL_MOUSEBUTTONUP) {
             SetDrawBackground(false);
         }
     }

@@ -135,13 +135,32 @@ void CreateUIElements(Engine &engine,
     testText2->SetDisplayPosition(UI::DisplayPosition::LowerRight);
 }
 
-int main(int argc, char *argv[]) {
+int main(int, char **) {
 
     const bool debug = true;
     Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
 
-    auto escapeMenu = std::make_shared<UI::Menu>("Pause Menu", Color::BLACK);
-    engine.AddMenu("escapeMenu", escapeMenu, SDLK_ESCAPE);
+    auto escapeMenu = std::make_shared<UI::Menu>(
+        "Pause Menu", Color::BLACK, Color::FromRGBA(50, 50, 50, 100));
+
+    std::shared_ptr<UI::DisplayLayout> displayLayoutStore;
+    std::shared_ptr<scene::Scene> sceneStore;
+    engine.onKeyPress.Subscribe([&escapeMenu, &displayLayoutStore,
+                                 &sceneStore](void *sender,
+                                              events::KeyPressEventArgs &args) {
+        auto *engine = static_cast<Engine *>(sender);
+
+        if (args.key == SDLK_ESCAPE && args.isKeyUp) {
+            if (engine->GetDisplayLayout() == escapeMenu) {
+                engine->SetAndGetDisplayLayout(displayLayoutStore);
+                // engine->SetAndGetScene(sceneStore);
+            } else {
+                displayLayoutStore = engine->SetAndGetDisplayLayout(escapeMenu);
+                // sceneStore = engine->SetAndGetScene(nullptr);
+            }
+        }
+    });
+
     CreateEscapeMenuOptions(escapeMenu, engine, debug);
 
     auto texture = engine.MakeGameObject<TextureObject>(

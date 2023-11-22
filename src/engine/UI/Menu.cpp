@@ -4,8 +4,10 @@
 
 using namespace admirals::UI;
 
-Menu::Menu(const std::string &menuTitle, const Color &foregroundColor)
-    : m_menuTitle(menuTitle), m_fgColor(foregroundColor) {
+Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
+           const Color &backgroundColor)
+    : m_menuTitle(menuTitle), m_fgColor(foregroundColor),
+      m_bgColor(backgroundColor) {
 
     const TextOption titleOption(MENU_TITLE_NAME, Menu::commonDepthOrder,
                                  menuTitle);
@@ -25,8 +27,10 @@ void Menu::Render(const renderer::RendererContext &r) const {
 
     // Draw background.
     renderer::Renderer::DrawRectangle(
-        Vector2(0, 0), Vector2((float)r.windowWidth, (float)r.windowHeight),
-        Color::LIGHT_GREY);
+        Vector2(0, 0),
+        Vector2(static_cast<float>(r.windowWidth),
+                static_cast<float>(r.windowHeight)),
+        m_bgColor);
 
     for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
         auto option = std::dynamic_pointer_cast<MenuOption>(*it);

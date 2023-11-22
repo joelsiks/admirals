@@ -61,12 +61,16 @@ int Renderer::Init(bool debug) {
     return code;
 }
 
-void Renderer::Render(const DrawableCollection &drawable) {
+void Renderer::Render(const DrawableCollection &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
     SDL_GetWindowSize(m_window, &m_context.windowWidth,
                       &m_context.windowHeight);
-    for (const auto &d : drawable) {
-        d->Render(m_context);
+    for (const auto &drawable : drawables) {
+        if (drawable == nullptr) {
+            continue;
+        }
+
+        drawable->Render(m_context);
     }
     vk2dRendererEndFrame();
 }

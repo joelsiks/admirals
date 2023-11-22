@@ -23,20 +23,20 @@ Vector2 DisplayLayout::GetOriginFromDisplayPosition(
 
     // Handle center.
     if (pos == DisplayPosition::Center) {
-        origin[0] = ((float)r.windowWidth - displaySize[0]) / 2.0;
+        origin[0] = (static_cast<float>(r.windowWidth) - displaySize[0]) / 2.0f;
         return origin;
     }
 
     // Fix right offset.
     if (pos == DisplayPosition::UpperRight ||
         pos == DisplayPosition::LowerRight) {
-        origin[0] = (float)r.windowWidth - displaySize[0];
+        origin[0] = static_cast<float>(r.windowWidth) - displaySize[0];
     }
 
     // Fix lower offset.
     if (pos == DisplayPosition::LowerLeft ||
         pos == DisplayPosition::LowerRight) {
-        origin[1] = (float)r.windowHeight - displaySize[1];
+        origin[1] = static_cast<float>(r.windowHeight) - displaySize[1];
     }
 
     return origin;

@@ -15,30 +15,6 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
 
     m_scene = std::make_shared<scene::Scene>();
 }
-void Engine::AddMenu(const std::string &menuName,
-                     const std::shared_ptr<UI::Menu> &menu,
-                     SDL_Keycode toggleKeyCode) {
-    m_menus[menuName] = menu;
-
-    if (toggleKeyCode != SDLK_IGNORE) {
-        onKeyPress.Subscribe([this, menu, toggleKeyCode](
-                                 void *, events::KeyPressEventArgs &args) {
-            if (args.key == toggleKeyCode && args.isKeyUp) {
-                if (this->m_activeMenu == menu) {
-                    this->m_activeMenu = nullptr;
-                } else {
-                    this->m_activeMenu = menu;
-                }
-            }
-        });
-    }
-}
-
-void Engine::ActivateMenu(const std::string &menuName) {
-    if (m_menus.contains(menuName)) {
-        m_activeMenu = m_menus[menuName];
-    }
-}
 
 bool Engine::PollAndHandleEvent() {
     bool quit = !m_running;
@@ -63,9 +39,7 @@ bool Engine::PollAndHandleEvent() {
             break;
         }
 
-        if (hasActiveMenu()) {
-            m_activeMenu->HandleEvent(e);
-        } else {
+        if (hasDisplayLayout()) {
             m_displayLayout->HandleEvent(e);
         }
     }
@@ -78,21 +52,20 @@ void Engine::StartGameLoop() {
     m_running = true;
     m_scene->OnStart();
 
-    std::vector<std::shared_ptr<renderer::IDrawable>> menuLayer;
-
-    std::vector<std::shared_ptr<renderer::IDrawable>> layers;
-    layers.emplace_back(m_scene);
-    layers.emplace_back(m_displayLayout);
+    std::vector<std::shared_ptr<renderer::IDrawable>> layers(2);
 
     // Start render loop
     bool quit = false;
     while (!quit) {
-        if (hasActiveMenu()) {
-            menuLayer = {m_activeMenu};
-        }
+        layers[0] = m_scene;
+        layers[1] = m_displayLayout;
 
         quit = PollAndHandleEvent();
-        m_scene->OnUpdate();
-        m_renderer->Render(hasActiveMenu() ? menuLayer : layers);
+
+        if (hasScene()) {
+            m_scene->OnUpdate();
+        }
+
+        m_renderer->Render(layers);
     }
 }

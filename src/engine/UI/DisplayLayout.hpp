@@ -24,7 +24,8 @@ public:
                                  const renderer::RendererContext &r);
 
     inline Vector2 TextFontSize(const std::string &text) const {
-        return Vector2((float)text.length() * m_fontWidth, m_fontHeight);
+        return Vector2(static_cast<float>(text.length()) * m_fontWidth,
+                       m_fontHeight);
     }
 
 protected:
