@@ -2,43 +2,41 @@
 #include <map>
 #include <stdint.h>
 
+namespace admirals::mvp {
+
 const int GridCells = 10;
 
-struct NetworkMessageTypes {
-    static const uint16_t PlayerReady = 0;
-    static const uint16_t ReadyConfirmation = 1;
-    static const uint16_t GameStart = 2;
-    static const uint16_t GameStop = 3;
-    static const uint16_t BuyShip = 4;
-    static const uint16_t MoveShip = 5;
-    static const uint16_t AttackShip = 6;
-    static const uint16_t BoardUpdate = 7;
+namespace NetworkMessageTypes {
+enum NetworkMessageTypes : uint16_t {
+    PlayerReady,
+    ReadyConfirmation,
+    GameStart,
+    GameStop,
+    BuyShip,
+    MoveShip,
+    AttackShip,
+    BoardUpdate
 };
+}
 
-struct ShipType {
-    static const uint8_t None = 0;
-    static const uint8_t Cruiser = 1;
-    static const uint8_t Destroyer = 2;
-};
+namespace ShipType {
+enum ShipType : uint16_t { None, Cruiser, Destroyer };
+}
 
-struct ShipAction {
-    static const uint8_t None = 0;
-    static const uint8_t Move = 1;
-    static const uint8_t Attack = 2;
-};
+namespace ShipAction {
+enum ShipAction : uint16_t { None, Move, Attack };
+}
 
 struct ShipInfo {
     uint16_t Damage;
     uint16_t Health;
     uint16_t Cost;
-    uint16_t textureOffsetX;
-    uint16_t textureOffsetY;
 };
 
 inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
     // ShipType, {damage, health, cost}
-    {ShipType::Cruiser, {90, 500, 10, 0, 0}},
-    {ShipType::Destroyer, {180, 300, 12, 0, 0}},
+    {ShipType::Cruiser, {90, 500, 10}},
+    {ShipType::Destroyer, {180, 300, 12}},
 };
 
 struct ShipData {
@@ -62,3 +60,5 @@ struct ShipData {
         uint16_t attackTargetID;
     };
 };
+
+} // namespace admirals::mvp

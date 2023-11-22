@@ -9,6 +9,7 @@
 #define BOARD_SIZE 10
 
 using namespace admirals::net;
+using namespace admirals::mvp;
 
 struct PlayerData {
     uint16_t coins = 0;

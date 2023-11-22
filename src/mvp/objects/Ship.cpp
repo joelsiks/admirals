@@ -4,10 +4,9 @@
 using namespace admirals;
 using namespace admirals::mvp::objects;
 
-Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source,
-           const Vector2 &texOffset)
+Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
     : Sprite("ship-" + std::to_string(data.id), 3, Vector2(data.x, data.y),
-             size, source, texOffset),
+             size, source, Ship::ShipTypeToTexOffset(data.type)),
       m_data(data) {}
 
 void Ship::OnUpdate() {
@@ -35,11 +34,17 @@ void Ship::OnUpdate() {
 
 void Ship::OnStart() {}
 
-// void Ship::Move(int x, int y) {
-//     SetPosition(Vector2(static_cast<float>(x) * GameData::CellSize,
-//                         static_cast<float>(y) * GameData::CellSize));
-// }
-
 Vector2 Ship::CalcOrigin() const {
     return GetPosition() * GameData::CellSize - Vector2(0, GameData::CellSize);
+}
+
+Vector2 Ship::ShipTypeToTexOffset(uint16_t type) {
+    switch (type) {
+    case ShipType::Cruiser:
+        return Vector2(0, GameData::SpriteSize);
+    case ShipType::Destroyer:
+        return Vector2(GameData::SpriteSize, GameData::SpriteSize);
+    default:
+        return Vector2(0, GameData::SpriteSize);
+    }
 }

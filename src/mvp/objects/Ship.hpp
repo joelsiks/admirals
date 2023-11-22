@@ -8,8 +8,7 @@ class Ship : public Sprite {
 public:
     events::EventSystem<events::EventArgs> onChanged;
 
-    Ship(const ShipData &data, const Vector2 &size, const Texture &source,
-         const Vector2 &texOffset = Vector2(0));
+    Ship(const ShipData &data, const Vector2 &size, const Texture &source);
 
     void OnUpdate() override;
     void OnStart() override;
@@ -41,7 +40,7 @@ public:
     void SetData(const ShipData &data) { m_data = data; }
     const ShipData &GetData() const { return m_data; }
 
-    // void Move(int x, int y);
+    static Vector2 ShipTypeToTexOffset(uint16_t type);
 
 protected:
     Vector2 CalcOrigin() const override;
