@@ -15,7 +15,7 @@ public:
     virtual ~MessageQueue() = default;
 
     const T &Front() {
-        std::scoped_lock lock(m_mutex);
+        const std::scoped_lock lock(m_mutex);
         return m_queue.front();
     }
 
@@ -33,7 +33,7 @@ public:
 
     // Removes an item from the front of the queue
     void PopFront() {
-        std::scoped_lock lock(m_mutex);
+        const std::scoped_lock lock(m_mutex);
         m_queue.pop_front();
     }
 
@@ -56,7 +56,7 @@ public:
     }
 
     size_t Size() {
-        std::scoped_lock lock(m_mutex);
+        const std::scoped_lock lock(m_mutex);
         return m_queue.size();
     }
 };

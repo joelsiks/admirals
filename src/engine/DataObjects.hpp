@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <string>
 
+#undef TRANSPARENT
+
 namespace admirals {
 
 class Vector2 {
@@ -410,6 +412,7 @@ public:
     const static Color BLUE;
     const static Color WHITE;
     const static Color BLACK;
+    const static Color TRANSPARENT;
     const static Color GREY;
     const static Color LIGHT_GREY;
 };

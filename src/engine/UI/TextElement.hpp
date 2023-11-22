@@ -2,8 +2,7 @@
 
 #include "UI/Element.hpp"
 
-namespace admirals {
-namespace UI {
+namespace admirals::UI {
 
 class TextElement : public Element {
 public:
@@ -20,5 +19,4 @@ private:
     Color m_textColor;
 };
 
-} // namespace UI
-} // namespace admirals
+} // namespace admirals::UI

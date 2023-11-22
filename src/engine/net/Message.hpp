@@ -22,7 +22,7 @@ struct Message {
                       "Data is too complex to be pushed into vector");
 
         // Resize the message and copy the new data into the end of the buffer
-        size_t prev_size = msg.body.size();
+        const size_t prev_size = msg.body.size();
         msg.body.resize(msg.body.size() + sizeof(DataType));
         std::memcpy(msg.body.data() + prev_size, &data, sizeof(DataType));
         msg.header.size = msg.Size();
@@ -37,7 +37,7 @@ struct Message {
         static_assert(std::is_standard_layout<DataType>::value,
                       "Data is too complex to be pulled from vector");
 
-        size_t new_size = msg.body.size() - sizeof(DataType);
+        const size_t new_size = msg.body.size() - sizeof(DataType);
         std::memcpy(&data, msg.body.data() + new_size, sizeof(DataType));
         msg.body.resize(new_size);
         msg.header.size = msg.Size();

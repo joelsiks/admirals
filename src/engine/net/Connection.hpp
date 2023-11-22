@@ -69,7 +69,6 @@ private:
     void HandleWriteValidation(std::error_code ec);
     void HandleReadValidation(std::error_code ec);
 
-private:
     asio::io_context &m_ioContext;
     asio::ip::tcp::socket m_socket;
 

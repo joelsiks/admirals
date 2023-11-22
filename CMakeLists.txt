@@ -44,6 +44,16 @@ set(SOURCES
     src/engine/net/Client.cpp
     src/engine/net/Server.cpp
 )
+set(MVP_SOURCES 
+    src/mvp/shared.cpp
+    src/mvp/objects/Sprite.cpp
+    src/mvp/objects/Background.cpp
+    src/mvp/objects/Grid.cpp
+    src/mvp/objects/Quad.cpp
+    src/mvp/objects/Ship.cpp
+    src/mvp/objects/GameManager.cpp
+    src/mvp/objects/NetworkManager.cpp
+)
 
 set(INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/
@@ -85,6 +95,24 @@ if(WIN32)
 endif()
 target_link_libraries(engine vk2d asio)
 target_include_directories(engine PUBLIC ${INCLUDE_DIRS})
+
+# Create mvp executable
+add_executable(mvp src/mvp/main.cpp ${MVP_SOURCES})
+target_link_libraries(mvp engine)
+target_include_directories(mvp PRIVATE 
+    "src/engine/"
+    "src/engine/net"
+    "src/mvp/"
+)
+
+# Create mvp server
+add_executable(mvp_server src/mvp/mvpserver.cpp)
+target_link_libraries(mvp_server engine)
+target_include_directories(mvp_server PRIVATE 
+    "src/engine/"
+    "src/engine/net"
+    "src/mvp/"
+)
 
 # Create test executable
 add_executable(renderer_test src/test/renderer.test.cpp)

@@ -16,6 +16,7 @@ public:
 
     inline Vector2 GetPosition() const { return m_position; }
     inline void SetPosition(const Vector2 &pos) { m_position = pos; }
+    inline void SetPosition(float x, float y) { m_position = Vector2(x, y); }
 
     virtual void OnStart() = 0;
     virtual void OnUpdate() = 0;

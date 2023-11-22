@@ -91,8 +91,7 @@ void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,
 }
 
 void Renderer::DrawRectangleOutline(const Vector2 &position,
-                                    const Vector2 &size,
-                                    const float outlineWidth,
+                                    const Vector2 &size, float outlineWidth,
                                     const Color &color) {
     vk2dRendererSetColourMod(color.Data());
     vk2dRendererDrawRectangleOutline(position[0], position[1], size[0], size[1],
@@ -105,6 +104,14 @@ void Renderer::DrawTexture(const Texture &texture, const Vector2 &position,
     vk2dRendererDrawTexture(texture.Data(), position.x(), position.y(),
                             scale.x(), scale.y(), 0, 0, 0, 0, 0,
                             texture.Width(), texture.Height());
+}
+
+void Renderer::DrawSprite(const Texture &texture, const Vector2 &position,
+                          const Vector2 &texOffset, const Vector2 &texSize,
+                          const Vector2 &scale) {
+    vk2dRendererDrawTexture(texture.Data(), position.x(), position.y(),
+                            scale.x(), scale.y(), 0, 0, 0, texOffset.x(),
+                            texOffset.y(), texSize.x(), texSize.y());
 }
 
 void Renderer::DrawText(const Texture &font, const Vector2 &position,

@@ -8,8 +8,7 @@
 #include "IDrawable.hpp"
 #include "OrderedCollection.hpp"
 
-namespace admirals {
-namespace scene {
+namespace admirals::scene {
 
 class Scene : public renderer::IDrawable {
 public:
@@ -29,5 +28,4 @@ private:
     OrderedCollection<GameObject> m_objects;
 };
 
-} // namespace scene
-} // namespace admirals
+} // namespace admirals::scene
