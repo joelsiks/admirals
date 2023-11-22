@@ -77,6 +77,11 @@ public:
     void StartGameLoop();
     inline void StopGameLoop() { m_running = false; }
 
+    inline Vector2 GetWindowSize() {
+        auto rctx = m_renderer->Context();
+        return Vector2(rctx.windowWidth, rctx.windowHeight);
+    }
+
 private:
     bool PollAndHandleEvent();
 
