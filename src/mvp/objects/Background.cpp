@@ -13,9 +13,7 @@ void Background::OnStart() {}
 void Background::OnUpdate() {}
 
 void Background::Render(const renderer::RendererContext &r) const {
-    Vector2 offset = Vector2(r.windowWidth - GameData::GridSize,
-                             r.windowHeight - GameData::GridSize) /
-                     2;
-    renderer::Renderer::DrawRectangle(offset, Vector2(GameData::GridSize),
-                                      m_color);
+    const Vector2 size = Vector2(static_cast<float>(r.windowWidth),
+                                 static_cast<float>(r.windowHeight));
+    renderer::Renderer::DrawRectangle(Vector2(0, 0), size, m_color);
 }

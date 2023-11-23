@@ -54,6 +54,8 @@ std::vector<std::string> Scene::GetSceneObjectNames() {
 }
 
 void Scene::OnStart() {
+    m_isInitialized = true;
+
     for (const auto &object : this->m_objects) {
         object->OnStart();
     }

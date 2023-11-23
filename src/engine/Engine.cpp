@@ -50,7 +50,10 @@ bool Engine::PollAndHandleEvent() {
 
 void Engine::StartGameLoop() {
     m_running = true;
-    m_scene->OnStart();
+
+    if (hasScene()) {
+        m_scene->OnStart();
+    }
 
     std::vector<std::shared_ptr<renderer::IDrawable>> layers(2);
 

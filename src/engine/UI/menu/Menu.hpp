@@ -11,7 +11,7 @@ namespace admirals::UI::menu {
 class Menu : public DisplayLayout {
 public:
     Menu(const std::string &menuTitle, const Color &foregroundColor,
-         const Color &backgroundColor);
+         const Color &backgroundColor, float topPadding = 0);
 
     void AddMenuOption(const std::shared_ptr<MenuOption> &menuOption);
 
@@ -29,8 +29,9 @@ public:
 private:
     static constexpr float commonDepthOrder = 10;
 
-    Color m_fgColor, m_bgColor;
     std::string m_menuTitle;
+    Color m_fgColor, m_bgColor;
+    float m_topPadding;
 };
 
 } // namespace admirals::UI::menu

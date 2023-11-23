@@ -24,8 +24,11 @@ public:
     void OnStart();
     void OnUpdate();
 
+    bool IsInitialized() const { return m_isInitialized; }
+
 private:
     OrderedCollection<GameObject> m_objects;
+    bool m_isInitialized;
 };
 
 } // namespace admirals::scene

@@ -36,6 +36,11 @@ public:
     SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
         auto currentScene = m_scene;
         m_scene = scene;
+
+        if (hasScene() && !m_scene->IsInitialized()) {
+            m_scene->OnStart();
+        }
+
         return currentScene;
     }
 
@@ -71,6 +76,11 @@ public:
 
     void StartGameLoop();
     inline void StopGameLoop() { m_running = false; }
+
+    inline Vector2 GetWindowSize() {
+        auto rctx = m_renderer->Context();
+        return Vector2(rctx.windowWidth, rctx.windowHeight);
+    }
 
 private:
     bool PollAndHandleEvent();

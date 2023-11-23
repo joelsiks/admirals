@@ -1,10 +1,12 @@
 #include "Engine.hpp"
 #include "UI/TextElement.hpp"
+#include "UI/menu/MenuOption.hpp"
 
 #include "objects/Background.hpp"
 #include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
 #include "objects/IconifiedButton.hpp"
+#include "objects/MenuMovingShip.hpp"
 #include "objects/Quad.hpp"
 #include "objects/Ship.hpp"
 #include "shared.hpp"
@@ -19,10 +21,14 @@ using namespace admirals::mvp::objects;
 const float GridWidth = GameData::GridSize;
 const float GridHeight = GameData::GridSize + 2 * GameData::CellSize;
 
+const Vector2 cellSize = Vector2(GameData::CellSize);
+const Color blue = Color::FromHEX("#3283cf");
+const Color green = Color::FromHEX("#087311");
+
+static std::shared_ptr<UI::DisplayLayout> g_dlStore;
+static std::shared_ptr<scene::Scene> g_sStore;
+
 void CreateGameBoard() {
-    const Vector2 cellSize = Vector2(GameData::CellSize);
-    const Color blue = Color::FromHEX("#3283cf");
-    const Color green = Color::FromHEX("#087311");
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
@@ -90,6 +96,60 @@ void CreateUI(const Texture &atlas,
     }
 }
 
+void CreateStartMenu() {
+    GameData::startMenuScene = std::make_shared<scene::Scene>();
+
+    GameData::startMenu = std::make_shared<UI::menu::Menu>(
+        "Admirals Conquest (MVP)", Color::BLACK,
+        Color::FromRGBA(20, 20, 20, 140), 100);
+
+    UI::menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
+    exitOption.onClick.Subscribe(
+        [](void *, UI::menu::OptionClickEventArgs &args) {
+            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+                return;
+
+            GameData::engine->StopGameLoop();
+        });
+    GameData::startMenu->AddMenuOption(
+        UI::menu::MenuOption::CreateFromDerived(exitOption));
+
+    UI::menu::ClickOption connectOption("connectOption", 1.0,
+                                        "Connect to server");
+    connectOption.onClick.Subscribe(
+        [](void *, UI::menu::OptionClickEventArgs &args) {
+            if (args.m_data.type == SDL_MOUSEBUTTONUP) {
+                GameData::engine->SetAndGetDisplayLayout(g_dlStore);
+                GameData::engine->SetAndGetScene(g_sStore);
+            }
+        });
+    GameData::startMenu->AddMenuOption(
+        UI::menu::MenuOption::CreateFromDerived(connectOption));
+
+    // Currently does nothing...
+    const UI::menu::ClickOption startOption("startOption", 1.0, "Start server");
+    GameData::startMenu->AddMenuOption(
+        UI::menu::MenuOption::CreateFromDerived(startOption));
+}
+
+void SwapEngineLayers() {
+    g_dlStore = GameData::engine->SetAndGetDisplayLayout(GameData::startMenu);
+    g_sStore = GameData::engine->SetAndGetScene(GameData::startMenuScene);
+}
+
+void CreateStartMenuScene(const Texture &atlas) {
+    GameData::engine->MakeGameObject<Background>("background", blue);
+    GameData::engine->MakeGameObject<MenuMovingShip>(
+        "movingShip1", Vector2(0, 0), Vector2(80, 80), atlas, ShipType::Cruiser,
+        70);
+    GameData::engine->MakeGameObject<MenuMovingShip>(
+        "movingShip2", Vector2(500, 300), Vector2(80, 80), atlas,
+        ShipType::Destroyer, 150);
+    GameData::engine->MakeGameObject<MenuMovingShip>(
+        "movingShip3", Vector2(200, 500), Vector2(80, 80), atlas,
+        ShipType::Cruiser, 80);
+}
+
 int main(int, char *[]) {
     GameData::engine =
         std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
@@ -105,6 +165,10 @@ int main(int, char *[]) {
         GameData::engine->MakeGameObject<GameManager>("gameManager");
 
     CreateUI(atlas, gameManager);
+
+    CreateStartMenu();
+    SwapEngineLayers();
+    CreateStartMenuScene(atlas);
 
     GameData::engine->StartGameLoop();
 

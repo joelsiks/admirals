@@ -5,9 +5,9 @@
 using namespace admirals::UI::menu;
 
 Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
-           const Color &backgroundColor)
+           const Color &backgroundColor, float topPadding)
     : m_menuTitle(menuTitle), m_fgColor(foregroundColor),
-      m_bgColor(backgroundColor) {
+      m_bgColor(backgroundColor), m_topPadding(topPadding) {
 
     const TextOption titleOption(MENU_TITLE_NAME, Menu::commonDepthOrder,
                                  menuTitle);
@@ -23,7 +23,7 @@ void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
 
 void Menu::Render(const renderer::RendererContext &r) const {
 
-    float centerPositionOffset = 0;
+    float centerPositionOffset = m_topPadding;
 
     // Draw background.
     renderer::Renderer::DrawRectangle(
