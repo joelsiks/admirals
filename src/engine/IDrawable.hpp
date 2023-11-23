@@ -1,4 +1,5 @@
 #pragma once
+#include "Context.hpp"
 
 namespace admirals::renderer {
 
@@ -12,7 +13,7 @@ struct RendererContext {
 
 class IDrawable {
 public:
-    virtual void Render(const RendererContext &r) const = 0;
+    virtual void Render(const Context &c) const = 0;
 };
 
 } // namespace admirals::renderer

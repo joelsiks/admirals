@@ -12,7 +12,6 @@
 
 using namespace admirals;
 
-#define SECONDS_PER_MICROSECOND 1000000.f
 #define FPS_BUFFER_SIZE 100
 
 const int WINDOW_WIDTH = 1000;
@@ -21,7 +20,6 @@ const int CELL_SIZE = 100;
 const float CELL_SPEED = 500.f;
 const std::vector<Color> COLOR_LOOP = {Color::BLUE, Color::RED, Color::GREEN,
                                        Color::BLACK};
-float deltaT = 0;
 
 class CellObject : public scene::GameObject {
 private:
@@ -31,7 +29,7 @@ public:
     CellObject(const std::string &name, const Vector3 &pos, const Color &color)
         : scene::GameObject(name, pos), m_color(color) {}
 
-    void OnStart() override {}
+    void OnStart(Context &c) override {}
 
     void OnClick(void *, events::MouseCLickEventArgs e) {
         if (e.button != events::MouseButton::Left || !e.pressed) {
@@ -58,9 +56,9 @@ public:
         }
     }
 
-    void OnUpdate() override {
+    void OnUpdate(Context &c) override {
         Vector2 position = this->GetPosition();
-        float x = position.x() + CELL_SPEED * deltaT;
+        float x = position.x() + CELL_SPEED * c.DeltaTime();
         while (x > WINDOW_WIDTH) {
             x = -CELL_SIZE + (x - WINDOW_WIDTH);
         }
@@ -68,12 +66,12 @@ public:
         this->SetPosition(position);
     }
 
-    void Render(const renderer::RendererContext &r) const override {
+    void Render(const Context &c) const override {
         Vector2 pos = this->GetPosition();
         // Calculate scaling
-        const float x = static_cast<float>(r.windowWidth) /
+        const float x = static_cast<float>(c.windowWidth) /
                         static_cast<float>(WINDOW_WIDTH);
-        const float y = static_cast<float>(r.windowHeight) /
+        const float y = static_cast<float>(c.windowHeight) /
                         static_cast<float>(WINDOW_HEIGHT);
 
         const Vector2 size(CELL_SIZE * x, CELL_SIZE * y);
@@ -90,24 +88,19 @@ public:
         : scene::GameObject(name, -1, Vector2(0)),
           m_textElement(std::move(textElement)) {}
 
-    void OnStart() override {
+    void OnStart(Context &c) override {
         m_time = std::chrono::high_resolution_clock::now();
     }
 
-    void OnUpdate() override {
-        auto time = std::chrono::high_resolution_clock::now();
-        deltaT =
-            std::chrono::duration_cast<std::chrono::microseconds>(time - m_time)
-                .count() /
-            SECONDS_PER_MICROSECOND;
+    void OnUpdate(Context &c) override {
         char fpsString[FPS_BUFFER_SIZE];
-        if (sprintf(fpsString, "DT = %f, FPS: %f", deltaT, 1.f / deltaT) > 0) {
+        if (sprintf(fpsString, "DT = %f, FPS: %f", c.DeltaTime(),
+                    1.f / c.DeltaTime()) > 0) {
             m_textElement->SetText(std::string(fpsString));
         }
-        m_time = time;
     }
 
-    void Render(const renderer::RendererContext &r) const override {}
+    void Render(const Context &c) const override {}
 
 private:
     std::chrono::_V2::system_clock::time_point m_time;

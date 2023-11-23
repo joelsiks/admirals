@@ -7,6 +7,7 @@
 #include <SDL_video.h>
 #include <VK2D/Texture.h>
 
+#include "Context.hpp"
 #include "DataObjects.hpp"
 #include "IDrawable.hpp"
 
@@ -20,14 +21,12 @@ public:
              bool debugRendering);
     ~Renderer();
 
-    int Init(bool debug);
-    void Render(const DrawableCollection &drawables);
+    int Init(int windowWidth, int windowHeight, bool debug);
+    void Render(Context &context, const DrawableCollection &drawables);
 
-    inline void ToggleDebugRendering() {
-        m_context.renderDebugOutlines = !m_context.renderDebugOutlines;
-    }
-
-    inline RendererContext Context() const { return m_context; }
+    // inline void ToggleDebugRendering() {
+    //     m_context.renderDebugOutlines = !m_context.renderDebugOutlines;
+    // }
 
     static void DrawLine(const Vector2 &p1, const Vector2 &p2,
                          const Color &color);
@@ -50,7 +49,7 @@ public:
                          const Color &color, const std::string &text);
 
 private:
-    RendererContext m_context;
+    // RendererContext m_context;
     SDL_Window *m_window;
 };
 

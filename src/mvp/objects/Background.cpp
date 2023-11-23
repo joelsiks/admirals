@@ -8,12 +8,12 @@ using namespace admirals::mvp::objects;
 Background::Background(const std::string &name, const Color &color)
     : scene::GameObject(name, 0, Vector2(0)), m_color(color) {}
 
-void Background::OnStart() {}
+void Background::OnStart(Context &c) {}
 
-void Background::OnUpdate() {}
+void Background::OnUpdate(Context &c) {}
 
-void Background::Render(const renderer::RendererContext &r) const {
-    const Vector2 size = Vector2(static_cast<float>(r.windowWidth),
-                                 static_cast<float>(r.windowHeight));
+void Background::Render(const Context &c) const {
+    const Vector2 size = Vector2(static_cast<float>(c.windowWidth),
+                                 static_cast<float>(c.windowHeight));
     renderer::Renderer::DrawRectangle(Vector2(0, 0), size, m_color);
 }

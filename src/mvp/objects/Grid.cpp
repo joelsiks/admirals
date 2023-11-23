@@ -8,13 +8,13 @@ using namespace admirals::mvp::objects;
 Grid::Grid(const std::string &name, const Color &color)
     : scene::GameObject(name, 1000, Vector2(0, 0)), m_color(color) {}
 
-void Grid::OnStart() {}
+void Grid::OnStart(Context &c) {}
 
-void Grid::OnUpdate() {}
+void Grid::OnUpdate(Context &c) {}
 
-void Grid::Render(const renderer::RendererContext &r) const {
-    Vector2 offset = Vector2(r.windowWidth - GameData::GridSize,
-                             r.windowHeight - GameData::GridSize) /
+void Grid::Render(const Context &c) const {
+    Vector2 offset = Vector2(c.windowWidth - GameData::GridSize,
+                             c.windowHeight - GameData::GridSize) /
                      2;
     for (int i = 0; i <= GameData::GridCells; i++) {
         float x = i * GameData::CellSize;

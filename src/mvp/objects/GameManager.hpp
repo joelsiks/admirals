@@ -22,9 +22,9 @@ public:
 
     events::EventSystem<CoinsChangesEventArgs> onCoinsChanged;
 
-    void OnStart() override;
-    void OnUpdate() override;
-    void Render(const renderer::RendererContext &r) const override {}
+    void OnStart(Context &c) override;
+    void OnUpdate(Context &c) override;
+    void Render(const Context &c) const override {}
 
     void StartGame() { m_gameStarted = true; }
     void StopGame();

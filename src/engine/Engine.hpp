@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Context.hpp"
 #include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Scene.hpp"
@@ -21,6 +22,8 @@ public:
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
+    inline Context &GetContext() const { return *m_context; }
+
     inline std::shared_ptr<UI::DisplayLayout>
     SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout) {
         auto currentLayout = m_displayLayout;
@@ -38,7 +41,7 @@ public:
         m_scene = scene;
 
         if (hasScene() && !m_scene->IsInitialized()) {
-            m_scene->OnStart();
+            m_scene->OnStart(*m_context);
         }
 
         return currentScene;
@@ -58,7 +61,9 @@ public:
         }
     }
 
-    inline void ToggleDebugRendering() { m_renderer->ToggleDebugRendering(); }
+    inline void ToggleDebugRendering() {
+        m_context->renderDebugOutlines = !m_context->renderDebugOutlines;
+    }
 
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {
@@ -78,8 +83,7 @@ public:
     inline void StopGameLoop() { m_running = false; }
 
     inline Vector2 GetWindowSize() {
-        auto rctx = m_renderer->Context();
-        return Vector2(rctx.windowWidth, rctx.windowHeight);
+        return Vector2(m_context->windowWidth, m_context->windowHeight);
     }
 
 private:
@@ -97,6 +101,7 @@ private:
     std::shared_ptr<scene::Scene> m_scene;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
+    std::unique_ptr<Context> m_context;
 };
 
 } // namespace admirals

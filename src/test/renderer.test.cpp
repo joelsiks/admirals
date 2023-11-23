@@ -25,9 +25,9 @@ public:
         : scene::GameObject(name, pos), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
 
-    void OnStart() override {}
+    void OnStart(Context &c) override {}
 
-    void OnUpdate() override {}
+    void OnUpdate(Context &c) override {}
 
     void ButtonClickHandler(void *sender, events::ButtonClickEventArgs &e) {
         if (e.m_data.type != SDL_MOUSEBUTTONDOWN)
@@ -40,10 +40,10 @@ public:
         }
     }
 
-    void Render(const renderer::RendererContext &r) const override {
-        float x = static_cast<float>(r.windowWidth) /
+    void Render(const Context &c) const override {
+        float x = static_cast<float>(c.windowWidth) /
                   static_cast<float>(m_texture.Width());
-        float y = static_cast<float>(r.windowHeight) /
+        float y = static_cast<float>(c.windowHeight) /
                   static_cast<float>(m_texture.Height());
         if (m_keepAspectRatio) {
             x = std::min(x, y);

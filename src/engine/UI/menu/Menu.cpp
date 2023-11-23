@@ -21,15 +21,15 @@ void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
     this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
 }
 
-void Menu::Render(const renderer::RendererContext &r) const {
+void Menu::Render(const Context &c) const {
 
     float centerPositionOffset = m_topPadding;
 
     // Draw background.
     renderer::Renderer::DrawRectangle(
         Vector2(0, 0),
-        Vector2(static_cast<float>(r.windowWidth),
-                static_cast<float>(r.windowHeight)),
+        Vector2(static_cast<float>(c.windowWidth),
+                static_cast<float>(c.windowHeight)),
         m_bgColor);
 
     for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
@@ -40,7 +40,7 @@ void Menu::Render(const renderer::RendererContext &r) const {
 
         // Calculate the origin with respect to the matching positionOffset.
         Vector2 origin =
-            DisplayLayout::GetOriginFromDisplayPosition(pos, displaySize, r);
+            DisplayLayout::GetOriginFromDisplayPosition(pos, displaySize, c);
         origin[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.
@@ -60,7 +60,7 @@ void Menu::Render(const renderer::RendererContext &r) const {
         }
 
         // If debugging, render an outline around the UI Element.
-        if (r.renderDebugOutlines) {
+        if (c.renderDebugOutlines) {
             renderer::Renderer::DrawRectangleOutline(origin, displaySize, 2,
                                                      Color::RED);
         }

@@ -27,8 +27,7 @@ void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
 }
 
 Renderer::Renderer(const std::string &name, int width, int height,
-                   bool debugRendering)
-    : m_context({width, height, debugRendering}) {
+                   bool debugRendering) {
     this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED, width, height,
                                       SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
@@ -39,7 +38,7 @@ Renderer::~Renderer() {
     SDL_DestroyWindow(this->m_window);
 }
 
-int Renderer::Init(bool debug) {
+int Renderer::Init(int windowWidth, int windowHeight, bool debug) {
     VK2DRendererConfig config = {VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE,
                                  VK2D_FILTER_TYPE_NEAREST};
     VK2DStartupOptions options = {debug, debug, debug, "error.txt", false};
@@ -49,28 +48,24 @@ int Renderer::Init(bool debug) {
         return code;
     }
 
-    VK2DCameraSpec camera = {VK2D_CAMERA_TYPE_DEFAULT,
-                             0,
-                             0,
-                             static_cast<float>(m_context.windowWidth),
-                             static_cast<float>(m_context.windowHeight),
-                             1,
-                             0};
+    VK2DCameraSpec camera = {
+        VK2D_CAMERA_TYPE_DEFAULT,         0, 0, static_cast<float>(windowWidth),
+        static_cast<float>(windowHeight), 1, 0};
 
     vk2dRendererSetCamera(camera);
     return code;
 }
 
-void Renderer::Render(const DrawableCollection &drawables) {
+void Renderer::Render(admirals::Context &context,
+                      const DrawableCollection &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
-    SDL_GetWindowSize(m_window, &m_context.windowWidth,
-                      &m_context.windowHeight);
+    SDL_GetWindowSize(m_window, &context.windowWidth, &context.windowHeight);
     for (const auto &drawable : drawables) {
         if (drawable == nullptr) {
             continue;
         }
 
-        drawable->Render(m_context);
+        drawable->Render(context);
     }
     vk2dRendererEndFrame();
 }

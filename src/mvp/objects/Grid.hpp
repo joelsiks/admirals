@@ -7,9 +7,9 @@ class Grid : public scene::GameObject {
 public:
     Grid(const std::string &name, const Color &color);
 
-    void OnStart() override;
-    void OnUpdate() override;
-    void Render(const renderer::RendererContext &r) const override;
+    void OnStart(Context &c) override;
+    void OnUpdate(Context &c) override;
+    void Render(const Context &c) const override;
 
 private:
     Color m_color;

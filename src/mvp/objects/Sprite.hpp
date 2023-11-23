@@ -13,9 +13,9 @@ public:
            const Vector2 &size, const Texture &source, const Vector2 &texOffset,
            const Vector2 &texSize = Vector2(GameData::SpriteSize));
 
-    virtual void OnUpdate() override;
-    virtual void OnStart() override;
-    void Render(const renderer::RendererContext &r) const override;
+    virtual void OnUpdate(Context &c) override;
+    virtual void OnStart(Context &c) override;
+    void Render(const Context &c) const override;
 
 protected:
     virtual inline Vector2 CalcOrigin() const { return GetPosition(); }
