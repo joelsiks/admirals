@@ -37,7 +37,7 @@ public:
         auto currentScene = m_scene;
         m_scene = scene;
 
-        if (scene != nullptr && !scene->IsInitialized()) {
+        if (hasScene() && !scene->IsInitialized()) {
             scene->OnStart();
         }
 
