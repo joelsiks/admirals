@@ -107,6 +107,12 @@ public:
     std::vector<std::shared_ptr<IDisplayable>>
     GetObjectsAtPosition(const Vector2 &position) const;
 
+    inline void PrintTree() const {
+        if (m_rootNode != nullptr && m_size != Vector2(0)) {
+            PrintNode(m_rootNode, 0, m_size);
+        }
+    }
+
 private:
     static constexpr int NUM_QUADRANTS = 4;
 
@@ -119,7 +125,7 @@ private:
     };
 
     struct BuildData {
-        const std::vector<std::shared_ptr<IDisplayable>> &objects;
+        std::vector<std::shared_ptr<IDisplayable>> objects;
         Node *node;
         Vector2 origin, size;
     };
@@ -127,7 +133,10 @@ private:
 
     void DestroyTree();
 
-    Vector2 m_size;
-    Node *m_rootNode;
+    // Helper function to print a node and its children recursively
+    void PrintNode(const Node *node, int depth, Vector2 size) const;
+
+    Vector2 m_size = Vector2(0);
+    Node *m_rootNode = nullptr;
 };
 } // namespace admirals

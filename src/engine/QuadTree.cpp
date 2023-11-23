@@ -1,5 +1,6 @@
 
 #include <algorithm>
+#include <iostream>
 #include <iterator>
 #include <stack>
 
@@ -13,10 +14,6 @@ using namespace admirals;
 //  -----
 //  2 | 3
 enum Quadrant : int { TopLeft = 0, TopRight, BottomLeft, BottomRight };
-
-QuadTree::QuadTree() {}
-
-QuadTree::~QuadTree() { DestroyTree(); }
 
 static Quadrant GetQuadrantFromPosition(const Vector2 &position,
                                         const Vector2 &origin,
@@ -39,6 +36,36 @@ static Quadrant GetQuadrantFromPosition(const Vector2 &position,
     return Quadrant::BottomRight;
 }
 
+static inline Vector2 CalculateNewOrigin(Quadrant q, const Vector2 &origin,
+                                         const Vector2 &size) {
+    switch (q) {
+    case Quadrant::TopLeft:
+        return origin;
+    case Quadrant::TopRight:
+        return origin + Vector2(size.x(), 0);
+    case Quadrant::BottomLeft:
+        return origin + Vector2(0, size.y());
+    case Quadrant::BottomRight:
+        return origin + size;
+    default:
+        return origin;
+    }
+}
+
+// Origin is the top left corner of the overlying box, and size is the size of
+// one quadrant inside that box.
+static bool inline InQuadrant(const std::shared_ptr<IDisplayable> &object,
+                              Quadrant q, const Vector2 &origin,
+                              const Vector2 &size) {
+
+    const Vector2 newOrigin = CalculateNewOrigin(q, origin, size);
+    return object->IsPartiallyInsideBox(newOrigin, size);
+}
+
+QuadTree::QuadTree() {}
+
+QuadTree::~QuadTree() { DestroyTree(); }
+
 std::vector<std::shared_ptr<IDisplayable>>
 QuadTree::GetObjectsAtPosition(const Vector2 &position) const {
     Vector2 currentSize = m_size;
@@ -59,65 +86,6 @@ QuadTree::GetObjectsAtPosition(const Vector2 &position) const {
     }
 
     return prev->data;
-}
-
-void QuadTree::DestroyTree() {
-    if (m_rootNode == nullptr) {
-        return;
-    }
-
-    std::stack<Node *> destroyStack;
-    destroyStack.push(m_rootNode);
-
-    while (!destroyStack.empty()) {
-        const Node *currentNode = destroyStack.top();
-        destroyStack.pop();
-
-        // If the data is empty, the node is not a leaf.
-        for (size_t i = 0; i < NUM_QUADRANTS; i++) {
-            if (currentNode->quadrants[i] != nullptr) {
-                destroyStack.push(currentNode->quadrants[i]);
-            }
-        }
-
-        delete currentNode;
-    }
-}
-
-static inline Vector2 CalculateNewOrigin(Quadrant q, const Vector2 &origin,
-                                         const Vector2 &size) {
-    switch (q) {
-    case Quadrant::TopLeft:
-        return origin;
-    case Quadrant::TopRight:
-        return origin + Vector2(size.x(), 0);
-    case Quadrant::BottomLeft:
-        return origin + Vector2(0, size.y());
-    case Quadrant::BottomRight:
-        return origin + size;
-    default:
-        return origin;
-    }
-}
-
-// Origin is the top left corner of the overlying box, and size is the size of
-// one quadrant inside that box.
-bool inline InQuadrant(const std::shared_ptr<IDisplayable> &object, Quadrant q,
-                       const Vector2 &origin, const Vector2 &size) {
-    switch (q) {
-    case Quadrant::TopLeft:
-        return object->IsPartiallyInsideBox(origin, size);
-    case Quadrant::TopRight:
-        return object->IsPartiallyInsideBox(origin + Vector2(size.x(), 0),
-                                            size);
-    case Quadrant::BottomLeft:
-        return object->IsPartiallyInsideBox(origin + Vector2(0, size.y()),
-                                            size);
-    case Quadrant::BottomRight:
-        return object->IsPartiallyInsideBox(origin + size, size);
-    default:
-        return false;
-    }
 }
 
 void QuadTree::BuildTree(
@@ -159,21 +127,20 @@ void QuadTree::BuildTree(
                 numEncapsulatingObjects++;
             }
 
-            if (InQuadrant(object, Quadrant::TopLeft, Vector2(0), newSize)) {
+            if (InQuadrant(object, Quadrant::TopLeft, data.origin, newSize)) {
                 quadrantObjects[Quadrant::TopLeft].push_back(object);
             }
 
-            if (InQuadrant(object, Quadrant::TopRight, Vector2(newSize.x(), 0),
+            if (InQuadrant(object, Quadrant::TopRight, data.origin, newSize)) {
+                quadrantObjects[Quadrant::TopRight].push_back(object);
+            }
+
+            if (InQuadrant(object, Quadrant::BottomLeft, data.origin,
                            newSize)) {
-                quadrantObjects[Quadrant::TopLeft].push_back(object);
-            }
-
-            if (InQuadrant(object, Quadrant::BottomLeft,
-                           Vector2(0, newSize.y()), newSize)) {
                 quadrantObjects[Quadrant::BottomLeft].push_back(object);
             }
 
-            if (InQuadrant(object, Quadrant::BottomRight, Vector2(newSize),
+            if (InQuadrant(object, Quadrant::BottomRight, data.origin,
                            newSize)) {
                 quadrantObjects[Quadrant::BottomRight].push_back(object);
             }
@@ -189,8 +156,12 @@ void QuadTree::BuildTree(
         for (int i = 0; i < NUM_QUADRANTS; i++) {
             const size_t numObjectsInQuadrant = quadrantObjects[i].size();
 
+            const Vector2 newOrigin = CalculateNewOrigin(
+                static_cast<Quadrant>(i), data.origin, newSize);
+
             if (numObjectsInQuadrant > 0) {
                 data.node->quadrants[i] = new Node();
+                data.node->quadrants[i]->origin = newOrigin;
             }
 
             if (numObjectsInQuadrant == 1) {
@@ -199,11 +170,60 @@ void QuadTree::BuildTree(
                 m_buildQueue.push({
                     quadrantObjects[i],
                     data.node->quadrants[i],
-                    CalculateNewOrigin(static_cast<Quadrant>(i), data.origin,
-                                       newSize),
+                    newOrigin,
                     newSize,
                 });
             }
+        }
+    }
+}
+
+void QuadTree::DestroyTree() {
+    if (m_rootNode == nullptr) {
+        return;
+    }
+
+    std::stack<Node *> destroyStack;
+    destroyStack.push(m_rootNode);
+
+    while (!destroyStack.empty()) {
+        const Node *currentNode = destroyStack.top();
+        destroyStack.pop();
+
+        // If the data is empty, the node is not a leaf.
+        for (size_t i = 0; i < NUM_QUADRANTS; i++) {
+            if (currentNode->quadrants[i] != nullptr) {
+                destroyStack.push(currentNode->quadrants[i]);
+            }
+        }
+
+        delete currentNode;
+    }
+}
+
+void QuadTree::PrintNode(const Node *node, int depth, Vector2 size) const {
+    if (node == nullptr) {
+        return;
+    }
+
+    size /= 2.0f;
+
+    // Print information about the current node
+    for (int i = 0; i < depth; ++i) {
+        std::cout
+            << "  "; // Adjust indentation for tree structure visualization
+    }
+    std::cout << "Node at (" << node->origin.x() << ", " << node->origin.y()
+              << "), size(" << size.x() << ", " << size.y() << ") ";
+
+    if (!node->data.empty()) {
+        std::cout << " [Leaf Node with " << node->data.size()
+                  << " object(s)]\n";
+    } else {
+        std::cout << " [Internal Node]\n";
+        // Recursively print its children
+        for (int i = 0; i < NUM_QUADRANTS; ++i) {
+            PrintNode(node->quadrants[i], depth + 1, size);
         }
     }
 }
