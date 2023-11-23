@@ -24,10 +24,6 @@ public:
     int Init(int windowWidth, int windowHeight, bool debug);
     void Render(Context &context, const DrawableCollection &drawables);
 
-    // inline void ToggleDebugRendering() {
-    //     m_context.renderDebugOutlines = !m_context.renderDebugOutlines;
-    // }
-
     static void DrawLine(const Vector2 &p1, const Vector2 &p2,
                          const Color &color);
 
@@ -49,7 +45,6 @@ public:
                          const Color &color, const std::string &text);
 
 private:
-    // RendererContext m_context;
     SDL_Window *m_window;
 };
 
