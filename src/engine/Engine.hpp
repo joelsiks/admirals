@@ -37,8 +37,8 @@ public:
         auto currentScene = m_scene;
         m_scene = scene;
 
-        if (hasScene() && !scene->IsInitialized()) {
-            scene->OnStart();
+        if (hasScene() && !m_scene->IsInitialized()) {
+            m_scene->OnStart();
         }
 
         return currentScene;
