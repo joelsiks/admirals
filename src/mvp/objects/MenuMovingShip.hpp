@@ -25,7 +25,7 @@ public:
         Vector2 position = this->GetPosition();
         Vector2 windowSize = GameData::engine->GetWindowSize();
 
-        float newX = position.x() + m_shipSpeed * c.DeltaTime();
+        float newX = position.x() + m_shipSpeed * c.deltaTime;
         if (newX > windowSize[0]) {
             newX = -m_size.x();
         }

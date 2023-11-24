@@ -22,7 +22,7 @@ public:
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
-    inline EngineContext GetContext() const { return m_context; }
+    inline const EngineContext &GetContext() const { return m_context; }
 
     inline std::shared_ptr<UI::DisplayLayout>
     SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout) {

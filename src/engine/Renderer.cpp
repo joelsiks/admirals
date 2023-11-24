@@ -56,10 +56,13 @@ int Renderer::Init(int windowWidth, int windowHeight, bool debug) {
     return code;
 }
 
-void Renderer::Render(admirals::EngineContext &context,
+void Renderer::GetWindowSize(int *width, int *height) {
+    SDL_GetWindowSize(m_window, width, height);
+}
+
+void Renderer::Render(const admirals::EngineContext &context,
                       const DrawableCollection &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
-    SDL_GetWindowSize(m_window, &context.windowWidth, &context.windowHeight);
     for (const auto &drawable : drawables) {
         if (drawable == nullptr) {
             continue;

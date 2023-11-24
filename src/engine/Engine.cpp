@@ -56,25 +56,36 @@ void Engine::StartGameLoop() {
     m_running = true;
 
     if (hasScene()) {
-        m_scene->OnStart(m_context);
+        m_scene->OnStart(GetContext());
     }
 
     std::vector<std::shared_ptr<renderer::IDrawable>> layers(2);
 
     // Start render loop
     bool quit = false;
+    std::chrono::time_point<std::chrono::high_resolution_clock> lastTime =
+        std::chrono::high_resolution_clock::now();
     while (!quit) {
         layers[0] = m_scene;
         layers[1] = m_displayLayout;
 
-        m_context.UpdateDelta();
+        std::chrono::time_point<std::chrono::high_resolution_clock> now =
+            std::chrono::high_resolution_clock::now();
+        m_context.deltaTime =
+            std::chrono::duration<double>(now - lastTime).count();
+        lastTime = now;
 
         quit = PollAndHandleEvent();
 
         if (hasScene()) {
-            m_scene->OnUpdate(m_context);
+            m_scene->OnUpdate(GetContext());
         }
 
-        m_renderer->Render(m_context, layers);
+        int windowWidth, windowHeight;
+        m_renderer->GetWindowSize(&windowWidth, &windowHeight);
+        m_context.windowWidth = windowWidth;
+        m_context.windowHeight = windowHeight;
+
+        m_renderer->Render(GetContext(), layers);
     }
 }

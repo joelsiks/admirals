@@ -22,7 +22,10 @@ public:
     ~Renderer();
 
     int Init(int windowWidth, int windowHeight, bool debug);
-    void Render(EngineContext &context, const DrawableCollection &drawables);
+    void Render(const EngineContext &context,
+                const DrawableCollection &drawables);
+
+    void GetWindowSize(int *width, int *height);
 
     static void DrawLine(const Vector2 &p1, const Vector2 &p2,
                          const Color &color);

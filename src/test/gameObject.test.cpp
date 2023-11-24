@@ -58,7 +58,7 @@ public:
 
     void OnUpdate(const EngineContext &c) override {
         Vector2 position = this->GetPosition();
-        float x = position.x() + CELL_SPEED * c.DeltaTime();
+        float x = position.x() + CELL_SPEED * c.deltaTime;
         while (x > WINDOW_WIDTH) {
             x = -CELL_SIZE + (x - WINDOW_WIDTH);
         }
@@ -94,8 +94,8 @@ public:
 
     void OnUpdate(const EngineContext &c) override {
         char fpsString[FPS_BUFFER_SIZE];
-        if (sprintf(fpsString, "DT = %f, FPS: %f", c.DeltaTime(),
-                    1.f / c.DeltaTime()) > 0) {
+        if (sprintf(fpsString, "DT = %f, FPS: %f", c.deltaTime,
+                    1.f / c.deltaTime) > 0) {
             m_textElement->SetText(std::string(fpsString));
         }
     }
