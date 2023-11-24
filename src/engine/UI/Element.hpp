@@ -6,7 +6,9 @@
 #include <SDL_events.h>
 
 #include "DataObjects.hpp"
+#include "IDisplayable.hpp"
 #include "IOrdered.hpp"
+#include "InteractiveDrawable.hpp"
 
 namespace admirals::UI {
 
@@ -19,28 +21,30 @@ enum DisplayPosition {
 };
 
 // General UI element that can be rendered.
-class Element : public IOrdered {
+class Element : public IOrdered,
+                public InteractiveDrawable,
+                public IDisplayable {
 public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);
 
     // Getters and setters
-    virtual const Vector2 &GetDisplaySize() const { return m_displaySize; }
-    virtual void SetDisplaySize(const Vector2 size) { m_displaySize = size; }
+    virtual const Vector2 GetDisplaySize() const {
+        return m_boundingBox.Size();
+    }
+    virtual void SetDisplaySize(const Vector2 &size) {
+        m_boundingBox.SetSize(size);
+    }
 
-    virtual const Vector2 &GetDisplayOrigin() const { return m_displayOrigin; }
-    virtual void SetDisplayOrigin(const Vector2 origin) {
-        m_displayOrigin = origin;
+    virtual const Vector2 GetDisplayOrigin() const {
+        return m_boundingBox.Position();
+    }
+    virtual void SetDisplayOrigin(const Vector2 &origin) {
+        m_boundingBox.SetPosition(origin);
     }
 
     virtual DisplayPosition GetDisplayPosition() const { return m_displayPos; }
     virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
-
-    // Pure virtual function for rendering the UI element
-    virtual void Render(const Texture &font) = 0;
-
-    // Input handling
-    virtual bool HandleEvent(const SDL_Event &event) { return false; }
 
     template <typename T>
     static std::shared_ptr<Element> CreateFromDerived(const T &derivedObject) {
@@ -52,10 +56,6 @@ public:
 protected:
     // Text to be displayed on the Element.
     std::string m_text;
-
-    // Origin and size and for displaying/rendering the element to the screen.
-    Vector2 m_displayOrigin;
-    Vector2 m_displaySize;
 
     DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
 };

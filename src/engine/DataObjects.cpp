@@ -74,7 +74,7 @@ const Color Color::GREY = Color::FromRGBA(80, 80, 80, 255);
 const Color Color::LIGHT_GREY = Color::FromRGBA(180, 180, 180, 255);
 
 // Texture
-Texture::Texture(VK2DTexture &m_texture) : m_texture(m_texture) {}
+Texture::Texture(VK2DTexture m_texture) : m_texture(m_texture) {}
 
 Texture::~Texture() { vk2dTextureFree(m_texture); }
 

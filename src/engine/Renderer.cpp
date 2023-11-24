@@ -8,6 +8,10 @@
 
 using namespace admirals::renderer;
 
+static const char *FONT_PATH = "assets/font.png";
+static const float FONT_CHAR_WIDTH = 16.0;
+static const float FONT_CHAR_HEIGHT = 36.0;
+
 void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
                 const char *text) {
     float x = postion.x();
@@ -27,11 +31,12 @@ void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
 }
 
 Renderer::Renderer(const std::string &name, int width, int height,
-                   bool debugRendering)
-    : m_context({width, height, debugRendering}) {
-    this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
-                                      SDL_WINDOWPOS_CENTERED, width, height,
-                                      SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
+                   bool debugRendering) {
+    m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
+                                SDL_WINDOWPOS_CENTERED, width, height,
+                                SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
+    m_context = {width,   height,          debugRendering,
+                 nullptr, FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT};
 }
 
 Renderer::~Renderer() {
@@ -58,6 +63,7 @@ int Renderer::Init(bool debug) {
                              0};
 
     vk2dRendererSetCamera(camera);
+    m_context.fontTexture = new Texture(vk2dTextureLoad(FONT_PATH));
     return code;
 }
 
@@ -80,6 +86,10 @@ void Renderer::DrawLine(const Vector2 &p1, const Vector2 &p2,
     vk2dRendererSetColourMod(color.Data());
     vk2dRendererDrawLine(p1[0], p1[1], p2[0], p2[1]);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::DrawRectangle(const Rect &rect, const Color &color) {
+    Renderer::DrawRectangle(rect.Position(), rect.Size(), color);
 }
 
 void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,

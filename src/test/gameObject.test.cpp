@@ -33,13 +33,13 @@ public:
 
     void OnStart() override {}
 
-    void OnClick(void *, events::MouseCLickEventArgs e) {
+    void OnClick(void *, events::MouseClickEventArgs e) {
         if (e.button != events::MouseButton::Left || !e.pressed) {
             return;
         }
 
         const Vector2 pos = GetPosition();
-        const Vector2 loc = e.location();
+        const Vector2 loc = e.Location();
         const float x = static_cast<float>(e.windowWidth) /
                         static_cast<float>(WINDOW_WIDTH);
         const float y = static_cast<float>(e.windowHeight) /

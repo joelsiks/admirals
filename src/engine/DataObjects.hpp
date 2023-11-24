@@ -488,7 +488,7 @@ public:
     inline float Height() const { return m_h; };
     inline void SetHeight(const float height) { m_h = height; }
 
-    inline Vector2 Size() const { return Vector2(m_h, m_w); };
+    inline Vector2 Size() const { return Vector2(m_w, m_h); };
     inline void SetSize(const Vector2 &size) {
         m_w = size.x();
         m_h = size.y();
@@ -502,7 +502,7 @@ class Texture {
 public:
     // Do not initialize to NULL, deconstructor will break renderer as the next
     // texture is not loaded before the next frame.
-    Texture(VK2DTexture &m_texture);
+    Texture(VK2DTexture m_texture);
     ~Texture();
 
     // should be uint32

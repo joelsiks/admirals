@@ -20,17 +20,17 @@ MenuOption::MenuOption(const std::string &name, float order,
     onClick.Subscribe(MenuOptionClickBackground);
 }
 
-void MenuOption::Render(const Texture &font) {
+void MenuOption::Render(const renderer::RendererContext &r) const {
     if (m_clickedAndShouldDrawBackground) {
-        renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
-                                          Color::GREY);
+        renderer::Renderer::DrawRectangle(m_boundingBox, Color::GREY);
     }
 
-    renderer::Renderer::DrawText(font, m_displayOrigin, m_textColor,
-                                 GetOptionText());
+    renderer::Renderer::DrawText(*r.fontTexture, m_boundingBox.Position(),
+                                 m_textColor, GetOptionText());
 }
 
-bool MenuOption::HandleEvent(const SDL_Event &event) {
+void MenuOption::OnClick(const events::MouseClickEventArgs &) {
+    /*
     if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
 
         const float mouseX = static_cast<float>(event.button.x);
@@ -55,6 +55,7 @@ bool MenuOption::HandleEvent(const SDL_Event &event) {
     }
 
     return false;
+    */
 }
 
 // TextOption
@@ -62,14 +63,14 @@ TextOption::TextOption(const std::string &name, float order,
                        const std::string &text)
     : MenuOption(name, order, text) {}
 
-std::string TextOption::GetOptionText() { return m_text; }
+std::string TextOption::GetOptionText() const { return m_text; }
 
 // ClickOption
 ClickOption::ClickOption(const std::string &name, float order,
                          const std::string &text)
     : MenuOption(name, order, text) {}
 
-std::string ClickOption::GetOptionText() { return m_text; }
+std::string ClickOption::GetOptionText() const { return m_text; }
 
 // ToggleOption
 ToggleOption::ToggleOption(const std::string &name, float order,
@@ -85,7 +86,7 @@ ToggleOption::ToggleOption(const std::string &name, float order,
     });
 }
 
-std::string ToggleOption::GetOptionText() {
+std::string ToggleOption::GetOptionText() const {
     return m_text + " [" + std::string(m_toggled ? "ON" : "OFF") + "]";
 }
 
@@ -99,7 +100,7 @@ CycleOption::CycleOption(const std::string &name, float order,
     : MenuOption(name, order, text), m_cycleOptions(cycleOptions),
       m_currentOption(startIndex) {}
 
-std::string CycleOption::GetOptionText() {
+std::string CycleOption::GetOptionText() const {
     return m_text + " [" + std::string(m_cycleOptions[CurrentIndex()]) + "]";
 }
 

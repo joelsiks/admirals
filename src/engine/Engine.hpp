@@ -15,7 +15,7 @@ namespace admirals {
 
 class Engine {
 public:
-    events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
+    events::EventSystem<events::MouseClickEventArgs> onMouseClick;
     events::EventSystem<events::KeyPressEventArgs> onKeyPress;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,

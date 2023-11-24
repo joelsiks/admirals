@@ -32,6 +32,8 @@ public:
     static void DrawLine(const Vector2 &p1, const Vector2 &p2,
                          const Color &color);
 
+    static void DrawRectangle(const Rect &rect, const Color &color);
+
     static void DrawRectangle(const Vector2 &position, const Vector2 &size,
                               const Color &color);
 
@@ -48,6 +50,11 @@ public:
 
     static void DrawText(const Texture &font, const Vector2 &position,
                          const Color &color, const std::string &text);
+
+    static inline Vector2 TextFontSize(const std::string &text, float width,
+                                       float height) {
+        return Vector2(static_cast<float>(text.length()) * width, height);
+    }
 
 private:
     RendererContext m_context;

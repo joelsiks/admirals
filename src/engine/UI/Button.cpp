@@ -9,13 +9,15 @@ Button::Button(const std::string &name, float order, const std::string &text,
     : Element(name, order, text, size), m_bgColor(bgColor), m_fgColor(fgColor) {
 }
 
-void Button::Render(const Texture &font) {
-    renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
-                                      m_bgColor);
-    renderer::Renderer::DrawText(font, m_displayOrigin, m_fgColor, m_text);
+void Button::Render(const renderer::RendererContext &r) const {
+    renderer::Renderer::DrawRectangle(m_boundingBox, m_bgColor);
+    renderer::Renderer::DrawText(*r.fontTexture, m_boundingBox.Position(),
+                                 m_fgColor, m_text);
 }
 
-bool Button::HandleEvent(const SDL_Event &event) {
+void Button::OnClick(const events::MouseClickEventArgs &args) {
+    printf("I (%s) WAS CLICKED\n", m_name.c_str());
+    /*
     if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
         const float mouseX = static_cast<float>(event.button.x);
         const float mouseY = static_cast<float>(event.button.y);
@@ -34,4 +36,5 @@ bool Button::HandleEvent(const SDL_Event &event) {
     }
 
     return false;
+    */
 }

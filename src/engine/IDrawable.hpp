@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DataObjects.hpp"
+
 namespace admirals::renderer {
 
 struct RendererContext {
@@ -8,6 +10,9 @@ struct RendererContext {
 
     // Indicates whether to draw outlines of elements for debugging purposes.
     bool renderDebugOutlines;
+
+    Texture *fontTexture;
+    float fontWidth, fontHeight;
 };
 
 class IDrawable {

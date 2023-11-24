@@ -44,11 +44,12 @@ void Menu::Render(const renderer::RendererContext &r) const {
         origin[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.
-        option->SetDisplaySize(TextFontSize(option->GetOptionText()));
+        option->SetDisplaySize(renderer::Renderer::TextFontSize(
+            option->GetOptionText(), r.fontWidth, r.fontHeight));
         option->SetTextColor(m_fgColor);
 
         option->SetDisplayOrigin(origin);
-        option->Render(this->m_font);
+        option->Render(r);
 
         // If we're rendering the menu title, add a line below it.
         if (option->name() == MENU_TITLE_NAME) {

@@ -11,10 +11,9 @@ namespace admirals::UI {
 
 class DisplayLayout : public InteractiveDrawable {
 public:
-    DisplayLayout();
-
     void Render(const renderer::RendererContext &r) const override;
-    void HandleEvent(SDL_Event &e) override;
+
+    virtual void OnClick(const events::MouseClickEventArgs &args) override;
 
     void AddElement(std::shared_ptr<Element> element);
 
@@ -23,15 +22,7 @@ public:
                                  const Vector2 &displaySize,
                                  const renderer::RendererContext &r);
 
-    inline Vector2 TextFontSize(const std::string &text) const {
-        return Vector2(static_cast<float>(text.length()) * m_fontWidth,
-                       m_fontHeight);
-    }
-
 protected:
-    Texture m_font;
-    float m_fontWidth, m_fontHeight;
-
     OrderedCollection<Element> m_elements;
 };
 

@@ -15,7 +15,7 @@ public:
         : UI::Button(name, order, text, size, bgColor, fgColor),
           m_source(source), m_texOffset(texOffset), m_texSize(texSize) {}
 
-    void Render(const Texture &font) override {
+    void Render(const renderer::RendererContext &r) const override {
         renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
                                           m_bgColor);
 
@@ -25,7 +25,8 @@ public:
         renderer::Renderer::DrawSprite(m_source, m_displayOrigin, m_texOffset,
                                        m_texSize, m_displaySize / m_texSize);
 
-        renderer::Renderer::DrawText(font, m_displayOrigin, m_fgColor, m_text);
+        renderer::Renderer::DrawText(*r.fontTexture, m_displayOrigin, m_fgColor,
+                                     m_text);
     }
 
 private:

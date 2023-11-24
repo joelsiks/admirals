@@ -14,7 +14,7 @@ void Scene::Render(const renderer::RendererContext &r) const {
 }
 
 /**
- * recieves a shared pointer to a gameObject and removes one from the multiset
+ * receives a shared pointer to a gameObject and removes one from the multiset
  */
 void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
     if (ExistObject(object)) {
@@ -24,7 +24,7 @@ void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
 void Scene::RemoveObject(const std::string &key) { this->m_objects.Erase(key); }
 
 /**
- * recieves a shared pointer to a gameObject and checks if it exist in the
+ * receives a shared pointer to a gameObject and checks if it exist in the
  * multiset
  */
 bool Scene::ExistObject(std::shared_ptr<GameObject> object) {

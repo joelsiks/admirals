@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "Element.hpp"
-#include "events/ButtonCLickEvent.hpp"
+#include "events/ButtonClickEvent.hpp"
 #include "events/EventSystem.hpp"
 
 namespace admirals::UI {
@@ -15,9 +15,9 @@ public:
     Button(const std::string &name, float order, const std::string &text,
            const Vector2 &size, const Color &bgColor, const Color &fgColor);
 
-    virtual void Render(const Texture &font) override;
+    virtual void Render(const renderer::RendererContext &r) const override;
 
-    bool HandleEvent(const SDL_Event &event) override;
+    void OnClick(const events::MouseClickEventArgs &args) override;
 
     inline void SetBackgroundColor(const Color &color) { m_bgColor = color; }
     inline void SetForegroundColor(const Color &color) { m_fgColor = color; }

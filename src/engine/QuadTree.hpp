@@ -4,17 +4,9 @@
 #include <queue>
 #include <vector>
 
-#include "DataObjects.hpp"
+#include "IDisplayable.hpp"
 
 namespace admirals {
-
-class IDisplayable {
-public:
-    inline Rect GetBoundingBox() const { return m_boundingBox; };
-
-protected:
-    Rect m_boundingBox;
-};
 
 class QuadTree {
 public:

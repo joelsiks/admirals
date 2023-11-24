@@ -27,7 +27,12 @@ bool Engine::PollAndHandleEvent() {
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP: {
-            auto args = MouseCLickEventArgs(e.button);
+            auto args = MouseClickEventArgs(e.button);
+
+            if (hasDisplayLayout()) {
+                m_displayLayout->OnClick(args);
+            }
+
             onMouseClick.Invoke(this, args);
         } break;
         case SDL_KEYDOWN:
@@ -37,10 +42,6 @@ bool Engine::PollAndHandleEvent() {
         } break;
         default:
             break;
-        }
-
-        if (hasDisplayLayout()) {
-            m_displayLayout->HandleEvent(e);
         }
     }
 

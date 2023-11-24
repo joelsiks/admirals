@@ -180,6 +180,15 @@ public:
         return nullptr;
     }
 
+    inline std::vector<std::shared_ptr<T>> ToVector() const {
+        std::vector<std::shared_ptr<T>> elements;
+        for (Iterator i = begin(); i != end(); ++i) {
+            elements.push_back(*i);
+        }
+
+        return elements;
+    }
+
 protected:
     OrderedKeySet m_ordered;
     KeyToPointerMap m_objects;

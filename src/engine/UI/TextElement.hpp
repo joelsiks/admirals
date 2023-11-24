@@ -11,9 +11,9 @@ public:
 
     void SetText(const std::string &text);
 
-    void Render(const Texture &font) override;
+    void Render(const renderer::RendererContext &r) const override;
 
-    bool HandleEvent(const SDL_Event &event) override;
+    virtual void OnClick(const events::MouseClickEventArgs &args) override;
 
 private:
     Color m_textColor;

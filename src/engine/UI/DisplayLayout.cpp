@@ -1,16 +1,59 @@
 #include "UI/DisplayLayout.hpp"
+#include "QuadTree.hpp"
 #include "Renderer.hpp"
 
 using namespace admirals;
 using namespace admirals::UI;
 
-static const char *FONT_PATH = "assets/font.png";
-static const float FONT_CHAR_WIDTH = 16.0;
-static const float FONT_CHAR_HEIGHT = 36.0;
+void DisplayLayout::Render(const renderer::RendererContext &r) const {
+    Vector4 positionOffsets = Vector4(0);
 
-DisplayLayout::DisplayLayout()
-    : m_font(Texture::LoadFromPath(FONT_PATH)), m_fontWidth(FONT_CHAR_WIDTH),
-      m_fontHeight(FONT_CHAR_HEIGHT) {}
+    for (const auto &element : m_elements) {
+        const DisplayPosition pos = element->GetDisplayPosition();
+        Vector2 displaySize = element->GetDisplaySize();
+
+        // Calculate the origin with respect to the matching positionOffset.
+        Vector2 origin = GetOriginFromDisplayPosition(pos, displaySize, r);
+        origin[0] += positionOffsets[pos];
+
+        element->SetDisplayOrigin(origin);
+
+        element->Render(r);
+
+        // If debugging, render an outline around the UI Element.
+        if (r.renderDebugOutlines) {
+            renderer::Renderer::DrawRectangleOutline(origin, displaySize, 2,
+                                                     Color::RED);
+        }
+
+        // Update the matching positionOffset.
+        if (pos == DisplayPosition::UpperRight ||
+            pos == DisplayPosition::LowerRight) {
+            positionOffsets[pos] -= displaySize[0];
+        } else {
+            positionOffsets[pos] += displaySize[0];
+        }
+    }
+}
+
+void DisplayLayout::OnClick(const events::MouseClickEventArgs &args) {
+    // Create and build a QuadTree to find out what elements to handle click
+    // events on.
+    QuadTree tree = QuadTree();
+    std::vector<std::shared_ptr<IDisplayable>> elements;
+    for (const auto &element : m_elements) {
+        elements.push_back(dynamic_pointer_cast<IDisplayable>(element));
+    }
+    tree.BuildTree(args.WindowSize(), elements);
+
+    const Vector2 clickLocation = args.Location();
+    for (const auto &element : tree.GetObjectsAtPosition(clickLocation)) {
+        auto el = static_pointer_cast<Element>(element);
+        if (el->GetBoundingBox().Contains(clickLocation)) {
+            el->OnClick(args);
+        }
+    }
+}
 
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     this->m_elements.Insert(std::move(element));
@@ -40,41 +83,4 @@ Vector2 DisplayLayout::GetOriginFromDisplayPosition(
     }
 
     return origin;
-}
-
-void DisplayLayout::Render(const renderer::RendererContext &r) const {
-    Vector4 positionOffsets = Vector4(0);
-
-    for (const auto &element : m_elements) {
-        const DisplayPosition pos = element->GetDisplayPosition();
-        Vector2 displaySize = element->GetDisplaySize();
-
-        // Calculate the origin with respect to the matching positionOffset.
-        Vector2 origin = GetOriginFromDisplayPosition(pos, displaySize, r);
-        origin[0] += positionOffsets[pos];
-
-        element->SetDisplayOrigin(origin);
-
-        element->Render(this->m_font);
-
-        // If debugging, render an outline around the UI Element.
-        if (r.renderDebugOutlines) {
-            renderer::Renderer::DrawRectangleOutline(origin, displaySize, 2,
-                                                     Color::RED);
-        }
-
-        // Update the matching positionOffset.
-        if (pos == DisplayPosition::UpperRight ||
-            pos == DisplayPosition::LowerRight) {
-            positionOffsets[pos] -= displaySize[0];
-        } else {
-            positionOffsets[pos] += displaySize[0];
-        }
-    }
-}
-
-void DisplayLayout::HandleEvent(SDL_Event &e) {
-    for (const auto &element : m_elements) {
-        element->HandleEvent(e);
-    }
 }
