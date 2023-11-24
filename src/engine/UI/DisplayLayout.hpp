@@ -13,7 +13,7 @@ class DisplayLayout : public InteractiveDrawable {
 public:
     void Render(const renderer::RendererContext &r) const override;
 
-    virtual void OnClick(const events::MouseClickEventArgs &args) override;
+    virtual void OnClick(events::MouseClickEventArgs &args) override;
 
     void AddElement(std::shared_ptr<Element> element);
 

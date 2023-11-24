@@ -29,7 +29,7 @@ void MenuOption::Render(const renderer::RendererContext &r) const {
                                  m_textColor, GetOptionText());
 }
 
-void MenuOption::OnClick(const events::MouseClickEventArgs &) {
+void MenuOption::OnClick(events::MouseClickEventArgs &) {
     /*
     if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
 

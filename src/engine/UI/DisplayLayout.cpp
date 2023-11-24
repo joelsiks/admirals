@@ -36,7 +36,7 @@ void DisplayLayout::Render(const renderer::RendererContext &r) const {
     }
 }
 
-void DisplayLayout::OnClick(const events::MouseClickEventArgs &args) {
+void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
     // Create and build a QuadTree to find out what elements to handle click
     // events on.
     QuadTree tree = QuadTree();

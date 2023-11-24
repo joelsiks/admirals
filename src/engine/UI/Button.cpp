@@ -15,26 +15,6 @@ void Button::Render(const renderer::RendererContext &r) const {
                                  m_fgColor, m_text);
 }
 
-void Button::OnClick(const events::MouseClickEventArgs &args) {
-    printf("I (%s) WAS CLICKED\n", m_name.c_str());
-    /*
-    if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-        const float mouseX = static_cast<float>(event.button.x);
-        const float mouseY = static_cast<float>(event.button.y);
-
-        if (mouseX >= m_displayOrigin[0] &&
-            mouseX <= m_displayOrigin[0] + m_displaySize[0] &&
-            mouseY >= m_displayOrigin[1] &&
-            mouseY <= m_displayOrigin[1] + m_displaySize[1]) {
-
-            // Call click handler.
-            ButtonClickEventArgs e = ButtonClickEventArgs(event);
-            onClick.Invoke(this, e);
-
-            return true;
-        }
-    }
-
-    return false;
-    */
+void Button::OnClick(events::MouseClickEventArgs &args) {
+    onClick.Invoke(this, args);
 }

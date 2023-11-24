@@ -15,4 +15,4 @@ void TextElement::Render(const renderer::RendererContext &r) const {
                                  m_textColor, m_text);
 }
 
-void TextElement::OnClick(const events::MouseClickEventArgs &args) {}
+void TextElement::OnClick(events::MouseClickEventArgs &args) {}

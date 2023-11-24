@@ -26,7 +26,7 @@ public:
 
     virtual void Render(const renderer::RendererContext &r) const override;
 
-    void OnClick(const events::MouseClickEventArgs &args) override;
+    void OnClick(events::MouseClickEventArgs &args) override;
 
     virtual std::string GetOptionText() const = 0;
     inline void SetTextColor(const Color &color) { m_textColor = color; }

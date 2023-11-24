@@ -12,7 +12,7 @@ public:
 
     virtual void Render(const renderer::RendererContext &r) const = 0;
 
-    virtual void OnClick(const events::MouseClickEventArgs &args) = 0;
+    virtual void OnClick(events::MouseClickEventArgs &args) = 0;
 };
 
 } // namespace admirals

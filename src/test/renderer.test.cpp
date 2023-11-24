@@ -29,9 +29,11 @@ public:
 
     void OnUpdate() override {}
 
-    void ButtonClickHandler(void *sender, events::ButtonClickEventArgs &e) {
-        if (e.m_data.type != SDL_MOUSEBUTTONDOWN)
+    void ButtonClickHandler(void *sender, events::MouseClickEventArgs &args) {
+        if (args.pressed) {
             return;
+        }
+
         auto *button = static_cast<Button *>(sender);
         if (button->name() == "btn1") {
             SetPosition(Vector2(GetPosition().x() - 100, 0));
@@ -103,11 +105,12 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
         menu::MenuOption::CreateFromDerived(cycleColorOption));
 }
 
-void OnButtonClick(void *object, events::ButtonClickEventArgs &event) {
+void OnButtonClick(void *object, events::MouseClickEventArgs &args) {
     auto button = static_cast<Button *>(object);
-    if (event.m_data.type == SDL_MOUSEBUTTONUP) {
+
+    if (!args.pressed) {
         button->SetBackgroundColor(Color::BLACK);
-    } else if (event.m_data.type == SDL_MOUSEBUTTONDOWN) {
+    } else if (args.pressed) {
         const Color grey = Color::FromRGBA(50, 50, 50, 255);
         button->SetBackgroundColor(grey);
     }
