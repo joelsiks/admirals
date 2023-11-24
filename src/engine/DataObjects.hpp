@@ -138,7 +138,7 @@ public:
     ~Vector3();
 
     inline float z() const { return this->m_2; }
-    inline void setZ(float value) { this->m_2 = value; }
+    inline void SetZ(float value) { this->m_2 = value; }
     inline Vector2 xy() const { return *this; }
 
     inline float Magnitude() const {
@@ -415,6 +415,87 @@ public:
     const static Color TRANSPARENT;
     const static Color GREY;
     const static Color LIGHT_GREY;
+};
+
+class Rect {
+public:
+    /// @brief Creates a `Rect` object representing an area in 2d space
+    /// @param position The position of the top-left corner in the `Rect`
+    /// @param size The size of the `Rect`
+    Rect(const Vector2 &position, const Vector2 &size);
+
+    /// @brief Creates a `Rect` object representing an area in 2d space
+    /// @param x The x-coordinate of the top-left corner in the `Rect`
+    /// @param y The y-coordinate of the top-left corner in the `Rect`
+    /// @param w The width of the `Rect`
+    /// @param h The height of the `Rect`
+    Rect(float x, float y, float w, float h);
+
+    /// @brief Creates a `Rect` object representing an area in 2d space
+    Rect();
+    ~Rect();
+
+    /// @brief Checks if a given point is located inside the bounds of the
+    /// `Rect`.
+    /// @param point The point to check
+    /// @return `true` if the given point is located inside the bounds of the
+    /// `Rect`, otherwise `false`.
+    inline bool Contains(const Vector2 &point) const {
+        return point.x() >= m_x && point.x() <= m_x + m_w && point.y() >= m_y &&
+               point.y() <= m_y + m_h;
+    };
+
+    /// @brief Checks if a given area is fully contained inside the bounds of
+    /// the `Rect`.
+    /// @param rect The area to check
+    /// @return `true` if the given area is fully contained inside the bounds of
+    /// the `Rect`, otherwise `false`.
+    inline bool Contains(const Rect &rect) const {
+        return m_x <= rect.m_x && m_x + m_w >= rect.m_x + rect.m_w &&
+               m_y <= rect.m_y && m_y + m_h >= rect.m_y + rect.m_h;
+    };
+
+    /// @brief Checks if a given area has some overlap with the bounds of the
+    /// `Rect`.
+    /// @param rect The area to check
+    /// @return `true` if the given area has some overlap with the bounds of the
+    /// `Rect`, otherwise `false`.
+    inline bool Overlaps(const Rect &rect) const {
+        return m_x < rect.m_x + rect.m_w && m_x + m_w > rect.m_x &&
+               m_y > rect.m_y + rect.m_h && m_y + m_h < rect.m_y;
+    };
+
+    inline Vector2 Center() const {
+        return Vector2(m_x + m_w / 2.f, m_y + m_h / 2.f);
+    };
+
+    inline float PositionX() const { return m_x; };
+    inline void SetPositionX(const float x) { m_x = x; }
+    inline float PositionY() const { return m_y; };
+    inline void SetPositionY(const float y) { m_y = y; }
+
+    /// @brief The top left 2d coordinate of the `Rect`
+    inline Vector2 Position() const { return Vector2(m_x, m_y); };
+
+    /// @brief The top left 2d coordinate of the `Rect`
+    inline void SetPosition(const Vector2 &position) {
+        m_x = position.x();
+        m_y = position.y();
+    }
+
+    inline float Width() const { return m_w; };
+    inline void SetWidth(const float width) { m_w = width; }
+    inline float Height() const { return m_h; };
+    inline void SetHeight(const float height) { m_h = height; }
+
+    inline Vector2 Size() const { return Vector2(m_h, m_w); };
+    inline void SetSize(const Vector2 &size) {
+        m_w = size.x();
+        m_h = size.y();
+    }
+
+private:
+    float m_x, m_y, m_w, m_h;
 };
 
 class Texture {
