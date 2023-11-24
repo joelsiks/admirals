@@ -16,10 +16,9 @@ using namespace admirals;
 enum Quadrant : int { TopLeft = 0, TopRight, BottomLeft, BottomRight };
 
 static Quadrant GetQuadrantFromPosition(const Vector2 &position,
-                                        const Vector2 &origin,
-                                        const Vector2 &size) {
-    // Calculate the center point of the quadrant
-    const Vector2 center = origin + (size / 2.0);
+                                        const Rect &boundingBox) {
+
+    const Vector2 center = boundingBox.Center();
 
     // Determine the quadrant based on the position relative to the center
     if (position.x() < center.x()) {
@@ -36,31 +35,12 @@ static Quadrant GetQuadrantFromPosition(const Vector2 &position,
     return Quadrant::BottomRight;
 }
 
-static inline Vector2 CalculateNewOrigin(Quadrant q, const Vector2 &origin,
-                                         const Vector2 &size) {
-    switch (q) {
-    case Quadrant::TopLeft:
-        return origin;
-    case Quadrant::TopRight:
-        return origin + Vector2(size.x(), 0);
-    case Quadrant::BottomLeft:
-        return origin + Vector2(0, size.y());
-    case Quadrant::BottomRight:
-        return origin + size;
-    default:
-        return origin;
-    }
-}
-
-// Origin is the top left corner of the overlying box, and size is the size of
-// one quadrant inside that box.
-static bool inline InQuadrant(const std::shared_ptr<IDisplayable> &object,
-                              Quadrant q, const Vector2 &origin,
-                              const Vector2 &size) {
-
-    const Vector2 newOrigin = CalculateNewOrigin(q, origin, size);
-    return object->IsPartiallyInsideBox(newOrigin, size);
-}
+static const Vector2 QuadrantOffsets[4] = {
+    Vector2(0, 0), // TopLeft
+    Vector2(1, 0), // TopRight
+    Vector2(0, 1), // BottomLeft
+    Vector2(1, 1)  // BottomRight
+};
 
 QuadTree::QuadTree() {}
 
@@ -68,17 +48,22 @@ QuadTree::~QuadTree() { DestroyTree(); }
 
 std::vector<std::shared_ptr<IDisplayable>>
 QuadTree::GetObjectsAtPosition(const Vector2 &position) const {
-    Vector2 currentSize = m_size;
+    Rect currentBoundingBox(Vector2(0), m_size);
+
     Node *prev = nullptr;
     Node *current = m_rootNode;
 
     while (current != nullptr) {
-        currentSize /= 2.0;
         prev = current;
 
         const Quadrant q =
-            GetQuadrantFromPosition(position, current->origin, currentSize);
+            GetQuadrantFromPosition(position, currentBoundingBox);
+
         current = current->quadrants[q];
+        if (current != nullptr) {
+            currentBoundingBox.SetPosition(current->origin);
+            currentBoundingBox.SetSize(currentBoundingBox.Size() / 2.0f);
+        }
     }
 
     if (prev == nullptr) {
@@ -95,54 +80,65 @@ void QuadTree::BuildTree(
     // Destroy the previous tree, if constructed.
     DestroyTree();
 
-    // Filter out objects that are not inside the window.
-    std::vector<std::shared_ptr<IDisplayable>> filteredObjects;
-    std::copy_if(
-        objects.begin(), objects.end(), std::back_inserter(filteredObjects),
-        [&windowSize](const std::shared_ptr<IDisplayable> &object) {
-            return object->IsPartiallyInsideBox(Vector2(0), windowSize);
-        });
-
     // Initialize values.
     m_rootNode = new Node();
     m_size = windowSize;
+    const Rect windowBounds = Rect(Vector2(0), m_size);
+
+    // Filter out objects that are not inside the window.
+    std::vector<std::shared_ptr<IDisplayable>> filteredObjects;
+    std::copy_if(objects.begin(), objects.end(),
+                 std::back_inserter(filteredObjects),
+                 [&windowBounds](const std::shared_ptr<IDisplayable> &object) {
+                     return windowBounds.Overlaps(object->GetBoundingBox());
+                 });
 
     // Construct initial build data object.
-    const BuildData data = {filteredObjects, m_rootNode, Vector2(0), m_size};
+    const BuildData data = {filteredObjects, m_rootNode, windowBounds};
     m_buildQueue.push(data);
 
     while (!m_buildQueue.empty()) {
         const BuildData data = m_buildQueue.front();
         m_buildQueue.pop();
 
-        std::vector<std::shared_ptr<IDisplayable>> quadrantObjects[4];
-        const Vector2 newSize = data.size / 2.f;
+        std::vector<std::shared_ptr<IDisplayable>>
+            quadrantObjects[NUM_QUADRANTS];
+
+        const Vector2 upperQuadrantPosition = data.bounds.Position();
+        const Vector2 dividedQuadrantSize = data.bounds.Size() / 2.f;
+
+        // If the quadrant size is less than the minimum quadrant size we should
+        // not divide further and stop here.
+        if (dividedQuadrantSize.x() < MINIMUM_QUADRANT_SIZE ||
+            dividedQuadrantSize.y() < MINIMUM_QUADRANT_SIZE) {
+            data.node->data = data.objects;
+            continue;
+        }
+
+        Rect quadrantBounds[NUM_QUADRANTS];
+        for (int i = 0; i < NUM_QUADRANTS; i++) {
+            quadrantBounds[i] =
+                Rect(upperQuadrantPosition +
+                         QuadrantOffsets[i] * dividedQuadrantSize,
+                     dividedQuadrantSize);
+        }
+
         int numEncapsulatingObjects = 0;
 
         for (const auto &object : data.objects) {
+            const Rect objectBounds = object->GetBoundingBox();
+
             // If the quadrant contains overlapping objects that all encapsulate
             // the quadrant, there is no point in dividing it further. Prevents
             // an infinite loop.
-            if (object->IsEncapsulatingBox(data.origin, data.size)) {
+            if (objectBounds.Contains(data.bounds)) {
                 numEncapsulatingObjects++;
             }
 
-            if (InQuadrant(object, Quadrant::TopLeft, data.origin, newSize)) {
-                quadrantObjects[Quadrant::TopLeft].push_back(object);
-            }
-
-            if (InQuadrant(object, Quadrant::TopRight, data.origin, newSize)) {
-                quadrantObjects[Quadrant::TopRight].push_back(object);
-            }
-
-            if (InQuadrant(object, Quadrant::BottomLeft, data.origin,
-                           newSize)) {
-                quadrantObjects[Quadrant::BottomLeft].push_back(object);
-            }
-
-            if (InQuadrant(object, Quadrant::BottomRight, data.origin,
-                           newSize)) {
-                quadrantObjects[Quadrant::BottomRight].push_back(object);
+            for (int i = 0; i < NUM_QUADRANTS; i++) {
+                if (quadrantBounds[i].Overlaps(objectBounds)) {
+                    quadrantObjects[i].push_back(object);
+                }
             }
         }
 
@@ -156,12 +152,9 @@ void QuadTree::BuildTree(
         for (int i = 0; i < NUM_QUADRANTS; i++) {
             const size_t numObjectsInQuadrant = quadrantObjects[i].size();
 
-            const Vector2 newOrigin = CalculateNewOrigin(
-                static_cast<Quadrant>(i), data.origin, newSize);
-
             if (numObjectsInQuadrant > 0) {
                 data.node->quadrants[i] = new Node();
-                data.node->quadrants[i]->origin = newOrigin;
+                data.node->quadrants[i]->origin = quadrantBounds[i].Position();
             }
 
             if (numObjectsInQuadrant == 1) {
@@ -170,8 +163,7 @@ void QuadTree::BuildTree(
                 m_buildQueue.push({
                     quadrantObjects[i],
                     data.node->quadrants[i],
-                    newOrigin,
-                    newSize,
+                    quadrantBounds[i],
                 });
             }
         }

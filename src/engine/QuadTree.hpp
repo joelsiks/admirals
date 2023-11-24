@@ -8,84 +8,12 @@
 
 namespace admirals {
 
-// Function to check if a point is inside a box
-static inline bool PointInsideBox(float x, float y, float left, float top,
-                                  float right, float bottom) {
-    return (x >= left && x <= right && y >= top && y <= bottom);
-}
-
 class IDisplayable {
 public:
-    inline Vector2 GetDisplayOrigin() const { return m_displayOrigin; };
-    inline Vector2 GetDisplaySize() const { return m_displaySize; };
-
-    inline bool IsPartiallyInsideBox(const Vector2 &origin,
-                                     const Vector2 &size) const {
-        // Our box
-        const float left1 = m_displayOrigin.x();
-        const float right1 = m_displayOrigin.x() + m_displaySize.x();
-        const float top1 = m_displayOrigin.y();
-        const float bottom1 = m_displayOrigin.y() + m_displaySize.y();
-
-        // Other box
-        const float left2 = origin.x();
-        const float right2 = origin.x() + size.x();
-        const float top2 = origin.y();
-        const float bottom2 = origin.y() + size.y();
-
-        // Check if any of the four corners of m_displaySize and m_displayOrigin
-        // box are inside the box defined by origin and size
-        const bool cornerInside =
-            (PointInsideBox(left1, top1, left2, top2, right2, bottom2) ||
-             PointInsideBox(left1, bottom1, left2, top2, right2, bottom2) ||
-             PointInsideBox(right1, top1, left2, top2, right2, bottom2) ||
-             PointInsideBox(right1, bottom1, left2, top2, right2, bottom2));
-
-        return cornerInside || IsInsideBox(origin, size);
-    }
-
-    inline bool IsInsideBox(const Vector2 &origin, const Vector2 &size) const {
-        // Our box
-        const float left1 = m_displayOrigin.x();
-        const float right1 = m_displayOrigin.x() + m_displaySize.x();
-        const float top1 = m_displayOrigin.y();
-        const float bottom1 = m_displayOrigin.y() + m_displaySize.y();
-
-        // Other box
-        const float left2 = origin.x();
-        const float right2 = origin.x() + size.x();
-        const float top2 = origin.y();
-        const float bottom2 = origin.y() + size.y();
-
-        // Check if m_displaySize and m_displayOrigin box is encapsulated by the
-        // other box
-        return (left1 >= left2 && right1 <= right2 && top1 >= top2 &&
-                bottom1 <= bottom2);
-    }
-
-    inline bool IsEncapsulatingBox(const Vector2 &origin,
-                                   const Vector2 &size) const {
-        // Our box
-        const float left2 = m_displayOrigin.x();
-        const float right2 = m_displayOrigin.x() + m_displaySize.x();
-        const float top2 = m_displayOrigin.y();
-        const float bottom2 = m_displayOrigin.y() + m_displaySize.y();
-
-        // Other box
-        const float left1 = origin.x();
-        const float right1 = origin.x() + size.x();
-        const float top1 = origin.y();
-        const float bottom1 = origin.y() + size.y();
-
-        // Check if m_displaySize and m_displayOrigin box is encapsulated by the
-        // other box
-        return (left1 >= left2 && right1 <= right2 && top1 >= top2 &&
-                bottom1 <= bottom2);
-    }
+    inline Rect GetBoundingBox() const { return m_boundingBox; };
 
 protected:
-    Vector2 m_displayOrigin;
-    Vector2 m_displaySize;
+    Rect m_boundingBox;
 };
 
 class QuadTree {
@@ -115,6 +43,7 @@ public:
 
 private:
     static constexpr int NUM_QUADRANTS = 4;
+    static constexpr float MINIMUM_QUADRANT_SIZE = 1.f;
 
     // If data is not a nullptr, the Node is a leaf.
     // If data is a nullptr, the quadrants are populated instead.
@@ -127,7 +56,7 @@ private:
     struct BuildData {
         std::vector<std::shared_ptr<IDisplayable>> objects;
         Node *node;
-        Vector2 origin, size;
+        Rect bounds;
     };
     std::queue<BuildData> m_buildQueue;
 

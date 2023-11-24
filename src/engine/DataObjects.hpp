@@ -462,7 +462,7 @@ public:
     /// `Rect`, otherwise `false`.
     inline bool Overlaps(const Rect &rect) const {
         return m_x < rect.m_x + rect.m_w && m_x + m_w > rect.m_x &&
-               m_y > rect.m_y + rect.m_h && m_y + m_h < rect.m_y;
+               m_y < rect.m_y + rect.m_h && m_y + m_h > rect.m_y;
     };
 
     inline Vector2 Center() const {
