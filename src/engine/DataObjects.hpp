@@ -431,6 +431,10 @@ public:
     /// @param h The height of the `Rect`
     Rect(float x, float y, float w, float h);
 
+    /// @brief Creates a `Rect` object representing an area in 2d space
+    Rect();
+    ~Rect();
+
     /// @brief Checks if a given point is located inside the bounds of the
     /// `Rect`.
     /// @param point The point to check
