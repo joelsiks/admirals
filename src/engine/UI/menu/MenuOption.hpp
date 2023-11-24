@@ -6,21 +6,16 @@
 #include "DataObjects.hpp"
 #include "UI/Element.hpp"
 #include "events/EventSystem.hpp"
+#include "events/MouseClickEvent.hpp"
 
 namespace admirals::UI::menu {
 
 static const char *MENU_TITLE_NAME = "__OPTION_TITLE_NAME";
 static const float MENU_TITLE_LINE_OFFSET = 10;
 
-class OptionClickEventArgs : public events::EventArgs {
-public:
-    OptionClickEventArgs(const SDL_Event &data) : m_data(data) {}
-    const SDL_Event m_data;
-};
-
 class MenuOption : public Element {
 public:
-    events::EventSystem<OptionClickEventArgs> onClick;
+    events::EventSystem<events::MouseClickEventArgs> onClick;
 
     MenuOption(const std::string &name, float order, const std::string &text);
 

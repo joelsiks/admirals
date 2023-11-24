@@ -3,22 +3,10 @@
 
 using namespace admirals::UI::menu;
 
-void MenuOptionClickBackground(void *sender, OptionClickEventArgs &event) {
-    auto *option = static_cast<MenuOption *>(sender);
-
-    if (event.m_data.type == SDL_MOUSEBUTTONUP) {
-        option->SetDrawBackground(false);
-    } else if (event.m_data.type == SDL_MOUSEBUTTONDOWN) {
-        option->SetDrawBackground(true);
-    }
-}
-
 // MenuOption
 MenuOption::MenuOption(const std::string &name, float order,
                        const std::string &text)
-    : Element(name, order, text, Vector2(0, 0)) {
-    onClick.Subscribe(MenuOptionClickBackground);
-}
+    : Element(name, order, text, Vector2(0, 0)) {}
 
 void MenuOption::Render(const renderer::RendererContext &r) const {
     if (m_clickedAndShouldDrawBackground) {
@@ -29,33 +17,8 @@ void MenuOption::Render(const renderer::RendererContext &r) const {
                                  m_textColor, GetOptionText());
 }
 
-void MenuOption::OnClick(events::MouseClickEventArgs &) {
-    /*
-    if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-
-        const float mouseX = static_cast<float>(event.button.x);
-        const float mouseY = static_cast<float>(event.button.y);
-
-        if (mouseX >= m_displayOrigin[0] &&
-            mouseX <= m_displayOrigin[0] + m_displaySize[0] &&
-            mouseY >= m_displayOrigin[1] &&
-            mouseY <= m_displayOrigin[1] + m_displaySize[1]) {
-
-            // call click handler.
-            OptionClickEventArgs e = OptionClickEventArgs(event);
-            onClick.Invoke(this, e);
-
-            return true;
-        }
-
-        if (m_clickedAndShouldDrawBackground &&
-            event.type == SDL_MOUSEBUTTONUP) {
-            SetDrawBackground(false);
-        }
-    }
-
-    return false;
-    */
+void MenuOption::OnClick(events::MouseClickEventArgs &args) {
+    onClick.Invoke(this, args);
 }
 
 // TextOption
@@ -77,8 +40,8 @@ ToggleOption::ToggleOption(const std::string &name, float order,
                            const std::string &text, bool startToggled)
     : MenuOption(name, order, text), m_toggled(startToggled) {
 
-    onClick.Subscribe([](void *sender, OptionClickEventArgs &e) {
-        if (e.m_data.type != SDL_MOUSEBUTTONUP)
+    onClick.Subscribe([](void *sender, events::MouseClickEventArgs &args) {
+        if (args.pressed)
             return;
 
         auto *toggleOption = static_cast<ToggleOption *>(sender);

@@ -65,8 +65,8 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                              Engine &engine, bool initialDebugValue) {
     menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
     exitOption.onClick.Subscribe(
-        [&engine](void *, menu::OptionClickEventArgs &args) {
-            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+        [&engine](void *, events::MouseClickEventArgs &args) {
+            if (!args.pressed)
                 return;
 
             engine.StopGameLoop();
@@ -76,8 +76,8 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
     menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
                                          "Debug Rendering", initialDebugValue);
     toggleDebugOption.onClick.Subscribe(
-        [&engine](void *, menu::OptionClickEventArgs &args) {
-            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+        [&engine](void *, events::MouseClickEventArgs &args) {
+            if (!args.pressed)
                 return;
 
             engine.ToggleDebugRendering();
@@ -92,8 +92,8 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                                        1);
     cycleColorOption.onClick.Subscribe([&escapeMenu, cycleColors](
                                            void *sender,
-                                           menu::OptionClickEventArgs &args) {
-        if (args.m_data.type != SDL_MOUSEBUTTONUP)
+                                           events::MouseClickEventArgs &args) {
+        if (!args.pressed)
             return;
 
         auto *cycleOption = static_cast<menu::CycleOption *>(sender);
@@ -158,10 +158,8 @@ int main(int, char **) {
         if (args.key == SDLK_ESCAPE && args.isKeyUp) {
             if (engine->GetDisplayLayout() == escapeMenu) {
                 engine->SetAndGetDisplayLayout(displayLayoutStore);
-                // engine->SetAndGetScene(sceneStore);
             } else {
                 displayLayoutStore = engine->SetAndGetDisplayLayout(escapeMenu);
-                // sceneStore = engine->SetAndGetScene(nullptr);
             }
         }
     });
