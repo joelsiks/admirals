@@ -417,6 +417,52 @@ public:
     const static Color LIGHT_GREY;
 };
 
+class Rect {
+public:
+    Rect(const Vector2 &position, const Vector2 &size);
+    Rect(float x, float y, float w, float h);
+
+    inline bool Contains(const Vector2 &point) const {
+        return point.x() >= m_x && point.x() <= m_x + m_w && point.y() >= m_y &&
+               point.y() <= m_y + m_h;
+    };
+
+    inline bool Contains(const Rect &rect) const {
+        return m_x <= rect.m_x && m_x + m_w >= rect.m_x + rect.m_w &&
+               m_y <= rect.m_y && m_y + m_h >= rect.m_y + rect.m_h;
+    };
+
+    inline bool Overlaps(const Rect &rect) const {
+        return m_x < rect.m_x + rect.m_w && m_x + m_w > rect.m_x &&
+               m_y > rect.m_y + rect.m_h && m_y + m_h < rect.m_y;
+    };
+
+    inline Vector2 Center() const {
+        return Vector2(m_x + m_w / 2.f, m_y + m_h / 2.f);
+    };
+
+    inline float x() const { return m_x; };
+    inline float y() const { return m_y; };
+
+    inline Vector2 Position() const { return Vector2(m_x, m_y); };
+    inline void SetPosition(const Vector2 &position) {
+        m_x = position.x();
+        m_y = position.y();
+    }
+
+    inline float w() const { return m_w; };
+    inline float h() const { return m_h; };
+
+    inline Vector2 Size() const { return Vector2(m_h, m_w); };
+    inline void SetSize(const Vector2 &size) {
+        m_w = size.x();
+        m_h = size.y();
+    }
+
+private:
+    float m_x, m_y, m_w, m_h;
+};
+
 class Texture {
 public:
     // Do not initialize to NULL, deconstructor will break renderer as the next

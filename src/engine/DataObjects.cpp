@@ -34,6 +34,14 @@ Vector4::Vector4(float x, float y, float z, float w) : Vector3(x, y, z) {
 
 Vector4::~Vector4() {}
 
+// Rect
+
+Rect::Rect(const Vector2 &position, const Vector2 &size)
+    : Rect(position.x(), position.y(), size.x(), size.y()) {}
+
+Rect::Rect(float x, float y, float w, float h)
+    : m_x(x), m_y(y), m_w(w), m_h(h) {}
+
 // Color
 Color::Color() {}
 
@@ -81,6 +89,6 @@ float admirals::Texture::Height() const {
 }
 
 Texture Texture::LoadFromPath(const std::string &path) {
-    auto result = vk2dTextureLoad(path.c_str());
+    VK2DTexture result = vk2dTextureLoad(path.c_str());
     return Texture(result);
 }
