@@ -37,6 +37,9 @@ public:
     static void DrawRectangle(const Vector2 &position, const Vector2 &size,
                               const Color &color);
 
+    static void DrawRectangleOutline(const Rect &rect, float outlineWidth,
+                                     const Color &color);
+
     static void DrawRectangleOutline(const Vector2 &position,
                                      const Vector2 &size, float outlineWidth,
                                      const Color &color);

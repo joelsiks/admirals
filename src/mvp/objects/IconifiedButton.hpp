@@ -16,17 +16,16 @@ public:
           m_source(source), m_texOffset(texOffset), m_texSize(texSize) {}
 
     void Render(const renderer::RendererContext &r) const override {
-        renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
-                                          m_bgColor);
+        renderer::Renderer::DrawRectangle(m_boundingBox, m_bgColor);
 
-        renderer::Renderer::DrawRectangleOutline(m_displayOrigin, m_displaySize,
-                                                 1, m_fgColor);
+        renderer::Renderer::DrawRectangleOutline(m_boundingBox, 1, m_fgColor);
 
-        renderer::Renderer::DrawSprite(m_source, m_displayOrigin, m_texOffset,
-                                       m_texSize, m_displaySize / m_texSize);
+        renderer::Renderer::DrawSprite(m_source, m_boundingBox.Position(),
+                                       m_texOffset, m_texSize,
+                                       m_boundingBox.Size() / m_texSize);
 
-        renderer::Renderer::DrawText(*r.fontTexture, m_displayOrigin, m_fgColor,
-                                     m_text);
+        renderer::Renderer::DrawText(*r.fontTexture, m_boundingBox.Position(),
+                                     m_fgColor, m_text);
     }
 
 private:

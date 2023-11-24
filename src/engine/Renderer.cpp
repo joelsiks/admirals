@@ -100,6 +100,12 @@ void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
+void Renderer::DrawRectangleOutline(const Rect &rect, float outlineWidth,
+                                    const Color &color) {
+    Renderer::DrawRectangleOutline(rect.Position(), rect.Size(), outlineWidth,
+                                   color);
+}
+
 void Renderer::DrawRectangleOutline(const Vector2 &position,
                                     const Vector2 &size, float outlineWidth,
                                     const Color &color) {
