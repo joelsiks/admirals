@@ -469,10 +469,10 @@ public:
         return Vector2(m_x + m_w / 2.f, m_y + m_h / 2.f);
     };
 
-    inline float x() const { return m_x; };
-    inline void SetX(const float x) { m_x = x; }
-    inline float y() const { return m_y; };
-    inline void SetY(const float y) { m_y = y; }
+    inline float PositionX() const { return m_x; };
+    inline void SetPositionX(const float x) { m_x = x; }
+    inline float PositionY() const { return m_y; };
+    inline void SetPositionY(const float y) { m_y = y; }
 
     /// @brief The top left 2d coordinate of the `Rect`
     inline Vector2 Position() const { return Vector2(m_x, m_y); };
@@ -483,9 +483,9 @@ public:
         m_y = position.y();
     }
 
-    inline float w() const { return m_w; };
+    inline float Width() const { return m_w; };
     inline void SetWidth(const float width) { m_w = width; }
-    inline float h() const { return m_h; };
+    inline float Height() const { return m_h; };
     inline void SetHeight(const float height) { m_h = height; }
 
     inline Vector2 Size() const { return Vector2(m_h, m_w); };
