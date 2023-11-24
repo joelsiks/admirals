@@ -11,7 +11,7 @@ NetworkManager::NetworkManager(const std::string &name,
 
 NetworkManager::~NetworkManager() {}
 
-void NetworkManager::OnStart(Context &c) {
+void NetworkManager::OnStart(const EngineContext &c) {
     printf("NetworkManager::OnStart()\n");
 
     // Should probably be called later and not here
@@ -26,7 +26,7 @@ void NetworkManager::OnStart(Context &c) {
     ReadyUp();
 }
 
-void NetworkManager::OnUpdate(Context &c) { HandleMessages(); }
+void NetworkManager::OnUpdate(const EngineContext &c) { HandleMessages(); }
 
 void NetworkManager::BuyShip(uint8_t type) {
     if (m_debug)

@@ -17,11 +17,11 @@ public:
                  Ship::ShipTypeToTexOffset(type)),
           m_size(size), m_shipSpeed(shipSpeed) {}
 
-    void OnStart(Context &c) override {
+    void OnStart(const EngineContext &c) override {
         m_time = std::chrono::high_resolution_clock::now();
     }
 
-    void OnUpdate(Context &c) override {
+    void OnUpdate(const EngineContext &c) override {
         Vector2 position = this->GetPosition();
         Vector2 windowSize = GameData::engine->GetWindowSize();
 

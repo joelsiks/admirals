@@ -5,7 +5,7 @@ using namespace admirals::events;
 
 Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
                bool debug) {
-    m_context = std::make_unique<Context>();
+    m_context = std::make_unique<EngineContext>();
     m_context->windowWidth = windowWidth;
     m_context->windowHeight = windowHeight;
     m_context->renderDebugOutlines = debug;

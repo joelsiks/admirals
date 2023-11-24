@@ -25,9 +25,9 @@ public:
         : scene::GameObject(name, pos), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
 
-    void OnStart(Context &c) override {}
+    void OnStart(const EngineContext &) override {}
 
-    void OnUpdate(Context &c) override {}
+    void OnUpdate(const EngineContext &) override {}
 
     void ButtonClickHandler(void *sender, events::ButtonClickEventArgs &e) {
         if (e.m_data.type != SDL_MOUSEBUTTONDOWN)
@@ -40,7 +40,7 @@ public:
         }
     }
 
-    void Render(const Context &c) const override {
+    void Render(const EngineContext &c) const override {
         float x = static_cast<float>(c.windowWidth) /
                   static_cast<float>(m_texture.Width());
         float y = static_cast<float>(c.windowHeight) /

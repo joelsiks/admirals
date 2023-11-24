@@ -29,7 +29,7 @@ public:
     CellObject(const std::string &name, const Vector3 &pos, const Color &color)
         : scene::GameObject(name, pos), m_color(color) {}
 
-    void OnStart(Context &c) override {}
+    void OnStart(const EngineContext &c) override {}
 
     void OnClick(void *, events::MouseCLickEventArgs e) {
         if (e.button != events::MouseButton::Left || !e.pressed) {
@@ -56,7 +56,7 @@ public:
         }
     }
 
-    void OnUpdate(Context &c) override {
+    void OnUpdate(const EngineContext &c) override {
         Vector2 position = this->GetPosition();
         float x = position.x() + CELL_SPEED * c.DeltaTime();
         while (x > WINDOW_WIDTH) {
@@ -66,7 +66,7 @@ public:
         this->SetPosition(position);
     }
 
-    void Render(const Context &c) const override {
+    void Render(const EngineContext &c) const override {
         Vector2 pos = this->GetPosition();
         // Calculate scaling
         const float x = static_cast<float>(c.windowWidth) /
@@ -88,11 +88,11 @@ public:
         : scene::GameObject(name, -1, Vector2(0)),
           m_textElement(std::move(textElement)) {}
 
-    void OnStart(Context &c) override {
+    void OnStart(const EngineContext &c) override {
         m_time = std::chrono::high_resolution_clock::now();
     }
 
-    void OnUpdate(Context &c) override {
+    void OnUpdate(const EngineContext &c) override {
         char fpsString[FPS_BUFFER_SIZE];
         if (sprintf(fpsString, "DT = %f, FPS: %f", c.DeltaTime(),
                     1.f / c.DeltaTime()) > 0) {
@@ -100,7 +100,7 @@ public:
         }
     }
 
-    void Render(const Context &c) const override {}
+    void Render(const EngineContext &c) const override {}
 
 private:
     std::chrono::_V2::system_clock::time_point m_time;

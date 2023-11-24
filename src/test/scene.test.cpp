@@ -12,11 +12,11 @@ public:
     CellObject(const std::string &name, const Vector3 &pos)
         : scene::GameObject(name, pos) {}
 
-    void OnStart(Context &c) {}
+    void OnStart(const EngineContext &c) {}
 
-    void OnUpdate(Context &c) {}
+    void OnUpdate(const EngineContext &c) {}
 
-    void Render(const Context &c) const {}
+    void Render(const EngineContext &c) const {}
 };
 
 int test_add() {

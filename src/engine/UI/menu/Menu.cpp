@@ -21,7 +21,7 @@ void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
     this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
 }
 
-void Menu::Render(const Context &c) const {
+void Menu::Render(const EngineContext &c) const {
 
     float centerPositionOffset = m_topPadding;
 

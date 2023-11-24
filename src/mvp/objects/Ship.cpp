@@ -9,7 +9,7 @@ Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
              size, source, Ship::ShipTypeToTexOffset(data.type)),
       m_data(data) {}
 
-void Ship::OnUpdate(Context &c) {
+void Ship::OnUpdate(const EngineContext &c) {
     const Vector2 pos = GetPosition();
     Vector2 target = pos;
     if (m_data.owner % 2 == 1) {
@@ -32,7 +32,7 @@ void Ship::OnUpdate(Context &c) {
     onChanged.Invoke(this, e);
 }
 
-void Ship::OnStart(Context &c) {}
+void Ship::OnStart(const EngineContext &c) {}
 
 Vector2 Ship::CalcOrigin() const {
     return GetPosition() * GameData::CellSize - Vector2(0, GameData::CellSize);

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Context.hpp"
+#include "EngineContext.hpp"
 #include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Scene.hpp"
@@ -22,7 +22,7 @@ public:
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
 
-    inline Context &GetContext() const { return *m_context; }
+    inline EngineContext &GetContext() const { return *m_context; }
 
     inline std::shared_ptr<UI::DisplayLayout>
     SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout) {
@@ -101,7 +101,7 @@ private:
     std::shared_ptr<scene::Scene> m_scene;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
-    std::unique_ptr<Context> m_context;
+    std::unique_ptr<EngineContext> m_context;
 };
 
 } // namespace admirals

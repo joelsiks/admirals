@@ -10,9 +10,9 @@ class TestObject : public scene::GameObject {
 public:
     TestObject(const std::string &name, float order, const Vector2 &pos)
         : scene::GameObject(name, order, pos) {}
-    void OnStart(Context &c) {}
-    void OnUpdate(Context &c) {}
-    void Render(const Context &c) const {}
+    void OnStart(const EngineContext &c) {}
+    void OnUpdate(const EngineContext &c) {}
+    void Render(const EngineContext &c) const {}
 };
 
 class TestInitialSize : public TestCaseBase {

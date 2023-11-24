@@ -7,7 +7,7 @@
 #include <SDL_video.h>
 #include <VK2D/Texture.h>
 
-#include "Context.hpp"
+#include "EngineContext.hpp"
 #include "DataObjects.hpp"
 #include "IDrawable.hpp"
 
@@ -22,7 +22,7 @@ public:
     ~Renderer();
 
     int Init(int windowWidth, int windowHeight, bool debug);
-    void Render(Context &context, const DrawableCollection &drawables);
+    void Render(EngineContext &context, const DrawableCollection &drawables);
 
     static void DrawLine(const Vector2 &p1, const Vector2 &p2,
                          const Color &color);

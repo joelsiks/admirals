@@ -9,11 +9,11 @@ Quad::Quad(const std::string &name, const Vector3 &position,
            const Vector2 &size, const Color &color)
     : scene::GameObject(name, position), m_size(size), m_color(color) {}
 
-void Quad::OnUpdate(Context &c) {}
+void Quad::OnUpdate(const EngineContext &c) {}
 
-void Quad::OnStart(Context &c) {}
+void Quad::OnStart(const EngineContext &c) {}
 
-void Quad::Render(const Context &c) const {
+void Quad::Render(const EngineContext &c) const {
     Vector2 pos = this->GetPosition();
     Vector2 offset =
         Vector2(c.windowWidth - GameData::GridSize,

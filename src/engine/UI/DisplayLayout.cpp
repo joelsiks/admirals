@@ -18,7 +18,7 @@ void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
 
 Vector2 DisplayLayout::GetOriginFromDisplayPosition(DisplayPosition pos,
                                                     const Vector2 &displaySize,
-                                                    const Context &c) {
+                                                    const EngineContext &c) {
     Vector2 origin(0, 0);
 
     // Handle center.
@@ -42,7 +42,7 @@ Vector2 DisplayLayout::GetOriginFromDisplayPosition(DisplayPosition pos,
     return origin;
 }
 
-void DisplayLayout::Render(const Context &c) const {
+void DisplayLayout::Render(const EngineContext &c) const {
     Vector4 positionOffsets = Vector4(0);
 
     for (const auto &element : m_elements) {

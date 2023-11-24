@@ -18,10 +18,10 @@ public:
     inline void SetPosition(const Vector2 &pos) { m_position = pos; }
     inline void SetPosition(float x, float y) { m_position = Vector2(x, y); }
 
-    virtual void OnStart(Context &c) = 0;
-    virtual void OnUpdate(Context &c) = 0;
+    virtual void OnStart(const EngineContext &c) = 0;
+    virtual void OnUpdate(const EngineContext &c) = 0;
 
-    virtual void Render(const Context &c) const = 0;
+    virtual void Render(const EngineContext &c) const = 0;
 
     template <typename T>
     static std::shared_ptr<GameObject>
