@@ -422,16 +422,31 @@ public:
     Rect(const Vector2 &position, const Vector2 &size);
     Rect(float x, float y, float w, float h);
 
+    /// @brief Checks if a given point is located inside the bounds of the
+    /// `Rect`.
+    /// @param point The point to check
+    /// @return `true` if the given point is located inside the bounds of the
+    /// `Rect`, otherwise `false`.
     inline bool Contains(const Vector2 &point) const {
         return point.x() >= m_x && point.x() <= m_x + m_w && point.y() >= m_y &&
                point.y() <= m_y + m_h;
     };
 
+    /// @brief Checks if a given area is fully contained inside the bounds of
+    /// the `Rect`.
+    /// @param rect The area to check
+    /// @return `true` if the given area is fully contained inside the bounds of
+    /// the `Rect`, otherwise `false`.
     inline bool Contains(const Rect &rect) const {
         return m_x <= rect.m_x && m_x + m_w >= rect.m_x + rect.m_w &&
                m_y <= rect.m_y && m_y + m_h >= rect.m_y + rect.m_h;
     };
 
+    /// @brief Checks if a given area has some overlap with the bounds of the
+    /// `Rect`.
+    /// @param rect The area to check
+    /// @return `true` if the given area has some overlap with the bounds of the
+    /// `Rect`, otherwise `false`.
     inline bool Overlaps(const Rect &rect) const {
         return m_x < rect.m_x + rect.m_w && m_x + m_w > rect.m_x &&
                m_y > rect.m_y + rect.m_h && m_y + m_h < rect.m_y;
