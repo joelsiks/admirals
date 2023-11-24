@@ -7,8 +7,8 @@
 #include <SDL_video.h>
 #include <VK2D/Texture.h>
 
-#include "EngineContext.hpp"
 #include "DataObjects.hpp"
+#include "EngineContext.hpp"
 #include "IDrawable.hpp"
 
 namespace admirals::renderer {

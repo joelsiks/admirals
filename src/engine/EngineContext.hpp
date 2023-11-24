@@ -8,7 +8,6 @@ public:
     EngineContext() : m_deltaTime(0.0) {
         m_lastTime = std::chrono::high_resolution_clock::now();
     }
-    EngineContext(const EngineContext &) = delete;
     ~EngineContext() {}
 
     void UpdateDelta() {
