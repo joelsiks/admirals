@@ -47,7 +47,13 @@ void GameManager::StopGame() {
     }
 }
 
-void GameManager::BuyShip(uint8_t type) { m_networkManager->BuyShip(type); }
+void GameManager::BuyShip(uint8_t type) {
+    if (m_coins < ShipInfoMap[type].Cost) {
+        return;
+    }
+
+    m_networkManager->BuyShip(type);
+}
 
 void GameManager::MoveShip(uint16_t id, int x, int y) {
     if (m_ships.find(id) == m_ships.end() ||
