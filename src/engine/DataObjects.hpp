@@ -419,7 +419,16 @@ public:
 
 class Rect {
 public:
+    /// @brief Creates a `Rect` object representing an area in 2d space
+    /// @param position The position of the top-left corner in the `Rect`
+    /// @param size The size of the `Rect`
     Rect(const Vector2 &position, const Vector2 &size);
+
+    /// @brief Creates a `Rect` object representing an area in 2d space
+    /// @param x The x-coordinate of the top-left corner in the `Rect`
+    /// @param y The y-coordinate of the top-left corner in the `Rect`
+    /// @param w The width of the `Rect`
+    /// @param h The height of the `Rect`
     Rect(float x, float y, float w, float h);
 
     /// @brief Checks if a given point is located inside the bounds of the
@@ -461,7 +470,10 @@ public:
     inline float y() const { return m_y; };
     inline void SetY(const float y) { m_y = y; }
 
+    /// @brief The top left 2d coordinate of the `Rect`
     inline Vector2 Position() const { return Vector2(m_x, m_y); };
+
+    /// @brief The top left 2d coordinate of the `Rect`
     inline void SetPosition(const Vector2 &position) {
         m_x = position.x();
         m_y = position.y();
