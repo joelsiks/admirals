@@ -25,11 +25,14 @@ void Ship::OnUpdate() {
             target[1] -= 1;
         }
     }
-    m_data.action = ShipAction::Move;
-    m_data.moveData.actionX = static_cast<uint8_t>(target.x());
-    m_data.moveData.actionY = static_cast<uint8_t>(target.y());
-    events::EventArgs e;
-    onChanged.Invoke(this, e);
+
+    if (m_data.action == ShipAction::None) {
+        m_data.action = ShipAction::Move;
+        m_data.moveData.actionX = static_cast<uint8_t>(target.x());
+        m_data.moveData.actionY = static_cast<uint8_t>(target.y());
+        events::EventArgs e;
+        onChanged.Invoke(this, e);
+    }
 }
 
 void Ship::OnStart() {}
