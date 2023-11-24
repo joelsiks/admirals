@@ -138,7 +138,7 @@ public:
     ~Vector3();
 
     inline float z() const { return this->m_2; }
-    inline void setZ(float value) { this->m_2 = value; }
+    inline void SetZ(float value) { this->m_2 = value; }
     inline Vector2 xy() const { return *this; }
 
     inline float Magnitude() const {
