@@ -18,7 +18,7 @@ using namespace admirals;
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
 const int CELL_SIZE = 100;
-const float CELL_SPEED = 500.f;
+const float CELL_SPEED = 300.f;
 const std::vector<Color> COLOR_LOOP = {Color::BLUE, Color::RED, Color::GREEN,
                                        Color::BLACK};
 float deltaT = 0;
@@ -39,13 +39,14 @@ public:
         }
 
         const Vector2 pos = GetPosition();
-        const Vector2 loc = e.location();
-        const float x = static_cast<float>(e.windowWidth) /
-                        static_cast<float>(WINDOW_WIDTH);
-        const float y = static_cast<float>(e.windowHeight) /
-                        static_cast<float>(WINDOW_HEIGHT);
-        if (loc.x() >= pos.x() * x && loc.x() <= (pos.x() + CELL_SIZE) * x &&
-            loc.y() >= pos.y() * y && loc.y() <= (pos.y() + CELL_SIZE) * y) {
+        const Vector2 loc = e.Location();
+        const Vector2 scale =
+            e.WindowSize() / Vector2(static_cast<float>(WINDOW_WIDTH),
+                                     static_cast<float>(WINDOW_HEIGHT));
+        if (loc.x() >= pos.x() * scale.x() &&
+            loc.x() <= (pos.x() + CELL_SIZE) * scale.x() &&
+            loc.y() >= pos.y() * scale.y() &&
+            loc.y() <= (pos.y() + CELL_SIZE) * scale.y()) {
             // This was clicked
             int index = 1;
             for (const Color &color : COLOR_LOOP) {
@@ -56,6 +57,10 @@ public:
             }
             m_color = COLOR_LOOP[index % COLOR_LOOP.size()];
         }
+    }
+
+    void OnMouseMove(void *, events::MouseMotionEventArgs e) {
+        m_mousePosition = e.Location();
     }
 
     void OnUpdate() override {
@@ -79,8 +84,21 @@ public:
         const Vector2 size(CELL_SIZE * x, CELL_SIZE * y);
         pos[0] *= x;
         pos[1] *= y;
+
         renderer::Renderer::DrawRectangle(pos, size, this->m_color);
+
+        // Mouse is inside bounds
+        if (m_mousePosition.x() >= pos.x() &&
+            m_mousePosition.x() <= pos.x() + CELL_SIZE &&
+            m_mousePosition.y() >= pos.y() &&
+            m_mousePosition.y() <= pos.y() + CELL_SIZE) {
+            renderer::Renderer::DrawRectangleOutline(pos, size, 3,
+                                                     Color::BLACK);
+        }
     }
+
+private:
+    Vector2 m_mousePosition = Vector2(-1);
 };
 
 class FpsTextElementController : public scene::GameObject {
@@ -136,6 +154,10 @@ int main(int argc, char *argv[]) {
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c2);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c3);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c4);
+    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c1);
+    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c2);
+    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c3);
+    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c4);
     engine.StartGameLoop();
 
     return EXIT_SUCCESS;

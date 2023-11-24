@@ -10,13 +10,15 @@
 #include "events/EventSystem.hpp"
 #include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
+#include "events/MouseMotionEvent.hpp"
 
 namespace admirals {
 
 class Engine {
 public:
-    events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
     events::EventSystem<events::KeyPressEventArgs> onKeyPress;
+    events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
+    events::EventSystem<events::MouseMotionEventArgs> onMouseMove;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
@@ -78,8 +80,9 @@ public:
     inline void StopGameLoop() { m_running = false; }
 
     inline Vector2 GetWindowSize() {
-        auto rctx = m_renderer->Context();
-        return Vector2(rctx.windowWidth, rctx.windowHeight);
+        auto context = m_renderer->Context();
+        return Vector2(static_cast<float>(context.windowWidth),
+                       static_cast<float>(context.windowHeight));
     }
 
 private:

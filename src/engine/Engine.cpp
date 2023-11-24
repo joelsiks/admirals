@@ -30,6 +30,10 @@ bool Engine::PollAndHandleEvent() {
             auto args = MouseCLickEventArgs(e.button);
             onMouseClick.Invoke(this, args);
         } break;
+        case SDL_MOUSEMOTION: {
+            auto args = MouseMotionEventArgs(e.motion);
+            onMouseMove.Invoke(this, args);
+        } break;
         case SDL_KEYDOWN:
         case SDL_KEYUP: {
             auto args = KeyPressEventArgs(e.key);
