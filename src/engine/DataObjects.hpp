@@ -442,7 +442,9 @@ public:
     };
 
     inline float x() const { return m_x; };
+    inline void SetX(const float x) { m_x = x; }
     inline float y() const { return m_y; };
+    inline void SetY(const float y) { m_y = y; }
 
     inline Vector2 Position() const { return Vector2(m_x, m_y); };
     inline void SetPosition(const Vector2 &position) {
@@ -451,7 +453,9 @@ public:
     }
 
     inline float w() const { return m_w; };
+    inline void SetWidth(const float width) { m_w = width; }
     inline float h() const { return m_h; };
+    inline void SetHeight(const float height) { m_h = height; }
 
     inline Vector2 Size() const { return Vector2(m_h, m_w); };
     inline void SetSize(const Vector2 &size) {
