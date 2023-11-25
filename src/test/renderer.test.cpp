@@ -77,7 +77,7 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                                          "Debug Rendering", initialDebugValue);
     toggleDebugOption.onClick.Subscribe(
         [&engine](void *, events::MouseClickEventArgs &args) {
-            if (!args.pressed)
+            if (args.pressed)
                 return;
 
             engine.ToggleDebugRendering();
@@ -93,7 +93,7 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
     cycleColorOption.onClick.Subscribe([&escapeMenu, cycleColors](
                                            void *sender,
                                            events::MouseClickEventArgs &args) {
-        if (!args.pressed)
+        if (args.pressed)
             return;
 
         auto *cycleOption = static_cast<menu::CycleOption *>(sender);
@@ -136,8 +136,8 @@ void CreateUIElements(Engine &engine,
         "text1", 0, "Le", Vector2(32, 40), Color::BLACK);
     auto testText2 = engine.MakeUIElement<TextElement>(
         "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
-    testText1->SetDisplayPosition(DisplayPosition::LowerLeft);
-    testText2->SetDisplayPosition(DisplayPosition::LowerRight);
+    testText1->SetDisplayOrientation(DisplayOrientation::LowerLeft);
+    testText2->SetDisplayOrientation(DisplayOrientation::LowerRight);
 }
 
 int main(int, char **) {

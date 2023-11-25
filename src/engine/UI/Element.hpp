@@ -12,7 +12,7 @@
 
 namespace admirals::UI {
 
-enum DisplayPosition {
+enum DisplayOrientation {
     UpperLeft = 0,
     UpperRight = 1,
     LowerLeft = 2,
@@ -28,21 +28,13 @@ public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);
 
-    // Getters and setters
-    virtual Vector2 GetDisplaySize() const { return m_boundingBox.Size(); }
-    virtual void SetDisplaySize(const Vector2 &size) {
-        m_boundingBox.SetSize(size);
+    virtual DisplayOrientation GetDisplayOrientation() const {
+        return m_dispOrient;
     }
 
-    virtual Vector2 GetDisplayOrigin() const {
-        return m_boundingBox.Position();
+    virtual void SetDisplayOrientation(DisplayOrientation pos) {
+        m_dispOrient = pos;
     }
-    virtual void SetDisplayOrigin(const Vector2 &origin) {
-        m_boundingBox.SetPosition(origin);
-    }
-
-    virtual DisplayPosition GetDisplayPosition() const { return m_displayPos; }
-    virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
 
     template <typename T>
     static std::shared_ptr<Element> CreateFromDerived(const T &derivedObject) {
@@ -55,7 +47,7 @@ protected:
     // Text to be displayed on the Element.
     std::string m_text;
 
-    DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
+    DisplayOrientation m_dispOrient = DisplayOrientation::UpperLeft;
 };
 
 } // namespace admirals::UI
