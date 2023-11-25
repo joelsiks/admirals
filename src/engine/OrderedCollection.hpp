@@ -84,7 +84,7 @@ public:
                         const KeyToPointerMap &objects)
             : m_revIter(i), m_objects(objects) {}
 
-        const std::shared_ptr<T> operator*() const {
+        std::shared_ptr<T> operator*() const {
             auto v = (m_revIter.operator*)();
             return m_objects.at(v);
         }

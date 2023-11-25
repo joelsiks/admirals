@@ -6,7 +6,7 @@ namespace admirals {
 
 class IDisplayable {
 public:
-    IDisplayable() : m_boundingBox(Rect()) {}
+    IDisplayable() {}
     IDisplayable(const Rect &bounds) : m_boundingBox(bounds) {}
 
     inline Rect GetBoundingBox() const { return m_boundingBox; };

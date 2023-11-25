@@ -29,14 +29,12 @@ public:
             const Vector2 &size);
 
     // Getters and setters
-    virtual const Vector2 GetDisplaySize() const {
-        return m_boundingBox.Size();
-    }
+    virtual Vector2 GetDisplaySize() const { return m_boundingBox.Size(); }
     virtual void SetDisplaySize(const Vector2 &size) {
         m_boundingBox.SetSize(size);
     }
 
-    virtual const Vector2 GetDisplayOrigin() const {
+    virtual Vector2 GetDisplayOrigin() const {
         return m_boundingBox.Position();
     }
     virtual void SetDisplayOrigin(const Vector2 &origin) {

@@ -78,8 +78,9 @@ public:
     inline void StopGameLoop() { m_running = false; }
 
     inline Vector2 GetWindowSize() {
-        auto rctx = m_renderer->Context();
-        return Vector2(rctx.windowWidth, rctx.windowHeight);
+        auto context = m_renderer->Context();
+        return Vector2(static_cast<float>(context.windowWidth),
+                       static_cast<float>(context.windowHeight));
     }
 
 private:
