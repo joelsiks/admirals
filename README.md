@@ -85,7 +85,7 @@ For Visual Studio Code users there is a settings template in `.vscode-template/s
 We use cppunit for unit testing. It can be installed using the following commands:
 ```bash
 # MSYS2
-pacman -S mingw-w64-x86_64-cppunit
+pacman -S mingw-w64-ucrt-x86_64-cppunit
 ```
 
 # Authors
