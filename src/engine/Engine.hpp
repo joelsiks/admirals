@@ -82,9 +82,7 @@ public:
     void StartGameLoop();
     inline void StopGameLoop() { m_running = false; }
 
-    inline Vector2 GetWindowSize() {
-        return Vector2(m_context.windowWidth, m_context.windowHeight);
-    }
+    inline Vector2 GetWindowSize() const { return m_context.windowSize; }
 
 private:
     bool PollAndHandleEvent();

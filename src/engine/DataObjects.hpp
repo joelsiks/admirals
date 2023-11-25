@@ -427,6 +427,7 @@ public:
     // should be uint32
     float Width() const;
     float Height() const;
+    inline Vector2 Size() const { return Vector2(Width(), Height()); };
     VK2DTexture Data() const { return m_texture; }
 
     static Texture LoadFromPath(const std::string &path);
