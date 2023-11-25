@@ -15,6 +15,9 @@ void Quad::OnStart(const EngineContext &c) {}
 
 void Quad::Render(const EngineContext &c) const {
     const Vector2 pos = this->GetPosition();
-    const Vector2 offset = c.windowSize / 2;
+    const Vector2 offset =
+        (c.windowSize - Vector2(GameData::GridSize,
+                                GameData::GridSize + 2 * GameData::CellSize)) /
+        2.f;
     renderer::Renderer::DrawRectangle(pos + offset, m_size, m_color);
 }

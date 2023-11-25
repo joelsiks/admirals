@@ -43,7 +43,7 @@ public:
     void Render(const EngineContext &c) const override {
         Vector2 scale = c.windowSize / m_texture.Size();
         if (m_keepAspectRatio) {
-            scale.SetX(std::min(scale.x(), scale.y()));
+            scale[0] = scale[1] = std::min(scale.x(), scale.y());
         }
 
         renderer::Renderer::DrawTexture(m_texture, GetPosition(), scale);
