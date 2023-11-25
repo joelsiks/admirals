@@ -18,9 +18,9 @@ public:
     void AddElement(std::shared_ptr<Element> element);
 
     static Vector2
-    GetOriginFromDisplayPosition(DisplayPosition pos,
-                                 const Vector2 &displaySize,
-                                 const renderer::RendererContext &r);
+    GetPositionFromOrientation(DisplayOrientation orientation,
+                               const Vector2 &displaySize,
+                               const renderer::RendererContext &r);
 
 protected:
     OrderedCollection<Element> m_elements;

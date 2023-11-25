@@ -16,7 +16,7 @@ Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
 }
 
 void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
-    menuOption->SetDisplayPosition(DisplayPosition::Center);
+    menuOption->SetDisplayOrientation(DisplayOrientation::Center);
 
     this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
 }
@@ -35,34 +35,35 @@ void Menu::Render(const renderer::RendererContext &r) const {
     for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
         auto option = std::dynamic_pointer_cast<MenuOption>(*it);
 
-        const DisplayPosition pos = option->GetDisplayPosition();
+        const DisplayOrientation orientation = option->GetDisplayOrientation();
         Vector2 displaySize = option->GetDisplaySize();
 
-        // Calculate the origin with respect to the matching positionOffset.
-        Vector2 origin =
-            DisplayLayout::GetOriginFromDisplayPosition(pos, displaySize, r);
-        origin[1] += centerPositionOffset;
+        // Calculate the position with respect to the matching positionOffset.
+        Vector2 position = DisplayLayout::GetPositionFromOrientation(
+            orientation, displaySize, r);
+        position[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.
         option->SetDisplaySize(renderer::Renderer::TextFontSize(
             option->GetOptionText(), r.fontWidth, r.fontHeight));
         option->SetTextColor(m_fgColor);
 
-        option->SetDisplayOrigin(origin);
+        option->SetDisplayPosition(position);
         option->Render(r);
 
         // If we're rendering the menu title, add a line below it.
         if (option->name() == MENU_TITLE_NAME) {
             renderer::Renderer::DrawLine(
-                Vector2(origin[0], origin[1] + displaySize[1]),
-                Vector2(origin[0] + displaySize[0], origin[1] + displaySize[1]),
+                Vector2(position[0], position[1] + displaySize[1]),
+                Vector2(position[0] + displaySize[0],
+                        position[1] + displaySize[1]),
                 m_fgColor);
             centerPositionOffset += MENU_TITLE_LINE_OFFSET;
         }
 
         // If debugging, render an outline around the UI Element.
         if (r.renderDebugOutlines) {
-            renderer::Renderer::DrawRectangleOutline(origin, displaySize, 2,
+            renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }
 

@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
                                                 Color::GREEN);
     auto fpsText = engine.MakeUIElement<UI::TextElement>(
         "Fps TextElement", 0, "", Vector2(500, 40), Color::BLACK);
-    fpsText->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
+    fpsText->SetDisplayOrientation(UI::DisplayOrientation::LowerLeft);
     engine.MakeGameObject<FpsTextElementController>("controller", fpsText);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c1);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c2);

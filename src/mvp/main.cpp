@@ -89,7 +89,7 @@ void CreateUI(const Texture &atlas,
                 std::to_string(ship.Cost), Vector2(GameData::CellSize),
                 Color::WHITE, Color::BLACK, atlas,
                 Vector2(Ship::ShipTypeToTexOffset(shipType)));
-        buyShipButton->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
+        buyShipButton->SetDisplayOrientation(UI::DisplayOrientation::LowerLeft);
         buyShipButton->onClick += [gameManager, shipType](void *, auto) {
             gameManager->BuyShip(shipType);
         };
