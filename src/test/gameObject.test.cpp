@@ -47,40 +47,45 @@ public:
         m_color = COLOR_LOOP[index % COLOR_LOOP.size()];
     }
 
-    void OnMouseEnter(events::MouseMotionEventArgs &args) override {
+    void OnMouseEnter(events::MouseMotionEventArgs &) override {
         m_drawOutline = true;
     }
-    void OnMouseLeave(events::MouseMotionEventArgs &args) override {
+    void OnMouseLeave(events::MouseMotionEventArgs &) override {
         m_drawOutline = false;
     }
 
-    void OnUpdate(const EngineContext &c) override {
-        Vector2 position = this->GetPosition();
-        float x = position.x() + CELL_SPEED * static_cast<float>(c.deltaTime);
-        while (x > WINDOW_WIDTH) {
-            x = -CELL_SIZE + (x - WINDOW_WIDTH);
-        }
-        position.SetX(x);
-        this->SetPosition(position);
+    Vector2 GetPosition() const override {
+        return m_boundingBox.Position() * m_scale;
     }
 
-    void Render(const EngineContext &c) const override {
-        // Calculate scaling
-        const Vector2 scale =
-            c.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
-                                   static_cast<float>(WINDOW_HEIGHT));
-        const Vector2 pos = this->GetPosition() * scale;
-        const Vector2 size = scale * CELL_SIZE;
-        renderer::Renderer::DrawRectangle(pos, size, this->m_color);
+    Vector2 GetSize() const override { return m_boundingBox.Size() * m_scale; }
 
+    Rect GetBoundingBox() const override {
+        return Rect(GetPosition(), GetSize());
+    }
+
+    void OnUpdate(const EngineContext &ctx) override {
+        m_scale = ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
+                                           static_cast<float>(WINDOW_HEIGHT));
+        const float motion = CELL_SPEED * static_cast<float>(ctx.deltaTime);
+        float x = m_boundingBox.PositionX() + motion;
+        if (x > WINDOW_WIDTH) {
+            x = x - WINDOW_WIDTH - CELL_SIZE;
+        }
+        m_boundingBox.SetPositionX(x);
+    }
+
+    void Render(const EngineContext &) const override {
+        const Rect bounds = GetBoundingBox();
+        renderer::Renderer::DrawRectangle(bounds, this->m_color);
         // Mouse is inside bounds
         if (m_drawOutline) {
-            renderer::Renderer::DrawRectangleOutline(pos, size, 3,
-                                                     Color::BLACK);
+            renderer::Renderer::DrawRectangleOutline(bounds, 3, Color::BLACK);
         }
     }
 
 private:
+    Vector2 m_scale = Vector2(1);
     bool m_drawOutline = false;
 };
 
