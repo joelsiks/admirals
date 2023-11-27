@@ -32,29 +32,26 @@ public:
 
     void OnStart(const EngineContext &c) override {}
 
-    void OnClick(void *, events::MouseClickEventArgs e) {
-        if (e.button != events::MouseButton::Left || !e.pressed) {
+    void OnClick(events::MouseClickEventArgs &args) override {
+        if (args.button != events::MouseButton::Left || !args.pressed) {
             return;
         }
 
-        const Vector2 scale =
-            e.WindowSize() / Vector2(static_cast<float>(WINDOW_WIDTH),
-                                     static_cast<float>(WINDOW_HEIGHT));
-        if (m_boundingBox.Contains(e.Location() / scale)) {
-            // This was clicked
-            int index = 1;
-            for (const Color &color : COLOR_LOOP) {
-                if (color == this->m_color) {
-                    break;
-                }
-                index++;
+        int index = 1;
+        for (const Color &color : COLOR_LOOP) {
+            if (color == this->m_color) {
+                break;
             }
-            m_color = COLOR_LOOP[index % COLOR_LOOP.size()];
+            index++;
         }
+        m_color = COLOR_LOOP[index % COLOR_LOOP.size()];
     }
 
-    void OnMouseMove(void *, events::MouseMotionEventArgs e) {
-        m_mousePosition = e.Location();
+    void OnMouseEnter(events::MouseMotionEventArgs &args) override {
+        m_drawOutline = true;
+    }
+    void OnMouseLeave(events::MouseMotionEventArgs &args) override {
+        m_drawOutline = false;
     }
 
     void OnUpdate(const EngineContext &c) override {
@@ -77,14 +74,14 @@ public:
         renderer::Renderer::DrawRectangle(pos, size, this->m_color);
 
         // Mouse is inside bounds
-        if (Rect(pos, size).Contains(m_mousePosition)) {
+        if (m_drawOutline) {
             renderer::Renderer::DrawRectangleOutline(pos, size, 3,
                                                      Color::BLACK);
         }
     }
 
 private:
-    Vector2 m_mousePosition = Vector2(-1);
+    bool m_drawOutline = false;
 };
 
 int main(int, char *[]) {
@@ -101,14 +98,6 @@ int main(int, char *[]) {
                                                 Color::RED);
     auto c4 = engine.MakeGameObject<CellObject>("6", Vector3(200, 200, 0),
                                                 Color::GREEN);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c1);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c2);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c3);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c4);
-    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c1);
-    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c2);
-    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c3);
-    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(CellObject::OnMouseMove, c4);
     engine.StartGameLoop();
 
     return EXIT_SUCCESS;

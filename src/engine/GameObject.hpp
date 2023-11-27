@@ -23,10 +23,10 @@ public:
     // Engine event handlers
     virtual void OnStart(const EngineContext &ctx) {}
     virtual void OnUpdate(const EngineContext &ctx) {}
-    virtual void OnClick(events::MouseClickEventArgs &args) {}
-    virtual void OnMouseEnter(events::EventArgs &args) {}
-    virtual void OnMouseLeave(events::EventArgs &args) {}
-    virtual void OnMouseMove(events::EventArgs &args) {}
+    virtual void OnClick(events::MouseClickEventArgs &args) override {}
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override {}
 
     virtual void Render(const EngineContext &ctx) const = 0;
 
