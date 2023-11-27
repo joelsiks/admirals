@@ -156,6 +156,13 @@ target_include_directories(scene_test PRIVATE
     "src/test/"
 )
 
+# Test server
+add_executable(pathfinding src/test/pathfinding.test.cpp)
+target_link_libraries(pathfinding engine)
+target_include_directories(pathfinding PRIVATE 
+    "src/test/"
+)
+
 # Copy SDL2.dll to the output directory after the executable is built
 add_custom_command(TARGET renderer_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
