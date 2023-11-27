@@ -8,6 +8,7 @@
 #include <VK2D/Texture.h>
 
 #include "DataObjects.hpp"
+#include "EngineContext.hpp"
 #include "IDrawable.hpp"
 
 namespace admirals::renderer {
@@ -16,18 +17,14 @@ typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
 
 class Renderer {
 public:
-    Renderer(const std::string &name, int width, int height,
-             bool debugRendering);
+    Renderer(const std::string &name, int width, int height);
     ~Renderer();
 
-    int Init(bool debug);
-    void Render(const DrawableCollection &drawables);
+    int Init(const EngineContext &context);
+    static void Render(const EngineContext &context,
+                       const DrawableCollection &drawables);
 
-    inline void ToggleDebugRendering() {
-        m_context.renderDebugOutlines = !m_context.renderDebugOutlines;
-    }
-
-    inline RendererContext Context() const { return m_context; }
+    Vector2 GetWindowSize() const;
 
     static void DrawLine(const Vector2 &p1, const Vector2 &p2,
                          const Color &color);
@@ -50,7 +47,6 @@ public:
                          const Color &color, const std::string &text);
 
 private:
-    RendererContext m_context;
     SDL_Window *m_window;
 };
 

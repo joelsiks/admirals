@@ -6,18 +6,20 @@
 #include "DataObjects.hpp"
 #include "Renderer.hpp"
 
+using namespace admirals;
 using namespace admirals::renderer;
 
-void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
+void RenderFont(VK2DTexture font, const admirals::Vector2 &postion,
                 const char *text) {
     float x = postion.x();
     float y = postion.y();
-    float ox = x;
+    const float ox = x;
     for (int i = 0; i < (int)strlen(text); i++) {
         if (text[i] != '\n') {
-            vk2dRendererDrawTexture(font, x, y, 2, 2, 0, 0, 0,
-                                    (text[i] * 8) % 128,
-                                    floorf(text[i] / 16) * 16, 8, 16);
+            vk2dRendererDrawTexture(
+                font, x, y, 2.f, 2.f, 0.f, 0.f, 0.f,
+                static_cast<float>((text[i] * 8) % 128),
+                floorf(static_cast<float>(text[i]) / 16.f) * 16.f, 8.f, 16.f);
             x += 8 * 2;
         } else {
             x = ox;
@@ -26,9 +28,7 @@ void RenderFont(const VK2DTexture font, const admirals::Vector2 &postion,
     }
 }
 
-Renderer::Renderer(const std::string &name, int width, int height,
-                   bool debugRendering)
-    : m_context({width, height, debugRendering}) {
+Renderer::Renderer(const std::string &name, int width, int height) {
     this->m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED, width, height,
                                       SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
@@ -39,38 +39,41 @@ Renderer::~Renderer() {
     SDL_DestroyWindow(this->m_window);
 }
 
-int Renderer::Init(bool debug) {
-    VK2DRendererConfig config = {VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE,
-                                 VK2D_FILTER_TYPE_NEAREST};
-    VK2DStartupOptions options = {debug, debug, debug, "error.txt", false};
+int Renderer::Init(const EngineContext &c) {
+    const VK2DRendererConfig config = {
+        VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE, VK2D_FILTER_TYPE_NEAREST};
+    VK2DStartupOptions options = {c.renderDebugOutlines, c.renderDebugOutlines,
+                                  c.renderDebugOutlines, "error.txt", false};
 
-    int code = vk2dRendererInit(this->m_window, config, &options);
+    const int code = vk2dRendererInit(this->m_window, config, &options);
     if (code < 0) {
         return code;
     }
 
-    VK2DCameraSpec camera = {VK2D_CAMERA_TYPE_DEFAULT,
-                             0,
-                             0,
-                             static_cast<float>(m_context.windowWidth),
-                             static_cast<float>(m_context.windowHeight),
-                             1,
-                             0};
+    const VK2DCameraSpec camera = {
+        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, c.windowSize.x(),
+        c.windowSize.y(),         1, 0};
 
     vk2dRendererSetCamera(camera);
     return code;
 }
 
-void Renderer::Render(const DrawableCollection &drawables) {
+Vector2 Renderer::GetWindowSize() const {
+    int width;
+    int height;
+    SDL_GetWindowSize(m_window, &width, &height);
+    return Vector2(static_cast<float>(width), static_cast<float>(height));
+}
+
+void Renderer::Render(const EngineContext &context,
+                      const DrawableCollection &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
-    SDL_GetWindowSize(m_window, &m_context.windowWidth,
-                      &m_context.windowHeight);
     for (const auto &drawable : drawables) {
         if (drawable == nullptr) {
             continue;
         }
 
-        drawable->Render(m_context);
+        drawable->Render(context);
     }
     vk2dRendererEndFrame();
 }

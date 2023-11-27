@@ -13,15 +13,14 @@ class DisplayLayout : public InteractiveDrawable {
 public:
     DisplayLayout();
 
-    void Render(const renderer::RendererContext &r) const override;
+    void Render(const EngineContext &c) const override;
     void HandleEvent(SDL_Event &e) override;
 
     void AddElement(std::shared_ptr<Element> element);
 
-    static Vector2
-    GetOriginFromDisplayPosition(DisplayPosition pos,
-                                 const Vector2 &displaySize,
-                                 const renderer::RendererContext &r);
+    static Vector2 GetOriginFromDisplayPosition(DisplayPosition pos,
+                                                const Vector2 &displaySize,
+                                                const EngineContext &c);
 
     inline Vector2 TextFontSize(const std::string &text) const {
         return Vector2(static_cast<float>(text.length()) * m_fontWidth,

@@ -25,9 +25,9 @@ public:
         : scene::GameObject(name, pos), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
 
-    void OnStart() override {}
+    void OnStart(const EngineContext &) override {}
 
-    void OnUpdate() override {}
+    void OnUpdate(const EngineContext &) override {}
 
     void ButtonClickHandler(void *sender, events::ButtonClickEventArgs &e) {
         if (e.m_data.type != SDL_MOUSEBUTTONDOWN)
@@ -40,18 +40,13 @@ public:
         }
     }
 
-    void Render(const renderer::RendererContext &r) const override {
-        float x = static_cast<float>(r.windowWidth) /
-                  static_cast<float>(m_texture.Width());
-        float y = static_cast<float>(r.windowHeight) /
-                  static_cast<float>(m_texture.Height());
+    void Render(const EngineContext &c) const override {
+        Vector2 scale = c.windowSize / m_texture.Size();
         if (m_keepAspectRatio) {
-            x = std::min(x, y);
-            y = x;
+            scale[0] = scale[1] = std::min(scale.x(), scale.y());
         }
 
-        renderer::Renderer::DrawTexture(m_texture, GetPosition(),
-                                        Vector2(x, y));
+        renderer::Renderer::DrawTexture(m_texture, GetPosition(), scale);
     }
 
 private:
@@ -104,7 +99,7 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
 }
 
 void OnButtonClick(void *object, events::ButtonClickEventArgs &event) {
-    auto button = static_cast<Button *>(object);
+    auto *button = static_cast<Button *>(object);
     if (event.m_data.type == SDL_MOUSEBUTTONUP) {
         button->SetBackgroundColor(Color::BLACK);
     } else if (event.m_data.type == SDL_MOUSEBUTTONDOWN) {
