@@ -83,16 +83,18 @@ void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
     }
 
     for (auto it = m_mouseOverSet.begin(); it != m_mouseOverSet.end();) {
+        if (args.handled)
+            break;
         const std::string &name = *it;
         if (!nameSet.contains(name)) {
             auto el = m_elements.Find(name);
             if (el != nullptr) {
                 el->OnMouseLeave(args);
-                it = m_mouseOverSet.erase(it);
-                continue;
             }
+            it = m_mouseOverSet.erase(it);
+        } else {
+            it++;
         }
-        it++;
     }
 }
 

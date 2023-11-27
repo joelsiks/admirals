@@ -88,6 +88,8 @@ void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
     std::unordered_set<std::string> nameSet;
 
     for (const auto &object : m_quadtree.GetObjectsAtPosition(mouseLocation)) {
+        if (args.handled)
+            break;
         auto obj = static_pointer_cast<GameObject>(object);
         const std::string name = obj->name();
         if (obj->IsVisible() && obj->GetBoundingBox().Contains(mouseLocation)) {
@@ -101,16 +103,18 @@ void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
     }
 
     for (auto it = m_mouseOverSet.begin(); it != m_mouseOverSet.end();) {
+        if (args.handled)
+            break;
         const std::string &name = *it;
         if (!nameSet.contains(name)) {
             auto obj = m_objects.Find(name);
             if (obj != nullptr) {
                 obj->OnMouseLeave(args);
-                it = m_mouseOverSet.erase(it);
-                continue;
             }
+            it = m_mouseOverSet.erase(it);
+        } else {
+            it++;
         }
-        it++;
     }
 }
 
