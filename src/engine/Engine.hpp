@@ -61,9 +61,7 @@ public:
         }
     }
 
-    inline void ToggleDebugRendering() {
-        m_context.renderDebugOutlines = !m_context.renderDebugOutlines;
-    }
+    inline void ToggleDebugRendering() { m_context.debug = !m_context.debug; }
 
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {

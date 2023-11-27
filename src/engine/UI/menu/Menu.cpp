@@ -58,11 +58,15 @@ void Menu::Render(const EngineContext &c) const {
         }
 
         // If debugging, render an outline around the UI Element.
-        if (c.renderDebugOutlines) {
+        if (c.debug) {
             renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }
 
         centerPositionOffset += displaySize[1];
+    }
+
+    if (c.debug) {
+        m_quadtree.DrawTree();
     }
 }

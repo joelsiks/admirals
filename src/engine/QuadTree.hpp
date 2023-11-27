@@ -33,9 +33,15 @@ public:
         }
     }
 
+    inline void DrawTree() const {
+        if (m_rootNode != nullptr && m_size != Vector2(0)) {
+            DrawNode(m_rootNode, 0, m_size);
+        }
+    }
+
 private:
     static constexpr int NUM_QUADRANTS = 4;
-    static constexpr float MINIMUM_QUADRANT_SIZE = 1.f;
+    static constexpr float MINIMUM_QUADRANT_SIZE = 10.f;
     static const Vector2 QuadrantOffsets[NUM_QUADRANTS];
 
     // If data is not a nullptr, the Node is a leaf.
@@ -60,7 +66,8 @@ private:
     void DestroyTree();
 
     // Helper function to print a node and its children recursively
-    void PrintNode(const Node *node, int depth, Vector2 size) const;
+    void PrintNode(const Node *node, int depth, const Vector2 &size) const;
+    void DrawNode(const Node *node, int depth, const Vector2 &size) const;
 
     Vector2 m_size = Vector2(0);
     Node *m_rootNode = nullptr;

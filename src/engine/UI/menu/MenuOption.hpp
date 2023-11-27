@@ -50,6 +50,8 @@ public:
     TextOption(const std::string &name, float order, const std::string &text);
 
     std::string GetOptionText() const override;
+
+    inline void SetText(const std::string &text) { m_text = text; }
 };
 
 // Click Option, click and event occurs (Close, Exit)

@@ -9,6 +9,8 @@
 using namespace admirals;
 using namespace admirals::renderer;
 
+#define FPS_BUFFER_SIZE 100
+
 void RenderFont(VK2DTexture font, const Vector2 &postion, const char *text) {
     float x = postion.x();
     float y = postion.y();
@@ -41,8 +43,8 @@ Renderer::~Renderer() {
 int Renderer::Init(const EngineContext &c) {
     const VK2DRendererConfig config = {
         VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE, VK2D_FILTER_TYPE_NEAREST};
-    VK2DStartupOptions options = {c.renderDebugOutlines, c.renderDebugOutlines,
-                                  c.renderDebugOutlines, "error.txt", false};
+    VK2DStartupOptions options = {c.debug, c.debug, c.debug, "error.txt",
+                                  false};
 
     const int code = vk2dRendererInit(this->m_window, config, &options);
     if (code < 0) {
@@ -74,6 +76,16 @@ void Renderer::Render(const EngineContext &context,
 
         drawable->Render(context);
     }
+
+    if (context.debug) {
+        char fpsString[FPS_BUFFER_SIZE];
+        if (sprintf(fpsString, "DT = %f, FPS: %f", context.deltaTime,
+                    1.f / context.deltaTime) > 0) {
+            DrawText(*context.fontTexture, Vector2(0, 0), Color::RED,
+                     fpsString);
+        }
+    }
+
     vk2dRendererEndFrame();
 }
 

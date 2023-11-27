@@ -13,7 +13,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     : m_context() {
     m_context.windowSize = Vector2(static_cast<float>(windowWidth),
                                    static_cast<float>(windowHeight));
-    m_context.renderDebugOutlines = debug;
+    m_context.debug = debug;
     m_renderer = std::make_shared<renderer::Renderer>(gameName, windowWidth,
                                                       windowHeight);
     // Initialize the renderer right after creating it. Necessary in cases where

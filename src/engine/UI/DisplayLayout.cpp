@@ -21,7 +21,7 @@ void DisplayLayout::Render(const EngineContext &c) const {
         element->Render(c);
 
         // If debugging, render an outline around the UI Element.
-        if (c.renderDebugOutlines) {
+        if (c.debug) {
             renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }
@@ -33,6 +33,10 @@ void DisplayLayout::Render(const EngineContext &c) const {
         } else {
             positionOffsets[orientation] += displaySize[0];
         }
+    }
+
+    if (c.debug) {
+        m_quadtree.DrawTree();
     }
 }
 void DisplayLayout::RebuildQuadTree(const Vector2 &windowSize) {

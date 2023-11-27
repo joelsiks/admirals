@@ -5,6 +5,7 @@
 #include <stack>
 
 #include "QuadTree.hpp"
+#include "Renderer.hpp"
 
 using namespace admirals;
 
@@ -198,12 +199,11 @@ void QuadTree::DestroyTree() {
     }
 }
 
-void QuadTree::PrintNode(const Node *node, int depth, Vector2 size) const {
+void QuadTree::PrintNode(const Node *node, int depth,
+                         const Vector2 &size) const {
     if (node == nullptr) {
         return;
     }
-
-    size /= 2.0f;
 
     // Print information about the current node
     for (int i = 0; i < depth; ++i) {
@@ -220,7 +220,23 @@ void QuadTree::PrintNode(const Node *node, int depth, Vector2 size) const {
         std::cout << " [Internal Node]\n";
         // Recursively print its children
         for (int i = 0; i < NUM_QUADRANTS; ++i) {
-            PrintNode(node->quadrants[i], depth + 1, size);
+            PrintNode(node->quadrants[i], depth + 1, size / 2.0f);
+        }
+    }
+}
+
+void QuadTree::DrawNode(const Node *node, int depth,
+                        const Vector2 &size) const {
+    if (node == nullptr) {
+        return;
+    }
+
+    renderer::Renderer::DrawRectangleOutline(node->origin, size, 1.0,
+                                             Color::RED);
+
+    if (node->data.empty()) {
+        for (int i = 0; i < NUM_QUADRANTS; ++i) {
+            DrawNode(node->quadrants[i], depth + 1, size / 2.0f);
         }
     }
 }
