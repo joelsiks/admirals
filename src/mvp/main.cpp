@@ -142,7 +142,7 @@ void CreateStartMenuScene(const Texture &atlas) {
 
 int main(int, char *[]) {
     GameData::engine =
-        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
+        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, true);
 
     CreateGameBoard();
 

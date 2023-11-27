@@ -11,6 +11,10 @@ void Scene::Render(const EngineContext &ctx) const {
     for (const auto &object : this->m_objects) {
         object->Render(ctx);
     }
+
+    if (ctx.debug) {
+        m_quadtree.DrawTree();
+    }
 }
 
 /**
@@ -64,6 +68,37 @@ void Scene::OnStart(const EngineContext &ctx) {
 void Scene::OnUpdate(const EngineContext &ctx) {
     for (const auto &object : this->m_objects) {
         object->OnUpdate(ctx);
+    }
+}
+
+void Scene::OnClick(events::MouseClickEventArgs &args) {
+    const Vector2 clickLocation = args.Location();
+    for (const auto &object : m_quadtree.GetObjectsAtPosition(clickLocation)) {
+        if (args.handled)
+            break;
+        auto obj = static_pointer_cast<GameObject>(object);
+        if (obj->IsVisible() && obj->GetBoundingBox().Contains(clickLocation)) {
+            obj->OnClick(args);
+        }
+    }
+}
+
+void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
+    const Vector2 mouseLocation = args.Location();
+    for (const auto &object : m_quadtree.GetObjectsAtPosition(mouseLocation)) {
+        if (args.handled)
+            break;
+        auto obj = static_pointer_cast<GameObject>(object);
+        const std::string name = obj->name();
+        if (obj->IsVisible() && obj->GetBoundingBox().Contains(mouseLocation)) {
+            if (m_mouseOverSet.insert(name).second) {
+                obj->OnMouseEnter(args);
+            } else {
+                obj->OnMouseMove(args);
+            }
+        } else if (m_mouseOverSet.erase(name) > 0) {
+            obj->OnMouseLeave(args);
+        }
     }
 }
 

@@ -1,6 +1,8 @@
-#include "UI/DisplayLayout.hpp"
+#include <vector>
+
 #include "DisplayLayout.hpp"
 #include "Renderer.hpp"
+#include "UI/DisplayLayout.hpp"
 
 using namespace admirals;
 using namespace admirals::UI;
@@ -52,16 +54,33 @@ void DisplayLayout::RebuildQuadTree(const Vector2 &windowSize) {
 void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
     const Vector2 clickLocation = args.Location();
     for (const auto &element : m_quadtree.GetObjectsAtPosition(clickLocation)) {
+        if (args.handled)
+            break;
         auto el = static_pointer_cast<Element>(element);
-        if (el->GetBoundingBox().Contains(clickLocation)) {
+        if (el->IsVisible() && el->GetBoundingBox().Contains(clickLocation)) {
             el->OnClick(args);
         }
     }
 }
 
-void DisplayLayout::OnMouseEnter(events::EventArgs &args) {}
-void DisplayLayout::OnMouseLeave(events::EventArgs &args) {}
-void DisplayLayout::OnMouseMove(events::EventArgs &args) {}
+void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
+    const Vector2 mouseLocation = args.Location();
+    for (const auto &element : m_quadtree.GetObjectsAtPosition(mouseLocation)) {
+        if (args.handled)
+            break;
+        auto el = static_pointer_cast<Element>(element);
+        const std::string name = el->name();
+        if (el->IsVisible() && el->GetBoundingBox().Contains(mouseLocation)) {
+            if (m_mouseOverSet.insert(name).second) {
+                el->OnMouseEnter(args);
+            } else {
+                el->OnMouseMove(args);
+            }
+        } else if (m_mouseOverSet.erase(name) > 0) {
+            el->OnMouseLeave(args);
+        }
+    }
+}
 
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     this->m_elements.Insert(std::move(element));
