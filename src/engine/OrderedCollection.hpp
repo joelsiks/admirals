@@ -22,7 +22,7 @@ private:
     /// @brief Compares values of the multiset to order the values by their
     //         respective `IOrdered::order` value.
     struct Comparator {
-        Comparator(const OrderedCollection &c) : m_collection(c) {}
+        Comparator(const OrderedCollection &ctx) : m_collection(ctx) {}
 
         bool operator()(const std::string &l, const std::string &r) const {
             const std::shared_ptr<IOrdered> a = m_collection.m_objects.at(l);

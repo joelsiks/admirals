@@ -11,7 +11,7 @@ public:
 
     void SetText(const std::string &text);
 
-    void Render(const EngineContext &c) const override;
+    void Render(const EngineContext &ctx) const override;
 
     virtual void OnClick(events::MouseClickEventArgs &args) override;
 

@@ -7,9 +7,9 @@ void Scene::AddObject(std::shared_ptr<GameObject> object) {
     this->m_objects.Insert(std::move(object));
 }
 
-void Scene::Render(const EngineContext &c) const {
+void Scene::Render(const EngineContext &ctx) const {
     for (const auto &object : this->m_objects) {
-        object->Render(c);
+        object->Render(ctx);
     }
 }
 
@@ -53,16 +53,16 @@ std::vector<std::string> Scene::GetSceneObjectNames() {
     return vec;
 }
 
-void Scene::OnStart(const EngineContext &c) {
+void Scene::OnStart(const EngineContext &ctx) {
     m_isInitialized = true;
 
     for (const auto &object : this->m_objects) {
-        object->OnStart(c);
+        object->OnStart(ctx);
     }
 }
 
-void Scene::OnUpdate(const EngineContext &c) {
+void Scene::OnUpdate(const EngineContext &ctx) {
     for (const auto &object : this->m_objects) {
-        object->OnUpdate(c);
+        object->OnUpdate(ctx);
     }
 }

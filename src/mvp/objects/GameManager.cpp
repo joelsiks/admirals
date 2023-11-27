@@ -12,9 +12,9 @@ GameManager::GameManager(const std::string &name)
 
 GameManager::~GameManager() {}
 
-void GameManager::OnStart(const EngineContext &c) { srand(time(NULL)); }
+void GameManager::OnStart(const EngineContext &ctx) { srand(time(NULL)); }
 
-void GameManager::OnUpdate(const EngineContext &c) {
+void GameManager::OnUpdate(const EngineContext &ctx) {
     if (!m_gameStarted) {
         return;
     }

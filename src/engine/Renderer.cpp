@@ -40,10 +40,10 @@ Renderer::~Renderer() {
     SDL_DestroyWindow(this->m_window);
 }
 
-int Renderer::Init(const EngineContext &c) {
+int Renderer::Init(const EngineContext &ctx) {
     const VK2DRendererConfig config = {
         VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE, VK2D_FILTER_TYPE_NEAREST};
-    VK2DStartupOptions options = {c.debug, c.debug, c.debug, "error.txt",
+    VK2DStartupOptions options = {ctx.debug, ctx.debug, ctx.debug, "error.txt",
                                   false};
 
     const int code = vk2dRendererInit(this->m_window, config, &options);
@@ -52,8 +52,8 @@ int Renderer::Init(const EngineContext &c) {
     }
 
     const VK2DCameraSpec camera = {
-        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, c.windowSize.x(),
-        c.windowSize.y(),         1, 0};
+        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, ctx.windowSize.x(),
+        ctx.windowSize.y(),         1, 0};
 
     vk2dRendererSetCamera(camera);
     return code;

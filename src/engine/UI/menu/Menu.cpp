@@ -21,12 +21,12 @@ void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
     this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
 }
 
-void Menu::Render(const EngineContext &c) const {
+void Menu::Render(const EngineContext &ctx) const {
 
     float centerPositionOffset = m_topPadding;
 
     // Draw background.
-    renderer::Renderer::DrawRectangle(Vector2(0, 0), c.windowSize, m_bgColor);
+    renderer::Renderer::DrawRectangle(Vector2(0, 0), ctx.windowSize, m_bgColor);
 
     for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
         auto option = std::dynamic_pointer_cast<MenuOption>(*it);
@@ -36,16 +36,16 @@ void Menu::Render(const EngineContext &c) const {
 
         // Calculate the position with respect to the matching positionOffset.
         Vector2 position = DisplayLayout::GetPositionFromOrientation(
-            orientation, displaySize, c);
+            orientation, displaySize, ctx);
         position[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.
         option->SetDisplaySize(renderer::Renderer::TextFontSize(
-            option->GetOptionText(), c.fontWidth, c.fontHeight));
+            option->GetOptionText(), ctx.fontWidth, ctx.fontHeight));
         option->SetTextColor(m_fgColor);
 
         option->SetDisplayPosition(position);
-        option->Render(c);
+        option->Render(ctx);
 
         // If we're rendering the menu title, add a line below it.
         if (option->name() == MENU_TITLE_NAME) {
@@ -58,7 +58,7 @@ void Menu::Render(const EngineContext &c) const {
         }
 
         // If debugging, render an outline around the UI Element.
-        if (c.debug) {
+        if (ctx.debug) {
             renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }
@@ -66,7 +66,7 @@ void Menu::Render(const EngineContext &c) const {
         centerPositionOffset += displaySize[1];
     }
 
-    if (c.debug) {
+    if (ctx.debug) {
         m_quadtree.DrawTree();
     }
 }

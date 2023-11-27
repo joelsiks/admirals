@@ -19,7 +19,7 @@ public:
 
     MenuOption(const std::string &name, float order, const std::string &text);
 
-    virtual void Render(const EngineContext &c) const override;
+    virtual void Render(const EngineContext &ctx) const override;
 
     void OnClick(events::MouseClickEventArgs &args) override;
 

@@ -8,12 +8,12 @@ MenuOption::MenuOption(const std::string &name, float order,
                        const std::string &text)
     : Element(name, order, text, Vector2(0, 0)) {}
 
-void MenuOption::Render(const EngineContext &c) const {
+void MenuOption::Render(const EngineContext &ctx) const {
     if (m_clickedAndShouldDrawBackground) {
         renderer::Renderer::DrawRectangle(m_boundingBox, Color::GREY);
     }
 
-    renderer::Renderer::DrawText(*c.fontTexture, m_boundingBox.Position(),
+    renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
                                  m_textColor, GetOptionText());
 }
 

@@ -12,7 +12,7 @@ namespace admirals::UI {
 
 class DisplayLayout : public InteractiveDrawable {
 public:
-    void Render(const EngineContext &c) const override;
+    void Render(const EngineContext &ctx) const override;
 
     virtual void OnClick(events::MouseClickEventArgs &args) override;
 
@@ -22,7 +22,7 @@ public:
 
     static Vector2 GetPositionFromOrientation(DisplayOrientation orientation,
                                               const Vector2 &displaySize,
-                                              const EngineContext &c);
+                                              const EngineContext &ctx);
 
 protected:
     OrderedCollection<Element> m_elements;
