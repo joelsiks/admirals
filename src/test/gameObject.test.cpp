@@ -58,7 +58,7 @@ public:
 
     void OnUpdate(const EngineContext &c) override {
         Vector2 position = this->GetPosition();
-        float x = position.x() + CELL_SPEED * c.deltaTime;
+        float x = position.x() + CELL_SPEED * static_cast<float>(c.deltaTime);
         while (x > WINDOW_WIDTH) {
             x = -CELL_SIZE + (x - WINDOW_WIDTH);
         }
@@ -67,17 +67,13 @@ public:
     }
 
     void Render(const EngineContext &c) const override {
-        Vector2 pos = this->GetPosition();
+        const Vector2 pos = this->GetPosition();
         // Calculate scaling
-        const float x = static_cast<float>(c.windowWidth) /
-                        static_cast<float>(WINDOW_WIDTH);
-        const float y = static_cast<float>(c.windowHeight) /
-                        static_cast<float>(WINDOW_HEIGHT);
-
-        const Vector2 size(CELL_SIZE * x, CELL_SIZE * y);
-        pos[0] *= x;
-        pos[1] *= y;
-        renderer::Renderer::DrawRectangle(pos, size, this->m_color);
+        const Vector2 scale =
+            c.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
+                                   static_cast<float>(WINDOW_HEIGHT));
+        const Vector2 size = scale * CELL_SIZE;
+        renderer::Renderer::DrawRectangle(pos * scale, size, this->m_color);
     }
 };
 
@@ -88,7 +84,7 @@ public:
         : scene::GameObject(name, -1, Vector2(0)),
           m_textElement(std::move(textElement)) {}
 
-    void OnStart(const EngineContext &c) override {
+    void OnStart(const EngineContext &) override {
         m_time = std::chrono::high_resolution_clock::now();
     }
 
@@ -103,11 +99,11 @@ public:
     void Render(const EngineContext &c) const override {}
 
 private:
-    std::chrono::_V2::system_clock::time_point m_time;
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_time;
     std::shared_ptr<UI::TextElement> m_textElement;
 };
 
-int main(int argc, char *argv[]) {
+int main(int, char *[]) {
     Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
         CellObject("1", Vector3(0, 0, 2), Color::BLUE)));

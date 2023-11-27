@@ -26,11 +26,7 @@ void Menu::Render(const EngineContext &c) const {
     float centerPositionOffset = m_topPadding;
 
     // Draw background.
-    renderer::Renderer::DrawRectangle(
-        Vector2(0, 0),
-        Vector2(static_cast<float>(c.windowWidth),
-                static_cast<float>(c.windowHeight)),
-        m_bgColor);
+    renderer::Renderer::DrawRectangle(Vector2(0, 0), c.windowSize, m_bgColor);
 
     for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
         auto option = std::dynamic_pointer_cast<MenuOption>(*it);

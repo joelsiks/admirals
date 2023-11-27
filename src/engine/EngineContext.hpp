@@ -1,11 +1,10 @@
 #pragma once
-#include <chrono>
+#include "DataObjects.hpp"
 
 namespace admirals {
 
 struct EngineContext {
-    int windowWidth;
-    int windowHeight;
+    Vector2 windowSize;
 
     // Indicates whether to draw outlines of elements for debugging purposes.
     bool renderDebugOutlines;

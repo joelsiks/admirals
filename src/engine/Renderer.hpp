@@ -17,15 +17,14 @@ typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
 
 class Renderer {
 public:
-    Renderer(const std::string &name, int width, int height,
-             bool debugRendering);
+    Renderer(const std::string &name, int width, int height);
     ~Renderer();
 
-    int Init(int windowWidth, int windowHeight, bool debug);
-    void Render(const EngineContext &context,
-                const DrawableCollection &drawables);
+    int Init(const EngineContext &context);
+    static void Render(const EngineContext &context,
+                       const DrawableCollection &drawables);
 
-    void GetWindowSize(int *width, int *height);
+    Vector2 GetWindowSize() const;
 
     static void DrawLine(const Vector2 &p1, const Vector2 &p2,
                          const Color &color);

@@ -13,17 +13,15 @@ void Grid::OnStart(const EngineContext &c) {}
 void Grid::OnUpdate(const EngineContext &c) {}
 
 void Grid::Render(const EngineContext &c) const {
-    Vector2 offset = Vector2(c.windowWidth - GameData::GridSize,
-                             c.windowHeight - GameData::GridSize) /
-                     2;
+    const Vector2 offset = (c.windowSize - Vector2(GameData::GridSize)) / 2.f;
     for (int i = 0; i <= GameData::GridCells; i++) {
-        float x = i * GameData::CellSize;
+        const float x = static_cast<float>(i) * GameData::CellSize;
         renderer::Renderer::DrawLine(Vector2(x, 0) + offset,
                                      Vector2(x, GameData::GridSize) + offset,
                                      m_color);
     }
     for (int i = 0; i <= GameData::GridCells; i++) {
-        float y = i * GameData::CellSize;
+        const float y = static_cast<float>(i) * GameData::CellSize;
         renderer::Renderer::DrawLine(Vector2(0, y) + offset,
                                      Vector2(GameData::GridSize, y) + offset,
                                      m_color);
