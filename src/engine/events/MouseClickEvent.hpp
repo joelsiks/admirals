@@ -1,30 +1,18 @@
 #pragma once
 
-#include <cstdint>
-
-#include <SDL_events.h>
-#include <SDL_mouse.h>
-
 #include "DataObjects.hpp"
 #include "events/EventArgs.hpp"
+#include "events/MouseEvents.hpp"
 
 namespace admirals::events {
-
-enum MouseButton : uint8_t {
-    Left = SDL_BUTTON_LEFT,
-    Middle = SDL_BUTTON_MIDDLE,
-    Right = SDL_BUTTON_RIGHT,
-    X1 = SDL_BUTTON_X1,
-    X2 = SDL_BUTTON_X2,
-};
 
 class MouseClickEventArgs : public EventArgs {
 public:
     MouseClickEventArgs(const SDL_MouseButtonEvent &e)
         : button(static_cast<MouseButton>(e.button)), clicks(e.clicks),
           pressed(e.state == SDL_PRESSED), x(e.x), y(e.y) {
-        SDL_GetWindowSize(SDL_GetWindowFromID(e.windowID), &windowWidth,
-                          &windowHeight);
+        SDL_GetWindowSize(SDL_GetWindowFromID(e.windowID), &m_windowWidth,
+                          &m_windowHeight);
     }
 
     inline Vector2 Location() const {
@@ -32,8 +20,8 @@ public:
     }
 
     inline Vector2 WindowSize() const {
-        return Vector2(static_cast<float>(windowWidth),
-                       static_cast<float>(windowHeight));
+        return Vector2(static_cast<float>(m_windowWidth),
+                       static_cast<float>(m_windowHeight));
     }
 
     const MouseButton button; // what button is clicked
@@ -41,8 +29,10 @@ public:
     const bool pressed;       // true = UP, false = DOWN
     const int32_t x;
     const int32_t y;
-    int windowWidth;
-    int windowHeight;
+
+private:
+    int m_windowWidth;
+    int m_windowHeight;
 };
 
 } // namespace admirals::events

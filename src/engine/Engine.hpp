@@ -11,6 +11,7 @@
 #include "events/EventSystem.hpp"
 #include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
+#include "events/MouseMotionEvent.hpp"
 
 namespace admirals {
 
@@ -18,6 +19,7 @@ class Engine {
 public:
     events::EventSystem<events::MouseClickEventArgs> onMouseClick;
     events::EventSystem<events::KeyPressEventArgs> onKeyPress;
+    events::EventSystem<events::MouseMotionEventArgs> onMouseMove;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
