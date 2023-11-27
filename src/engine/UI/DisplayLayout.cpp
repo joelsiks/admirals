@@ -82,6 +82,7 @@ void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
         }
     }
 
+    // Handle elements that are no longer moused over
     for (auto it = m_mouseOverSet.begin(); it != m_mouseOverSet.end();) {
         if (args.handled)
             break;
