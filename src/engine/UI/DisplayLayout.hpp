@@ -5,6 +5,7 @@
 
 #include "InteractiveDrawable.hpp"
 #include "OrderedCollection.hpp"
+#include "QuadTree.hpp"
 #include "UI/Element.hpp"
 
 namespace admirals::UI {
@@ -17,12 +18,15 @@ public:
 
     void AddElement(std::shared_ptr<Element> element);
 
+    void RebuildQuadTree(const Vector2 &windowSize);
+
     static Vector2 GetPositionFromOrientation(DisplayOrientation orientation,
                                               const Vector2 &displaySize,
-                                              const EngineContext &r);
+                                              const EngineContext &c);
 
 protected:
     OrderedCollection<Element> m_elements;
+    QuadTree m_quadtree;
 };
 
 } // namespace admirals::UI

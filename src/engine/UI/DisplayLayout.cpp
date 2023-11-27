@@ -1,5 +1,4 @@
 #include "UI/DisplayLayout.hpp"
-#include "QuadTree.hpp"
 #include "Renderer.hpp"
 
 using namespace admirals;
@@ -36,19 +35,18 @@ void DisplayLayout::Render(const EngineContext &c) const {
         }
     }
 }
-
-void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
-    // Create and build a QuadTree to find out what elements to handle click
-    // events on.
-    QuadTree tree = QuadTree();
+void DisplayLayout::RebuildQuadTree(const Vector2 &windowSize) {
+    // build a QuadTree to find out what elements to handle click events on.
     std::vector<std::shared_ptr<IDisplayable>> elements;
     for (const auto &element : m_elements) {
         elements.push_back(dynamic_pointer_cast<IDisplayable>(element));
     }
-    tree.BuildTree(args.WindowSize(), elements);
+    m_quadtree.BuildTree(windowSize, elements);
+}
 
+void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
     const Vector2 clickLocation = args.Location();
-    for (const auto &element : tree.GetObjectsAtPosition(clickLocation)) {
+    for (const auto &element : m_quadtree.GetObjectsAtPosition(clickLocation)) {
         auto el = static_pointer_cast<Element>(element);
         if (el->GetBoundingBox().Contains(clickLocation)) {
             el->OnClick(args);

@@ -35,7 +35,7 @@ static Quadrant GetQuadrantFromPosition(const Vector2 &position,
     return Quadrant::BottomRight;
 }
 
-static const Vector2 QuadrantOffsets[4] = {
+const Vector2 QuadTree::QuadrantOffsets[] = {
     Vector2(0, 0), // TopLeft
     Vector2(1, 0), // TopRight
     Vector2(0, 1), // BottomLeft
@@ -79,23 +79,7 @@ void QuadTree::BuildTree(
 
     // Destroy the previous tree, if constructed.
     DestroyTree();
-
-    // Initialize values.
-    m_rootNode = new Node();
-    m_size = windowSize;
-    const Rect windowBounds = Rect(Vector2(0), m_size);
-
-    // Filter out objects that are not inside the window.
-    std::vector<std::shared_ptr<IDisplayable>> filteredObjects;
-    std::copy_if(objects.begin(), objects.end(),
-                 std::back_inserter(filteredObjects),
-                 [&windowBounds](const std::shared_ptr<IDisplayable> &object) {
-                     return windowBounds.Overlaps(object->GetBoundingBox());
-                 });
-
-    // Construct initial build data object.
-    const BuildData data = {filteredObjects, m_rootNode, windowBounds};
-    m_buildQueue.push(data);
+    InitializeTree(windowSize, objects);
 
     while (!m_buildQueue.empty()) {
         const BuildData data = m_buildQueue.front();
@@ -168,6 +152,27 @@ void QuadTree::BuildTree(
             }
         }
     }
+}
+
+void QuadTree::InitializeTree(
+    const Vector2 &windowSize,
+    const std::vector<std::shared_ptr<IDisplayable>> &objects) {
+    // Initialize values.
+    m_rootNode = new Node();
+    m_size = windowSize;
+    const Rect windowBounds = Rect(Vector2(0), m_size);
+
+    // Filter out objects that are not inside the window.
+    std::vector<std::shared_ptr<IDisplayable>> filteredObjects;
+    std::copy_if(objects.begin(), objects.end(),
+                 std::back_inserter(filteredObjects),
+                 [&windowBounds](const std::shared_ptr<IDisplayable> &object) {
+                     return windowBounds.Overlaps(object->GetBoundingBox());
+                 });
+
+    // Construct initial build data object.
+    const BuildData data = {filteredObjects, m_rootNode, windowBounds};
+    m_buildQueue.push(data);
 }
 
 void QuadTree::DestroyTree() {

@@ -91,6 +91,7 @@ void Engine::StartGameLoop() {
         }
 
         m_context.windowSize = m_renderer->GetWindowSize();
+        m_displayLayout->RebuildQuadTree(m_context.windowSize);
         m_renderer->Render(GetContext(), layers);
     }
 }

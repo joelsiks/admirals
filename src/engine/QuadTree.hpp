@@ -13,11 +13,11 @@ public:
     QuadTree();
     ~QuadTree();
 
-    /// @brief This builds the QuadTree given a window size and a list of
+    /// @brief This builds the QuadTree given a window size and a vector of
     /// objects to place inside the tree.
     /// @param windowSize The size of the (SDL) window where objects can be
     /// placed.
-    /// @param objects A vector
+    /// @param objects A vector containing all objects to place inside the tree.
     void BuildTree(const Vector2 &windowSize,
                    const std::vector<std::shared_ptr<IDisplayable>> &objects);
 
@@ -36,6 +36,7 @@ public:
 private:
     static constexpr int NUM_QUADRANTS = 4;
     static constexpr float MINIMUM_QUADRANT_SIZE = 1.f;
+    static const Vector2 QuadrantOffsets[NUM_QUADRANTS];
 
     // If data is not a nullptr, the Node is a leaf.
     // If data is a nullptr, the quadrants are populated instead.
@@ -51,6 +52,10 @@ private:
         Rect bounds;
     };
     std::queue<BuildData> m_buildQueue;
+
+    void
+    InitializeTree(const Vector2 &windowSize,
+                   const std::vector<std::shared_ptr<IDisplayable>> &objects);
 
     void DestroyTree();
 
