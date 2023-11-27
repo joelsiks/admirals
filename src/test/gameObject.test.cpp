@@ -31,13 +31,13 @@ public:
 
     void OnStart(const EngineContext &c) override {}
 
-    void OnClick(void *, events::MouseCLickEventArgs e) {
+    void OnClick(void *, events::MouseClickEventArgs e) {
         if (e.button != events::MouseButton::Left || !e.pressed) {
             return;
         }
 
         const Vector2 pos = GetPosition();
-        const Vector2 loc = e.location();
+        const Vector2 loc = e.Location();
         const float x = static_cast<float>(e.windowWidth) /
                         static_cast<float>(WINDOW_WIDTH);
         const float y = static_cast<float>(e.windowHeight) /
@@ -119,7 +119,7 @@ int main(int, char *[]) {
                                                 Color::GREEN);
     auto fpsText = engine.MakeUIElement<UI::TextElement>(
         "Fps TextElement", 0, "", Vector2(500, 40), Color::BLACK);
-    fpsText->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
+    fpsText->SetDisplayOrientation(UI::DisplayOrientation::LowerLeft);
     engine.MakeGameObject<FpsTextElementController>("controller", fpsText);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c1);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c2);

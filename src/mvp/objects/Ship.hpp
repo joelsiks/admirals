@@ -10,8 +10,8 @@ public:
 
     Ship(const ShipData &data, const Vector2 &size, const Texture &source);
 
-    void OnUpdate(const EngineContext &c) override;
-    void OnStart(const EngineContext &c) override;
+    void OnUpdate(const EngineContext &ctx) override;
+    void OnStart(const EngineContext &ctx) override;
 
     void SetHealth(uint16_t health) { m_data.health = health; }
     uint16_t GetHealth() const { return m_data.health; }

@@ -7,14 +7,14 @@ void Scene::AddObject(std::shared_ptr<GameObject> object) {
     this->m_objects.Insert(std::move(object));
 }
 
-void Scene::Render(const EngineContext &c) const {
+void Scene::Render(const EngineContext &ctx) const {
     for (const auto &object : this->m_objects) {
-        object->Render(c);
+        object->Render(ctx);
     }
 }
 
 /**
- * recieves a shared pointer to a gameObject and removes one from the multiset
+ * receives a shared pointer to a gameObject and removes one from the multiset
  */
 void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
     if (ExistObject(object)) {
@@ -24,7 +24,7 @@ void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
 void Scene::RemoveObject(const std::string &key) { this->m_objects.Erase(key); }
 
 /**
- * recieves a shared pointer to a gameObject and checks if it exist in the
+ * receives a shared pointer to a gameObject and checks if it exist in the
  * multiset
  */
 bool Scene::ExistObject(std::shared_ptr<GameObject> object) {
@@ -53,16 +53,16 @@ std::vector<std::string> Scene::GetSceneObjectNames() {
     return vec;
 }
 
-void Scene::OnStart(const EngineContext &c) {
+void Scene::OnStart(const EngineContext &ctx) {
     m_isInitialized = true;
 
     for (const auto &object : this->m_objects) {
-        object->OnStart(c);
+        object->OnStart(ctx);
     }
 }
 
-void Scene::OnUpdate(const EngineContext &c) {
+void Scene::OnUpdate(const EngineContext &ctx) {
     for (const auto &object : this->m_objects) {
-        object->OnUpdate(c);
+        object->OnUpdate(ctx);
     }
 }

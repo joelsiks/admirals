@@ -16,7 +16,7 @@ namespace admirals {
 
 class Engine {
 public:
-    events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
+    events::EventSystem<events::MouseClickEventArgs> onMouseClick;
     events::EventSystem<events::KeyPressEventArgs> onKeyPress;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
@@ -61,9 +61,7 @@ public:
         }
     }
 
-    inline void ToggleDebugRendering() {
-        m_context.renderDebugOutlines = !m_context.renderDebugOutlines;
-    }
+    inline void ToggleDebugRendering() { m_context.debug = !m_context.debug; }
 
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {

@@ -1,18 +1,18 @@
 #pragma once
 
 #include "IDrawable.hpp"
-#include "IEventHandler.hpp"
+#include "events/MouseClickEvent.hpp"
 
 namespace admirals {
 
-class InteractiveDrawable : public renderer::IDrawable, public IEventHandler {
+class InteractiveDrawable : public renderer::IDrawable {
 public:
     InteractiveDrawable(){};
     ~InteractiveDrawable(){};
 
-    virtual void Render(const EngineContext &c) const = 0;
+    virtual void Render(const EngineContext &ctx) const = 0;
 
-    virtual void HandleEvent(SDL_Event &e) = 0;
+    virtual void OnClick(events::MouseClickEventArgs &args) = 0;
 };
 
 } // namespace admirals

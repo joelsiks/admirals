@@ -6,29 +6,24 @@
 #include "DataObjects.hpp"
 #include "UI/Element.hpp"
 #include "events/EventSystem.hpp"
+#include "events/MouseClickEvent.hpp"
 
 namespace admirals::UI::menu {
 
 static const char *MENU_TITLE_NAME = "__OPTION_TITLE_NAME";
 static const float MENU_TITLE_LINE_OFFSET = 10;
 
-class OptionClickEventArgs : public events::EventArgs {
-public:
-    OptionClickEventArgs(const SDL_Event &data) : m_data(data) {}
-    const SDL_Event m_data;
-};
-
 class MenuOption : public Element {
 public:
-    events::EventSystem<OptionClickEventArgs> onClick;
+    events::EventSystem<events::MouseClickEventArgs> onClick;
 
     MenuOption(const std::string &name, float order, const std::string &text);
 
-    virtual void Render(const Texture &font) override;
+    virtual void Render(const EngineContext &ctx) const override;
 
-    bool HandleEvent(const SDL_Event &event) override;
+    void OnClick(events::MouseClickEventArgs &args) override;
 
-    virtual std::string GetOptionText() = 0;
+    virtual std::string GetOptionText() const = 0;
     inline void SetTextColor(const Color &color) { m_textColor = color; }
 
     inline void SetDrawBackground(bool value) {
@@ -54,7 +49,9 @@ class TextOption : public MenuOption {
 public:
     TextOption(const std::string &name, float order, const std::string &text);
 
-    std::string GetOptionText() override;
+    std::string GetOptionText() const override;
+
+    inline void SetText(const std::string &text) { m_text = text; }
 };
 
 // Click Option, click and event occurs (Close, Exit)
@@ -62,7 +59,7 @@ class ClickOption : public MenuOption {
 public:
     ClickOption(const std::string &name, float order, const std::string &text);
 
-    std::string GetOptionText() override;
+    std::string GetOptionText() const override;
 };
 
 // Toggle Option, click and toggle between two states (ON/OFF)
@@ -71,7 +68,7 @@ public:
     ToggleOption(const std::string &name, float order, const std::string &text,
                  bool startToggled);
 
-    std::string GetOptionText() override;
+    std::string GetOptionText() const override;
 
     void Toggle();
 
@@ -88,7 +85,7 @@ public:
                 const std::vector<std::string> &cycleOptions,
                 size_t startIndex);
 
-    std::string GetOptionText() override;
+    std::string GetOptionText() const override;
 
     void Cycle();
     size_t CurrentIndex() const;

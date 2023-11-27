@@ -89,7 +89,7 @@ void CreateUI(const Texture &atlas,
                 std::to_string(ship.Cost), Vector2(GameData::CellSize),
                 Color::WHITE, Color::BLACK, atlas,
                 Vector2(Ship::ShipTypeToTexOffset(shipType)));
-        buyShipButton->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
+        buyShipButton->SetDisplayOrientation(UI::DisplayOrientation::LowerLeft);
         buyShipButton->onClick += [gameManager, shipType](void *, auto) {
             gameManager->BuyShip(shipType);
         };
@@ -104,21 +104,20 @@ void CreateStartMenu() {
         Color::FromRGBA(20, 20, 20, 140), 100);
 
     UI::menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
-    exitOption.onClick.Subscribe(
-        [](void *, UI::menu::OptionClickEventArgs &args) {
-            if (args.m_data.type != SDL_MOUSEBUTTONUP)
-                return;
+    exitOption.onClick.Subscribe([](void *, events::MouseClickEventArgs &args) {
+        if (!args.pressed)
+            return;
 
-            GameData::engine->StopGameLoop();
-        });
+        GameData::engine->StopGameLoop();
+    });
     GameData::startMenu->AddMenuOption(
         UI::menu::MenuOption::CreateFromDerived(exitOption));
 
     UI::menu::ClickOption connectOption("connectOption", 1.0,
                                         "Connect to server");
     connectOption.onClick.Subscribe(
-        [](void *, UI::menu::OptionClickEventArgs &args) {
-            if (args.m_data.type == SDL_MOUSEBUTTONUP) {
+        [](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed) {
                 GameData::engine->SetAndGetDisplayLayout(g_dlStore);
                 GameData::engine->SetAndGetScene(g_sStore);
             }

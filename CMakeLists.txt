@@ -36,13 +36,14 @@ set(SOURCES
     src/engine/UI/TextElement.cpp
     src/engine/UI/menu/Menu.cpp
     src/engine/UI/menu/MenuOption.cpp
+    src/engine/net/Connection.cpp
+    src/engine/net/Client.cpp
+    src/engine/net/Server.cpp
     src/engine/GameObject.cpp
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
     src/engine/Engine.cpp
-    src/engine/net/Connection.cpp
-    src/engine/net/Client.cpp
-    src/engine/net/Server.cpp
+    src/engine/QuadTree.cpp
 )
 set(MVP_SOURCES 
     src/mvp/shared.cpp
@@ -99,18 +100,14 @@ target_include_directories(engine PUBLIC ${INCLUDE_DIRS})
 # Create mvp executable
 add_executable(mvp src/mvp/main.cpp ${MVP_SOURCES})
 target_link_libraries(mvp engine)
-target_include_directories(mvp PRIVATE 
-    "src/engine/"
-    "src/engine/net"
+target_include_directories(mvp PRIVATE
     "src/mvp/"
 )
 
 # Create mvp server
 add_executable(mvp_server src/mvp/mvpserver.cpp)
 target_link_libraries(mvp_server engine)
-target_include_directories(mvp_server PRIVATE 
-    "src/engine/"
-    "src/engine/net"
+target_include_directories(mvp_server PRIVATE
     "src/mvp/"
 )
 

@@ -17,15 +17,16 @@ Sprite::Sprite(const std::string &name, float order, const Vector2 &position,
     : scene::GameObject(name, order, position), m_size(size), m_source(source),
       m_texSize(texSize), m_texOffset(texOffset) {}
 
-void Sprite::OnUpdate(const EngineContext &c) {}
+void Sprite::OnUpdate(const EngineContext &ctx) {}
 
-void Sprite::OnStart(const EngineContext &c) {}
+void Sprite::OnStart(const EngineContext &ctx) {}
 
-void Sprite::Render(const EngineContext &c) const {
+void Sprite::Render(const EngineContext &ctx) const {
     const Vector2 org = this->CalcOrigin();
     const Vector2 offset =
-        (c.windowSize - Vector2(GameData::GridSize,
-                                GameData::GridSize + 2 * GameData::CellSize)) /
+        (ctx.windowSize -
+         Vector2(GameData::GridSize,
+                 GameData::GridSize + 2 * GameData::CellSize)) /
         2.f;
     renderer::Renderer::DrawSprite(m_source, org + offset, m_texOffset,
                                    m_texSize, m_size / m_texSize);

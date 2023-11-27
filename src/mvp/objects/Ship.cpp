@@ -9,7 +9,7 @@ Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
              size, source, Ship::ShipTypeToTexOffset(data.type)),
       m_data(data) {}
 
-void Ship::OnUpdate(const EngineContext &c) {
+void Ship::OnUpdate(const EngineContext &ctx) {
     const Vector2 pos = GetPosition();
     Vector2 target = pos;
     if (m_data.owner % 2 == 1) {
@@ -35,7 +35,7 @@ void Ship::OnUpdate(const EngineContext &c) {
     }
 }
 
-void Ship::OnStart(const EngineContext &c) {}
+void Ship::OnStart(const EngineContext &ctx) {}
 
 Vector2 Ship::CalcOrigin() const {
     return GetPosition() * GameData::CellSize - Vector2(0, GameData::CellSize);
