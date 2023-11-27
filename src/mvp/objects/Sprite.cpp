@@ -24,8 +24,9 @@ void Sprite::OnStart(const EngineContext &ctx) {}
 void Sprite::Render(const EngineContext &ctx) const {
     const Vector2 org = this->CalcOrigin();
     const Vector2 offset =
-        (ctx.windowSize - Vector2(GameData::GridSize,
-                                GameData::GridSize + 2 * GameData::CellSize)) /
+        (ctx.windowSize -
+         Vector2(GameData::GridSize,
+                 GameData::GridSize + 2 * GameData::CellSize)) /
         2.f;
     renderer::Renderer::DrawSprite(m_source, org + offset, m_texOffset,
                                    m_texSize, m_size / m_texSize);

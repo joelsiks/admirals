@@ -53,7 +53,7 @@ int Renderer::Init(const EngineContext &ctx) {
 
     const VK2DCameraSpec camera = {
         VK2D_CAMERA_TYPE_DEFAULT, 0, 0, ctx.windowSize.x(),
-        ctx.windowSize.y(),         1, 0};
+        ctx.windowSize.y(),       1, 0};
 
     vk2dRendererSetCamera(camera);
     return code;
