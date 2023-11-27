@@ -9,8 +9,8 @@ Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
     : m_menuTitle(menuTitle), m_fgColor(foregroundColor),
       m_bgColor(backgroundColor), m_topPadding(topPadding) {
 
-    const TextOption titleOption(MENU_TITLE_NAME, Menu::commonDepthOrder,
-                                 menuTitle);
+    const TextOption titleOption =
+        TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle);
 
     this->AddMenuOption(MenuOption::CreateFromDerived(titleOption));
 }
@@ -21,16 +21,12 @@ void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
     this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
 }
 
-void Menu::Render(const renderer::RendererContext &r) const {
+void Menu::Render(const EngineContext &c) const {
 
     float centerPositionOffset = m_topPadding;
 
     // Draw background.
-    renderer::Renderer::DrawRectangle(
-        Vector2(0, 0),
-        Vector2(static_cast<float>(r.windowWidth),
-                static_cast<float>(r.windowHeight)),
-        m_bgColor);
+    renderer::Renderer::DrawRectangle(Vector2(0, 0), c.windowSize, m_bgColor);
 
     for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
         auto option = std::dynamic_pointer_cast<MenuOption>(*it);
@@ -40,16 +36,16 @@ void Menu::Render(const renderer::RendererContext &r) const {
 
         // Calculate the position with respect to the matching positionOffset.
         Vector2 position = DisplayLayout::GetPositionFromOrientation(
-            orientation, displaySize, r);
+            orientation, displaySize, c);
         position[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.
         option->SetDisplaySize(renderer::Renderer::TextFontSize(
-            option->GetOptionText(), r.fontWidth, r.fontHeight));
+            option->GetOptionText(), c.fontWidth, c.fontHeight));
         option->SetTextColor(m_fgColor);
 
         option->SetDisplayPosition(position);
-        option->Render(r);
+        option->Render(c);
 
         // If we're rendering the menu title, add a line below it.
         if (option->name() == MENU_TITLE_NAME) {
@@ -62,7 +58,7 @@ void Menu::Render(const renderer::RendererContext &r) const {
         }
 
         // If debugging, render an outline around the UI Element.
-        if (r.renderDebugOutlines) {
+        if (c.renderDebugOutlines) {
             renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }

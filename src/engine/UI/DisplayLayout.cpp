@@ -5,7 +5,7 @@
 using namespace admirals;
 using namespace admirals::UI;
 
-void DisplayLayout::Render(const renderer::RendererContext &r) const {
+void DisplayLayout::Render(const EngineContext &c) const {
     Vector4 positionOffsets = Vector4(0);
 
     for (const auto &element : m_elements) {
@@ -14,15 +14,15 @@ void DisplayLayout::Render(const renderer::RendererContext &r) const {
 
         // Calculate the position with respect to the matching positionOffset.
         Vector2 position =
-            GetPositionFromOrientation(orientation, displaySize, r);
+            GetPositionFromOrientation(orientation, displaySize, c);
         position[0] += positionOffsets[orientation];
 
         element->SetDisplayPosition(position);
 
-        element->Render(r);
+        element->Render(c);
 
         // If debugging, render an outline around the UI Element.
-        if (r.renderDebugOutlines) {
+        if (c.renderDebugOutlines) {
             renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }
@@ -63,26 +63,25 @@ void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
 Vector2
 DisplayLayout::GetPositionFromOrientation(DisplayOrientation orientation,
                                           const Vector2 &displaySize,
-                                          const renderer::RendererContext &r) {
+                                          const EngineContext &c) {
     Vector2 position(0, 0);
 
     // Handle center.
     if (orientation == DisplayOrientation::Center) {
-        position[0] =
-            (static_cast<float>(r.windowWidth) - displaySize[0]) / 2.0f;
+        position[0] = (c.windowSize.x() - displaySize[0]) / 2.0f;
         return position;
     }
 
     // Fix right offset.
     if (orientation == DisplayOrientation::UpperRight ||
         orientation == DisplayOrientation::LowerRight) {
-        position[0] = static_cast<float>(r.windowWidth) - displaySize[0];
+        position[0] = c.windowSize.x() - displaySize[0];
     }
 
     // Fix lower offset.
     if (orientation == DisplayOrientation::LowerLeft ||
         orientation == DisplayOrientation::LowerRight) {
-        position[1] = static_cast<float>(r.windowHeight) - displaySize[1];
+        position[1] = c.windowSize.y() - displaySize[1];
     }
 
     return position;

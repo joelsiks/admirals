@@ -9,9 +9,9 @@ Button::Button(const std::string &name, float order, const std::string &text,
     : Element(name, order, text, size), m_bgColor(bgColor), m_fgColor(fgColor) {
 }
 
-void Button::Render(const renderer::RendererContext &r) const {
+void Button::Render(const EngineContext &c) const {
     renderer::Renderer::DrawRectangle(m_boundingBox, m_bgColor);
-    renderer::Renderer::DrawText(*r.fontTexture, m_boundingBox.Position(),
+    renderer::Renderer::DrawText(*c.fontTexture, m_boundingBox.Position(),
                                  m_fgColor, m_text);
 }
 

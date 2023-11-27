@@ -10,7 +10,7 @@ public:
     InteractiveDrawable(){};
     ~InteractiveDrawable(){};
 
-    virtual void Render(const renderer::RendererContext &r) const = 0;
+    virtual void Render(const EngineContext &c) const = 0;
 
     virtual void OnClick(events::MouseClickEventArgs &args) = 0;
 };

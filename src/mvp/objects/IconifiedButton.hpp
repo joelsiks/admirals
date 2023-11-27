@@ -15,7 +15,7 @@ public:
         : UI::Button(name, order, text, size, bgColor, fgColor),
           m_source(source), m_texOffset(texOffset), m_texSize(texSize) {}
 
-    void Render(const renderer::RendererContext &r) const override {
+    void Render(const EngineContext &c) const override {
         renderer::Renderer::DrawRectangle(m_boundingBox, m_bgColor);
 
         renderer::Renderer::DrawRectangleOutline(m_boundingBox, 1, m_fgColor);
@@ -24,7 +24,7 @@ public:
                                        m_texOffset, m_texSize,
                                        m_boundingBox.Size() / m_texSize);
 
-        renderer::Renderer::DrawText(*r.fontTexture, m_boundingBox.Position(),
+        renderer::Renderer::DrawText(*c.fontTexture, m_boundingBox.Position(),
                                      m_fgColor, m_text);
     }
 

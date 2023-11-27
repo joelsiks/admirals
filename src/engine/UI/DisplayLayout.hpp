@@ -11,16 +11,15 @@ namespace admirals::UI {
 
 class DisplayLayout : public InteractiveDrawable {
 public:
-    void Render(const renderer::RendererContext &r) const override;
+    void Render(const EngineContext &c) const override;
 
     virtual void OnClick(events::MouseClickEventArgs &args) override;
 
     void AddElement(std::shared_ptr<Element> element);
 
-    static Vector2
-    GetPositionFromOrientation(DisplayOrientation orientation,
-                               const Vector2 &displaySize,
-                               const renderer::RendererContext &r);
+    static Vector2 GetPositionFromOrientation(DisplayOrientation orientation,
+                                              const Vector2 &displaySize,
+                                              const EngineContext &r);
 
 protected:
     OrderedCollection<Element> m_elements;

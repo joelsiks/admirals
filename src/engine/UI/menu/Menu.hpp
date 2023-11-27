@@ -15,7 +15,7 @@ public:
 
     void AddMenuOption(const std::shared_ptr<MenuOption> &menuOption);
 
-    void Render(const renderer::RendererContext &r) const override;
+    void Render(const EngineContext &c) const override;
 
     inline void SetTextColor(const Color &color) { m_fgColor = color; }
 

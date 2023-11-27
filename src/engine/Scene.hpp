@@ -17,12 +17,12 @@ public:
     void RemoveObject(const std::string &key);
     bool ExistObject(std::shared_ptr<GameObject> object);
     bool ExistObject(const std::string &key);
-    void Render(const renderer::RendererContext &r) const override;
+    void Render(const EngineContext &c) const override;
     int NumObjectsInScene();
 
     std::vector<std::string> GetSceneObjectNames();
-    void OnStart();
-    void OnUpdate();
+    void OnStart(const EngineContext &c);
+    void OnUpdate(const EngineContext &c);
 
     bool IsInitialized() const { return m_isInitialized; }
 

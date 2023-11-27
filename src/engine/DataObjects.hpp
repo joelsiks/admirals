@@ -69,7 +69,7 @@ public:
     }
 
     inline Vector2 operator-(const Vector2 &r) const {
-        return Vector2(m_0 + r.m_0, m_1 + r.m_1);
+        return Vector2(m_0 - r.m_0, m_1 - r.m_1);
     }
 
     inline Vector2 &operator-=(const Vector2 &r) {
@@ -190,7 +190,7 @@ public:
     }
 
     inline Vector3 operator-(const Vector3 &r) const {
-        return Vector3(m_0 + r.m_0, m_1 + r.m_1, m_2 + r.m_2);
+        return Vector3(m_0 - r.m_0, m_1 - r.m_1, m_2 - r.m_2);
     }
 
     inline Vector3 &operator-=(const Vector3 &r) {
@@ -322,7 +322,7 @@ public:
     }
 
     inline Vector4 operator-(const Vector4 &r) const {
-        return Vector4(m_0 + r.m_0, m_1 + r.m_1, m_2 + r.m_2, m_3 + r.m_3);
+        return Vector4(m_0 - r.m_0, m_1 - r.m_1, m_2 - r.m_2, m_3 - r.m_3);
     }
 
     inline Vector4 &operator-=(const Vector4 &r) {
@@ -508,6 +508,7 @@ public:
     // should be uint32
     float Width() const;
     float Height() const;
+    inline Vector2 Size() const { return Vector2(Width(), Height()); };
     VK2DTexture Data() const { return m_texture; }
 
     static Texture LoadFromPath(const std::string &path);

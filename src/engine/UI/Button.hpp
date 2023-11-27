@@ -14,7 +14,7 @@ public:
     Button(const std::string &name, float order, const std::string &text,
            const Vector2 &size, const Color &bgColor, const Color &fgColor);
 
-    virtual void Render(const renderer::RendererContext &r) const override;
+    virtual void Render(const EngineContext &c) const override;
 
     void OnClick(events::MouseClickEventArgs &args) override;
 

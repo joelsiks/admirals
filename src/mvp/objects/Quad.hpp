@@ -8,9 +8,9 @@ public:
     Quad(const std::string &name, const Vector3 &position, const Vector2 &size,
          const Color &color);
 
-    void OnUpdate() override;
-    void OnStart() override;
-    void Render(const renderer::RendererContext &r) const override;
+    void OnUpdate(const EngineContext &c) override;
+    void OnStart(const EngineContext &c) override;
+    void Render(const EngineContext &c) const override;
 
 private:
     Color m_color;
