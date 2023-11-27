@@ -16,7 +16,7 @@ void Scene::Render(const EngineContext &ctx) const {
 /**
  * receives a shared pointer to a gameObject and removes one from the multiset
  */
-void Scene::RemoveObject(std::shared_ptr<GameObject> object) {
+void Scene::RemoveObject(const std::shared_ptr<GameObject> &object) {
     if (ExistObject(object)) {
         this->m_objects.Erase(object->name());
     }
@@ -27,7 +27,7 @@ void Scene::RemoveObject(const std::string &key) { this->m_objects.Erase(key); }
  * receives a shared pointer to a gameObject and checks if it exist in the
  * multiset
  */
-bool Scene::ExistObject(std::shared_ptr<GameObject> object) {
+bool Scene::ExistObject(const std::shared_ptr<GameObject> &object) {
     auto obj = this->m_objects.Find(object->name());
     if (obj != nullptr) {
         // if another that doesn't exist in m_objects have an identical name to
@@ -43,7 +43,7 @@ bool Scene::ExistObject(const std::string &key) {
     return (this->m_objects.Find(key) != nullptr);
 }
 
-int Scene::NumObjectsInScene() { return this->m_objects.Size(); }
+size_t Scene::NumObjectsInScene() { return this->m_objects.Size(); }
 
 std::vector<std::string> Scene::GetSceneObjectNames() {
     std::vector<std::string> vec = {};
@@ -65,4 +65,13 @@ void Scene::OnUpdate(const EngineContext &ctx) {
     for (const auto &object : this->m_objects) {
         object->OnUpdate(ctx);
     }
+}
+
+void Scene::RebuildQuadTree(const Vector2 &windowSize) {
+    // build a QuadTree to find out what objects to handle click events on.
+    std::vector<std::shared_ptr<IDisplayable>> objects;
+    for (const auto &element : m_objects) {
+        objects.push_back(dynamic_pointer_cast<IDisplayable>(element));
+    }
+    m_quadtree.BuildTree(windowSize, objects);
 }

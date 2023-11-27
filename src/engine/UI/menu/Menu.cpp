@@ -32,7 +32,7 @@ void Menu::Render(const EngineContext &ctx) const {
         auto option = std::dynamic_pointer_cast<MenuOption>(*it);
 
         const DisplayOrientation orientation = option->GetDisplayOrientation();
-        Vector2 displaySize = option->GetDisplaySize();
+        Vector2 displaySize = option->GetSize();
 
         // Calculate the position with respect to the matching positionOffset.
         Vector2 position = DisplayLayout::GetPositionFromOrientation(
@@ -40,11 +40,11 @@ void Menu::Render(const EngineContext &ctx) const {
         position[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.
-        option->SetDisplaySize(renderer::Renderer::TextFontSize(
+        option->SetSize(renderer::Renderer::TextFontSize(
             option->GetOptionText(), ctx.fontWidth, ctx.fontHeight));
         option->SetTextColor(m_fgColor);
 
-        option->SetDisplayPosition(position);
+        option->SetPosition(position);
         option->Render(ctx);
 
         // If we're rendering the menu title, add a line below it.

@@ -27,7 +27,8 @@ private:
 
 public:
     CellObject(const std::string &name, const Vector3 &pos, const Color &color)
-        : scene::GameObject(name, pos), m_color(color) {}
+        : scene::GameObject(name, pos.x(), pos.xy(), Vector2(CELL_SIZE)),
+          m_color(color) {}
 
     void OnStart(const EngineContext &c) override {}
 
@@ -39,9 +40,7 @@ public:
         const Vector2 scale =
             e.WindowSize() / Vector2(static_cast<float>(WINDOW_WIDTH),
                                      static_cast<float>(WINDOW_HEIGHT));
-        const Vector2 pos = this->GetPosition() * scale;
-        const Vector2 size = scale * CELL_SIZE;
-        if (Rect(pos, size).Contains(e.Location())) {
+        if (m_boundingBox.Contains(e.Location() / scale)) {
             // This was clicked
             int index = 1;
             for (const Color &color : COLOR_LOOP) {
@@ -88,32 +87,6 @@ private:
     Vector2 m_mousePosition = Vector2(-1);
 };
 
-class FpsTextElementController : public scene::GameObject {
-public:
-    FpsTextElementController(const std::string &name,
-                             std::shared_ptr<UI::TextElement> textElement)
-        : scene::GameObject(name, -1, Vector2(0)),
-          m_textElement(std::move(textElement)) {}
-
-    void OnStart(const EngineContext &) override {
-        m_time = std::chrono::high_resolution_clock::now();
-    }
-
-    void OnUpdate(const EngineContext &c) override {
-        char fpsString[FPS_BUFFER_SIZE];
-        if (sprintf(fpsString, "DT = %f, FPS: %f", c.deltaTime,
-                    1.f / c.deltaTime) > 0) {
-            m_textElement->SetText(std::string(fpsString));
-        }
-    }
-
-    void Render(const EngineContext &c) const override {}
-
-private:
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_time;
-    std::shared_ptr<UI::TextElement> m_textElement;
-};
-
 int main(int, char *[]) {
     Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
@@ -128,10 +101,6 @@ int main(int, char *[]) {
                                                 Color::RED);
     auto c4 = engine.MakeGameObject<CellObject>("6", Vector3(200, 200, 0),
                                                 Color::GREEN);
-    auto fpsText = engine.MakeUIElement<UI::TextElement>(
-        "Fps TextElement", 0, "", Vector2(500, 40), Color::BLACK);
-    fpsText->SetDisplayOrientation(UI::DisplayOrientation::LowerLeft);
-    engine.MakeGameObject<FpsTextElementController>("controller", fpsText);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c1);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c2);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c3);

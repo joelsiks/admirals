@@ -35,15 +35,15 @@ public:
     inline bool IsButtonDown(MouseButton button) const {
         switch (button) {
         case MouseButton::Left:
-            return state & SDL_BUTTON_LMASK != 0;
+            return (state & SDL_BUTTON_LMASK != 0) != 0u;
         case MouseButton::Middle:
-            return state & SDL_BUTTON_MMASK != 0;
+            return (state & SDL_BUTTON_MMASK != 0) != 0u;
         case MouseButton::Right:
-            return state & SDL_BUTTON_RMASK != 0;
+            return (state & SDL_BUTTON_RMASK != 0) != 0u;
         case MouseButton::X1:
-            return state & SDL_BUTTON_X1MASK != 0;
+            return (state & SDL_BUTTON_X1MASK != 0) != 0u;
         case MouseButton::X2:
-            return state & SDL_BUTTON_X2MASK != 0;
+            return (state & SDL_BUTTON_X2MASK != 0) != 0u;
         default:
             return false;
         }

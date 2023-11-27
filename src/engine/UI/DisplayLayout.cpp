@@ -1,4 +1,5 @@
 #include "UI/DisplayLayout.hpp"
+#include "DisplayLayout.hpp"
 #include "Renderer.hpp"
 
 using namespace admirals;
@@ -9,14 +10,14 @@ void DisplayLayout::Render(const EngineContext &ctx) const {
 
     for (const auto &element : m_elements) {
         const DisplayOrientation orientation = element->GetDisplayOrientation();
-        const Vector2 displaySize = element->GetDisplaySize();
+        const Vector2 displaySize = element->GetSize();
 
         // Calculate the position with respect to the matching positionOffset.
         Vector2 position =
             GetPositionFromOrientation(orientation, displaySize, ctx);
         position[0] += positionOffsets[orientation];
 
-        element->SetDisplayPosition(position);
+        element->SetPosition(position);
 
         element->Render(ctx);
 
@@ -57,6 +58,10 @@ void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
         }
     }
 }
+
+void DisplayLayout::OnMouseEnter(events::EventArgs &args) {}
+void DisplayLayout::OnMouseLeave(events::EventArgs &args) {}
+void DisplayLayout::OnMouseMove(events::EventArgs &args) {}
 
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     this->m_elements.Insert(std::move(element));

@@ -7,18 +7,19 @@
 #include "GameObject.hpp"
 #include "IDrawable.hpp"
 #include "OrderedCollection.hpp"
+#include "QuadTree.hpp"
 
 namespace admirals::scene {
 
 class Scene : public renderer::IDrawable {
 public:
     void AddObject(std::shared_ptr<GameObject> object);
-    void RemoveObject(std::shared_ptr<GameObject> object);
+    void RemoveObject(const std::shared_ptr<GameObject> &object);
     void RemoveObject(const std::string &key);
-    bool ExistObject(std::shared_ptr<GameObject> object);
+    bool ExistObject(const std::shared_ptr<GameObject> &object);
     bool ExistObject(const std::string &key);
     void Render(const EngineContext &ctx) const override;
-    int NumObjectsInScene();
+    size_t NumObjectsInScene();
 
     std::vector<std::string> GetSceneObjectNames();
     void OnStart(const EngineContext &ctx);
@@ -26,8 +27,11 @@ public:
 
     bool IsInitialized() const { return m_isInitialized; }
 
+    void RebuildQuadTree(const Vector2 &windowSize);
+
 private:
     OrderedCollection<GameObject> m_objects;
+    QuadTree m_quadtree;
     bool m_isInitialized;
 };
 

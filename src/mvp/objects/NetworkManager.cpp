@@ -1,17 +1,17 @@
-#include "NetworkManager.hpp"
-#include "GameManager.hpp"
+#include "objects/NetworkManager.hpp"
 #include "commontypes.hpp"
+#include "objects/GameManager.hpp"
 
 using namespace admirals::mvp::objects;
 using namespace admirals::net;
 
 NetworkManager::NetworkManager(const std::string &name,
                                GameManager &gameManager)
-    : GameObject(name, 0, Vector3(0)), m_gameManager(gameManager) {}
+    : GameObject(name), m_gameManager(gameManager) {}
 
 NetworkManager::~NetworkManager() {}
 
-void NetworkManager::OnStart(const EngineContext &ctx) {
+void NetworkManager::OnStart(const EngineContext &) {
     printf("NetworkManager::OnStart()\n");
 
     // Should probably be called later and not here
@@ -26,7 +26,7 @@ void NetworkManager::OnStart(const EngineContext &ctx) {
     ReadyUp();
 }
 
-void NetworkManager::OnUpdate(const EngineContext &ctx) { HandleMessages(); }
+void NetworkManager::OnUpdate(const EngineContext &) { HandleMessages(); }
 
 void NetworkManager::BuyShip(uint8_t type) {
     if (m_debug)

@@ -3,18 +3,21 @@
 #include <memory>
 #include <vector>
 
-#include "InteractiveDrawable.hpp"
+#include "IInteractiveDrawable.hpp"
 #include "OrderedCollection.hpp"
 #include "QuadTree.hpp"
 #include "UI/Element.hpp"
 
 namespace admirals::UI {
 
-class DisplayLayout : public InteractiveDrawable {
+class DisplayLayout : public IInteractiveDrawable {
 public:
     void Render(const EngineContext &ctx) const override;
 
     virtual void OnClick(events::MouseClickEventArgs &args) override;
+    virtual void OnMouseEnter(events::EventArgs &args) override;
+    virtual void OnMouseLeave(events::EventArgs &args) override;
+    virtual void OnMouseMove(events::EventArgs &args) override;
 
     void AddElement(std::shared_ptr<Element> element);
 
