@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "EngineContext.hpp"
 #include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Scene.hpp"
@@ -16,12 +17,14 @@ namespace admirals {
 
 class Engine {
 public:
+    events::EventSystem<events::MouseClickEventArgs> onMouseClick;
     events::EventSystem<events::KeyPressEventArgs> onKeyPress;
-    events::EventSystem<events::MouseCLickEventArgs> onMouseClick;
     events::EventSystem<events::MouseMotionEventArgs> onMouseMove;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
            bool debug);
+
+    inline const EngineContext &GetContext() const { return m_context; }
 
     inline std::shared_ptr<UI::DisplayLayout>
     SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout) {
@@ -40,7 +43,7 @@ public:
         m_scene = scene;
 
         if (hasScene() && !m_scene->IsInitialized()) {
-            m_scene->OnStart();
+            m_scene->OnStart(m_context);
         }
 
         return currentScene;
@@ -60,7 +63,7 @@ public:
         }
     }
 
-    inline void ToggleDebugRendering() { m_renderer->ToggleDebugRendering(); }
+    inline void ToggleDebugRendering() { m_context.debug = !m_context.debug; }
 
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {
@@ -79,11 +82,7 @@ public:
     void StartGameLoop();
     inline void StopGameLoop() { m_running = false; }
 
-    inline Vector2 GetWindowSize() {
-        auto context = m_renderer->Context();
-        return Vector2(static_cast<float>(context.windowWidth),
-                       static_cast<float>(context.windowHeight));
-    }
+    inline Vector2 GetWindowSize() const { return m_context.windowSize; }
 
 private:
     bool PollAndHandleEvent();
@@ -100,6 +99,7 @@ private:
     std::shared_ptr<scene::Scene> m_scene;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
+    EngineContext m_context;
 };
 
 } // namespace admirals

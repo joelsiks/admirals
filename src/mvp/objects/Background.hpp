@@ -7,9 +7,9 @@ class Background : public scene::GameObject {
 public:
     Background(const std::string &name, const Color &color);
 
-    void OnStart() override;
-    void OnUpdate() override;
-    void Render(const renderer::RendererContext &r) const override;
+    void OnStart(const EngineContext &ctx) override;
+    void OnUpdate(const EngineContext &ctx) override;
+    void Render(const EngineContext &ctx) const override;
 
 private:
     Color m_color;

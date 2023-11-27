@@ -9,7 +9,7 @@ Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
              size, source, Ship::ShipTypeToTexOffset(data.type)),
       m_data(data) {}
 
-void Ship::OnUpdate() {
+void Ship::OnUpdate(const EngineContext &ctx) {
     const Vector2 pos = GetPosition();
     Vector2 target = pos;
     if (m_data.owner % 2 == 1) {
@@ -25,14 +25,17 @@ void Ship::OnUpdate() {
             target[1] -= 1;
         }
     }
-    m_data.action = ShipAction::Move;
-    m_data.moveData.actionX = static_cast<uint8_t>(target.x());
-    m_data.moveData.actionY = static_cast<uint8_t>(target.y());
-    events::EventArgs e;
-    onChanged.Invoke(this, e);
+
+    if (m_data.action == ShipAction::None) {
+        m_data.action = ShipAction::Move;
+        m_data.moveData.actionX = static_cast<uint8_t>(target.x());
+        m_data.moveData.actionY = static_cast<uint8_t>(target.y());
+        events::EventArgs e;
+        onChanged.Invoke(this, e);
+    }
 }
 
-void Ship::OnStart() {}
+void Ship::OnStart(const EngineContext &ctx) {}
 
 Vector2 Ship::CalcOrigin() const {
     return GetPosition() * GameData::CellSize - Vector2(0, GameData::CellSize);

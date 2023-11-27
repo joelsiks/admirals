@@ -25,13 +25,15 @@ public:
         : scene::GameObject(name, pos), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
 
-    void OnStart() override {}
+    void OnStart(const EngineContext &) override {}
 
-    void OnUpdate() override {}
+    void OnUpdate(const EngineContext &) override {}
 
-    void ButtonClickHandler(void *sender, events::ButtonClickEventArgs &e) {
-        if (e.m_data.type != SDL_MOUSEBUTTONDOWN)
+    void ButtonClickHandler(void *sender, events::MouseClickEventArgs &args) {
+        if (args.pressed) {
             return;
+        }
+
         auto *button = static_cast<Button *>(sender);
         if (button->name() == "btn1") {
             SetPosition(Vector2(GetPosition().x() - 100, 0));
@@ -40,18 +42,13 @@ public:
         }
     }
 
-    void Render(const renderer::RendererContext &r) const override {
-        float x = static_cast<float>(r.windowWidth) /
-                  static_cast<float>(m_texture.Width());
-        float y = static_cast<float>(r.windowHeight) /
-                  static_cast<float>(m_texture.Height());
+    void Render(const EngineContext &c) const override {
+        Vector2 scale = c.windowSize / m_texture.Size();
         if (m_keepAspectRatio) {
-            x = std::min(x, y);
-            y = x;
+            scale[0] = scale[1] = std::min(scale.x(), scale.y());
         }
 
-        renderer::Renderer::DrawTexture(m_texture, GetPosition(),
-                                        Vector2(x, y));
+        renderer::Renderer::DrawTexture(m_texture, GetPosition(), scale);
     }
 
 private:
@@ -63,8 +60,8 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                              Engine &engine, bool initialDebugValue) {
     menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
     exitOption.onClick.Subscribe(
-        [&engine](void *, menu::OptionClickEventArgs &args) {
-            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+        [&engine](void *, events::MouseClickEventArgs &args) {
+            if (!args.pressed)
                 return;
 
             engine.StopGameLoop();
@@ -74,8 +71,8 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
     menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
                                          "Debug Rendering", initialDebugValue);
     toggleDebugOption.onClick.Subscribe(
-        [&engine](void *, menu::OptionClickEventArgs &args) {
-            if (args.m_data.type != SDL_MOUSEBUTTONUP)
+        [&engine](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed)
                 return;
 
             engine.ToggleDebugRendering();
@@ -90,8 +87,8 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                                        1);
     cycleColorOption.onClick.Subscribe([&escapeMenu, cycleColors](
                                            void *sender,
-                                           menu::OptionClickEventArgs &args) {
-        if (args.m_data.type != SDL_MOUSEBUTTONUP)
+                                           events::MouseClickEventArgs &args) {
+        if (args.pressed)
             return;
 
         auto *cycleOption = static_cast<menu::CycleOption *>(sender);
@@ -103,11 +100,12 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
         menu::MenuOption::CreateFromDerived(cycleColorOption));
 }
 
-void OnButtonClick(void *object, events::ButtonClickEventArgs &event) {
-    auto button = static_cast<Button *>(object);
-    if (event.m_data.type == SDL_MOUSEBUTTONUP) {
+void OnButtonClick(void *object, events::MouseClickEventArgs &args) {
+    auto *button = static_cast<Button *>(object);
+
+    if (!args.pressed) {
         button->SetBackgroundColor(Color::BLACK);
-    } else if (event.m_data.type == SDL_MOUSEBUTTONDOWN) {
+    } else if (args.pressed) {
         const Color grey = Color::FromRGBA(50, 50, 50, 255);
         button->SetBackgroundColor(grey);
     }
@@ -133,8 +131,8 @@ void CreateUIElements(Engine &engine,
         "text1", 0, "Le", Vector2(32, 40), Color::BLACK);
     auto testText2 = engine.MakeUIElement<TextElement>(
         "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
-    testText1->SetDisplayPosition(DisplayPosition::LowerLeft);
-    testText2->SetDisplayPosition(DisplayPosition::LowerRight);
+    testText1->SetDisplayOrientation(DisplayOrientation::LowerLeft);
+    testText2->SetDisplayOrientation(DisplayOrientation::LowerRight);
 }
 
 int main(int, char **) {
@@ -155,10 +153,8 @@ int main(int, char **) {
         if (args.key == SDLK_ESCAPE && args.isKeyUp) {
             if (engine->GetDisplayLayout() == escapeMenu) {
                 engine->SetAndGetDisplayLayout(displayLayoutStore);
-                // engine->SetAndGetScene(sceneStore);
             } else {
                 displayLayoutStore = engine->SetAndGetDisplayLayout(escapeMenu);
-                // sceneStore = engine->SetAndGetScene(nullptr);
             }
         }
     });

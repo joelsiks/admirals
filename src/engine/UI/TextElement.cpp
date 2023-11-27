@@ -10,8 +10,9 @@ TextElement::TextElement(const std::string &name, float order,
 
 void TextElement::SetText(const std::string &text) { m_text = text; }
 
-void TextElement::Render(const Texture &font) {
-    renderer::Renderer::DrawText(font, m_displayOrigin, m_textColor, m_text);
+void TextElement::Render(const EngineContext &ctx) const {
+    renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
+                                 m_textColor, m_text);
 }
 
-bool TextElement::HandleEvent(const SDL_Event &) { return false; }
+void TextElement::OnClick(events::MouseClickEventArgs &args) {}

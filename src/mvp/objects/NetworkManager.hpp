@@ -14,9 +14,9 @@ public:
     NetworkManager(const std::string &name, GameManager &gameManager);
     ~NetworkManager();
 
-    void OnStart() override;
-    void OnUpdate() override;
-    void Render(const renderer::RendererContext &r) const override {}
+    void OnStart(const EngineContext &ctx) override;
+    void OnUpdate(const EngineContext &ctx) override;
+    void Render(const EngineContext &ctx) const override {}
 
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);

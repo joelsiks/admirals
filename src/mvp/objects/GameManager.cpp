@@ -12,9 +12,9 @@ GameManager::GameManager(const std::string &name)
 
 GameManager::~GameManager() {}
 
-void GameManager::OnStart() { srand(time(NULL)); }
+void GameManager::OnStart(const EngineContext &ctx) { srand(time(NULL)); }
 
-void GameManager::OnUpdate() {
+void GameManager::OnUpdate(const EngineContext &ctx) {
     if (!m_gameStarted) {
         return;
     }
@@ -47,13 +47,30 @@ void GameManager::StopGame() {
     }
 }
 
-void GameManager::BuyShip(uint8_t type) { m_networkManager->BuyShip(type); }
+void GameManager::BuyShip(uint8_t type) {
+    if (m_coins < ShipInfoMap[type].Cost) {
+        return;
+    }
+
+    m_networkManager->BuyShip(type);
+}
 
 void GameManager::MoveShip(uint16_t id, int x, int y) {
+    if (m_ships.find(id) == m_ships.end() ||
+        m_ships[id]->GetPlayerId() != m_playerId) {
+        return;
+    }
+
     m_networkManager->MoveShip(id, x, y);
 }
 
 void GameManager::AttackShip(uint16_t id, uint16_t targetId) {
+    if (m_ships.find(id) == m_ships.end() ||
+        m_ships.find(targetId) == m_ships.end() ||
+        m_ships[id]->GetPlayerId() != m_playerId) {
+        return;
+    }
+
     m_networkManager->AttackShip(id, targetId);
 }
 
@@ -99,6 +116,7 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
         if (it != m_ships.end()) {
             it->second->SetPosition(ship.x, ship.y);
             it->second->SetHealth(ship.health);
+            it->second->SetAction(ship.action);
         } else {
             if (m_debug)
                 printf("Creating ship %d\n", ship.id);

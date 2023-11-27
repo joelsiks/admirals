@@ -9,15 +9,16 @@ Quad::Quad(const std::string &name, const Vector3 &position,
            const Vector2 &size, const Color &color)
     : scene::GameObject(name, position), m_size(size), m_color(color) {}
 
-void Quad::OnUpdate() {}
+void Quad::OnUpdate(const EngineContext &ctx) {}
 
-void Quad::OnStart() {}
+void Quad::OnStart(const EngineContext &ctx) {}
 
-void Quad::Render(const renderer::RendererContext &r) const {
-    Vector2 pos = this->GetPosition();
-    Vector2 offset =
-        Vector2(r.windowWidth - GameData::GridSize,
-                r.windowHeight - GameData::GridSize - 2 * GameData::CellSize) /
-        2;
+void Quad::Render(const EngineContext &ctx) const {
+    const Vector2 pos = this->GetPosition();
+    const Vector2 offset =
+        (ctx.windowSize -
+         Vector2(GameData::GridSize,
+                 GameData::GridSize + 2 * GameData::CellSize)) /
+        2.f;
     renderer::Renderer::DrawRectangle(pos + offset, m_size, m_color);
 }

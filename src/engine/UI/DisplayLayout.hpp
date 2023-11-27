@@ -5,34 +5,28 @@
 
 #include "InteractiveDrawable.hpp"
 #include "OrderedCollection.hpp"
+#include "QuadTree.hpp"
 #include "UI/Element.hpp"
 
 namespace admirals::UI {
 
 class DisplayLayout : public InteractiveDrawable {
 public:
-    DisplayLayout();
+    void Render(const EngineContext &ctx) const override;
 
-    void Render(const renderer::RendererContext &r) const override;
-    void HandleEvent(SDL_Event &e) override;
+    virtual void OnClick(events::MouseClickEventArgs &args) override;
 
     void AddElement(std::shared_ptr<Element> element);
 
-    static Vector2
-    GetOriginFromDisplayPosition(DisplayPosition pos,
-                                 const Vector2 &displaySize,
-                                 const renderer::RendererContext &r);
+    void RebuildQuadTree(const Vector2 &windowSize);
 
-    inline Vector2 TextFontSize(const std::string &text) const {
-        return Vector2(static_cast<float>(text.length()) * m_fontWidth,
-                       m_fontHeight);
-    }
+    static Vector2 GetPositionFromOrientation(DisplayOrientation orientation,
+                                              const Vector2 &displaySize,
+                                              const EngineContext &ctx);
 
 protected:
-    Texture m_font;
-    float m_fontWidth, m_fontHeight;
-
     OrderedCollection<Element> m_elements;
+    QuadTree m_quadtree;
 };
 
 } // namespace admirals::UI
