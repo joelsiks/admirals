@@ -16,8 +16,12 @@ void GameManager::OnStart(const EngineContext &ctx) { srand(time(NULL)); }
 
 void GameManager::OnUpdate(const EngineContext &ctx) {}
 
-bool GameManager::ConnectToServer(std::string ip,
-                                  std::string port,
+bool GameManager::StartAndConnectToServer(uint16_t port,
+                                          const size_t maxTries) {
+    return m_networkManager->StartAndConnectToServer(port, maxTries);
+}
+
+bool GameManager::ConnectToServer(const std::string &ip, uint16_t port,
                                   const size_t maxTries) {
     return m_networkManager->ConnectToServer(ip, port, maxTries);
 }

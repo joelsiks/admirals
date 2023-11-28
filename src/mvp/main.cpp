@@ -131,9 +131,13 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     // Currently does nothing...
     UI::menu::ClickOption startOption("startOption", 1.0, "Start server");
     startOption.onClick.Subscribe(
-        [](void *, events::MouseClickEventArgs &args) {
+        [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                printf("Start server\n");
+                bool connected = gameManager->StartAndConnectToServer();
+                if (connected) {
+                    GameData::engine->SetAndGetDisplayLayout(g_dlStore);
+                    GameData::engine->SetAndGetScene(g_sStore);
+                }
             }
         });
     GameData::startMenu->AddMenuOption(

@@ -54,6 +54,7 @@ set(MVP_SOURCES
     src/mvp/objects/Ship.cpp
     src/mvp/objects/GameManager.cpp
     src/mvp/objects/NetworkManager.cpp
+    src/mvp/MvpServer.cpp
 )
 
 set(INCLUDE_DIRS
@@ -105,7 +106,7 @@ target_include_directories(mvp PRIVATE
 )
 
 # Create mvp server
-add_executable(mvp_server src/mvp/MvpServer.cpp)
+add_executable(mvp_server src/mvp/DedicatedServer.cpp src/mvp/MvpServer.cpp)
 target_link_libraries(mvp_server engine)
 target_include_directories(mvp_server PRIVATE
     "src/mvp/"

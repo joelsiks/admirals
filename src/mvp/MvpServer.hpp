@@ -24,19 +24,22 @@ public:
     bool OnClientConnect(std::shared_ptr<admirals::net::Connection>) override;
     void
         OnClientDisconnect(std::shared_ptr<admirals::net::Connection>) override;
-    void OnClientValidated(std::shared_ptr<admirals::net::Connection> client) override;
+    void OnClientValidated(
+        std::shared_ptr<admirals::net::Connection> client) override;
     void OnMessage(std::shared_ptr<admirals::net::Connection> client,
                    admirals::net::Message &message) override;
 
     void ProcessTurn();
     void EnterServerLoop();
+
 private:
     bool ShipAtLocation(int x, int y);
     bool ShipExists(PlayerData &player, uint16_t id);
     void StartGame();
     void StopGame();
     void PlayerReady(std::shared_ptr<admirals::net::Connection> client);
-    void BuyShip(std::shared_ptr<admirals::net::Connection> &client, admirals::net::Message &message);
+    void BuyShip(std::shared_ptr<admirals::net::Connection> &client,
+                 admirals::net::Message &message);
     void MoveShip(std::shared_ptr<admirals::net::Connection> client,
                   admirals::net::Message &message);
     void AttackShip(std::shared_ptr<admirals::net::Connection> client,

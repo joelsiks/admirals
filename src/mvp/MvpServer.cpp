@@ -4,12 +4,9 @@
 using namespace admirals::net;
 using namespace admirals::mvp;
 
-
 // MvpServer::MvpServer(uint16_t port) : Server(port) { m_turn = 0; }
 
-bool MvpServer::OnClientConnect(std::shared_ptr<Connection>) {
-    return true;
-}
+bool MvpServer::OnClientConnect(std::shared_ptr<Connection>) { return true; }
 
 void MvpServer::OnClientDisconnect(std::shared_ptr<Connection>) {
     m_connectedPlayers--;
@@ -303,12 +300,4 @@ void MvpServer::BroadcastState() {
     }
 
     MessageAllClients(msg);
-}
-
-int main() {
-    admirals::mvp::MvpServer server(60000);
-    server.Start();
-    server.EnterServerLoop();
-
-    return EXIT_SUCCESS;
 }

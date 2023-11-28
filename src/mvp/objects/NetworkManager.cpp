@@ -1,5 +1,6 @@
 #include "NetworkManager.hpp"
 #include "GameManager.hpp"
+#include "MvpServer.hpp"
 #include "commontypes.hpp"
 
 using namespace admirals::mvp::objects;
@@ -9,28 +10,46 @@ NetworkManager::NetworkManager(const std::string &name,
                                GameManager &gameManager)
     : GameObject(name, 0, Vector3(0)), m_gameManager(gameManager) {}
 
-NetworkManager::~NetworkManager() {}
+NetworkManager::~NetworkManager() {
+    if (m_isHost) {
+        m_serverThread.join();
+    }
+}
 
 void NetworkManager::OnStart(const EngineContext &ctx) {}
 
 void NetworkManager::OnUpdate(const EngineContext &ctx) { HandleMessages(); }
 
-bool NetworkManager::ConnectToServer(std::string ip, std::string port,
+bool NetworkManager::StartAndConnectToServer(uint16_t port,
+                                             const size_t maxTries) {
+    m_isHost = true;
+
+    m_serverThread = std::thread([this, port]() {
+        MvpServer server(port);
+        server.Start();
+        server.EnterServerLoop();
+    });
+
+    return ConnectToServer("127.0.0.1", port, maxTries);
+}
+
+bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
                                      const size_t maxTries) {
     for (size_t i = 0; i < maxTries; i++) {
         if (m_debug) {
             printf("Trying to connect to the server...\n");
         }
 
-        Connect(ip, port);
+        Connect(ip, std::to_string(port));
         if (IsConnected()) {
             if (m_debug) {
                 printf("Connected to the server\n");
             }
 
-            // Should probably be called later by the user conciously and not here
+            // Should probably be called later by the user conciously and not
+            // here
             ReadyUp();
-            
+
             return true;
         }
     }
