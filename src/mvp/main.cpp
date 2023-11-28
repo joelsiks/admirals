@@ -119,7 +119,6 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     GameData::startMenu->AddMenuOption(
         UI::menu::MenuOption::CreateFromDerived(connectOption));
 
-    // Currently does nothing...
     UI::menu::ClickOption startOption("startOption", 1.0, "Start server");
     startOption.onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {

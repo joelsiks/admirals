@@ -4,8 +4,6 @@
 using namespace admirals::net;
 using namespace admirals::mvp;
 
-// MvpServer::MvpServer(uint16_t port) : Server(port) { m_turn = 0; }
-
 bool MvpServer::OnClientConnect(std::shared_ptr<Connection>) { return true; }
 
 void MvpServer::OnClientDisconnect(std::shared_ptr<Connection>) {

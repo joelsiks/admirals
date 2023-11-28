@@ -98,7 +98,6 @@ void NetworkManager::ReadyUp() {
 
     Message msg;
     msg.header.id = NetworkMessageTypes::PlayerReady;
-    printf("Sending ready message\n");
     Send(msg);
 }
 
