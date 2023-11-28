@@ -39,6 +39,8 @@ public:
         }
     }
 
+    inline Vector2 GetSize() const { return m_size; }
+
 private:
     static constexpr int NUM_QUADRANTS = 4;
     static constexpr float MINIMUM_QUADRANT_SIZE = 10.f;

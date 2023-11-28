@@ -1,165 +1,112 @@
-#pragma once
+#include "PathFinding.hpp"
 
-#include "GameObject.cpp"
-#include "Scene.hpp"
-#include <List>
-#include <vector>
+using namespace admirals;
 
-namespace admirals {
-
-struct PF_Node {
-    Vector2 current_position;
-    float distance;
-    float heuristic;
-    std::list<Vector2> node_list;
+const std::vector<Vector2> ADJACENT_DIRECTIONS = {
+    {1, 0}, {-1, 0},  {0, 1},  {0, -1}, // vertical and horizontal directions
+    {1, 1}, {-1, -1}, {1, -1}, {-1, 1}  // diagonal directions
 };
 
-class Pathfinding {
-private:
-    std::vector<Vector2> m_adjacent_tiles_list =
-        {
-            {1, 0},  {-1, 0},
-            {0, 1},  {0, -1}, // vertical and horisontal directions
-            {1, 1},  {-1, -1},
-            {1, -1}, {-1, 1} // diagonal directions
-    };
-
-    float heuristic(Vector2 start, Vector2 end) {
-        // manhattan
-        return std::abs(start.x() - end.x()) + std::abs(start.y() - end.y());
-    }
-    bool within(Vector2 gridSize, Vector2 position) {
-        return within(gridSize, (int)position.x(), (int)position.y());
-    }
-    bool within(Vector2 gridSize, int position_x, int position_y) {
-        return (gridSize.x() > position_x && 0 < position_x &&
-                gridSize.y() > position_y && 0 < position_y);
+std::deque<Vector2> PathFinding::FindPath(
+    const QuadTree &quadTree, const Vector2 &start, const Vector2 &dest,
+    const std::unordered_set<float> &checkedOrders, float detailLevel) {
+    const Rect bounds = Rect(Vector2(), quadTree.GetSize());
+    if (!bounds.Contains(start) || !bounds.Contains(dest)) {
+        return std::deque<Vector2>();
     }
 
-public:
-    std::list<Vector2> findpath(Vector2 mapSize,
-                                OrderedCollection<GameObject> gameObjects,
-                                std::shared_ptr<GameObject> object,
-                                Vector2 dest) {
+    const size_t width = static_cast<size_t>(bounds.Width() / detailLevel);
+    const size_t height = static_cast<size_t>(bounds.Height() / detailLevel);
+    // world grid
+    std::vector<PF_Node> grid(width * height,
+                              {false, 0, 0, 0, static_cast<size_t>(-1)});
+    const size_t startIndex =
+        ConvertVectorToNodeIndex(start, width, detailLevel);
+    const size_t endIndex = ConvertVectorToNodeIndex(dest, width, detailLevel);
 
-        Vector2 object_pos = {2, 2};
-        struct PF_Node expanded;
-        expanded.current_position = object_pos;
-        expanded.distance = 0;
-        expanded.heuristic = heuristic(object_pos, dest);
-        expanded.node_list = std::list<Vector2>();
-        std::list<PF_Node> frontier;
+    std::vector<size_t> queue = {startIndex};
+    grid[startIndex].visited = true;
+    size_t minIndex = 0;
+    float minValue = INFINITY;
 
-        std::shared_ptr<GameObject> mapGrid[(int)mapSize.x()][(int)mapSize.y()];
-        auto it = gameObjects.begin();
-        for (it; it != gameObjects.end(); it++) {
-            std::shared_ptr<GameObject> object = *it;
-            mapGrid[(int)object->GetPosition().x()]
-                   [(int)object->GetPosition().y()] = object;
+    while (!queue.empty()) {
+        // 1. Find nodes that can be passed (neighboring passed nodes)
+        // 2. Calculate values of nodes not passed
+        // 3. "pass" node of lowest value & set "path" value to the node it
+        // traveled from
+        // 4. If end node is passed, break.
+        const size_t nodeIndex = queue[minIndex];
+        queue.erase(queue.begin() + static_cast<int>(minIndex));
+
+        if (nodeIndex == endIndex) {
+            const auto path = FindPathRoot(grid, nodeIndex, width, detailLevel);
+            return path;
         }
 
-        while (expanded.heuristic > 0) {
-            for (size_t i = 0; i < 8; i++) {
-                Vector2 nextNode = {expanded.current_position.x(),
-                                    expanded.current_position.y()};
-                nextNode += m_adjacent_tiles_list[i];
-
-                if (within(mapSize, nextNode)) {
-                    // TODO need to check with objects
-                    // if (within(mapSize, nextNode) &&
-                    // mapGrid[(int)nextNode.x()][(int)nextNode.y()] != nullptr)
-                    // {
-                    float pathCost = 1;
-                    if (i > 3) {
-                        pathCost = 1.99f;
-                    }
-                    float node_heuristic = heuristic(nextNode, dest);
-                    bool newNode = true;
-                    bool replaceNode = false;
-                    auto it = frontier.begin();
-
-                    if (frontier.size() > 0) {
-                        for (it; it != frontier.end(); it++) {
-                            PF_Node temp_node = *it;
-                            if (nextNode == temp_node.current_position) {
-                                float oldCost =
-                                    temp_node.distance + temp_node.heuristic;
-                                float newCost = pathCost + node_heuristic;
-                                if (newCost < oldCost) {
-                                    replaceNode = true;
-                                } else {
-                                    newNode = false;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if (newNode) {
-                        if (replaceNode) {
-                            frontier.erase(it);
-                        }
-                        PF_Node newFrontier;
-                        newFrontier.current_position = nextNode;
-                        newFrontier.distance = pathCost;
-                        newFrontier.heuristic = node_heuristic;
-                        newFrontier.node_list =
-                            std::list<Vector2>(expanded.node_list);
-                        newFrontier.node_list.emplace_back(
-                            expanded.current_position);
-                        frontier.emplace_back(newFrontier);
-                    }
+        const auto neighbors = FindNeighboringNodes(nodeIndex, width, height);
+        for (const size_t neighborIndex : neighbors) {
+            if (neighborIndex == static_cast<size_t>(-1)) {
+                continue;
+            }
+            PF_Node &neighbor = grid[neighborIndex];
+            if (!neighbor.visited) {
+                const Vector2 position =
+                    ConvertNodeIndexToVector(neighborIndex, width, detailLevel);
+                neighbor.visited = true;
+                if (IsValidNextPosition(position, quadTree, checkedOrders)) {
+                    neighbor.h = Heuristic(position, dest);
+                    neighbor.g = grid[nodeIndex].g + 1;
+                    neighbor.f = neighbor.h + neighbor.g;
+                    neighbor.path = nodeIndex;
+                    queue.push_back(neighborIndex);
                 }
             }
-            auto nextExp = frontier.begin();
-            float totalCost = 10000;
-            auto it = frontier.begin();
-            for (it; it != frontier.end(); it++) {
-                PF_Node temp_node = *it;
-                float cost = temp_node.distance + temp_node.heuristic;
-                if (cost < totalCost) {
-                    totalCost = cost;
-                    nextExp = it;
-                }
-            }
-            expanded = *nextExp;
-            frontier.erase(nextExp);
         }
 
-        expanded.node_list.pop_front();
-        expanded.node_list.emplace_back(expanded.current_position);
-        auto it_exp = expanded.node_list.begin();
-        for (it_exp; it_exp != expanded.node_list.end(); it_exp++) {
-            std::cout << "x:" << (*it_exp).x() << ", y:" << (*it_exp).y()
-                      << "\n";
+        minValue = INFINITY;
+        for (int index = 0; index < queue.size(); index++) {
+            const size_t nodeIndex = queue[index];
+            if (grid[nodeIndex].f < minValue) {
+                minValue = grid[nodeIndex].f;
+                minIndex = index;
+            }
         }
-        return expanded.node_list;
     }
 
-    void visualizeGrid(Vector2 mapSize,
-                       OrderedCollection<GameObject> gameObjects) {
+    return std::deque<Vector2>();
+}
 
-        for (size_t i = 0; i < mapSize.x(); i++) {
-            for (size_t j = 0; j < mapSize.y(); j++) {
+std::deque<Vector2> PathFinding::FindPathRoot(const std::vector<PF_Node> &grid,
+                                              size_t nodeIndex, size_t width,
+                                              float detailLevel) {
+    std::deque<Vector2> path = {};
 
-                std::cout << "| ";
-                auto it = gameObjects.begin();
-                bool found = false;
-                for (it; it != gameObjects.end(); it++) {
-                    std::shared_ptr<GameObject> object = *it;
-                    if (object->GetPosition().x() == i &&
-                        object->GetPosition().y() == j) {
-                        found = true;
-                        std::cout << "@";
-                    }
-                }
-                if (!found) {
-                    std::cout << " ";
-                }
-                std::cout << " ";
-            }
-            std::cout << "\n";
-        }
+    while (grid[nodeIndex].path != static_cast<size_t>(-1)) {
+        path.push_front(
+            ConvertNodeIndexToVector(nodeIndex, width, detailLevel));
+        nodeIndex = grid[nodeIndex].path;
     }
-};
 
-} // namespace admirals
+    return path;
+}
+
+std::vector<size_t> PathFinding::FindNeighboringNodes(size_t nodeIndex,
+                                                      size_t width,
+                                                      size_t height) {
+    std::vector<size_t> neighbors;
+    const size_t x = nodeIndex % width;
+    const size_t y = nodeIndex / width;
+    if (x > 0) {
+        neighbors.push_back(nodeIndex - 1);
+    }
+    if (x < width) {
+        neighbors.push_back(nodeIndex + 1);
+    }
+    if (y > 0) {
+        neighbors.push_back(nodeIndex - width);
+    }
+    if (y < height) {
+        neighbors.push_back(nodeIndex + width);
+    }
+    return neighbors;
+}

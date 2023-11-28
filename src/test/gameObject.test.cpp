@@ -89,6 +89,39 @@ private:
     bool m_drawOutline = false;
 };
 
+class PathFindingObject : public scene::GameObject {
+public:
+    PathFindingObject(const std::string &name, const Vector2 &position)
+        : scene::GameObject(name, -1.f, position, Vector2()) {}
+
+    void HandleMouseMove(void *sender, events::MouseMotionEventArgs args) {
+        if (m_updated) {
+            return;
+        }
+
+        Engine *engine = static_cast<Engine *>(sender);
+        m_updated = true;
+        const auto scene = engine->GetScene();
+        const auto path =
+            scene->FindPath(GetPosition(), args.Location(), {8}, CELL_SIZE);
+        m_path = path;
+    }
+
+    void OnUpdate(const EngineContext &) override { m_updated = false; }
+
+    void Render(const EngineContext &) const override {
+        Vector2 prev = GetPosition();
+        for (const Vector2 &part : m_path) {
+            renderer::Renderer::DrawLine(prev, part, Color::BLUE);
+            prev = part;
+        }
+    }
+
+private:
+    bool m_updated = false;
+    std::deque<Vector2> m_path;
+};
+
 int main(int, char *[]) {
     Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
@@ -103,6 +136,10 @@ int main(int, char *[]) {
                                                 Color::RED);
     auto c4 = engine.MakeGameObject<CellObject>("6", Vector3(200, 200, 0),
                                                 Color::GREEN);
+    auto pathFinding =
+        engine.MakeGameObject<PathFindingObject>("path", Vector2(100));
+    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(
+        PathFindingObject::HandleMouseMove, pathFinding);
     engine.StartGameLoop();
 
     return EXIT_SUCCESS;

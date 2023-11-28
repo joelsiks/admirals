@@ -43,6 +43,7 @@ set(SOURCES
     src/engine/Renderer.cpp
     src/engine/Engine.cpp
     src/engine/QuadTree.cpp
+    src/engine/PathFinding.cpp
 )
 set(MVP_SOURCES 
     src/mvp/shared.cpp
@@ -149,13 +150,6 @@ target_include_directories(depthOrderedCollection_text PRIVATE
 add_executable(scene_test src/test/scene.test.cpp)
 target_link_libraries(scene_test engine)
 target_include_directories(scene_test PRIVATE 
-    "src/test/"
-)
-
-# Test server
-add_executable(pathfinding src/test/pathfinding.test.cpp)
-target_link_libraries(pathfinding engine)
-target_include_directories(pathfinding PRIVATE 
     "src/test/"
 )
 
