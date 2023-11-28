@@ -65,15 +65,17 @@ void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
 
 void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
     const Vector2 mouseLocation = args.Location();
-    std::unordered_set<std::string> nameSet;
+    std::unordered_set<std::string> currentMouseOverElements;
 
     for (const auto &element : m_quadtree.GetObjectsAtPosition(mouseLocation)) {
-        if (args.handled)
+        if (args.handled) {
             break;
+        }
+
         auto el = static_pointer_cast<Element>(element);
         const std::string name = el->name();
         if (el->IsVisible() && el->GetBoundingBox().Contains(mouseLocation)) {
-            nameSet.insert(name);
+            currentMouseOverElements.insert(name);
             if (m_mouseOverSet.insert(name).second) {
                 el->OnMouseEnter(args);
             } else {
@@ -84,10 +86,12 @@ void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
 
     // Handle elements that are no longer moused over
     for (auto it = m_mouseOverSet.begin(); it != m_mouseOverSet.end();) {
-        if (args.handled)
+        if (args.handled) {
             break;
+        }
+
         const std::string &name = *it;
-        if (!nameSet.contains(name)) {
+        if (!currentMouseOverElements.contains(name)) {
             auto el = m_elements.Find(name);
             if (el != nullptr) {
                 el->OnMouseLeave(args);

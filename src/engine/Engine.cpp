@@ -42,7 +42,7 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEBUTTONUP: {
             auto args = MouseClickEventArgs(e.button);
 
-            if (hasDisplayLayout() && !args.handled) {
+            if (hasDisplayLayout()) {
                 m_displayLayout->OnClick(args);
             }
 
@@ -55,7 +55,7 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEMOTION: {
             auto args = MouseMotionEventArgs(e.motion);
 
-            if (hasDisplayLayout() && !args.handled) {
+            if (hasDisplayLayout()) {
                 m_displayLayout->OnMouseMove(args);
             }
 

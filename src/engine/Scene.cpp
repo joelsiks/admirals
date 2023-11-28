@@ -85,15 +85,17 @@ void Scene::OnClick(events::MouseClickEventArgs &args) {
 
 void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
     const Vector2 mouseLocation = args.Location();
-    std::unordered_set<std::string> nameSet;
+    std::unordered_set<std::string> currentMouseOverObjects;
 
     for (const auto &object : m_quadtree.GetObjectsAtPosition(mouseLocation)) {
-        if (args.handled)
+        if (args.handled) {
             break;
+        }
+
         auto obj = static_pointer_cast<GameObject>(object);
         const std::string name = obj->name();
         if (obj->IsVisible() && obj->GetBoundingBox().Contains(mouseLocation)) {
-            nameSet.insert(name);
+            currentMouseOverObjects.insert(name);
             if (m_mouseOverSet.insert(name).second) {
                 obj->OnMouseEnter(args);
             } else {
@@ -104,10 +106,12 @@ void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
 
     // Handle objects that are no longer moused over
     for (auto it = m_mouseOverSet.begin(); it != m_mouseOverSet.end();) {
-        if (args.handled)
+        if (args.handled) {
             break;
+        }
+
         const std::string &name = *it;
-        if (!nameSet.contains(name)) {
+        if (!currentMouseOverObjects.contains(name)) {
             auto obj = m_objects.Find(name);
             if (obj != nullptr) {
                 obj->OnMouseLeave(args);

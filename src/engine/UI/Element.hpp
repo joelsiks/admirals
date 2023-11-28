@@ -28,10 +28,10 @@ public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);
 
-    virtual void OnClick(events::MouseClickEventArgs &args) override{};
-    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override{};
-    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override{};
-    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override{};
+    virtual void OnClick(events::MouseClickEventArgs &args) override {}
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override {}
 
     virtual DisplayOrientation GetDisplayOrientation() const {
         return m_dispOrient;
