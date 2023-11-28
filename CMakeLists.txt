@@ -39,7 +39,6 @@ set(SOURCES
     src/engine/net/Connection.cpp
     src/engine/net/Client.cpp
     src/engine/net/Server.cpp
-    src/engine/GameObject.cpp
     src/engine/Scene.cpp
     src/engine/Renderer.cpp
     src/engine/Engine.cpp

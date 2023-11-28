@@ -20,14 +20,10 @@ const int WINDOW_HEIGHT = 600;
 
 class TextureObject : public scene::GameObject {
 public:
-    TextureObject(const std::string &name, const Vector3 &pos,
-                  const char *texturePath, bool keepAspectRatio = true)
-        : scene::GameObject(name, pos), m_keepAspectRatio(keepAspectRatio),
+    TextureObject(const std::string &name, const char *texturePath,
+                  bool keepAspectRatio = true)
+        : scene::GameObject(name), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
-
-    void OnStart(const EngineContext &) override {}
-
-    void OnUpdate(const EngineContext &) override {}
 
     void ButtonClickHandler(void *sender, events::MouseClickEventArgs &args) {
         if (args.pressed) {
@@ -161,8 +157,8 @@ int main(int, char **) {
 
     CreateEscapeMenuOptions(escapeMenu, engine, debug);
 
-    auto texture = engine.MakeGameObject<TextureObject>(
-        "image", Vector3(0, 0, 0), "assets/admirals.png");
+    auto texture =
+        engine.MakeGameObject<TextureObject>("image", "assets/admirals.png");
     CreateUIElements(engine, texture);
 
     engine.StartGameLoop();

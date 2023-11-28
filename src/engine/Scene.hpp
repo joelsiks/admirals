@@ -1,33 +1,46 @@
 #pragma once
 
 #include <memory>
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 #include "GameObject.hpp"
-#include "IDrawable.hpp"
+#include "IInteractiveDrawable.hpp"
 #include "OrderedCollection.hpp"
+#include "QuadTree.hpp"
+#include "events/MouseClickEvent.hpp"
+#include "events/MouseMotionEvent.hpp"
 
 namespace admirals::scene {
 
 class Scene : public renderer::IDrawable {
 public:
-    void AddObject(std::shared_ptr<GameObject> object);
-    void RemoveObject(std::shared_ptr<GameObject> object);
-    void RemoveObject(const std::string &key);
-    bool ExistObject(std::shared_ptr<GameObject> object);
-    bool ExistObject(const std::string &key);
-    void Render(const EngineContext &ctx) const override;
-    int NumObjectsInScene();
+    // Engine events
+    virtual void Render(const EngineContext &ctx) const override;
 
-    std::vector<std::string> GetSceneObjectNames();
-    void OnStart(const EngineContext &ctx);
-    void OnUpdate(const EngineContext &ctx);
+    virtual void OnStart(const EngineContext &ctx);
+    virtual void OnUpdate(const EngineContext &ctx);
 
+    virtual void OnClick(events::MouseClickEventArgs &args);
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args);
+
+    // Initialization
     bool IsInitialized() const { return m_isInitialized; }
+    void RebuildQuadTree(const Vector2 &windowSize);
+
+    // Collection
+    void AddObject(std::shared_ptr<GameObject> object);
+    void RemoveObject(const std::shared_ptr<GameObject> &object);
+    void RemoveObject(const std::string &key);
+    bool ExistObject(const std::shared_ptr<GameObject> &object);
+    bool ExistObject(const std::string &key);
+    size_t NumObjectsInScene();
+    std::vector<std::string> GetSceneObjectNames();
 
 private:
     OrderedCollection<GameObject> m_objects;
+    QuadTree m_quadtree;
+    std::unordered_set<std::string> m_mouseOverSet;
     bool m_isInitialized;
 };
 

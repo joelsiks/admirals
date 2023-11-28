@@ -8,19 +8,17 @@ using namespace admirals::test;
 
 class TestObject : public scene::GameObject {
 public:
-    TestObject(const std::string &name, float order, const Vector2 &pos)
-        : scene::GameObject(name, order, pos) {}
-    void OnStart(const EngineContext &c) {}
-    void OnUpdate(const EngineContext &c) {}
-    void Render(const EngineContext &c) const {}
+    TestObject(const std::string &name, float order)
+        : scene::GameObject(name, order) {}
+    void Render(const EngineContext &c) const override {}
 };
 
 class TestInitialSize : public TestCaseBase {
 public:
     TestInitialSize() : TestCaseBase("initial size") {}
     void test() override {
-        OrderedCollection collection = OrderedCollection();
-        size_t size = collection.Size();
+        const OrderedCollection collection = OrderedCollection();
+        const size_t size = collection.Size();
         assert(size == 0,
                "collection size not initially 0, was: " + std::to_string(size));
     }
@@ -31,9 +29,9 @@ public:
     TestInsertSize() : TestCaseBase("insert size") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
+        const TestObject t1 = TestObject("a", 0);
         collection.Insert(scene::GameObject::CreateFromDerived(t1));
-        size_t size = collection.Size();
+        const size_t size = collection.Size();
         assert(size == 1, "collection size not 1 after insert, was: " +
                               std::to_string(size));
     }
@@ -44,11 +42,11 @@ public:
     TestInsertSameName() : TestCaseBase("insert same name") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
-        TestObject t2 = TestObject("a", 1, Vector2(1, 1));
+        const TestObject t1 = TestObject("a", 0);
+        const TestObject t2 = TestObject("a", 1);
         collection.Insert(scene::GameObject::CreateFromDerived(t1));
         collection.Insert(scene::GameObject::CreateFromDerived(t2));
-        size_t size = collection.Size();
+        const size_t size = collection.Size();
         assert(size == 1, "collection size not 1 after insert, was: " +
                               std::to_string(size));
     }
@@ -59,11 +57,11 @@ public:
     TestInsertSameZIndex() : TestCaseBase("insert same z-index") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
-        TestObject t2 = TestObject("b", 0, Vector2(1, 1));
+        const TestObject t1 = TestObject("a", 0);
+        const TestObject t2 = TestObject("b", 0);
         collection.Insert(scene::GameObject::CreateFromDerived(t1));
         collection.Insert(scene::GameObject::CreateFromDerived(t2));
-        size_t size = collection.Size();
+        const size_t size = collection.Size();
         assert(size == 2, "collection size not 2 after insert, was: " +
                               std::to_string(size));
     }
@@ -74,13 +72,13 @@ public:
     TestInsertMultiple() : TestCaseBase("insert multiple") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
-        TestObject t2 = TestObject("b", 1, Vector2(1, 1));
-        TestObject t3 = TestObject("c", 2, Vector2(2, 2));
+        const TestObject t1 = TestObject("a", 0);
+        const TestObject t2 = TestObject("b", 1);
+        const TestObject t3 = TestObject("c", 2);
         collection.Insert(scene::GameObject::CreateFromDerived(t1));
         collection.Insert(scene::GameObject::CreateFromDerived(t2));
         collection.Insert(scene::GameObject::CreateFromDerived(t3));
-        size_t size = collection.Size();
+        const size_t size = collection.Size();
         assert(size == 3, "collection size not 3 after insert, was: " +
                               std::to_string(size));
     }
@@ -91,16 +89,16 @@ public:
     TestOrderedZIndex() : TestCaseBase("ordered by z-index") {}
     void test() override {
         OrderedCollection collection = OrderedCollection();
-        TestObject t1 = TestObject("a", 0, Vector2(0, 0));
-        TestObject t2 = TestObject("b", 1, Vector2(1, 1));
-        TestObject t3 = TestObject("c", 2, Vector2(2, 2));
+        const TestObject t1 = TestObject("a", 0);
+        const TestObject t2 = TestObject("b", 1);
+        const TestObject t3 = TestObject("c", 2);
         collection.Insert(scene::GameObject::CreateFromDerived(t1));
         collection.Insert(scene::GameObject::CreateFromDerived(t2));
         collection.Insert(scene::GameObject::CreateFromDerived(t3));
 
         float prev = -1;
         for (const auto &o : collection) {
-            float order = o->order();
+            const float order = o->order();
             assert(prev <= order,
                    "object out of order, index " + std::to_string(order) +
                        " appeared after " + std::to_string(prev));
@@ -114,8 +112,9 @@ public:
     TestTypedObjects() : TestCaseBase("typed objects") {}
     void test() override {
         OrderedCollection collection = OrderedCollection<scene::GameObject>();
-        Vector2 pos = Vector2(0);
-        TestObject t1 = TestObject("a", 0, pos);
+        const Vector2 pos = Vector2(2, 4);
+        TestObject t1 = TestObject("a", 0);
+        t1.SetPosition(pos);
         collection.Insert(scene::GameObject::CreateFromDerived(t1));
 
         for (const auto &o : collection) {

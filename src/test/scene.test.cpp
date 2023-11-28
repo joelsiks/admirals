@@ -10,11 +10,7 @@ class CellObject : public scene::GameObject {
 
 public:
     CellObject(const std::string &name, const Vector3 &pos)
-        : scene::GameObject(name, pos) {}
-
-    void OnStart(const EngineContext &c) {}
-
-    void OnUpdate(const EngineContext &c) {}
+        : scene::GameObject(name, pos.z(), pos.xy(), Vector2()) {}
 
     void Render(const EngineContext &c) const {}
 };
