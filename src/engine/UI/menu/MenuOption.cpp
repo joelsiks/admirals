@@ -72,3 +72,39 @@ void CycleOption::Cycle() {
 }
 
 size_t CycleOption::CurrentIndex() const { return m_currentOption; }
+
+InputOption::InputOption(const std::string &name, float order,
+                         const std::string &placeholder)
+    : MenuOption(name, order, ""), m_placeholderText(placeholder) {}
+
+void InputOption::Render(const EngineContext &ctx) const {
+    if (m_isActive || m_clickedAndShouldDrawBackground) {
+        renderer::Renderer::DrawRectangle(m_boundingBox, Color::GREY);
+    }
+
+    renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
+                                 m_textColor, GetOptionText());
+}
+
+std::string InputOption::GetOptionText() const {
+    if (m_inputText.length() == 0) {
+        return m_placeholderText;
+    }
+
+    return m_inputText;
+}
+
+void InputOption::HandleKeyPressEvent(events::KeyPressEventArgs &args) {
+    if (!args.isKeyUp) {
+        return;
+    }
+
+    // TODO: This only handles ASCII-values...
+    if (args.key == SDLK_BACKSPACE && m_inputText.length() > 0) {
+        m_inputText.pop_back();
+        args.handled = true;
+    } else if (args.key >= 32 && args.key <= 126) {
+        m_inputText.push_back((char)args.key);
+        args.handled = true;
+    }
+}

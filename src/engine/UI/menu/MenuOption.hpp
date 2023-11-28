@@ -39,7 +39,7 @@ public:
         return element;
     }
 
-private:
+protected:
     Color m_textColor;
     bool m_clickedAndShouldDrawBackground = false;
 };
@@ -93,6 +93,26 @@ public:
 private:
     size_t m_currentOption;
     std::vector<std::string> m_cycleOptions;
+};
+
+class InputOption : public MenuOption {
+public:
+    InputOption(const std::string &name, float order,
+                const std::string &placeholder = "...");
+
+    virtual void Render(const EngineContext &ctx) const override;
+
+    std::string GetOptionText() const override;
+
+    inline bool IsActive() const { return m_isActive; }
+    inline void ToggleActive() { m_isActive = !m_isActive; }
+
+    void HandleKeyPressEvent(events::KeyPressEventArgs &args);
+
+private:
+    std::string m_placeholderText;
+    std::string m_inputText;
+    bool m_isActive = false;
 };
 
 } // namespace admirals::UI::menu

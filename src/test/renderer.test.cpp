@@ -52,6 +52,14 @@ private:
     bool m_keepAspectRatio;
 };
 
+// Global inputOption for visibility in other functions.
+std::shared_ptr<menu::InputOption> inputOption =
+    std::make_shared<menu::InputOption>("inputOption", 1.0);
+
+void HandleEscapeMenuInput(void *, events::KeyPressEventArgs &args) {
+    inputOption->HandleKeyPressEvent(args);
+}
+
 void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                              Engine &engine, bool initialDebugValue) {
     menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
@@ -63,6 +71,21 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
             engine.StopGameLoop();
         });
     escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(exitOption));
+
+    inputOption->onClick.Subscribe(
+        [&engine](void *sender, events::MouseClickEventArgs &args) {
+            if (args.pressed) {
+                auto *inputOption = static_cast<menu::InputOption *>(sender);
+                inputOption->ToggleActive();
+
+                if (inputOption->IsActive()) {
+                    engine.onKeyPress.Subscribe(HandleEscapeMenuInput);
+                } else {
+                    engine.onKeyPress.Unsubscribe(HandleEscapeMenuInput);
+                }
+            }
+        });
+    escapeMenu->AddMenuOption(inputOption);
 
     menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
                                          "Debug Rendering", initialDebugValue);
