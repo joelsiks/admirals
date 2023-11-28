@@ -6,6 +6,7 @@
 #include "DataObjects.hpp"
 #include "UI/Element.hpp"
 #include "events/EventSystem.hpp"
+#include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
 
 namespace admirals::UI::menu {
@@ -22,13 +23,12 @@ public:
     virtual void Render(const EngineContext &ctx) const override;
 
     void OnClick(events::MouseClickEventArgs &args) override;
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override;
 
     virtual std::string GetOptionText() const = 0;
     inline void SetTextColor(const Color &color) { m_textColor = color; }
-
-    inline void SetDrawBackground(bool value) {
-        m_clickedAndShouldDrawBackground = value;
-    }
 
     template <typename T>
     static std::shared_ptr<MenuOption>
@@ -41,7 +41,7 @@ public:
 
 protected:
     Color m_textColor;
-    bool m_clickedAndShouldDrawBackground = false;
+    bool m_shouldDrawBackground = false;
 };
 
 // Text Option, is non-interactive.

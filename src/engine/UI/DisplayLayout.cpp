@@ -64,6 +64,10 @@ void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
 }
 
 void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
+    // TODO: This currentl handles MouseEnter/MouseMove before any MouseLeave
+    // events, which is reverse of what is happening chronologically. Instead,
+    // one might want to handle MouseLeave events first.
+    //
     const Vector2 mouseLocation = args.Location();
     std::unordered_set<std::string> currentMouseOverElements;
 
