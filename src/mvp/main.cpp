@@ -28,6 +28,11 @@ const Color green = Color::FromHEX("#087311");
 static std::shared_ptr<UI::DisplayLayout> g_dlStore;
 static std::shared_ptr<scene::Scene> g_sStore;
 
+void SwapEngineLayers() {
+    g_dlStore = GameData::engine->SetAndGetDisplayLayout(g_dlStore);
+    g_sStore = GameData::engine->SetAndGetScene(g_sStore);
+}
+
 void CreateGameBoard() {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
@@ -111,8 +116,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
             if (args.pressed) {
                 bool connected = gameManager->ConnectToServer();
                 if (connected) {
-                    GameData::engine->SetAndGetDisplayLayout(g_dlStore);
-                    GameData::engine->SetAndGetScene(g_sStore);
+                    SwapEngineLayers();
                 }
             }
         });
@@ -125,18 +129,12 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
             if (args.pressed) {
                 bool connected = gameManager->StartAndConnectToServer();
                 if (connected) {
-                    GameData::engine->SetAndGetDisplayLayout(g_dlStore);
-                    GameData::engine->SetAndGetScene(g_sStore);
+                    SwapEngineLayers();
                 }
             }
         });
     GameData::startMenu->AddMenuOption(
         UI::menu::MenuOption::CreateFromDerived(startOption));
-}
-
-void SwapEngineLayers() {
-    g_dlStore = GameData::engine->SetAndGetDisplayLayout(GameData::startMenu);
-    g_sStore = GameData::engine->SetAndGetScene(GameData::startMenuScene);
 }
 
 void CreateStartMenuScene(const Texture &atlas) {
@@ -169,6 +167,8 @@ int main(int, char *[]) {
     CreateUI(atlas, gameManager);
 
     CreateStartMenu(gameManager);
+    g_dlStore = GameData::startMenu;
+    g_sStore = GameData::startMenuScene;
     SwapEngineLayers();
     CreateStartMenuScene(atlas);
 
