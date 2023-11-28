@@ -1,14 +1,14 @@
-#include "NetworkManager.hpp"
-#include "GameManager.hpp"
+#include "objects/NetworkManager.hpp"
 #include "MvpServer.hpp"
 #include "commontypes.hpp"
+#include "objects/GameManager.hpp"
 
 using namespace admirals::mvp::objects;
 using namespace admirals::net;
 
 NetworkManager::NetworkManager(const std::string &name,
                                GameManager &gameManager)
-    : GameObject(name, 0, Vector3(0)), m_gameManager(gameManager) {}
+    : GameObject(name), m_gameManager(gameManager) {}
 
 NetworkManager::~NetworkManager() {
     if (m_isHost) {
@@ -16,9 +16,9 @@ NetworkManager::~NetworkManager() {
     }
 }
 
-void NetworkManager::OnStart(const EngineContext &ctx) {}
+void NetworkManager::OnStart(const EngineContext &) {}
 
-void NetworkManager::OnUpdate(const EngineContext &ctx) { HandleMessages(); }
+void NetworkManager::OnUpdate(const EngineContext &) { HandleMessages(); }
 
 bool NetworkManager::StartAndConnectToServer(uint16_t port,
                                              const size_t maxTries) {
@@ -108,7 +108,6 @@ void NetworkManager::HandleMessages() {
         auto msg = Incoming().Front().message;
         Incoming().PopFront();
 
-        printf("Message id: %d\n", msg.header.id);
         switch (msg.header.id) {
         case NetworkMessageTypes::ReadyConfirmation: {
             ReadyUpResponse(msg);

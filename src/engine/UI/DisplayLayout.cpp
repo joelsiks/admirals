@@ -1,5 +1,8 @@
-#include "UI/DisplayLayout.hpp"
+#include <vector>
+
+#include "DisplayLayout.hpp"
 #include "Renderer.hpp"
+#include "UI/DisplayLayout.hpp"
 
 using namespace admirals;
 using namespace admirals::UI;
@@ -9,14 +12,14 @@ void DisplayLayout::Render(const EngineContext &ctx) const {
 
     for (const auto &element : m_elements) {
         const DisplayOrientation orientation = element->GetDisplayOrientation();
-        const Vector2 displaySize = element->GetDisplaySize();
+        const Vector2 displaySize = element->GetSize();
 
         // Calculate the position with respect to the matching positionOffset.
         Vector2 position =
             GetPositionFromOrientation(orientation, displaySize, ctx);
         position[0] += positionOffsets[orientation];
 
-        element->SetDisplayPosition(position);
+        element->SetPosition(position);
 
         element->Render(ctx);
 
@@ -51,9 +54,51 @@ void DisplayLayout::RebuildQuadTree(const Vector2 &windowSize) {
 void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
     const Vector2 clickLocation = args.Location();
     for (const auto &element : m_quadtree.GetObjectsAtPosition(clickLocation)) {
+        if (args.handled)
+            break;
         auto el = static_pointer_cast<Element>(element);
-        if (el->GetBoundingBox().Contains(clickLocation)) {
+        if (el->IsVisible() && el->GetBoundingBox().Contains(clickLocation)) {
             el->OnClick(args);
+        }
+    }
+}
+
+void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
+    const Vector2 mouseLocation = args.Location();
+    std::unordered_set<std::string> currentMouseOverElements;
+
+    for (const auto &element : m_quadtree.GetObjectsAtPosition(mouseLocation)) {
+        if (args.handled) {
+            break;
+        }
+
+        auto el = static_pointer_cast<Element>(element);
+        const std::string name = el->name();
+        if (el->IsVisible() && el->GetBoundingBox().Contains(mouseLocation)) {
+            currentMouseOverElements.insert(name);
+            if (m_mouseOverSet.insert(name).second) {
+                el->OnMouseEnter(args);
+            } else {
+                el->OnMouseMove(args);
+            }
+        }
+    }
+
+    // Handle elements that are no longer moused over
+    for (auto it = m_mouseOverSet.begin(); it != m_mouseOverSet.end();) {
+        if (args.handled) {
+            break;
+        }
+
+        const std::string &name = *it;
+        if (!currentMouseOverElements.contains(name)) {
+            auto el = m_elements.Find(name);
+            if (el != nullptr) {
+                el->OnMouseLeave(args);
+            }
+            it = m_mouseOverSet.erase(it);
+        } else {
+            it++;
         }
     }
 }

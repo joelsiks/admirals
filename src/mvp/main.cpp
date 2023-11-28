@@ -32,45 +32,36 @@ void CreateGameBoard() {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "overlayTop", Vector3(0, 0, 1), Vector2(GridWidth, GameData::CellSize),
+        "overlayTop", 1,
+        Rect(Vector2(0, 0), Vector2(GridWidth, GameData::CellSize)),
         Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "overlayBottom", Vector3(0, GridHeight - GameData::CellSize, 1),
-        Vector2(GridWidth, GameData::CellSize), Color::BLACK);
-
+        "overlayBottom", 1,
+        Rect(Vector2(0, GridHeight - GameData::CellSize),
+             Vector2(GridWidth, GameData::CellSize)),
+        Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "islandLeft0", Vector3(0, GameData::CellSize, 1), cellSize, green);
+        "islandLeft", 1,
+        Rect(Vector2(0, GameData::CellSize),
+             Vector2(GameData::CellSize, GameData::CellSize * 3)),
+        green);
     GameData::engine->MakeGameObject<Quad>(
-        "islandLeft1", Vector3(0, 2 * GameData::CellSize, 1), cellSize, green);
-    GameData::engine->MakeGameObject<Quad>(
-        "islandLeft2", Vector3(0, 3 * GameData::CellSize, 1), cellSize, green);
-    GameData::engine->MakeGameObject<Quad>(
-        "islandRight0",
-        Vector3(GridWidth - GameData::CellSize,
-                GridHeight - 2 * GameData::CellSize, 1),
-        cellSize, green);
-    GameData::engine->MakeGameObject<Quad>(
-        "islandRight1",
-        Vector3(GridWidth - GameData::CellSize,
-                GridHeight - 3 * GameData::CellSize, 1),
-        cellSize, green);
-    GameData::engine->MakeGameObject<Quad>(
-        "islandRight2",
-        Vector3(GridWidth - GameData::CellSize,
-                GridHeight - 4 * GameData::CellSize, 1),
-        cellSize, green);
+        "islandRight", 1,
+        Rect(Vector2(GridWidth - GameData::CellSize,
+                     GridHeight - 4 * GameData::CellSize),
+             Vector2(GameData::CellSize, GameData::CellSize * 3)),
+        green);
 }
 
 void CreateBases(const Texture &atlas) {
     const Vector2 cellSize = Vector2(GameData::CellSize);
     GameData::engine->MakeGameObject<Sprite>(
-        "base0", Vector3(0, 2 * GameData::CellSize, 2), cellSize, atlas,
-        Vector2(0));
+        "base0", atlas, 2, Rect(Vector2(0, 2 * GameData::CellSize), cellSize));
     GameData::engine->MakeGameObject<Sprite>(
-        "base1",
-        Vector3(GridWidth - GameData::CellSize,
-                GridHeight - 3 * GameData::CellSize, 2),
-        cellSize, atlas, Vector2(0));
+        "base1", atlas, 2,
+        Rect(Vector2(GridWidth - GameData::CellSize,
+                     GridHeight - 3 * GameData::CellSize),
+             cellSize));
 }
 
 void CreateUI(const Texture &atlas,
@@ -152,19 +143,19 @@ void SwapEngineLayers() {
 void CreateStartMenuScene(const Texture &atlas) {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip1", Vector2(0, 0), Vector2(80, 80), atlas, ShipType::Cruiser,
-        70);
+        "movingShip1", atlas, 1, Rect(Vector2(0, 0), Vector2(80, 80)),
+        ShipType::Cruiser, 70);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip2", Vector2(500, 300), Vector2(80, 80), atlas,
+        "movingShip2", atlas, 1, Rect(Vector2(500, 300), Vector2(80, 80)),
         ShipType::Destroyer, 150);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip3", Vector2(200, 500), Vector2(80, 80), atlas,
+        "movingShip3", atlas, 1, Rect(Vector2(200, 500), Vector2(80, 80)),
         ShipType::Cruiser, 80);
 }
 
 int main(int, char *[]) {
     GameData::engine =
-        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
+        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, true);
 
     CreateGameBoard();
 

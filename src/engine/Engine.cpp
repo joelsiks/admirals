@@ -46,10 +46,23 @@ bool Engine::PollAndHandleEvent() {
                 m_displayLayout->OnClick(args);
             }
 
+            if (hasScene() && !args.handled) {
+                m_scene->OnClick(args);
+            }
+
             onMouseClick.Invoke(this, args);
         } break;
         case SDL_MOUSEMOTION: {
             auto args = MouseMotionEventArgs(e.motion);
+
+            if (hasDisplayLayout()) {
+                m_displayLayout->OnMouseMove(args);
+            }
+
+            if (hasScene() && !args.handled) {
+                m_scene->OnMouseMove(args);
+            }
+
             onMouseMove.Invoke(this, args);
         } break;
         case SDL_KEYDOWN:
@@ -89,13 +102,17 @@ void Engine::StartGameLoop() {
         lastTime = now;
 
         quit = PollAndHandleEvent();
+        m_context.windowSize = m_renderer->GetWindowSize();
 
         if (hasScene()) {
             m_scene->OnUpdate(GetContext());
+            m_scene->RebuildQuadTree(m_context.windowSize);
         }
 
-        m_context.windowSize = m_renderer->GetWindowSize();
-        m_displayLayout->RebuildQuadTree(m_context.windowSize);
+        if (hasDisplayLayout()) {
+            m_displayLayout->RebuildQuadTree(m_context.windowSize);
+        }
+
         m_renderer->Render(GetContext(), layers);
     }
 }
