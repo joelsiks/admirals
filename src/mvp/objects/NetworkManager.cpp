@@ -11,22 +11,36 @@ NetworkManager::NetworkManager(const std::string &name,
 
 NetworkManager::~NetworkManager() {}
 
-void NetworkManager::OnStart(const EngineContext &ctx) {
-    printf("NetworkManager::OnStart()\n");
-
-    // Should probably be called later and not here
-    while (!IsConnected()) {
-        Connect("127.0.0.1", "60000");
-        printf("Waiting for connection...\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-    printf("Connected!\n");
-
-    // Should probably be called later and not here
-    ReadyUp();
-}
+void NetworkManager::OnStart(const EngineContext &ctx) {}
 
 void NetworkManager::OnUpdate(const EngineContext &ctx) { HandleMessages(); }
+
+bool NetworkManager::ConnectToServer(std::string ip, std::string port,
+                                     const size_t maxTries) {
+    for (size_t i = 0; i < maxTries; i++) {
+        if (m_debug) {
+            printf("Trying to connect to the server...\n");
+        }
+
+        Connect(ip, port);
+        if (IsConnected()) {
+            if (m_debug) {
+                printf("Connected to the server\n");
+            }
+
+            // Should probably be called later by the user conciously and not here
+            ReadyUp();
+            
+            return true;
+        }
+    }
+
+    if (m_debug) {
+        printf("Failed to connect to the server\n");
+    }
+
+    return false;
+}
 
 void NetworkManager::BuyShip(uint8_t type) {
     if (m_debug)
@@ -65,6 +79,7 @@ void NetworkManager::ReadyUp() {
 
     Message msg;
     msg.header.id = NetworkMessageTypes::PlayerReady;
+    printf("Sending ready message\n");
     Send(msg);
 }
 
@@ -74,6 +89,7 @@ void NetworkManager::HandleMessages() {
         auto msg = Incoming().Front().message;
         Incoming().PopFront();
 
+        printf("Message id: %d\n", msg.header.id);
         switch (msg.header.id) {
         case NetworkMessageTypes::ReadyConfirmation: {
             ReadyUpResponse(msg);

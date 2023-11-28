@@ -18,6 +18,10 @@ public:
     void OnUpdate(const EngineContext &ctx) override;
     void Render(const EngineContext &ctx) const override {}
 
+    bool ConnectToServer(std::string ip = "127.0.0.1",
+                         std::string port = "60000",
+                         const size_t maxTries = -1);
+
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);
     void AttackShip(uint16_t id, uint16_t targetId);

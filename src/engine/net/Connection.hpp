@@ -35,7 +35,7 @@ public:
     void ConnectToClient(admirals::net::Server *server, uint32_t uid = 0);
 
     // Connects to the server from a client
-    void
+    bool
     ConnectToServer(const asio::ip::tcp::resolver::results_type &endpoints);
 
     // Disconnects the connection
@@ -61,7 +61,7 @@ private:
     void WriteValidation();
     void ReadValidation();
 
-    void HandleConnectToserver(std::error_code ec);
+    bool HandleConnectToserver(std::error_code ec);
     void HandleReadHeader(std::error_code ec);
     void HandleReadBody(std::error_code ec);
     void HandleWriteHeader(std::error_code ec);

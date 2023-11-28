@@ -96,7 +96,7 @@ void CreateUI(const Texture &atlas,
     }
 }
 
-void CreateStartMenu() {
+void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     GameData::startMenuScene = std::make_shared<scene::Scene>();
 
     GameData::startMenu = std::make_shared<UI::menu::Menu>(
@@ -116,17 +116,26 @@ void CreateStartMenu() {
     UI::menu::ClickOption connectOption("connectOption", 1.0,
                                         "Connect to server");
     connectOption.onClick.Subscribe(
-        [](void *, events::MouseClickEventArgs &args) {
+        [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                GameData::engine->SetAndGetDisplayLayout(g_dlStore);
-                GameData::engine->SetAndGetScene(g_sStore);
+                bool connected = gameManager->ConnectToServer();
+                if (connected) {
+                    GameData::engine->SetAndGetDisplayLayout(g_dlStore);
+                    GameData::engine->SetAndGetScene(g_sStore);
+                }
             }
         });
     GameData::startMenu->AddMenuOption(
         UI::menu::MenuOption::CreateFromDerived(connectOption));
 
     // Currently does nothing...
-    const UI::menu::ClickOption startOption("startOption", 1.0, "Start server");
+    UI::menu::ClickOption startOption("startOption", 1.0, "Start server");
+    startOption.onClick.Subscribe(
+        [](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed) {
+                printf("Start server\n");
+            }
+        });
     GameData::startMenu->AddMenuOption(
         UI::menu::MenuOption::CreateFromDerived(startOption));
 }
@@ -165,7 +174,7 @@ int main(int, char *[]) {
 
     CreateUI(atlas, gameManager);
 
-    CreateStartMenu();
+    CreateStartMenu(gameManager);
     SwapEngineLayers();
     CreateStartMenuScene(atlas);
 

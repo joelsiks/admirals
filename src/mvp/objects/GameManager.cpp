@@ -14,29 +14,12 @@ GameManager::~GameManager() {}
 
 void GameManager::OnStart(const EngineContext &ctx) { srand(time(NULL)); }
 
-void GameManager::OnUpdate(const EngineContext &ctx) {
-    if (!m_gameStarted) {
-        return;
-    }
+void GameManager::OnUpdate(const EngineContext &ctx) {}
 
-    // Tests for actions
-    // if (m_turn % 10 == 5 && !m_testActionDone) {
-    //     m_networkManager->BuyShip(ShipType::Destroyer);
-    //     m_testActionDone = true;
-    // }
-
-    // if (m_turn % 10 == 0 && m_testActionDone) {
-    //     auto it = std::find_if(
-    //         m_ships.begin(), m_ships.end(),
-    //         [this](const std::pair<uint16_t, std::shared_ptr<Ship>> &pair) {
-    //             return pair.second->GetPlayerId() == m_playerId;
-    //         });
-
-    //     uint16_t id = it->second->GetId();
-
-    //     m_networkManager->MoveShip(id, rand() % 10, rand() % 10);
-    //     m_testActionDone = false;
-    // }
+bool GameManager::ConnectToServer(std::string ip,
+                                  std::string port,
+                                  const size_t maxTries) {
+    return m_networkManager->ConnectToServer(ip, port, maxTries);
 }
 
 void GameManager::StopGame() {
