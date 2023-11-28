@@ -22,7 +22,7 @@ private:
     /// @brief Compares values of the multiset to order the values by their
     //         respective `IOrdered::order` value.
     struct Comparator {
-        Comparator(const OrderedCollection &c) : m_collection(c) {}
+        Comparator(const OrderedCollection &ctx) : m_collection(ctx) {}
 
         bool operator()(const std::string &l, const std::string &r) const {
             const std::shared_ptr<IOrdered> a = m_collection.m_objects.at(l);
@@ -84,7 +84,7 @@ public:
                         const KeyToPointerMap &objects)
             : m_revIter(i), m_objects(objects) {}
 
-        const std::shared_ptr<T> operator*() const {
+        std::shared_ptr<T> operator*() const {
             auto v = (m_revIter.operator*)();
             return m_objects.at(v);
         }
@@ -178,6 +178,15 @@ public:
             return res->second;
         }
         return nullptr;
+    }
+
+    inline std::vector<std::shared_ptr<T>> ToVector() const {
+        std::vector<std::shared_ptr<T>> elements;
+        for (Iterator i = begin(); i != end(); ++i) {
+            elements.push_back(*i);
+        }
+
+        return elements;
     }
 
 protected:

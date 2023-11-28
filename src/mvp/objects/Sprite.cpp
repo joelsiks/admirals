@@ -5,28 +5,19 @@
 using namespace admirals;
 using namespace admirals::mvp::objects;
 
-Sprite::Sprite(const std::string &name, const Vector3 &position,
-               const Vector2 &size, const Texture &source,
-               const Vector2 &texOffset, const Vector2 &texSize)
-    : Sprite(name, position.z(), position.xy(), size, source, texOffset,
-             texSize) {}
-
-Sprite::Sprite(const std::string &name, float order, const Vector2 &position,
-               const Vector2 &size, const Texture &source,
-               const Vector2 &texOffset, const Vector2 &texSize)
-    : scene::GameObject(name, order, position), m_size(size), m_source(source),
+Sprite::Sprite(const std::string &name, const Texture &source, float order,
+               const Rect &bounds, const Vector2 &texOffset,
+               const Vector2 &texSize)
+    : scene::GameObject(name, order, bounds), m_source(source),
       m_texSize(texSize), m_texOffset(texOffset) {}
 
-void Sprite::OnUpdate(const EngineContext &c) {}
-
-void Sprite::OnStart(const EngineContext &c) {}
-
-void Sprite::Render(const EngineContext &c) const {
+void Sprite::Render(const EngineContext &ctx) const {
     const Vector2 org = this->CalcOrigin();
     const Vector2 offset =
-        (c.windowSize - Vector2(GameData::GridSize,
-                                GameData::GridSize + 2 * GameData::CellSize)) /
+        (ctx.windowSize -
+         Vector2(GameData::GridSize,
+                 GameData::GridSize + 2 * GameData::CellSize)) /
         2.f;
     renderer::Renderer::DrawSprite(m_source, org + offset, m_texOffset,
-                                   m_texSize, m_size / m_texSize);
+                                   m_texSize, GetSize() / m_texSize);
 }

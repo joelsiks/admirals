@@ -5,11 +5,12 @@ using namespace admirals;
 using namespace admirals::mvp::objects;
 
 Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
-    : Sprite("ship-" + std::to_string(data.id), 3, Vector2(data.x, data.y),
-             size, source, Ship::ShipTypeToTexOffset(data.type)),
+    : Sprite("ship-" + std::to_string(data.id), source, 3,
+             Rect(data.x, data.y, size.x(), size.y()),
+             Ship::ShipTypeToTexOffset(data.type)),
       m_data(data) {}
 
-void Ship::OnUpdate(const EngineContext &c) {
+void Ship::OnUpdate(const EngineContext &) {
     const Vector2 pos = GetPosition();
     Vector2 target = pos;
     if (m_data.owner % 2 == 1) {
@@ -34,8 +35,6 @@ void Ship::OnUpdate(const EngineContext &c) {
         onChanged.Invoke(this, e);
     }
 }
-
-void Ship::OnStart(const EngineContext &c) {}
 
 Vector2 Ship::CalcOrigin() const {
     return GetPosition() * GameData::CellSize - Vector2(0, GameData::CellSize);

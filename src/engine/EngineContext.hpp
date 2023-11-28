@@ -7,9 +7,12 @@ struct EngineContext {
     Vector2 windowSize;
 
     // Indicates whether to draw outlines of elements for debugging purposes.
-    bool renderDebugOutlines;
+    bool debug;
 
     double deltaTime;
+
+    Texture *fontTexture;
+    float fontWidth, fontHeight;
 };
 
 } // namespace admirals

@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.hpp"
-#include "Ship.hpp"
 #include "commontypes.hpp"
 #include "events/EventSystem.hpp"
+#include "objects/Ship.hpp"
 #include "shared.hpp"
 
 namespace admirals::mvp::objects {
@@ -11,7 +11,7 @@ class NetworkManager;
 
 class CoinsChangesEventArgs : public events::EventArgs {
 public:
-    CoinsChangesEventArgs(int c) : coins(c) {}
+    CoinsChangesEventArgs(int ctx) : coins(ctx) {}
     const int coins;
 };
 
@@ -22,9 +22,9 @@ public:
 
     events::EventSystem<CoinsChangesEventArgs> onCoinsChanged;
 
-    void OnStart(const EngineContext &c) override;
-    void OnUpdate(const EngineContext &c) override;
-    void Render(const EngineContext &c) const override {}
+    void OnStart(const EngineContext &ctx) override;
+    void OnUpdate(const EngineContext &ctx) override;
+    void Render(const EngineContext &ctx) const override {}
 
     void StartGame() { m_gameStarted = true; }
     void StopGame();

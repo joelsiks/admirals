@@ -17,7 +17,7 @@ using namespace admirals;
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
 const int CELL_SIZE = 100;
-const float CELL_SPEED = 500.f;
+const float CELL_SPEED = 300.f;
 const std::vector<Color> COLOR_LOOP = {Color::BLUE, Color::RED, Color::GREEN,
                                        Color::BLACK};
 
@@ -27,80 +27,66 @@ private:
 
 public:
     CellObject(const std::string &name, const Vector3 &pos, const Color &color)
-        : scene::GameObject(name, pos), m_color(color) {}
+        : scene::GameObject(name, pos.x(), pos.xy(), Vector2(CELL_SIZE)),
+          m_color(color) {}
 
     void OnStart(const EngineContext &c) override {}
 
-    void OnClick(void *, events::MouseCLickEventArgs e) {
-        if (e.button != events::MouseButton::Left || !e.pressed) {
+    void OnClick(events::MouseClickEventArgs &args) override {
+        if (args.button != events::MouseButton::Left || !args.pressed) {
             return;
         }
 
-        const Vector2 pos = GetPosition();
-        const Vector2 loc = e.location();
-        const float x = static_cast<float>(e.windowWidth) /
-                        static_cast<float>(WINDOW_WIDTH);
-        const float y = static_cast<float>(e.windowHeight) /
-                        static_cast<float>(WINDOW_HEIGHT);
-        if (loc.x() >= pos.x() * x && loc.x() <= (pos.x() + CELL_SIZE) * x &&
-            loc.y() >= pos.y() * y && loc.y() <= (pos.y() + CELL_SIZE) * y) {
-            // This was clicked
-            int index = 1;
-            for (const Color &color : COLOR_LOOP) {
-                if (color == this->m_color) {
-                    break;
-                }
-                index++;
+        int index = 1;
+        for (const Color &color : COLOR_LOOP) {
+            if (color == this->m_color) {
+                break;
             }
-            m_color = COLOR_LOOP[index % COLOR_LOOP.size()];
+            index++;
+        }
+        m_color = COLOR_LOOP[index % COLOR_LOOP.size()];
+    }
+
+    void OnMouseEnter(events::MouseMotionEventArgs &) override {
+        m_drawOutline = true;
+    }
+    void OnMouseLeave(events::MouseMotionEventArgs &) override {
+        m_drawOutline = false;
+    }
+
+    Vector2 GetPosition() const override {
+        return m_boundingBox.Position() * m_scale;
+    }
+
+    Vector2 GetSize() const override { return m_boundingBox.Size() * m_scale; }
+
+    Rect GetBoundingBox() const override {
+        return Rect(GetPosition(), GetSize());
+    }
+
+    void OnUpdate(const EngineContext &ctx) override {
+        m_scale = ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
+                                           static_cast<float>(WINDOW_HEIGHT));
+        const float motion = CELL_SPEED * static_cast<float>(ctx.deltaTime);
+        float x = m_boundingBox.PositionX() + motion;
+        if (x > WINDOW_WIDTH) {
+            x = x - WINDOW_WIDTH - CELL_SIZE;
+        }
+        m_boundingBox.SetPositionX(x);
+    }
+
+    void Render(const EngineContext &) const override {
+        const Rect bounds = GetBoundingBox();
+        renderer::Renderer::DrawRectangle(bounds, this->m_color);
+        // Mouse is inside bounds
+        if (m_drawOutline) {
+            renderer::Renderer::DrawRectangleOutline(bounds, 3, Color::BLACK);
         }
     }
-
-    void OnUpdate(const EngineContext &c) override {
-        Vector2 position = this->GetPosition();
-        float x = position.x() + CELL_SPEED * static_cast<float>(c.deltaTime);
-        while (x > WINDOW_WIDTH) {
-            x = -CELL_SIZE + (x - WINDOW_WIDTH);
-        }
-        position.SetX(x);
-        this->SetPosition(position);
-    }
-
-    void Render(const EngineContext &c) const override {
-        const Vector2 pos = this->GetPosition();
-        // Calculate scaling
-        const Vector2 scale =
-            c.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
-                                   static_cast<float>(WINDOW_HEIGHT));
-        const Vector2 size = scale * CELL_SIZE;
-        renderer::Renderer::DrawRectangle(pos * scale, size, this->m_color);
-    }
-};
-
-class FpsTextElementController : public scene::GameObject {
-public:
-    FpsTextElementController(const std::string &name,
-                             std::shared_ptr<UI::TextElement> textElement)
-        : scene::GameObject(name, -1, Vector2(0)),
-          m_textElement(std::move(textElement)) {}
-
-    void OnStart(const EngineContext &) override {
-        m_time = std::chrono::high_resolution_clock::now();
-    }
-
-    void OnUpdate(const EngineContext &c) override {
-        char fpsString[FPS_BUFFER_SIZE];
-        if (sprintf(fpsString, "DT = %f, FPS: %f", c.deltaTime,
-                    1.f / c.deltaTime) > 0) {
-            m_textElement->SetText(std::string(fpsString));
-        }
-    }
-
-    void Render(const EngineContext &c) const override {}
 
 private:
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_time;
-    std::shared_ptr<UI::TextElement> m_textElement;
+    Vector2 m_scale = Vector2(1);
+    bool m_drawOutline = false;
 };
 
 int main(int, char *[]) {
@@ -117,14 +103,6 @@ int main(int, char *[]) {
                                                 Color::RED);
     auto c4 = engine.MakeGameObject<CellObject>("6", Vector3(200, 200, 0),
                                                 Color::GREEN);
-    auto fpsText = engine.MakeUIElement<UI::TextElement>(
-        "Fps TextElement", 0, "", Vector2(500, 40), Color::BLACK);
-    fpsText->SetDisplayPosition(UI::DisplayPosition::LowerLeft);
-    engine.MakeGameObject<FpsTextElementController>("controller", fpsText);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c1);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c2);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c3);
-    engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c4);
     engine.StartGameLoop();
 
     return EXIT_SUCCESS;

@@ -2,26 +2,34 @@
 #include <memory>
 
 #include "DataObjects.hpp"
-#include "IDrawable.hpp"
+#include "IDisplayable.hpp"
+#include "IInteractiveDrawable.hpp"
 #include "IOrdered.hpp"
 
 namespace admirals::scene {
 
-class GameObject : public IOrdered, public renderer::IDrawable {
+class GameObject : public IOrdered,
+                   public IInteractiveDrawable,
+                   public IDisplayable {
 public:
-    GameObject(const std::string &name, float order, const Vector2 &position);
+    GameObject(const std::string &name, float order, const Vector2 &position,
+               const Vector2 &size)
+        : GameObject(name, order, Rect(position, size)) {}
 
-    /// @brief This expands to `GameObject(name, position.z(), position.xy())`;
-    GameObject(const std::string &name, const Vector3 &position);
+    GameObject(const std::string &name, float order = 0.f,
+               const Rect &bounds = Rect())
+        : IOrdered(name, order), IDisplayable(bounds) {}
 
-    inline Vector2 GetPosition() const { return m_position; }
-    inline void SetPosition(const Vector2 &pos) { m_position = pos; }
-    inline void SetPosition(float x, float y) { m_position = Vector2(x, y); }
+    // Engine event handlers
+    virtual void OnStart(const EngineContext &ctx) {}
+    virtual void OnUpdate(const EngineContext &ctx) {}
 
-    virtual void OnStart(const EngineContext &c) = 0;
-    virtual void OnUpdate(const EngineContext &c) = 0;
+    virtual void OnClick(events::MouseClickEventArgs &args) override {}
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override {}
 
-    virtual void Render(const EngineContext &c) const = 0;
+    virtual void Render(const EngineContext &ctx) const = 0;
 
     template <typename T>
     static std::shared_ptr<GameObject>
@@ -31,9 +39,6 @@ public:
             std::make_shared<T>(derivedObject);
         return gameObject;
     }
-
-private:
-    Vector2 m_position;
 };
 
 } // namespace admirals::scene

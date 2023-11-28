@@ -1,37 +1,39 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <unordered_set>
 
-#include "InteractiveDrawable.hpp"
+#include "IDrawable.hpp"
 #include "OrderedCollection.hpp"
+#include "QuadTree.hpp"
 #include "UI/Element.hpp"
+#include "events/MouseClickEvent.hpp"
+#include "events/MouseMotionEvent.hpp"
 
 namespace admirals::UI {
 
-class DisplayLayout : public InteractiveDrawable {
+class DisplayLayout : public renderer::IDrawable {
 public:
-    DisplayLayout();
+    // Engine events
+    void Render(const EngineContext &ctx) const override;
 
-    void Render(const EngineContext &c) const override;
-    void HandleEvent(SDL_Event &e) override;
+    virtual void OnClick(events::MouseClickEventArgs &args);
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args);
 
+    // Collection
     void AddElement(std::shared_ptr<Element> element);
 
-    static Vector2 GetOriginFromDisplayPosition(DisplayPosition pos,
-                                                const Vector2 &displaySize,
-                                                const EngineContext &c);
+    static Vector2 GetPositionFromOrientation(DisplayOrientation orientation,
+                                              const Vector2 &displaySize,
+                                              const EngineContext &ctx);
 
-    inline Vector2 TextFontSize(const std::string &text) const {
-        return Vector2(static_cast<float>(text.length()) * m_fontWidth,
-                       m_fontHeight);
-    }
+    // Initialization
+    void RebuildQuadTree(const Vector2 &windowSize);
 
 protected:
-    Texture m_font;
-    float m_fontWidth, m_fontHeight;
-
     OrderedCollection<Element> m_elements;
+    QuadTree m_quadtree;
+    std::unordered_set<std::string> m_mouseOverSet;
 };
 
 } // namespace admirals::UI

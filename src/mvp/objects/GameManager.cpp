@@ -1,20 +1,19 @@
 #include "GameManager.hpp"
-#include "NetworkManager.hpp"
 #include "events/EventArgs.hpp"
+#include "objects/NetworkManager.hpp"
 
 using namespace admirals::mvp::objects;
 
-GameManager::GameManager(const std::string &name)
-    : scene::GameObject(name, 0, Vector3(0)) {
+GameManager::GameManager(const std::string &name) : scene::GameObject(name) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
 }
 
 GameManager::~GameManager() {}
 
-void GameManager::OnStart(const EngineContext &c) { srand(time(NULL)); }
+void GameManager::OnStart(const EngineContext &) { srand(time(NULL)); }
 
-void GameManager::OnUpdate(const EngineContext &c) {
+void GameManager::OnUpdate(const EngineContext &) {
     if (!m_gameStarted) {
         return;
     }
@@ -75,19 +74,17 @@ void GameManager::AttackShip(uint16_t id, uint16_t targetId) {
 }
 
 void GameManager::ShipChangeEventHandler(void *sender,
-                                         admirals::events::EventArgs e) {
+                                         admirals::events::EventArgs) {
     const Ship *ship = static_cast<Ship *>(sender);
     switch (ship->GetAction()) {
     case ShipAction::Move: {
         MoveShip(ship->GetID(), ship->GetActionX(), ship->GetActionY());
         break;
     }
-    case ShipAction::Attack: {
+    // case ShipAction::Attack:
+    //     break;
+    default:
         break;
-    }
-    default: {
-        break;
-    }
     }
 }
 

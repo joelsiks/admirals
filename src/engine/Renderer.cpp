@@ -9,8 +9,9 @@
 using namespace admirals;
 using namespace admirals::renderer;
 
-void RenderFont(VK2DTexture font, const admirals::Vector2 &postion,
-                const char *text) {
+#define FPS_BUFFER_SIZE 100
+
+void RenderFont(VK2DTexture font, const Vector2 &postion, const char *text) {
     float x = postion.x();
     float y = postion.y();
     const float ox = x;
@@ -39,11 +40,11 @@ Renderer::~Renderer() {
     SDL_DestroyWindow(this->m_window);
 }
 
-int Renderer::Init(const EngineContext &c) {
+int Renderer::Init(const EngineContext &ctx) {
     const VK2DRendererConfig config = {
         VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE, VK2D_FILTER_TYPE_NEAREST};
-    VK2DStartupOptions options = {c.renderDebugOutlines, c.renderDebugOutlines,
-                                  c.renderDebugOutlines, "error.txt", false};
+    VK2DStartupOptions options = {ctx.debug, ctx.debug, ctx.debug, "error.txt",
+                                  false};
 
     const int code = vk2dRendererInit(this->m_window, config, &options);
     if (code < 0) {
@@ -51,8 +52,8 @@ int Renderer::Init(const EngineContext &c) {
     }
 
     const VK2DCameraSpec camera = {
-        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, c.windowSize.x(),
-        c.windowSize.y(),         1, 0};
+        VK2D_CAMERA_TYPE_DEFAULT, 0, 0, ctx.windowSize.x(),
+        ctx.windowSize.y(),       1, 0};
 
     vk2dRendererSetCamera(camera);
     return code;
@@ -75,6 +76,16 @@ void Renderer::Render(const EngineContext &context,
 
         drawable->Render(context);
     }
+
+    if (context.debug) {
+        char fpsString[FPS_BUFFER_SIZE];
+        if (sprintf(fpsString, "DT = %f, FPS: %f", context.deltaTime,
+                    1.f / context.deltaTime) > 0) {
+            DrawText(*context.fontTexture, Vector2(0, 0), Color::RED,
+                     fpsString);
+        }
+    }
+
     vk2dRendererEndFrame();
 }
 
@@ -85,12 +96,22 @@ void Renderer::DrawLine(const Vector2 &p1, const Vector2 &p2,
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 
+void Renderer::DrawRectangle(const Rect &rect, const Color &color) {
+    Renderer::DrawRectangle(rect.Position(), rect.Size(), color);
+}
+
 void Renderer::DrawRectangle(const Vector2 &position, const Vector2 &size,
                              const Color &color) {
     vk2dRendererSetColourMod(color.Data());
     vk2dRendererDrawRectangle(position[0], position[1], size[0], size[1], 0, 0,
                               0);
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::DrawRectangleOutline(const Rect &rect, float outlineWidth,
+                                    const Color &color) {
+    Renderer::DrawRectangleOutline(rect.Position(), rect.Size(), outlineWidth,
+                                   color);
 }
 
 void Renderer::DrawRectangleOutline(const Vector2 &position,
