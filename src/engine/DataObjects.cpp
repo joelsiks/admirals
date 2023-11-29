@@ -50,6 +50,8 @@ Color::Color() {}
 
 Color::Color(float r, float g, float b, float a) : Vector4(r, g, b, a) {}
 
+Color::Color(const Vector4 &vec) : Vector4(vec) {}
+
 Color::~Color() {}
 
 Color Color::FromHEX(const char *hex) {

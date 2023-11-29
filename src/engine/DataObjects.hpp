@@ -394,12 +394,7 @@ public:
     /// @brief Constructs a Color object from a Vector4. This assumes that the
     /// Vector4 contains values from 0.0-1.0.
     /// @param vec A vector containing the data to put in the Color.
-    Color(const Vector4 &vec) : Vector4(vec) {
-        SetR(vec.x());
-        SetG(vec.y());
-        SetB(vec.z());
-        SetA(vec.w());
-    }
+    Color(const Vector4 &vec);
 
     ~Color();
 
