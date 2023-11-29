@@ -23,9 +23,13 @@ public:
     virtual void Render(const EngineContext &ctx) const override;
 
     void OnClick(events::MouseClickEventArgs &args) override;
+
     virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override;
     virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override;
     virtual void OnMouseMove(events::MouseMotionEventArgs &args) override;
+
+    virtual void OnShown() override;
+    virtual void OnHidden() override;
 
     virtual std::string GetOptionText() const = 0;
     inline void SetTextColor(const Color &color) { m_textColor = color; }

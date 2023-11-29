@@ -8,6 +8,7 @@
 #include "IInteractiveDrawable.hpp"
 #include "OrderedCollection.hpp"
 #include "QuadTree.hpp"
+#include "events/EventSystem.hpp"
 #include "events/MouseClickEvent.hpp"
 #include "events/MouseMotionEvent.hpp"
 
@@ -15,6 +16,9 @@ namespace admirals::scene {
 
 class Scene : public renderer::IDrawable {
 public:
+    // Invoked when the DisplayLayout is swapped with another layout.
+    events::EventSystem<events::EventArgs> onSwapped;
+
     // Engine events
     virtual void Render(const EngineContext &ctx) const override;
 
@@ -23,6 +27,9 @@ public:
 
     virtual void OnClick(events::MouseClickEventArgs &args);
     virtual void OnMouseMove(events::MouseMotionEventArgs &args);
+
+    virtual void OnShown();
+    virtual void OnHidden();
 
     // Initialization
     bool IsInitialized() const { return m_isInitialized; }

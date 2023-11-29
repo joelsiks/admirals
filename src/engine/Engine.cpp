@@ -29,6 +29,44 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_scene = std::make_shared<scene::Scene>();
 }
 
+std::shared_ptr<UI::DisplayLayout> Engine::SetAndGetDisplayLayout(
+    const std::shared_ptr<UI::DisplayLayout> &layout) {
+    auto currentLayout = m_displayLayout;
+    currentLayout->OnHidden();
+
+    m_displayLayout = layout;
+    m_displayLayout->OnShown();
+
+    SDL_MouseMotionEvent motionEvent;
+    motionEvent.state = SDL_GetMouseState(&motionEvent.x, &motionEvent.y);
+    events::MouseMotionEventArgs args(motionEvent);
+    m_displayLayout->OnMouseMove(args);
+
+    return currentLayout;
+}
+
+std::shared_ptr<scene::Scene>
+Engine::SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
+    auto currentScene = m_scene;
+    currentScene->OnHidden();
+
+    m_scene = scene;
+
+    // Initialize the scene immediately after swapping if it isn't already.
+    if (hasScene() && !m_scene->IsInitialized()) {
+        m_scene->OnStart(m_context);
+    }
+
+    m_scene->OnShown();
+
+    SDL_MouseMotionEvent motionEvent;
+    motionEvent.state = SDL_GetMouseState(&motionEvent.x, &motionEvent.y);
+    events::MouseMotionEventArgs args(motionEvent);
+    m_scene->OnMouseMove(args);
+
+    return currentScene;
+}
+
 bool Engine::PollAndHandleEvent() {
     bool quit = !m_running;
     SDL_Event e;

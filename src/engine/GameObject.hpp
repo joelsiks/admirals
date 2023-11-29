@@ -25,9 +25,13 @@ public:
     virtual void OnUpdate(const EngineContext &ctx) {}
 
     virtual void OnClick(events::MouseClickEventArgs &args) override {}
+
     virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
     virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
     virtual void OnMouseMove(events::MouseMotionEventArgs &args) override {}
+
+    virtual void OnShown() override {}
+    virtual void OnHidden() override {}
 
     virtual void Render(const EngineContext &ctx) const = 0;
 

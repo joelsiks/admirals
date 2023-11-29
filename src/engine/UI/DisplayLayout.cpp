@@ -107,6 +107,20 @@ void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
     }
 }
 
+void DisplayLayout::OnShown() {
+    for (const auto &el : m_elements) {
+        el->OnShown();
+    }
+}
+
+void DisplayLayout::OnHidden() {
+    for (const auto &el : m_elements) {
+        el->OnHidden();
+    }
+
+    m_mouseOverSet.clear();
+}
+
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {
     this->m_elements.Insert(std::move(element));
 }

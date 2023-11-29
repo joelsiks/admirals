@@ -22,6 +22,8 @@ public:
     virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override;
     virtual void OnMouseMove(events::MouseMotionEventArgs &args) override;
 
+    virtual void OnHidden() override;
+
     inline void SetBackgroundColor(const Color &color) {
         m_bgColor = color;
         m_bgColorFaded = color * Vector4(1, 1, 1, 0.75);

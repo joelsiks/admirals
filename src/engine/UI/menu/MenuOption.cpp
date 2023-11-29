@@ -35,6 +35,13 @@ void MenuOption::OnMouseMove(events::MouseMotionEventArgs &) {
     renderer::Renderer::SetCursor(renderer::Cursor::Hand);
 }
 
+void MenuOption::OnShown() {}
+
+void MenuOption::OnHidden() {
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+    m_shouldDrawBackground = false;
+}
+
 // TextOption
 TextOption::TextOption(const std::string &name, float order,
                        const std::string &text)

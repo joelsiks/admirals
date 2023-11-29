@@ -36,3 +36,8 @@ void Button::OnMouseLeave(events::MouseMotionEventArgs &) {
 void Button::OnMouseMove(events::MouseMotionEventArgs &) {
     renderer::Renderer::SetCursor(renderer::Cursor::Hand);
 }
+
+void Button::OnHidden() {
+    m_shouldFadeBackground = false;
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+}
