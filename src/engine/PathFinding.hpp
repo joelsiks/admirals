@@ -36,9 +36,9 @@ private:
     /// @param start The start node
     /// @param end The end node
     /// @return The heuristic value from start to end
-    inline static float Heuristic(const Vector2 &start, const Vector2 &end, 
-    const Vector2 pathSize) {
-        return start.Distance(end-pathSize/2);
+    inline static float Heuristic(const Vector2 &start, const Vector2 &end,
+                                  const Vector2 pathSize) {
+        return start.Distance(end - pathSize / 2);
     }
 
     /// @description returns the coordinates for a given vector value (index)
