@@ -1,51 +1,51 @@
 #include "PathFinding.hpp"
+#include <set>
 
 using namespace admirals;
-
-const std::vector<Vector2> ADJACENT_DIRECTIONS = {
-    {1, 0}, {-1, 0},  {0, 1},  {0, -1}, // vertical and horizontal directions
-    {1, 1}, {-1, -1}, {1, -1}, {-1, 1}  // diagonal directions
-};
 
 std::deque<Vector2> PathFinding::FindPath(
     const QuadTree &quadTree, const Vector2 &start, const Vector2 &dest,
     const std::unordered_set<float> &checkedOrders, float detailLevel) {
     const Rect bounds = Rect(Vector2(), quadTree.GetSize());
-    if (!bounds.Contains(start) || !bounds.Contains(dest)) {
+
+    if (!bounds.Contains(start) || !bounds.Contains(dest) ||
+        !IsValidPosition(start, quadTree, checkedOrders) ||
+        !IsValidPosition(dest, quadTree, checkedOrders)) {
         return std::deque<Vector2>();
     }
 
-    const size_t width = static_cast<size_t>(bounds.Width() / detailLevel);
-    const size_t height = static_cast<size_t>(bounds.Height() / detailLevel);
+    const size_t width =
+        static_cast<size_t>((bounds.Width() / detailLevel) + 1);
+    const size_t height =
+        static_cast<size_t>((bounds.Height() / detailLevel) + 1);
     // world grid
-    std::vector<PF_Node> grid(width * height,
-                              {false, 0, 0, 0, static_cast<size_t>(-1)});
+    PF_Node *grid = new PF_Node[width * height];
+
     const size_t startIndex =
         ConvertVectorToNodeIndex(start, width, detailLevel);
     const size_t endIndex = ConvertVectorToNodeIndex(dest, width, detailLevel);
 
-    std::vector<size_t> queue = {startIndex};
+    std::set<size_t, PathFinding::Comparator> queue =
+        std::set<size_t, PathFinding::Comparator>(
+            PathFinding::Comparator(grid));
+    queue.insert(startIndex);
     grid[startIndex].visited = true;
-    size_t minIndex = 0;
-    float minValue = INFINITY;
+    grid[startIndex].path = NULLVALUE;
 
+    size_t neighbors[4];
     while (!queue.empty()) {
-        // 1. Find nodes that can be passed (neighboring passed nodes)
-        // 2. Calculate values of nodes not passed
-        // 3. "pass" node of lowest value & set "path" value to the node it
-        // traveled from
-        // 4. If end node is passed, break.
-        const size_t nodeIndex = queue[minIndex];
-        queue.erase(queue.begin() + static_cast<int>(minIndex));
+        const size_t nodeIndex = *queue.begin();
+        queue.erase(queue.begin());
 
         if (nodeIndex == endIndex) {
             const auto path = FindPathRoot(grid, nodeIndex, width, detailLevel);
+            delete[] grid;
             return path;
         }
 
-        const auto neighbors = FindNeighboringNodes(nodeIndex, width, height);
+        FindNeighboringNodes(nodeIndex, width, height, neighbors);
         for (const size_t neighborIndex : neighbors) {
-            if (neighborIndex == static_cast<size_t>(-1)) {
+            if (neighborIndex == NULLVALUE) {
                 continue;
             }
             PF_Node &neighbor = grid[neighborIndex];
@@ -53,60 +53,59 @@ std::deque<Vector2> PathFinding::FindPath(
                 const Vector2 position =
                     ConvertNodeIndexToVector(neighborIndex, width, detailLevel);
                 neighbor.visited = true;
-                if (IsValidNextPosition(position, quadTree, checkedOrders)) {
+                if (IsValidPosition(position, quadTree, checkedOrders)) {
                     neighbor.h = Heuristic(position, dest);
                     neighbor.g = grid[nodeIndex].g + 1;
                     neighbor.f = neighbor.h + neighbor.g;
                     neighbor.path = nodeIndex;
-                    queue.push_back(neighborIndex);
+                    queue.insert(neighborIndex);
                 }
-            }
-        }
-
-        minValue = INFINITY;
-        for (int index = 0; index < queue.size(); index++) {
-            const size_t nodeIndex = queue[index];
-            if (grid[nodeIndex].f < minValue) {
-                minValue = grid[nodeIndex].f;
-                minIndex = index;
             }
         }
     }
 
+    delete[] grid;
     return std::deque<Vector2>();
 }
 
-std::deque<Vector2> PathFinding::FindPathRoot(const std::vector<PF_Node> &grid,
+std::deque<Vector2> PathFinding::FindPathRoot(const PF_Node *grid,
                                               size_t nodeIndex, size_t width,
                                               float detailLevel) {
     std::deque<Vector2> path = {};
 
-    while (grid[nodeIndex].path != static_cast<size_t>(-1)) {
+    while (grid[nodeIndex].path != NULLVALUE) {
         path.push_front(
             ConvertNodeIndexToVector(nodeIndex, width, detailLevel));
         nodeIndex = grid[nodeIndex].path;
     }
 
+    printf("Path size = %d\n", path.size());
     return path;
 }
 
-std::vector<size_t> PathFinding::FindNeighboringNodes(size_t nodeIndex,
-                                                      size_t width,
-                                                      size_t height) {
-    std::vector<size_t> neighbors;
+void PathFinding::FindNeighboringNodes(size_t nodeIndex, size_t width,
+                                       size_t height, size_t *data) {
     const size_t x = nodeIndex % width;
     const size_t y = nodeIndex / width;
+
     if (x > 0) {
-        neighbors.push_back(nodeIndex - 1);
+        data[0] = nodeIndex - 1;
+    } else {
+        data[0] = NULLVALUE;
     }
-    if (x < width) {
-        neighbors.push_back(nodeIndex + 1);
+    if (x < width - 1) {
+        data[1] = nodeIndex + 1;
+    } else {
+        data[1] = NULLVALUE;
     }
     if (y > 0) {
-        neighbors.push_back(nodeIndex - width);
+        data[2] = nodeIndex - width;
+    } else {
+        data[2] = NULLVALUE;
     }
-    if (y < height) {
-        neighbors.push_back(nodeIndex + width);
+    if (y < height - 1) {
+        data[3] = nodeIndex + width;
+    } else {
+        data[3] = NULLVALUE;
     }
-    return neighbors;
 }

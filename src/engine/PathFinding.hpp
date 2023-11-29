@@ -13,9 +13,22 @@ namespace admirals {
 class PathFinding {
 private:
     struct PF_Node {
-        bool visited;
-        float g, h, f;
-        size_t path;
+        bool visited = false;
+        float g = 0;
+        float h = 0;
+        float f = 0;
+        size_t path = -1;
+    };
+
+    struct Comparator {
+        Comparator(const PF_Node *grid) : m_grid(grid) {}
+
+        inline bool operator()(size_t l, size_t r) const {
+            return m_grid[l].f < m_grid[r].f;
+        }
+
+    private:
+        const PF_Node *m_grid;
     };
 
     /// @description returns the heuristic value between the start and end node.
@@ -24,8 +37,7 @@ private:
     /// @param end The end node
     /// @return The heuristic value from start to end
     inline static float Heuristic(const Vector2 &start, const Vector2 &end) {
-        return std::min(std::abs(start.x() - end.x()),
-                        std::abs(start.y() - end.y()));
+        return std::abs(start.x() - end.x()) + std::abs(start.y() - end.y());
     }
 
     /// @description returns the coordinates for a given vector value (index)
@@ -51,11 +63,11 @@ private:
     }
 
     inline static bool
-    IsValidNextPosition(const Vector2 &nextPosition, const QuadTree &quadTree,
-                        const std::unordered_set<float> &checkedOrders) {
-        for (const auto &object : quadTree.GetObjectsAtPosition(nextPosition)) {
-            const auto &o = static_pointer_cast<scene::GameObject>(object);
-            if (o->GetBoundingBox().Contains(nextPosition) &&
+    IsValidPosition(const Vector2 &position, const QuadTree &quadTree,
+                    const std::unordered_set<float> &checkedOrders) {
+        for (const auto &object : quadTree.GetObjectsAtPosition(position)) {
+            const auto &o = dynamic_pointer_cast<scene::GameObject>(object);
+            if (o->GetBoundingBox().Contains(position) &&
                 checkedOrders.contains(o->order())) {
                 return false;
             }
@@ -69,7 +81,7 @@ private:
     /// @param nodeIndex the node that has the chain from the end position to
     /// the start position.
     /// @return The best node to travel to.
-    static std::deque<Vector2> FindPathRoot(const std::vector<PF_Node> &grid,
+    static std::deque<Vector2> FindPathRoot(const PF_Node *grid,
                                             size_t nodeIndex, size_t width,
                                             float detailLevel);
 
@@ -77,11 +89,13 @@ private:
     /// @param position The coordinates to find neighbors around
     /// @return An array of all neighboring nodes and null values (there
     ///         should always be at least 2 neighboring nodes)
-    static std::vector<size_t>
-    FindNeighboringNodes(size_t nodeIndex, size_t width, size_t height);
+    static void FindNeighboringNodes(size_t nodeIndex, size_t width,
+                                     size_t height, size_t *data);
+
+    static constexpr size_t NULLVALUE = static_cast<size_t>(-1);
 
 public:
-    std::deque<Vector2> static FindPath(
+    static std::deque<Vector2> FindPath(
         const QuadTree &quadTree, const Vector2 &start, const Vector2 &dest,
         const std::unordered_set<float> &checkedOrders, float detailLevel = 1);
 };

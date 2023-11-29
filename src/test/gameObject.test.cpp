@@ -16,7 +16,7 @@ using namespace admirals;
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
-const int CELL_SIZE = 100;
+const float CELL_SIZE = 100;
 const float CELL_SPEED = 300.f;
 const std::vector<Color> COLOR_LOOP = {Color::BLUE, Color::RED, Color::GREEN,
                                        Color::BLACK};
@@ -27,7 +27,7 @@ private:
 
 public:
     CellObject(const std::string &name, const Vector3 &pos, const Color &color)
-        : scene::GameObject(name, pos.x(), pos.xy(), Vector2(CELL_SIZE)),
+        : scene::GameObject(name, pos.z(), pos.xy(), Vector2(CELL_SIZE)),
           m_color(color) {}
 
     void OnStart(const EngineContext &c) override {}
@@ -91,39 +91,48 @@ private:
 
 class PathFindingObject : public scene::GameObject {
 public:
-    PathFindingObject(const std::string &name, const Vector2 &position)
-        : scene::GameObject(name, -1.f, position, Vector2()) {}
+    PathFindingObject(const std::string &name, const Vector2 &position,
+                      const std::shared_ptr<scene::Scene> &scene)
+        : scene::GameObject(name, 10.f, position, Vector2(0)), m_scene(scene) {}
 
-    void HandleMouseMove(void *sender, events::MouseMotionEventArgs args) {
-        if (m_updated) {
-            return;
-        }
-
-        Engine *engine = static_cast<Engine *>(sender);
-        m_updated = true;
-        const auto scene = engine->GetScene();
-        const auto path =
-            scene->FindPath(GetPosition(), args.Location(), {8}, CELL_SIZE);
-        m_path = path;
+    void HandleMouseMove(void *, events::MouseMotionEventArgs args) {
+        m_mousePosition = args.Location();
     }
 
-    void OnUpdate(const EngineContext &) override { m_updated = false; }
+    void OnUpdate(const EngineContext &) override {
+        m_path = m_scene->FindPath(GetPosition(), m_mousePosition, {0, 1, 2, 3},
+                                   CELL_SIZE);
+    }
 
-    void Render(const EngineContext &) const override {
-        Vector2 prev = GetPosition();
+    void Render(const EngineContext &ctx) const override {
+        const Vector2 scale =
+            ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
+                                     static_cast<float>(WINDOW_HEIGHT));
+        Vector2 prev = GetPosition() * scale;
         for (const Vector2 &part : m_path) {
-            renderer::Renderer::DrawLine(prev, part, Color::BLUE);
-            prev = part;
+            // printf("Draw part: x = %d, y = %d\n", part.x(), part.y());
+            const Vector2 newPosition = part + Vector2(CELL_SIZE / 2);
+            renderer::Renderer::DrawLine(prev, newPosition, Color::BLUE);
+            prev = newPosition;
         }
+        if (!m_path.empty()) {
+            // Draw square at destination
+            renderer::Renderer::DrawRectangle(prev - Vector2(10), Vector2(20),
+                                              Color::BLUE);
+        }
+        // Draw square at origin
+        renderer::Renderer::DrawRectangle(GetPosition() - Vector2(10),
+                                          Vector2(20), Color::BLUE);
     }
 
 private:
-    bool m_updated = false;
-    std::deque<Vector2> m_path;
+    Vector2 m_mousePosition;
+    std::deque<admirals::Vector2> m_path;
+    const std::shared_ptr<scene::Scene> m_scene;
 };
 
 int main(int, char *[]) {
-    Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
+    Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
         CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
@@ -136,8 +145,8 @@ int main(int, char *[]) {
                                                 Color::RED);
     auto c4 = engine.MakeGameObject<CellObject>("6", Vector3(200, 200, 0),
                                                 Color::GREEN);
-    auto pathFinding =
-        engine.MakeGameObject<PathFindingObject>("path", Vector2(100));
+    auto pathFinding = engine.MakeGameObject<PathFindingObject>(
+        "path", Vector2(150), engine.GetScene());
     engine.onMouseMove += BIND_EVENT_HANDLER_FROM(
         PathFindingObject::HandleMouseMove, pathFinding);
     engine.StartGameLoop();
