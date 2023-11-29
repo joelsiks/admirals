@@ -1,5 +1,6 @@
-#include "PathFinding.hpp"
 #include <set>
+
+#include "PathFinding.hpp"
 
 using namespace admirals;
 
@@ -20,24 +21,24 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
 
     const size_t width = static_cast<size_t>((bounds.Width() / detailLevel));
     const size_t height = static_cast<size_t>((bounds.Height() / detailLevel));
-    // world grid
+    // world grid representing possible move locations
     Node *grid = new Node[width * height];
 
     const size_t startIndex =
         ConvertVectorToNodeIndex(start, width, detailLevel);
     const size_t endIndex = ConvertVectorToNodeIndex(dest, width, detailLevel);
 
-    std::set<size_t, PathFinding::Comparator> queue =
+    std::set<size_t, PathFinding::Comparator> orderedNodeIndexQueue =
         std::set<size_t, PathFinding::Comparator>(
             PathFinding::Comparator(grid));
-    queue.insert(startIndex);
+    orderedNodeIndexQueue.insert(startIndex);
     grid[startIndex].visited = true;
     grid[startIndex].path = NULLVALUE;
 
     size_t neighbors[8];
-    while (!queue.empty()) {
-        const size_t nodeIndex = *queue.begin();
-        queue.erase(queue.begin());
+    while (!orderedNodeIndexQueue.empty()) {
+        const size_t nodeIndex = *orderedNodeIndexQueue.begin();
+        orderedNodeIndexQueue.erase(orderedNodeIndexQueue.begin());
 
         if (nodeIndex == endIndex) {
             const auto path = FindPathRoot(grid, nodeIndex, width, detailLevel);
@@ -62,7 +63,7 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
                     neighbor.g = g;
                     neighbor.f = neighbor.h + g;
                     neighbor.path = nodeIndex;
-                    queue.insert(neighborIndex);
+                    orderedNodeIndexQueue.insert(neighborIndex);
                 }
             }
         }

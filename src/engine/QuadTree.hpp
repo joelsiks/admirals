@@ -32,7 +32,7 @@ public:
     /// @param location The location to check against in the QuadTree
     /// @return A vector of objects that overlap the position
     std::unordered_set<std::shared_ptr<IDisplayable>>
-    GetObjectsAtLocation(const Rect &location) const;
+    GetObjectsInArea(const Rect &location) const;
 
     inline void PrintTree() const {
         if (m_rootNode != nullptr && m_size != Vector2(0)) {

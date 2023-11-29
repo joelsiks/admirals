@@ -75,15 +75,15 @@ QuadTree::GetObjectsAtPosition(const Vector2 &position) const {
 }
 
 std::unordered_set<std::shared_ptr<IDisplayable>>
-QuadTree::GetObjectsAtLocation(const Rect &location) const {
+QuadTree::GetObjectsInArea(const Rect &location) const {
     Vector2 size = m_size;
 
     Node *current = nullptr;
     std::unordered_set<std::shared_ptr<IDisplayable>> found;
-    std::deque<Node *> queue = {m_rootNode};
-    while (!queue.empty()) {
-        current = queue.back();
-        queue.pop_back();
+    std::deque<Node *> visitQueue = {m_rootNode};
+    while (!visitQueue.empty()) {
+        current = visitQueue.back();
+        visitQueue.pop_back();
 
         size /= 2.0f;
 
@@ -93,7 +93,7 @@ QuadTree::GetObjectsAtLocation(const Rect &location) const {
             }
             if (Rect(quadrant->origin, size).Overlaps(location)) {
                 if (quadrant->data.empty()) {
-                    queue.push_back(quadrant);
+                    visitQueue.push_back(quadrant);
                 } else {
                     for (const auto &o : quadrant->data) {
                         found.insert(o);
