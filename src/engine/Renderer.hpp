@@ -18,7 +18,11 @@ typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
 
 enum Cursor {
     Arrow = SDL_SYSTEM_CURSOR_ARROW,
+    Crosshair = SDL_SYSTEM_CURSOR_CROSSHAIR,
     Hand = SDL_SYSTEM_CURSOR_HAND,
+    IBeam = SDL_SYSTEM_CURSOR_IBEAM, // Also known as "text-cursor".
+    No = SDL_SYSTEM_CURSOR_NO,
+    Wait = SDL_SYSTEM_CURSOR_WAIT,
 };
 
 class Renderer {
@@ -26,7 +30,7 @@ public:
     Renderer(const std::string &name, int width, int height);
     ~Renderer();
 
-    int Init(const EngineContext &context);
+    int Init(const EngineContext &ctx);
     static void Render(const EngineContext &context,
                        const DrawableCollection &drawables);
 
