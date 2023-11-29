@@ -52,14 +52,6 @@ private:
     bool m_keepAspectRatio;
 };
 
-// Global inputOption for visibility in other functions.
-std::shared_ptr<menu::InputOption> inputOption =
-    std::make_shared<menu::InputOption>("inputOption", 1.0);
-
-void HandleEscapeMenuInput(void *, events::KeyPressEventArgs &args) {
-    inputOption->HandleKeyPressEvent(args);
-}
-
 void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                              Engine &engine, bool initialDebugValue) {
     menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
@@ -72,20 +64,23 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
         });
     escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(exitOption));
 
-    inputOption->onClick.Subscribe(
+    menu::InputOption inputOption("inputOption", 1.0);
+    inputOption.onClick.Subscribe(
         [&engine](void *sender, events::MouseClickEventArgs &args) {
             if (args.pressed) {
                 auto *inputOption = static_cast<menu::InputOption *>(sender);
                 inputOption->ToggleActive();
 
                 if (inputOption->IsActive()) {
-                    engine.onKeyPress.Subscribe(HandleEscapeMenuInput);
+                    engine.onKeyPress.Subscribe(BIND_EVENT_HANDLER_FROM(
+                        menu::InputOption::HandleKeyPressEvent, inputOption));
                 } else {
-                    engine.onKeyPress.Unsubscribe(HandleEscapeMenuInput);
+                    engine.onKeyPress.Subscribe(BIND_EVENT_HANDLER_FROM(
+                        menu::InputOption::HandleKeyPressEvent, inputOption));
                 }
             }
         });
-    escapeMenu->AddMenuOption(inputOption);
+    escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(inputOption));
 
     menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
                                          "Debug Rendering", initialDebugValue);
@@ -119,30 +114,17 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
         menu::MenuOption::CreateFromDerived(cycleColorOption));
 }
 
-void OnButtonClick(void *object, events::MouseClickEventArgs &args) {
-    auto *button = static_cast<Button *>(object);
-
-    if (!args.pressed) {
-        button->SetBackgroundColor(Color::BLACK);
-    } else if (args.pressed) {
-        const Color grey = Color::FromRGBA(50, 50, 50, 255);
-        button->SetBackgroundColor(grey);
-    }
-}
-
 void CreateUIElements(Engine &engine,
                       std::shared_ptr<TextureObject> textureObj) {
     const Vector2 elementSize = Vector2(300, 40);
 
     auto btn1 = engine.MakeUIElement<Button>(
         "btn1", 0, "Move Image Left", elementSize, Color::BLACK, Color::WHITE);
-    btn1->onClick.Subscribe(OnButtonClick);
     btn1->onClick.Subscribe(
         BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, textureObj));
 
     auto btn2 = engine.MakeUIElement<Button>(
         "btn2", 0, "Move Image Right", elementSize, Color::BLACK, Color::WHITE);
-    btn2->onClick.Subscribe(OnButtonClick);
     btn2->onClick.Subscribe(
         BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, textureObj));
 

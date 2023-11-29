@@ -51,6 +51,10 @@ public:
 
     std::string GetOptionText() const override;
 
+    void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
+    void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
+    void OnMouseMove(events::MouseMotionEventArgs &args) override {}
+
     inline void SetText(const std::string &text) { m_text = text; }
 };
 
@@ -107,7 +111,7 @@ public:
     inline bool IsActive() const { return m_isActive; }
     inline void ToggleActive() { m_isActive = !m_isActive; }
 
-    void HandleKeyPressEvent(events::KeyPressEventArgs &args);
+    void HandleKeyPressEvent(void *sender, events::KeyPressEventArgs &args);
 
 private:
     std::string m_placeholderText;

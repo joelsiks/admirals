@@ -108,7 +108,7 @@ std::string InputOption::GetOptionText() const {
     return m_inputText;
 }
 
-void InputOption::HandleKeyPressEvent(events::KeyPressEventArgs &args) {
+void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
     if (!args.isKeyUp) {
         return;
     }
