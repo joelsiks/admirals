@@ -19,9 +19,9 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
     }
 
     const size_t width =
-        static_cast<size_t>((bounds.Width() / detailLevel) + 1);
+        static_cast<size_t>((bounds.Width() / detailLevel));
     const size_t height =
-        static_cast<size_t>((bounds.Height() / detailLevel) + 1);
+        static_cast<size_t>((bounds.Height() / detailLevel));
     // world grid
     Node *grid = new Node[width * height];
 
@@ -60,7 +60,7 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
                 neighbor.visited = true;
                 if (IsValidPosition(position, pathSize, quadTree,
                                     checkedOrders)) {
-                    neighbor.h = Heuristic(position, dest);
+                    neighbor.h = Heuristic(position, dest, pathSize);
                     neighbor.g = g;
                     neighbor.f = neighbor.h + g;
                     neighbor.path = nodeIndex;
