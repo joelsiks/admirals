@@ -16,7 +16,7 @@ using namespace admirals;
 
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 1000;
-const int CELL_SIZE = 100;
+const float CELL_SIZE = 100;
 const float CELL_SPEED = 300.f;
 const std::vector<Color> COLOR_LOOP = {Color::BLUE, Color::RED, Color::GREEN,
                                        Color::BLACK};
@@ -27,7 +27,7 @@ private:
 
 public:
     CellObject(const std::string &name, const Vector3 &pos, const Color &color)
-        : scene::GameObject(name, pos.x(), pos.xy(), Vector2(CELL_SIZE)),
+        : scene::GameObject(name, pos.z(), pos.xy(), Vector2(CELL_SIZE)),
           m_color(color) {}
 
     void OnStart(const EngineContext &c) override {}
@@ -89,8 +89,54 @@ private:
     bool m_drawOutline = false;
 };
 
+class PathFindingObject : public scene::GameObject {
+public:
+    PathFindingObject(const std::string &name, const Vector2 &position,
+                      const std::shared_ptr<scene::Scene> &scene)
+        : scene::GameObject(name, 10.f, position, Vector2(0)), m_scene(scene) {}
+
+    void HandleMouseMove(void *, events::MouseMotionEventArgs args) {
+        m_mousePosition = args.Location();
+    }
+
+    void Render(const EngineContext &ctx) const override {
+        const Vector2 scale =
+            ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
+                                     static_cast<float>(WINDOW_HEIGHT));
+        const Vector2 pathSize = Vector2(CELL_SIZE - __FLT_EPSILON__);
+        const auto path =
+            m_scene->FindPath(GetPosition(), m_mousePosition, pathSize,
+                              {0, 1, 2, 3}, pathSize.x());
+
+        Vector2 prev = GetPosition();
+        for (const Vector2 &part : path) {
+            renderer::Renderer::DrawRectangleOutline(part, pathSize, 1,
+                                                     Color::BLUE);
+        }
+
+        for (const Vector2 &part : path) {
+            const Vector2 newPosition = part + pathSize / 2;
+            renderer::Renderer::DrawLine(prev, newPosition, Color::BLUE);
+            prev = newPosition;
+        }
+
+        if (!path.empty()) {
+            // Draw square at destination
+            renderer::Renderer::DrawRectangle(prev - Vector2(10), Vector2(20),
+                                              Color::BLUE);
+        }
+        // Draw square at origin
+        renderer::Renderer::DrawRectangle(GetPosition() - Vector2(10),
+                                          Vector2(20), Color::BLUE);
+    }
+
+private:
+    Vector2 m_mousePosition;
+    const std::shared_ptr<scene::Scene> m_scene;
+};
+
 int main(int, char *[]) {
-    Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
+    Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT, false);
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
         CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
@@ -103,6 +149,10 @@ int main(int, char *[]) {
                                                 Color::RED);
     auto c4 = engine.MakeGameObject<CellObject>("6", Vector3(200, 200, 0),
                                                 Color::GREEN);
+    auto pathFinding = engine.MakeGameObject<PathFindingObject>(
+        "path", Vector2(150), engine.GetScene());
+    engine.onMouseMove += BIND_EVENT_HANDLER_FROM(
+        PathFindingObject::HandleMouseMove, pathFinding);
     engine.StartGameLoop();
 
     return EXIT_SUCCESS;

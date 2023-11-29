@@ -1,5 +1,6 @@
 #pragma once
 
+#include <deque>
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -36,6 +37,11 @@ public:
     bool ExistObject(const std::string &key);
     size_t NumObjectsInScene();
     std::vector<std::string> GetSceneObjectNames();
+
+    std::deque<Vector2> FindPath(const Vector2 &start, const Vector2 &dest,
+                                 const Vector2 &pathSize,
+                                 const std::unordered_set<float> &checkedOrders,
+                                 float detailLevel) const;
 
 private:
     OrderedCollection<GameObject> m_objects;
