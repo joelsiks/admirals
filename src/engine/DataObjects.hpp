@@ -120,6 +120,7 @@ public:
 
     inline float operator[](int i) const { return this->Data()[i]; }
 
+    // NOLINTNEXTLINE
     inline float &operator[](int i) { return this->Data()[i]; }
 
     static inline float Distance(const Vector2 &v1, const Vector2 &v2) {

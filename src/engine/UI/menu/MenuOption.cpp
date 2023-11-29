@@ -125,7 +125,7 @@ void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
         m_inputText.pop_back();
         args.handled = true;
     } else if (args.key >= 32 && args.key <= 126) {
-        m_inputText.push_back((char)args.key);
+        m_inputText.push_back(static_cast<char>(args.key));
         args.handled = true;
     }
 }
