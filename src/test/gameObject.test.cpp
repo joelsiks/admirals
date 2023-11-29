@@ -99,23 +99,27 @@ public:
         m_mousePosition = args.Location();
     }
 
-    void OnUpdate(const EngineContext &) override {
-        m_path = m_scene->FindPath(GetPosition(), m_mousePosition, {0, 1, 2, 3},
-                                   CELL_SIZE);
-    }
-
     void Render(const EngineContext &ctx) const override {
         const Vector2 scale =
             ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
                                      static_cast<float>(WINDOW_HEIGHT));
-        Vector2 prev = GetPosition() * scale;
-        for (const Vector2 &part : m_path) {
-            // printf("Draw part: x = %d, y = %d\n", part.x(), part.y());
+        const auto path =
+            m_scene->FindPath(GetPosition(), m_mousePosition,
+                              Vector2(CELL_SIZE), {0, 1, 2, 3}, CELL_SIZE);
+
+        Vector2 prev = GetPosition();
+        for (const Vector2 &part : path) {
+            renderer::Renderer::DrawRectangleOutline(part, Vector2(CELL_SIZE),
+                                                     1, Color::BLUE);
+        }
+
+        for (const Vector2 &part : path) {
             const Vector2 newPosition = part + Vector2(CELL_SIZE / 2);
             renderer::Renderer::DrawLine(prev, newPosition, Color::BLUE);
             prev = newPosition;
         }
-        if (!m_path.empty()) {
+
+        if (!path.empty()) {
             // Draw square at destination
             renderer::Renderer::DrawRectangle(prev - Vector2(10), Vector2(20),
                                               Color::BLUE);
@@ -127,12 +131,11 @@ public:
 
 private:
     Vector2 m_mousePosition;
-    std::deque<admirals::Vector2> m_path;
     const std::shared_ptr<scene::Scene> m_scene;
 };
 
 int main(int, char *[]) {
-    Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT, true);
+    Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT, false);
     engine.AddGameObject(scene::GameObject::CreateFromDerived(
         CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
     engine.AddGameObject(scene::GameObject::CreateFromDerived(

@@ -63,12 +63,14 @@ private:
     }
 
     inline static bool
-    IsValidPosition(const Vector2 &position, const QuadTree &quadTree,
+    IsValidPosition(const Vector2 &position, const Vector2 &pathSize,
+                    const QuadTree &quadTree,
                     const std::unordered_set<float> &checkedOrders) {
+        const Rect bounds = Rect(position, pathSize);
         for (const auto &object : quadTree.GetObjectsAtPosition(position)) {
             const auto &o = dynamic_pointer_cast<scene::GameObject>(object);
-            if (o->GetBoundingBox().Contains(position) &&
-                checkedOrders.contains(o->order())) {
+            if (checkedOrders.contains(o->order()) &&
+                o->GetBoundingBox().Overlaps(bounds)) {
                 return false;
             }
         }
@@ -95,9 +97,11 @@ private:
     static constexpr size_t NULLVALUE = static_cast<size_t>(-1);
 
 public:
-    static std::deque<Vector2> FindPath(
-        const QuadTree &quadTree, const Vector2 &start, const Vector2 &dest,
-        const std::unordered_set<float> &checkedOrders, float detailLevel = 1);
+    static std::deque<Vector2>
+    FindPath(const QuadTree &quadTree, const Vector2 &start,
+             const Vector2 &dest, const Vector2 &pathSize,
+             const std::unordered_set<float> &checkedOrders,
+             float detailLevel = 1);
 };
 
 } // namespace admirals

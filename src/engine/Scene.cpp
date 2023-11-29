@@ -60,12 +60,11 @@ std::vector<std::string> Scene::GetSceneObjectNames() {
     return vec;
 }
 
-std::deque<Vector2>
-Scene::FindPath(const Vector2 &start, const Vector2 &dest,
-                const std::unordered_set<float> &checkedOrders,
-                float detailLevel) const {
-    return PathFinding::FindPath(m_quadtree, start, dest, checkedOrders,
-                                 detailLevel);
+std::deque<Vector2> Scene::FindPath(
+    const Vector2 &start, const Vector2 &dest, const Vector2 &pathSize,
+    const std::unordered_set<float> &checkedOrders, float detailLevel) const {
+    return PathFinding::FindPath(m_quadtree, start, dest, pathSize,
+                                 checkedOrders, detailLevel);
 }
 
 void Scene::OnStart(const EngineContext &ctx) {

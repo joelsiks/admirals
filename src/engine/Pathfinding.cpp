@@ -3,14 +3,16 @@
 
 using namespace admirals;
 
-std::deque<Vector2> PathFinding::FindPath(
-    const QuadTree &quadTree, const Vector2 &start, const Vector2 &dest,
-    const std::unordered_set<float> &checkedOrders, float detailLevel) {
+std::deque<Vector2>
+PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
+                      const Vector2 &dest, const Vector2 &pathSize,
+                      const std::unordered_set<float> &checkedOrders,
+                      float detailLevel) {
     const Rect bounds = Rect(Vector2(), quadTree.GetSize());
 
     if (!bounds.Contains(start) || !bounds.Contains(dest) ||
-        !IsValidPosition(start, quadTree, checkedOrders) ||
-        !IsValidPosition(dest, quadTree, checkedOrders)) {
+        !IsValidPosition(start, pathSize, quadTree, checkedOrders) ||
+        !IsValidPosition(dest, pathSize, quadTree, checkedOrders)) {
         return std::deque<Vector2>();
     }
 
@@ -32,7 +34,7 @@ std::deque<Vector2> PathFinding::FindPath(
     grid[startIndex].visited = true;
     grid[startIndex].path = NULLVALUE;
 
-    size_t neighbors[4];
+    size_t neighbors[8];
     while (!queue.empty()) {
         const size_t nodeIndex = *queue.begin();
         queue.erase(queue.begin());
@@ -53,7 +55,8 @@ std::deque<Vector2> PathFinding::FindPath(
                 const Vector2 position =
                     ConvertNodeIndexToVector(neighborIndex, width, detailLevel);
                 neighbor.visited = true;
-                if (IsValidPosition(position, quadTree, checkedOrders)) {
+                if (IsValidPosition(position, pathSize, quadTree,
+                                    checkedOrders)) {
                     neighbor.h = Heuristic(position, dest);
                     neighbor.g = grid[nodeIndex].g + 1;
                     neighbor.f = neighbor.h + neighbor.g;
@@ -79,7 +82,6 @@ std::deque<Vector2> PathFinding::FindPathRoot(const PF_Node *grid,
         nodeIndex = grid[nodeIndex].path;
     }
 
-    printf("Path size = %d\n", path.size());
     return path;
 }
 
@@ -107,5 +109,26 @@ void PathFinding::FindNeighboringNodes(size_t nodeIndex, size_t width,
         data[3] = nodeIndex + width;
     } else {
         data[3] = NULLVALUE;
+    }
+    // Diagonals
+    if (x > 0 && y < height - 1) {
+        data[4] = nodeIndex - 1 + width;
+    } else {
+        data[4] = NULLVALUE;
+    }
+    if (x < width - 1 && y < height - 1) {
+        data[5] = nodeIndex + 1 + width;
+    } else {
+        data[5] = NULLVALUE;
+    }
+    if (x > 0 && y > 0) {
+        data[6] = nodeIndex - 1 - width;
+    } else {
+        data[6] = NULLVALUE;
+    }
+    if (x < width - 1 && y > 0) {
+        data[7] = nodeIndex + 1 - width;
+    } else {
+        data[7] = NULLVALUE;
     }
 }
