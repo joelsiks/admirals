@@ -64,8 +64,9 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
         });
     escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(exitOption));
 
-    menu::InputOption inputOption("inputOption", 1.0);
-    inputOption.onClick.Subscribe(
+    const std::shared_ptr<menu::InputOption> inputOption =
+        std::make_shared<menu::InputOption>("inputOption", 1.0);
+    inputOption->onClick.Subscribe(
         [&engine](void *sender, events::MouseClickEventArgs &args) {
             if (args.pressed) {
                 auto *inputOption = static_cast<menu::InputOption *>(sender);
@@ -75,12 +76,12 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                     engine.onKeyPress.Subscribe(BIND_EVENT_HANDLER_FROM(
                         menu::InputOption::HandleKeyPressEvent, inputOption));
                 } else {
-                    engine.onKeyPress.Subscribe(BIND_EVENT_HANDLER_FROM(
+                    engine.onKeyPress.Unsubscribe(BIND_EVENT_HANDLER_FROM(
                         menu::InputOption::HandleKeyPressEvent, inputOption));
                 }
             }
         });
-    escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(inputOption));
+    escapeMenu->AddMenuOption(inputOption);
 
     menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
                                          "Debug Rendering", initialDebugValue);
