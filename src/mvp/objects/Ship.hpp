@@ -24,6 +24,9 @@ public:
     void SetType(uint8_t type) { m_data.type = type; }
     uint8_t GetType() const { return m_data.type; }
 
+    void SetOwner(uint8_t owner) { m_data.owner = owner; }
+    uint8_t GetOwner() const { return m_data.owner; }
+
     void SetAction(uint8_t action) { m_data.action = action; }
     uint8_t GetAction() const { return m_data.action; }
 

@@ -12,6 +12,8 @@ enum NetworkMessageTypes : uint16_t {
     ReadyConfirmation,
     GameStart,
     GameStop,
+    GamePause,
+    GameResume,
     BuyShip,
     MoveShip,
     AttackShip,

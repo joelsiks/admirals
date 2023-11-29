@@ -124,6 +124,16 @@ void NetworkManager::HandleMessages() {
             break;
         }
 
+        case NetworkMessageTypes::GamePause: {
+            GamePause();
+            break;
+        }
+
+        case NetworkMessageTypes::GameResume: {
+            GameResume();
+            break;
+        }
+
         case NetworkMessageTypes::BoardUpdate: {
             UpdateBoard(msg);
             break;
@@ -156,6 +166,18 @@ void NetworkManager::GameStop() {
     if (m_debug)
         printf("StopGame\n");
     m_gameManager.StopGame();
+}
+
+void NetworkManager::GamePause() {
+    if (m_debug)
+        printf("PauseGame\n");
+    m_gameManager.PauseGame();
+}
+
+void NetworkManager::GameResume() {
+    if (m_debug)
+        printf("ResumeGame\n");
+    m_gameManager.ResumeGame();
 }
 
 void NetworkManager::UpdateBoard(Message &msg) {
