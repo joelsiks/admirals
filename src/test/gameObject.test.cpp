@@ -103,18 +103,19 @@ public:
         const Vector2 scale =
             ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
                                      static_cast<float>(WINDOW_HEIGHT));
+        const Vector2 pathSize = Vector2(CELL_SIZE - __FLT_EPSILON__);
         const auto path =
-            m_scene->FindPath(GetPosition(), m_mousePosition,
-                              Vector2(CELL_SIZE), {0, 1, 2, 3}, CELL_SIZE);
+            m_scene->FindPath(GetPosition(), m_mousePosition, pathSize,
+                              {0, 1, 2, 3}, pathSize.x());
 
         Vector2 prev = GetPosition();
         for (const Vector2 &part : path) {
-            renderer::Renderer::DrawRectangleOutline(part, Vector2(CELL_SIZE),
-                                                     1, Color::BLUE);
+            renderer::Renderer::DrawRectangleOutline(part, pathSize, 1,
+                                                     Color::BLUE);
         }
 
         for (const Vector2 &part : path) {
-            const Vector2 newPosition = part + Vector2(CELL_SIZE / 2);
+            const Vector2 newPosition = part + pathSize / 2;
             renderer::Renderer::DrawLine(prev, newPosition, Color::BLUE);
             prev = newPosition;
         }

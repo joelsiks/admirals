@@ -11,8 +11,10 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
     const Rect bounds = Rect(Vector2(), quadTree.GetSize());
 
     if (!bounds.Contains(start) || !bounds.Contains(dest) ||
-        !IsValidPosition(start, pathSize, quadTree, checkedOrders) ||
-        !IsValidPosition(dest, pathSize, quadTree, checkedOrders)) {
+        !IsValidPosition(start, Vector2(__FLT_EPSILON__), quadTree,
+                         checkedOrders) ||
+        !IsValidPosition(dest, Vector2(__FLT_EPSILON__), quadTree,
+                         checkedOrders)) {
         return std::deque<Vector2>();
     }
 
@@ -21,7 +23,7 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
     const size_t height =
         static_cast<size_t>((bounds.Height() / detailLevel) + 1);
     // world grid
-    PF_Node *grid = new PF_Node[width * height];
+    Node *grid = new Node[width * height];
 
     const size_t startIndex =
         ConvertVectorToNodeIndex(start, width, detailLevel);
@@ -46,20 +48,21 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
         }
 
         FindNeighboringNodes(nodeIndex, width, height, neighbors);
+        const float g = grid[nodeIndex].g + detailLevel;
         for (const size_t neighborIndex : neighbors) {
             if (neighborIndex == NULLVALUE) {
                 continue;
             }
-            PF_Node &neighbor = grid[neighborIndex];
-            if (!neighbor.visited) {
+            Node &neighbor = grid[neighborIndex];
+            if (!neighbor.visited || neighbor.g > g) {
                 const Vector2 position =
                     ConvertNodeIndexToVector(neighborIndex, width, detailLevel);
                 neighbor.visited = true;
                 if (IsValidPosition(position, pathSize, quadTree,
                                     checkedOrders)) {
                     neighbor.h = Heuristic(position, dest);
-                    neighbor.g = grid[nodeIndex].g + 1;
-                    neighbor.f = neighbor.h + neighbor.g;
+                    neighbor.g = g;
+                    neighbor.f = neighbor.h + g;
                     neighbor.path = nodeIndex;
                     queue.insert(neighborIndex);
                 }
@@ -71,7 +74,7 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
     return std::deque<Vector2>();
 }
 
-std::deque<Vector2> PathFinding::FindPathRoot(const PF_Node *grid,
+std::deque<Vector2> PathFinding::FindPathRoot(const Node *grid,
                                               size_t nodeIndex, size_t width,
                                               float detailLevel) {
     std::deque<Vector2> path = {};

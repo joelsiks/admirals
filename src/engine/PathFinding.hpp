@@ -12,7 +12,7 @@ namespace admirals {
 
 class PathFinding {
 private:
-    struct PF_Node {
+    struct Node {
         bool visited = false;
         float g = 0;
         float h = 0;
@@ -21,14 +21,14 @@ private:
     };
 
     struct Comparator {
-        Comparator(const PF_Node *grid) : m_grid(grid) {}
+        Comparator(const Node *grid) : m_grid(grid) {}
 
         inline bool operator()(size_t l, size_t r) const {
             return m_grid[l].f < m_grid[r].f;
         }
 
     private:
-        const PF_Node *m_grid;
+        const Node *m_grid;
     };
 
     /// @description returns the heuristic value between the start and end node.
@@ -37,7 +37,7 @@ private:
     /// @param end The end node
     /// @return The heuristic value from start to end
     inline static float Heuristic(const Vector2 &start, const Vector2 &end) {
-        return std::abs(start.x() - end.x()) + std::abs(start.y() - end.y());
+        return start.Distance(end);
     }
 
     /// @description returns the coordinates for a given vector value (index)
@@ -67,10 +67,10 @@ private:
                     const QuadTree &quadTree,
                     const std::unordered_set<float> &checkedOrders) {
         const Rect bounds = Rect(position, pathSize);
-        for (const auto &object : quadTree.GetObjectsAtPosition(position)) {
+        for (const auto &object : quadTree.GetObjectsAtLocation(bounds)) {
             const auto &o = dynamic_pointer_cast<scene::GameObject>(object);
             if (checkedOrders.contains(o->order()) &&
-                o->GetBoundingBox().Overlaps(bounds)) {
+                bounds.Overlaps(o->GetBoundingBox())) {
                 return false;
             }
         }
@@ -83,9 +83,8 @@ private:
     /// @param nodeIndex the node that has the chain from the end position to
     /// the start position.
     /// @return The best node to travel to.
-    static std::deque<Vector2> FindPathRoot(const PF_Node *grid,
-                                            size_t nodeIndex, size_t width,
-                                            float detailLevel);
+    static std::deque<Vector2> FindPathRoot(const Node *grid, size_t nodeIndex,
+                                            size_t width, float detailLevel);
 
     /// @brief Finds the nodes neighboring the given position
     /// @param position The coordinates to find neighbors around

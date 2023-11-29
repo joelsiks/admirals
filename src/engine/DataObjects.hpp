@@ -441,10 +441,8 @@ public:
     /// @return `true` if the given point is located inside the bounds of the
     /// `Rect`, otherwise `false`.
     inline bool Contains(const Vector2 &point) const {
-        return point.x() + __FLT_EPSILON__ >= m_x &&
-               point.x() <= m_x + m_w + __FLT_EPSILON__ &&
-               point.y() + __FLT_EPSILON__ >= m_y &&
-               point.y() <= m_y + m_h + __FLT_EPSILON__;
+        return point.x() >= m_x && point.x() <= m_x + m_w && point.y() >= m_y &&
+               point.y() <= m_y + m_h;
     };
 
     /// @brief Checks if a given area is fully contained inside the bounds of
@@ -453,10 +451,8 @@ public:
     /// @return `true` if the given area is fully contained inside the bounds of
     /// the `Rect`, otherwise `false`.
     inline bool Contains(const Rect &rect) const {
-        return m_x <= rect.m_x + __FLT_EPSILON__ &&
-               m_x + m_w + __FLT_EPSILON__ >= rect.m_x + rect.m_w &&
-               m_y <= rect.m_y + __FLT_EPSILON__ &&
-               m_y + m_h + __FLT_EPSILON__ >= rect.m_y + rect.m_h;
+        return m_x <= rect.m_x && m_x + m_w >= rect.m_x + rect.m_w &&
+               m_y <= rect.m_y && m_y + m_h >= rect.m_y + rect.m_h;
     };
 
     /// @brief Checks if a given area has some overlap with the bounds of the
@@ -465,10 +461,8 @@ public:
     /// @return `true` if the given area has some overlap with the bounds of the
     /// `Rect`, otherwise `false`.
     inline bool Overlaps(const Rect &rect) const {
-        return m_x < rect.m_x + rect.m_w + __FLT_EPSILON__ &&
-               m_x + m_w + __FLT_EPSILON__ > rect.m_x &&
-               m_y < rect.m_y + rect.m_h + __FLT_EPSILON__ &&
-               m_y + m_h + __FLT_EPSILON__ > rect.m_y;
+        return m_x < rect.m_x + rect.m_w && m_x + m_w > rect.m_x &&
+               m_y < rect.m_y + rect.m_h && m_y + m_h > rect.m_y;
     };
 
     inline Vector2 Center() const {
