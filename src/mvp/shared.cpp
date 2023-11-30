@@ -10,4 +10,6 @@ std::unique_ptr<Engine> GameData::engine = nullptr;
 const float GameData::CellSize = 64;
 const int GameData::GridCells = 10;
 const float GameData::GridSize = GameData::CellSize * GameData::GridCells;
+const Rect GameData::GridArea =
+    Rect(0, GameData::CellSize, GameData::GridSize, GameData::GridSize);
 const float GameData::SpriteSize = 64;

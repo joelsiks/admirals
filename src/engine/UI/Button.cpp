@@ -12,7 +12,7 @@ Button::Button(const std::string &name, float order, const std::string &text,
 
 void Button::Render(const EngineContext &ctx) const {
     const Color &renderColor =
-        m_shouldFadeBackground ? m_bgColorFaded : m_bgColor;
+        m_shouldFadeBackground ? m_bgColor * Vector4(1, 1, 1, 0.75) : m_bgColor;
 
     renderer::Renderer::DrawRectangle(m_boundingBox, renderColor);
     renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),

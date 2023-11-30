@@ -12,6 +12,13 @@ public:
 
     void OnUpdate(const EngineContext &ctx) override;
 
+    void OnClick(events::MouseClickEventArgs &args) override;
+
+    void OnMouseEnter(events::MouseMotionEventArgs &args) override;
+    void OnMouseLeave(events::MouseMotionEventArgs &args) override;
+
+    void Render(const EngineContext &ctx) const;
+
     void SetHealth(uint16_t health) { m_data.health = health; }
     uint16_t GetHealth() const { return m_data.health; }
 
@@ -41,11 +48,10 @@ public:
 
     static Vector2 ShipTypeToTexOffset(uint16_t type);
 
-protected:
-    Vector2 CalcOrigin() const override;
-
 private:
     ShipData m_data;
+    bool m_drawOutline = false;
+    bool m_selected = false;
 };
 
 } // namespace admirals::mvp::objects

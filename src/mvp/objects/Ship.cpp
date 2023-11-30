@@ -10,7 +10,8 @@ Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
              Ship::ShipTypeToTexOffset(data.type)),
       m_data(data) {}
 
-void Ship::OnUpdate(const EngineContext &) {
+void Ship::OnUpdate(const EngineContext &ctx) {
+    Sprite::OnUpdate(ctx);
     const Vector2 pos = GetPosition();
     Vector2 target = pos;
     if (m_data.owner % 2 == 1) {
@@ -36,8 +37,27 @@ void Ship::OnUpdate(const EngineContext &) {
     }
 }
 
-Vector2 Ship::CalcOrigin() const {
-    return GetPosition() * GameData::CellSize - Vector2(0, GameData::CellSize);
+void Ship::OnClick(events::MouseClickEventArgs &) {
+    printf("Mouse Click\n");
+    m_selected = true;
+}
+
+void Ship::OnMouseEnter(events::MouseMotionEventArgs &) {
+    printf("Mouse Enter\n");
+    m_drawOutline = true;
+}
+
+void Ship::OnMouseLeave(events::MouseMotionEventArgs &) {
+    printf("Mouse Leave\n");
+    m_drawOutline = false;
+}
+
+void Ship::Render(const EngineContext &ctx) const {
+    Sprite::Render(ctx);
+    if (m_drawOutline) {
+        renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
+                                                 Color::WHITE);
+    }
 }
 
 Vector2 Ship::ShipTypeToTexOffset(uint16_t type) {

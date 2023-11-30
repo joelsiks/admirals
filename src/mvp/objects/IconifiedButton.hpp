@@ -16,7 +16,11 @@ public:
           m_source(source), m_texOffset(texOffset), m_texSize(texSize) {}
 
     void Render(const EngineContext &ctx) const override {
-        renderer::Renderer::DrawRectangle(m_boundingBox, m_bgColor);
+        const Color &renderColor = m_shouldFadeBackground
+                                       ? m_bgColor * Vector4(1, 1, 1, 0.75)
+                                       : m_bgColor;
+
+        renderer::Renderer::DrawRectangle(m_boundingBox, renderColor);
 
         renderer::Renderer::DrawRectangleOutline(m_boundingBox, 1, m_fgColor);
 

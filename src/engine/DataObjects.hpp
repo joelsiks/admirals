@@ -411,6 +411,18 @@ public:
     inline float a() const { return m_3; }
     inline void SetA(float value) { m_3 = value; }
 
+    inline Color operator*(const Vector4 &r) const {
+        return Color(m_0 * r.x(), m_1 * r.y(), m_2 * r.z(), m_3 * r.w());
+    }
+
+    inline Color &operator*=(const Vector4 &r) {
+        m_0 *= r.x();
+        m_1 *= r.y();
+        m_2 *= r.z();
+        m_3 *= r.w();
+        return *this;
+    }
+
     static Color FromHEX(const char *hex);
     static Color FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 

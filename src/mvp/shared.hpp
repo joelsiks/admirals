@@ -19,6 +19,7 @@ public:
     static std::unique_ptr<Engine> engine;
     static const float CellSize;
     static const float GridSize;
+    static const Rect GridArea;
     static const int GridCells;
     static const float SpriteSize;
 };

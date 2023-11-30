@@ -32,36 +32,36 @@ void CreateGameBoard() {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "overlayTop", 1,
-        Rect(Vector2(0, 0), Vector2(GridWidth, GameData::CellSize)),
+        "overlayTop", 1, Rect(0, -1, GridWidth, GameData::CellSize),
         Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
         "overlayBottom", 1,
-        Rect(Vector2(0, GridHeight - GameData::CellSize),
-             Vector2(GridWidth, GameData::CellSize)),
+        Rect(0, static_cast<float>(GameData::GridCells), GridWidth,
+             GameData::CellSize),
         Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "islandLeft", 1,
-        Rect(Vector2(0, GameData::CellSize),
-             Vector2(GameData::CellSize, GameData::CellSize * 3)),
+        "islandLeft", 1, Rect(0, 0, GameData::CellSize, GameData::CellSize * 3),
         green);
     GameData::engine->MakeGameObject<Quad>(
         "islandRight", 1,
-        Rect(Vector2(GridWidth - GameData::CellSize,
-                     GridHeight - 4 * GameData::CellSize),
-             Vector2(GameData::CellSize, GameData::CellSize * 3)),
+        Rect(static_cast<float>(GameData::GridCells) - 1,
+             static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
+             GameData::CellSize * 3),
         green);
 }
 
 void CreateBases(const Texture &atlas) {
     const Vector2 cellSize = Vector2(GameData::CellSize);
     GameData::engine->MakeGameObject<Sprite>(
-        "base0", atlas, 2, Rect(Vector2(0, 2 * GameData::CellSize), cellSize));
+        "base0", atlas, 2, Rect(0, 1, GameData::CellSize, GameData::CellSize));
     GameData::engine->MakeGameObject<Sprite>(
         "base1", atlas, 2,
-        Rect(Vector2(GridWidth - GameData::CellSize,
-                     GridHeight - 3 * GameData::CellSize),
-             cellSize));
+        Rect(static_cast<float>(GameData::GridCells) - 1,
+             static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
+             GameData::CellSize));
+    const ShipData data = {0, 1, 3, 3, ShipType::Cruiser, 0};
+    GameData::engine->MakeGameObject<Ship>(data, Vector2(GameData::CellSize),
+                                           atlas);
 }
 
 void CreateUI(const Texture &atlas,
@@ -130,14 +130,11 @@ void SwapEngineLayers() {
 void CreateStartMenuScene(const Texture &atlas) {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip1", atlas, 1, Rect(Vector2(0, 0), Vector2(80, 80)),
-        ShipType::Cruiser, 70);
+        "movingShip1", atlas, 1, Rect(0, 0, 80, 80), ShipType::Cruiser, 1);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip2", atlas, 1, Rect(Vector2(500, 300), Vector2(80, 80)),
-        ShipType::Destroyer, 150);
+        "movingShip2", atlas, 1, Rect(3, 2, 80, 80), ShipType::Destroyer, 1.7);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip3", atlas, 1, Rect(Vector2(200, 500), Vector2(80, 80)),
-        ShipType::Cruiser, 80);
+        "movingShip3", atlas, 1, Rect(5, 7, 80, 80), ShipType::Cruiser, 0.9);
 }
 
 int main(int, char *[]) {
