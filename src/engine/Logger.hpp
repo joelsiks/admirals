@@ -5,68 +5,66 @@
 #include <fstream>
 #include <iostream>
 
+using namespace std;
 namespace admirals {
 
 class Logger {
-private:
-    std::ofstream textlog_m;
-    const std::string filename_m = "logFile.txt";
-    const std::time_t startTime_m = std::time(nullptr);
 
-    const std::string timeSinceStart() {
-        const std::time_t currentTime = std::time(nullptr);
-        long long time_taken = currentTime - startTime_m;
-        long sec = time_taken % 60;
-        long min = (time_taken / 60) % 60;
-        long hour = (time_taken / 3600) % 60;
-        std::string return_str = std::to_string(hour) + ":" +
-                                 std::to_string(min) + ":" +
-                                 std::to_string(sec);
-        return return_str;
+public:
+    enum ErrorCase {
+        ValueOutOfBound = 101,
+        NoObjectFound = 102,
+        NetworkConnectionLost = 201
+    };
+
+private:
+    static constexpr std::string filename = "logFile.txt";
+
+    Logger(){};
+
+    static std::string GetCurrentTime() {
+        const std::time_t time = std::time(nullptr);
+        std::string time_string(std::asctime(std::localtime(&time)));
+        return time_string;
     }
 
-    std::string getErrorMessage(std::error_code ec) {
-        switch (ec.value()) {
-        case 1337:
-            return "One code paragraph was too elite.";
-        case 101:
+    static std::string GetErrorMessage(ErrorCase ec) {
+        switch (ec) {
+        case ValueOutOfBound:
             return "Engine Error: \n    Value out of bounds";
-        case 102:
+        case NoObjectFound:
             return "Engine Error: \n    Object not found";
-        case 201:
+        case NetworkConnectionLost:
             return "Network error:\n    Connection lost";
         default: // code 0
             return "unknown error code.";
         }
     }
 
+    static void AppendToLogFile(const std::string &text) {
+        std::ofstream file1;
+        file1.open(filename, std::ios::app);
+        file1 << GetCurrentTime();
+        file1 << text + "\n\n";
+        file1.close();
+    }
+
 public:
-    Logger() {
-        textlog_m.open(filename_m);
-        textlog_m.close();
-    };
+    static void ClearLogFile() {
+        std::ofstream file1;
+        file1.open(filename);
+        file1.close();
+    }
 
-    void catchError(int ec) {
-        catchError(std::error_code(ec, std::system_category()));
+    static void LogMessage(const std::string &logString) {
+        AppendToLogFile(logString);
     }
-    void catchError(const std::string &logString, int ec) {
-        catchError(logString, std::error_code(ec, std::system_category()));
-    }
-    void catchError(std::error_code ec) { catchError("NO MESSAGE", ec); }
-    void catchError(const std::string &logString) {
-        catchError(logString, std::error_code()); // error code 0
-    }
-    void catchError(const std::string &logString, std::error_code ec) {
-        textlog_m.open(filename_m, std::ios::app);
-        textlog_m << std::asctime(std::localtime(&startTime_m))
-                  << "time since start: " + (timeSinceStart()) + "\n"
-                  << getErrorMessage(ec) + "\n"
-                  << "---Unique log message: \n"
-                  << logString + "\n"
-                  << "---End of Message \n"
-                  << std::filesystem::current_path(ec) << ("\n\n");
 
-        textlog_m.close();
+    static void CatchError(const std::string &logString, ErrorCase ec) {
+        const std::string text = "\n" + GetErrorMessage(ec) + "\n" +
+                                 "---Unique log message: \n" + logString +
+                                 "\n" + "---End of Message \n";
+        AppendToLogFile(text);
     }
 };
 
