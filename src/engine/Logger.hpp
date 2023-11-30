@@ -18,7 +18,7 @@ public:
     };
 
 private:
-    static constexpr std::string filename = "logFile.txt";
+    static constexpr std::string m_filename = "logFile.txt";
 
     Logger(){};
 
@@ -43,7 +43,7 @@ private:
 
     static void AppendToLogFile(const std::string &text) {
         std::ofstream file1;
-        file1.open(filename, std::ios::app);
+        file1.open(m_filename, std::ios::app);
         file1 << GetCurrentTime();
         file1 << text + "\n\n";
         file1.close();
@@ -52,7 +52,7 @@ private:
 public:
     static void ClearLogFile() {
         std::ofstream file1;
-        file1.open(filename);
+        file1.open(m_filename);
         file1.close();
     }
 
