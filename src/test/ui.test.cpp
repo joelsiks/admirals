@@ -67,9 +67,8 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
     const std::shared_ptr<menu::InputOption> inputOption =
         std::make_shared<menu::InputOption>("inputOption", 1.0,
                                             engine.onKeyPress);
-    inputOption->onInputChange.Subscribe([](void *sender, events::EventArgs &) {
-        auto *inputOption = static_cast<menu::InputOption *>(sender);
-        printf("Input was changed: %s\n", inputOption->GetInputText().c_str());
+    inputOption->onInput.Subscribe([](void *, events::TextEventArgs &args) {
+        printf("Input was changed: %s\n", args.text.c_str());
     });
     escapeMenu->AddMenuOption(inputOption);
 

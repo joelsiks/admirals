@@ -8,6 +8,7 @@
 #include "events/EventSystem.hpp"
 #include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
+#include "events/TextEvent.hpp"
 
 namespace admirals::UI::menu {
 
@@ -106,7 +107,7 @@ private:
 class InputOption : public MenuOption {
 public:
     // Invoked when the text in the input is changed.
-    events::EventSystem<events::EventArgs> onInputChange;
+    events::EventSystem<events::TextEventArgs> onInput;
 
     InputOption(const std::string &name, float order,
                 events::EventSystem<events::KeyPressEventArgs> &eventHandler,

@@ -176,7 +176,7 @@ void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
     }
 
     if (args.handled) {
-        events::EventArgs e;
-        onInputChange.Invoke(this, e);
+        events::TextEventArgs args(m_inputText);
+        onInput.Invoke(this, args);
     }
 }
