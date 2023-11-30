@@ -65,22 +65,12 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
     escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(exitOption));
 
     const std::shared_ptr<menu::InputOption> inputOption =
-        std::make_shared<menu::InputOption>("inputOption", 1.0);
-    inputOption->onClick.Subscribe(
-        [&engine](void *sender, events::MouseClickEventArgs &args) {
-            if (args.pressed) {
-                auto *inputOption = static_cast<menu::InputOption *>(sender);
-                inputOption->ToggleActive();
-
-                if (inputOption->IsActive()) {
-                    engine.onKeyPress.Subscribe(BIND_EVENT_HANDLER_FROM(
-                        menu::InputOption::HandleKeyPressEvent, inputOption));
-                } else {
-                    engine.onKeyPress.Unsubscribe(BIND_EVENT_HANDLER_FROM(
-                        menu::InputOption::HandleKeyPressEvent, inputOption));
-                }
-            }
-        });
+        std::make_shared<menu::InputOption>("inputOption", 1.0,
+                                            engine.onKeyPress);
+    inputOption->onInputChange.Subscribe([](void *sender, events::EventArgs &) {
+        auto *inputOption = static_cast<menu::InputOption *>(sender);
+        printf("Input was changed: %s\n", inputOption->GetInputText().c_str());
+    });
     escapeMenu->AddMenuOption(inputOption);
 
     menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
@@ -140,7 +130,7 @@ void CreateUIElements(Engine &engine,
 int main(int, char **) {
 
     const bool debug = true;
-    Engine engine("Renderer Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
+    Engine engine("UI Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
 
     auto escapeMenu = std::make_shared<menu::Menu>(
         "Pause Menu", Color::BLACK, Color::FromRGBA(50, 50, 50, 100));

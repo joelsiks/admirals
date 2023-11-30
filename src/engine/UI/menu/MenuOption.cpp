@@ -94,9 +94,30 @@ void CycleOption::Cycle() {
 
 size_t CycleOption::CurrentIndex() const { return m_currentOption; }
 
-InputOption::InputOption(const std::string &name, float order,
-                         const std::string &placeholder)
-    : MenuOption(name, order, ""), m_placeholderText(placeholder) {}
+InputOption::InputOption(
+    const std::string &name, float order,
+    events::EventSystem<events::KeyPressEventArgs> &eventHandler,
+    const std::string &placeholder)
+    : MenuOption(name, order, ""), m_placeholderText(placeholder),
+      m_keyPressEventHandler(eventHandler) {
+
+    onClick.Subscribe([](void *sender, events::MouseClickEventArgs &args) {
+        if (args.pressed) {
+            auto *inputOption = static_cast<menu::InputOption *>(sender);
+            inputOption->ToggleActive();
+
+            if (inputOption->IsActive()) {
+                inputOption->m_keyPressEventHandler.Subscribe(
+                    BIND_EVENT_HANDLER_FROM(
+                        menu::InputOption::HandleKeyPressEvent, inputOption));
+            } else {
+                inputOption->m_keyPressEventHandler.Unsubscribe(
+                    BIND_EVENT_HANDLER_FROM(
+                        menu::InputOption::HandleKeyPressEvent, inputOption));
+            }
+        }
+    });
+}
 
 void InputOption::Render(const EngineContext &ctx) const {
     if (m_isActive || m_shouldDrawBackground) {
@@ -105,6 +126,31 @@ void InputOption::Render(const EngineContext &ctx) const {
 
     renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
                                  m_textColor, GetOptionText());
+}
+
+void InputOption::OnMouseEnter(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = true;
+    renderer::Renderer::SetCursor(renderer::Cursor::IBeam);
+}
+
+void InputOption::OnMouseLeave(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = false;
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+}
+
+void InputOption::OnMouseMove(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = true;
+    renderer::Renderer::SetCursor(renderer::Cursor::IBeam);
+}
+
+void InputOption::OnHidden() {
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+
+    if (m_isActive) {
+        m_keyPressEventHandler.Unsubscribe(BIND_EVENT_HANDLER_FROM(
+            menu::InputOption::HandleKeyPressEvent, this));
+        m_isActive = false;
+    }
 }
 
 std::string InputOption::GetOptionText() const {
@@ -127,5 +173,10 @@ void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
     } else if (args.key >= 32 && args.key <= 126) {
         m_inputText.push_back(static_cast<char>(args.key));
         args.handled = true;
+    }
+
+    if (args.handled) {
+        events::EventArgs e;
+        onInputChange.Invoke(this, e);
     }
 }

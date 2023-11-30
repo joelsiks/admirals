@@ -82,8 +82,9 @@ void Renderer::Render(const EngineContext &context,
         char fpsString[FPS_BUFFER_SIZE];
         if (sprintf(fpsString, "DT = %f, FPS: %f", context.deltaTime,
                     1.f / context.deltaTime) > 0) {
-            DrawText(*context.fontTexture, Vector2(0, 0), Color::RED,
-                     fpsString);
+            DrawText(*context.fontTexture,
+                     Vector2(0, context.windowSize.y() - context.fontHeight),
+                     Color::RED, fpsString);
         }
     }
 
