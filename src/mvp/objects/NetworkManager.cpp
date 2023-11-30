@@ -1,4 +1,5 @@
 #include "objects/NetworkManager.hpp"
+#include "MvpServer.hpp"
 #include "commontypes.hpp"
 #include "objects/GameManager.hpp"
 
@@ -9,24 +10,57 @@ NetworkManager::NetworkManager(const std::string &name,
                                GameManager &gameManager)
     : GameObject(name), m_gameManager(gameManager) {}
 
-NetworkManager::~NetworkManager() {}
-
-void NetworkManager::OnStart(const EngineContext &) {
-    printf("NetworkManager::OnStart()\n");
-
-    // Should probably be called later and not here
-    while (!IsConnected()) {
-        Connect("127.0.0.1", "60000");
-        printf("Waiting for connection...\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+NetworkManager::~NetworkManager() {
+    if (m_isHost) {
+        m_serverThread.join();
     }
-    printf("Connected!\n");
-
-    // Should probably be called later and not here
-    ReadyUp();
 }
 
+void NetworkManager::OnStart(const EngineContext &) {}
+
 void NetworkManager::OnUpdate(const EngineContext &) { HandleMessages(); }
+
+bool NetworkManager::StartAndConnectToServer(uint16_t port,
+                                             const size_t maxTries) {
+    m_isHost = true;
+
+    m_serverThread = std::thread([this, port]() {
+        MvpServer server(port);
+        server.Start();
+        server.EnterServerLoop();
+    });
+
+    return ConnectToServer("127.0.0.1", port, maxTries);
+}
+
+bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
+                                     const size_t maxTries) {
+    for (size_t i = 0; i < maxTries; i++) {
+        if (m_debug) {
+            printf("Trying to connect to the server...\n");
+        }
+
+        Connect(ip, std::to_string(port));
+        if (IsConnected()) {
+            if (m_debug) {
+                printf("Connected to the server\n");
+            }
+
+            // Should probably be called later by the user conciously and not
+            // here
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            ReadyUp();
+
+            return true;
+        }
+    }
+
+    if (m_debug) {
+        printf("Failed to connect to the server\n");
+    }
+
+    return false;
+}
 
 void NetworkManager::BuyShip(uint8_t type) {
     if (m_debug)
