@@ -144,12 +144,12 @@ void NetworkManager::UpdateBoard(Message &msg) {
     msg >> player2BaseHealth >> player1BaseHealth >> player2Coins >>
         player1Coins >> turn;
 
-    const int player_coins = m_playerId % 2 == 0 ? player1Coins : player2Coins;
+    const bool isPlayer1 = m_playerId % 2 == 1;
+    const int player_coins = isPlayer1 ? player1Coins : player2Coins;
 
-    const int base_health =
-        m_playerId % 2 == 0 ? player1BaseHealth : player2BaseHealth;
+    const int base_health = isPlayer1 ? player1BaseHealth : player2BaseHealth;
     const int enemy_base_health =
-        m_playerId % 2 == 0 ? player2BaseHealth : player1BaseHealth;
+        isPlayer1 ? player2BaseHealth : player1BaseHealth;
 
     if (m_debug) {
         printf("Turn: %d\n", turn);

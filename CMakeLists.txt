@@ -46,7 +46,6 @@ set(SOURCES
     src/engine/PathFinding.cpp
 )
 set(MVP_SOURCES 
-    src/mvp/shared.cpp
     src/mvp/objects/Sprite.cpp
     src/mvp/objects/Background.cpp
     src/mvp/objects/Grid.cpp

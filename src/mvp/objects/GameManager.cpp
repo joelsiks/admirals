@@ -54,12 +54,13 @@ void GameManager::BuyShip(uint8_t type) {
     m_networkManager->BuyShip(type);
 }
 
-void GameManager::MoveShip(uint16_t id, int x, int y) {
+void GameManager::MoveShip(uint16_t id, uint8_t x, uint8_t y) {
     if (m_ships.find(id) == m_ships.end() ||
         m_ships[id]->GetPlayerId() != m_playerId) {
         return;
     }
 
+    printf("MoveShip\n");
     m_networkManager->MoveShip(id, x, y);
 }
 
@@ -75,6 +76,7 @@ void GameManager::AttackShip(uint16_t id, uint16_t targetId) {
 
 void GameManager::ShipChangeEventHandler(void *sender,
                                          admirals::events::EventArgs) {
+    printf("ShipChangeEventHandler\n");
     const Ship *ship = static_cast<Ship *>(sender);
     switch (ship->GetAction()) {
     case ShipAction::Move: {

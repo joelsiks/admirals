@@ -9,10 +9,12 @@ public:
     events::EventSystem<events::EventArgs> onChanged;
 
     Ship(const ShipData &data, const Vector2 &size, const Texture &source);
+    ~Ship();
 
     void OnUpdate(const EngineContext &ctx) override;
 
     void OnClick(events::MouseClickEventArgs &args) override;
+    void HandleClick(void *sender, events::MouseClickEventArgs &args);
 
     void OnMouseEnter(events::MouseMotionEventArgs &args) override;
     void OnMouseLeave(events::MouseMotionEventArgs &args) override;
@@ -52,6 +54,9 @@ private:
     ShipData m_data;
     bool m_drawOutline = false;
     bool m_selected = false;
+    std::deque<admirals::Vector2> m_path;
+
+    void HandleAction();
 };
 
 } // namespace admirals::mvp::objects

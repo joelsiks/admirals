@@ -60,17 +60,25 @@ void CreateBases(const Texture &atlas) {
              static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
              GameData::CellSize));
     const ShipData data = {0, 1, 3, 3, ShipType::Cruiser, 0};
-    GameData::engine->MakeGameObject<Ship>(data, Vector2(GameData::CellSize),
-                                           atlas);
+    // GameData::engine->MakeGameObject<Ship>(data, Vector2(GameData::CellSize),
+    //                                        atlas);
 }
 
 void CreateUI(const Texture &atlas,
               const std::shared_ptr<GameManager> &gameManager) {
     auto coinText = GameData::engine->MakeUIElement<UI::TextElement>(
-        "coinText", 0, "Coins: 0", Vector2(100, 20), Color::WHITE);
+        "coinText", 0, "Coins: 0", Vector2(200, 40), Color::WHITE);
+
+    auto idText = GameData::engine->MakeUIElement<UI::TextElement>(
+        "idText", 0, "Player: X", Vector2(200, 40), Color::WHITE);
+    idText->SetDisplayOrientation(UI::DisplayOrientation::UpperRight);
 
     gameManager->onCoinsChanged += [coinText](void *, auto e) {
         coinText->SetText("Coins: " + std::to_string(e.coins));
+    };
+    gameManager->onPlayerIdChanged += [idText](void *, auto e) {
+        GameData::playerId = e.playerId;
+        idText->SetText("Player: " + std::to_string(e.playerId));
     };
 
     for (auto &[shipType, ship] : ShipInfoMap) {
@@ -139,7 +147,7 @@ void CreateStartMenuScene(const Texture &atlas) {
 
 int main(int, char *[]) {
     GameData::engine =
-        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, true);
+        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
 
     CreateGameBoard();
 
@@ -156,6 +164,11 @@ int main(int, char *[]) {
     CreateStartMenu();
     SwapEngineLayers();
     CreateStartMenuScene(atlas);
+
+    GameData::engine->onMouseMove +=
+        [](void *, events::MouseMotionEventArgs args) {
+            GameData::mousePosition = args.Location();
+        };
 
     GameData::engine->StartGameLoop();
 

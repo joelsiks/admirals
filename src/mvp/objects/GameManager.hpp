@@ -15,12 +15,19 @@ public:
     const int coins;
 };
 
+class PlayerIdChangedEventArgs : public events::EventArgs {
+public:
+    PlayerIdChangedEventArgs(uint32_t id) : playerId(id) {}
+    const uint32_t playerId;
+};
+
 class GameManager : public scene::GameObject {
 public:
     GameManager(const std::string &name);
     ~GameManager();
 
     events::EventSystem<CoinsChangesEventArgs> onCoinsChanged;
+    events::EventSystem<PlayerIdChangedEventArgs> onPlayerIdChanged;
 
     void OnStart(const EngineContext &ctx) override;
     void OnUpdate(const EngineContext &ctx) override;
@@ -31,10 +38,14 @@ public:
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }
-    void SetPlayerId(uint32_t id) { m_playerId = id; }
+    void SetPlayerId(uint32_t id) {
+        m_playerId = id;
+        PlayerIdChangedEventArgs args(m_playerId);
+        onPlayerIdChanged.Invoke(this, args);
+    }
 
     void BuyShip(uint8_t type);
-    void MoveShip(uint16_t id, int x, int y);
+    void MoveShip(uint16_t id, uint8_t x, uint8_t y);
     void AttackShip(uint16_t id, uint16_t targetId);
 
     void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,

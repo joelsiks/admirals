@@ -22,7 +22,10 @@ struct PlayerData {
 class MvpServer : public Server {
 
 public:
-    MvpServer(uint16_t port) : Server(port) { m_turn = 0; }
+    MvpServer(uint16_t port, bool debug = false)
+        : Server(port), m_debug(debug) {
+        m_turn = 0;
+    }
 
     bool OnClientConnect(std::shared_ptr<Connection>) override { return true; }
 
@@ -97,7 +100,8 @@ public:
         }
 
         // Process ship actions
-        ProcessShips();
+        ProcessShips(m_player1.ships);
+        ProcessShips(m_player2.ships);
 
         // Broadcast state
         BroadcastState();
@@ -157,11 +161,11 @@ private:
         // Assumed that the ship is spawned besides the base
         // Could do other logic instead
         // Ship spawn location is (1, 0) or (-2, -1)
-        const int x = clientID == m_player1.id ? 1 : -1 + BOARD_SIZE - 1;
-        const int y = clientID == m_player1.id ? 0 : BOARD_SIZE - 1;
+        const int x = player.id == m_player1.id ? 1 : BOARD_SIZE - 2;
+        const int y = player.id == m_player1.id ? 0 : BOARD_SIZE - 1;
 
         if (m_debug) {
-            std::cout << "Player " << clientID << " bought ship " << type
+            std::cout << "Player " << player.id << " bought ship " << type
                       << "at (" << x << ", " << y << ")\n";
         }
 
@@ -171,7 +175,7 @@ private:
         }
 
         const ShipData ship(m_shipID++, type, x, y, ShipInfoMap[type].Health,
-                            clientID);
+                            player.id);
 
         player.coins -= ShipInfoMap[type].Cost;
         player.ships[ship.id] = ship;
@@ -250,9 +254,15 @@ private:
         ship.attackTargetID = targetID;
     }
 
-    void ProcessShips() {
+    void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships) {
         // TODO: Process ship actions correctly
-        for (auto &ship : m_player1.ships) {
+        for (auto &ship : ships) {
+            if (ship.second.moveData.actionX == ship.second.x &&
+                ship.second.moveData.actionY == ship.second.y) {
+                ship.second.action = ShipAction::None;
+                continue;
+            }
+
             if (ship.second.action == ShipAction::Move) {
                 if (m_board[ship.second.moveData.actionX]
                            [ship.second.moveData.actionY] != 0) {
@@ -263,20 +273,6 @@ private:
                 ship.second.y = ship.second.moveData.actionY;
                 m_board[ship.second.x][ship.second.y] = ship.second.id;
             }
-            ship.second.action = ShipAction::None;
-        }
-        for (auto &ship : m_player2.ships) {
-            if (ship.second.action == ShipAction::Move) {
-                if (m_board[ship.second.moveData.actionX]
-                           [ship.second.moveData.actionY] != 0) {
-                    continue;
-                }
-                m_board[ship.second.x][ship.second.y] = 0;
-                ship.second.x = ship.second.moveData.actionX;
-                ship.second.y = ship.second.moveData.actionY;
-                m_board[ship.second.x][ship.second.y] = ship.second.id;
-            }
-            ship.second.action = ShipAction::None;
         }
     }
 
@@ -330,7 +326,7 @@ private:
 };
 
 int main() {
-    MvpServer server(60000);
+    MvpServer server(60000, true);
     server.Start();
 
     while (true) {
