@@ -26,28 +26,15 @@ public:
 
     inline const EngineContext &GetContext() const { return m_context; }
 
-    inline std::shared_ptr<UI::DisplayLayout>
-    SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout) {
-        auto currentLayout = m_displayLayout;
-        m_displayLayout = layout;
-        return currentLayout;
-    }
+    std::shared_ptr<UI::DisplayLayout>
+    SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout);
 
     inline std::shared_ptr<UI::DisplayLayout> GetDisplayLayout() {
         return m_displayLayout;
     }
 
-    inline std::shared_ptr<scene::Scene>
-    SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
-        auto currentScene = m_scene;
-        m_scene = scene;
-
-        if (hasScene() && !m_scene->IsInitialized()) {
-            m_scene->OnStart(m_context);
-        }
-
-        return currentScene;
-    }
+    std::shared_ptr<scene::Scene>
+    SetAndGetScene(const std::shared_ptr<scene::Scene> &scene);
 
     inline std::shared_ptr<scene::Scene> GetScene() { return m_scene; }
 

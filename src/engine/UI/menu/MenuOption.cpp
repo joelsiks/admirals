@@ -9,7 +9,7 @@ MenuOption::MenuOption(const std::string &name, float order,
     : Element(name, order, text, Vector2(0, 0)) {}
 
 void MenuOption::Render(const EngineContext &ctx) const {
-    if (m_clickedAndShouldDrawBackground) {
+    if (m_shouldDrawBackground) {
         renderer::Renderer::DrawRectangle(m_boundingBox, Color::GREY);
     }
 
@@ -19,6 +19,27 @@ void MenuOption::Render(const EngineContext &ctx) const {
 
 void MenuOption::OnClick(events::MouseClickEventArgs &args) {
     onClick.Invoke(this, args);
+}
+
+void MenuOption::OnMouseEnter(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = true;
+    renderer::Renderer::SetCursor(renderer::Cursor::Hand);
+}
+
+void MenuOption::OnMouseLeave(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = false;
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+}
+
+void MenuOption::OnMouseMove(events::MouseMotionEventArgs &) {
+    renderer::Renderer::SetCursor(renderer::Cursor::Hand);
+}
+
+void MenuOption::OnShown() {}
+
+void MenuOption::OnHidden() {
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+    m_shouldDrawBackground = false;
 }
 
 // TextOption
@@ -72,3 +93,39 @@ void CycleOption::Cycle() {
 }
 
 size_t CycleOption::CurrentIndex() const { return m_currentOption; }
+
+InputOption::InputOption(const std::string &name, float order,
+                         const std::string &placeholder)
+    : MenuOption(name, order, ""), m_placeholderText(placeholder) {}
+
+void InputOption::Render(const EngineContext &ctx) const {
+    if (m_isActive || m_shouldDrawBackground) {
+        renderer::Renderer::DrawRectangle(m_boundingBox, Color::GREY);
+    }
+
+    renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
+                                 m_textColor, GetOptionText());
+}
+
+std::string InputOption::GetOptionText() const {
+    if (m_inputText.length() == 0) {
+        return m_placeholderText;
+    }
+
+    return m_inputText;
+}
+
+void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
+    if (!args.isKeyUp) {
+        return;
+    }
+
+    // TODO: This only handles ASCII-values...
+    if (args.key == SDLK_BACKSPACE && m_inputText.length() > 0) {
+        m_inputText.pop_back();
+        args.handled = true;
+    } else if (args.key >= 32 && args.key <= 126) {
+        m_inputText.push_back(static_cast<char>(args.key));
+        args.handled = true;
+    }
+}

@@ -133,6 +133,18 @@ void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
     }
 }
 
+void Scene::OnShown() {
+    for (const auto &obj : m_objects) {
+        obj->OnShown();
+    }
+}
+
+void Scene::OnHidden() {
+    for (const auto &obj : m_objects) {
+        obj->OnHidden();
+    }
+}
+
 void Scene::RebuildQuadTree(const Vector2 &windowSize) {
     // build a QuadTree to find out what objects to handle click events on.
     std::vector<std::shared_ptr<IDisplayable>> objects;

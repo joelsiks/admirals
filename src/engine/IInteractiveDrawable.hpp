@@ -9,9 +9,13 @@ namespace admirals {
 class IInteractiveDrawable : public renderer::IDrawable {
 public:
     virtual void OnClick(events::MouseClickEventArgs &args) = 0;
+
     virtual void OnMouseEnter(events::MouseMotionEventArgs &args) = 0;
     virtual void OnMouseLeave(events::MouseMotionEventArgs &args) = 0;
     virtual void OnMouseMove(events::MouseMotionEventArgs &args) = 0;
+
+    virtual void OnShown() = 0;
+    virtual void OnHidden() = 0;
 };
 
 } // namespace admirals

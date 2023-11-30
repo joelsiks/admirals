@@ -7,6 +7,7 @@
 #include "OrderedCollection.hpp"
 #include "QuadTree.hpp"
 #include "UI/Element.hpp"
+#include "events/EventSystem.hpp"
 #include "events/MouseClickEvent.hpp"
 #include "events/MouseMotionEvent.hpp"
 
@@ -19,6 +20,9 @@ public:
 
     virtual void OnClick(events::MouseClickEventArgs &args);
     virtual void OnMouseMove(events::MouseMotionEventArgs &args);
+
+    virtual void OnShown();
+    virtual void OnHidden();
 
     // Collection
     void AddElement(std::shared_ptr<Element> element);

@@ -29,9 +29,13 @@ public:
             const Vector2 &size);
 
     virtual void OnClick(events::MouseClickEventArgs &args) override {}
+
     virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
     virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
     virtual void OnMouseMove(events::MouseMotionEventArgs &args) override {}
+
+    virtual void OnShown() override {}
+    virtual void OnHidden() override {}
 
     virtual DisplayOrientation GetDisplayOrientation() const {
         return m_dispOrient;

@@ -56,6 +56,7 @@ int Renderer::Init(const EngineContext &ctx) {
         ctx.windowSize.y(),       1, 0};
 
     vk2dRendererSetCamera(camera);
+
     return code;
 }
 
@@ -143,4 +144,10 @@ void Renderer::DrawText(const Texture &font, const Vector2 &position,
     vk2dRendererSetColourMod(color.Data());
     RenderFont(font.Data(), position, text.c_str());
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
+}
+
+void Renderer::SetCursor(Cursor cursor) {
+    SDL_Cursor *c;
+    c = SDL_CreateSystemCursor(static_cast<SDL_SystemCursor>(cursor));
+    SDL_SetCursor(c);
 }

@@ -6,15 +6,38 @@ using namespace admirals::events;
 
 Button::Button(const std::string &name, float order, const std::string &text,
                const Vector2 &size, const Color &bgColor, const Color &fgColor)
-    : Element(name, order, text, size), m_bgColor(bgColor), m_fgColor(fgColor) {
+    : Element(name, order, text, size), m_fgColor(fgColor) {
+    SetBackgroundColor(bgColor);
 }
 
 void Button::Render(const EngineContext &ctx) const {
-    renderer::Renderer::DrawRectangle(m_boundingBox, m_bgColor);
+    const Color &renderColor =
+        m_shouldFadeBackground ? m_bgColorFaded : m_bgColor;
+
+    renderer::Renderer::DrawRectangle(m_boundingBox, renderColor);
     renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
                                  m_fgColor, m_text);
 }
 
 void Button::OnClick(events::MouseClickEventArgs &args) {
     onClick.Invoke(this, args);
+}
+
+void Button::OnMouseEnter(events::MouseMotionEventArgs &) {
+    m_shouldFadeBackground = true;
+    renderer::Renderer::SetCursor(renderer::Cursor::Hand);
+}
+
+void Button::OnMouseLeave(events::MouseMotionEventArgs &) {
+    m_shouldFadeBackground = false;
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+}
+
+void Button::OnMouseMove(events::MouseMotionEventArgs &) {
+    renderer::Renderer::SetCursor(renderer::Cursor::Hand);
+}
+
+void Button::OnHidden() {
+    m_shouldFadeBackground = false;
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
 }

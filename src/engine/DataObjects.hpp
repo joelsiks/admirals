@@ -120,6 +120,7 @@ public:
 
     inline float operator[](int i) const { return this->Data()[i]; }
 
+    // NOLINTNEXTLINE
     inline float &operator[](int i) { return this->Data()[i]; }
 
     static inline float Distance(const Vector2 &v1, const Vector2 &v2) {
@@ -390,6 +391,12 @@ class Color : public Vector4 {
 public:
     Color();
     Color(float r, float g, float b, float a);
+
+    /// @brief Constructs a Color object from a Vector4. This assumes that the
+    /// Vector4 contains values from 0.0-1.0.
+    /// @param vec A vector containing the data to put in the Color.
+    Color(const Vector4 &vec);
+
     ~Color();
 
     inline float r() const { return m_0; }
