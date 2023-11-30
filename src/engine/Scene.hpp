@@ -16,9 +16,6 @@ namespace admirals::scene {
 
 class Scene : public renderer::IDrawable {
 public:
-    // Invoked when the DisplayLayout is swapped with another layout.
-    events::EventSystem<events::EventArgs> onSwapped;
-
     // Engine events
     virtual void Render(const EngineContext &ctx) const override;
 
