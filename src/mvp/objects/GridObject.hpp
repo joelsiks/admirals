@@ -3,7 +3,6 @@
 #include "shared.hpp"
 
 namespace admirals::mvp::objects {
-const float TotalHeight = GameData::GridSize + GameData::CellSize * 2;
 
 class GridObject : public scene::GameObject {
     using scene::GameObject::GameObject; // Inherit constructors
@@ -12,6 +11,7 @@ public:
     inline Rect GetBoundingBox() const override {
         return Rect(GetPosition(), GetSize());
     };
+
     virtual inline Vector2 GetPosition() const override {
         return ConvertPositionGridToWorld(m_boundingBox.Position());
     };
@@ -20,13 +20,14 @@ public:
         const Vector2 windowSize = GameData::engine->GetWindowSize();
         const float dim =
             std::min(windowSize.x() + GameData::CellSize * 2, windowSize.y());
-        return std::max<float>(0, dim) / TotalHeight;
+        return std::max<float>(0, dim) / GameData::TotalHeight;
     }
 
     static inline Vector2 GetGridOffset() {
         const Vector2 windowSize = GameData::engine->GetWindowSize();
         const float scale = GetGridScale();
-        return (windowSize - Vector2(GameData::GridSize, TotalHeight) * scale) /
+        return (windowSize -
+                Vector2(GameData::GridSize, GameData::TotalHeight) * scale) /
                2.f;
     }
 
@@ -34,7 +35,6 @@ public:
     ConvertPositionGridToWorld(const Vector2 &gridPosition) {
         const float scale = GetGridScale();
         const Vector2 offset = GetGridOffset();
-
         return offset + (GameData::GridArea.Position() +
                          gridPosition * GameData::CellSize) *
                             scale;
@@ -44,10 +44,10 @@ public:
     ConvertPositionWorldToGrid(const Vector2 &worldPosition) {
         const float scale = GetGridScale();
         const Vector2 offset = GetGridOffset();
-
-        return (((worldPosition - offset) / scale) -
-                GameData::GridArea.Position()) /
-               GameData::CellSize;
+        const Vector2 res = (((worldPosition - offset) / scale) -
+                             GameData::GridArea.Position()) /
+                            GameData::CellSize;
+        return res;
     }
 
     virtual inline Vector2 GetSize() const override {

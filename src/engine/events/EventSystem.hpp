@@ -52,7 +52,7 @@ private:
 
             // Target function pointer
             const size_t *functor = reinterpret_cast<const size_t *>(&e);
-            const size_t functionHash = functor[2];
+            const size_t functionHash = functor[0] ^ functor[2];
 
             // Combine the hash values
             return typeHash ^ functionHash;

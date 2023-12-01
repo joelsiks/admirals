@@ -21,32 +21,43 @@ public:
 
     void Render(const EngineContext &ctx) const;
 
-    void SetHealth(uint16_t health) { m_data.health = health; }
-    uint16_t GetHealth() const { return m_data.health; }
+    inline bool IsOwned() const { return GameData::playerId == GetPlayerId(); }
+    inline bool IsSelected() const { return GameData::selectedShip == m_name; }
+    inline void Select() const { GameData::selectedShip = m_name; }
+    inline static void DeSelect() { GameData::selectedShip = ""; }
 
-    void SetID(uint16_t id) { m_data.id = id; }
-    uint16_t GetID() const { return m_data.id; }
+    inline void SetHealth(uint16_t health) { m_data.health = health; }
+    inline uint16_t GetHealth() const { return m_data.health; }
 
-    void SetPlayerId(uint8_t playerId) { m_data.owner = playerId; }
-    uint8_t GetPlayerId() const { return m_data.owner; }
+    inline void SetID(uint16_t id) { m_data.id = id; }
+    inline uint16_t GetID() const { return m_data.id; }
 
-    void SetType(uint8_t type) { m_data.type = type; }
-    uint8_t GetType() const { return m_data.type; }
+    inline void SetPlayerId(uint8_t playerId) { m_data.owner = playerId; }
+    inline uint8_t GetPlayerId() const { return m_data.owner; }
 
-    void SetAction(uint8_t action) { m_data.action = action; }
-    uint8_t GetAction() const { return m_data.action; }
+    inline void SetType(uint8_t type) { m_data.type = type; }
+    inline uint8_t GetType() const { return m_data.type; }
 
-    void SetActionX(uint8_t actionX) { m_data.moveData.actionX = actionX; }
-    uint8_t GetActionX() const { return m_data.moveData.actionX; }
+    inline void SetAction(uint8_t action) { m_data.action = action; }
+    inline uint8_t GetAction() const { return m_data.action; }
 
-    void SetActionY(uint8_t actionY) { m_data.moveData.actionY = actionY; }
-    uint8_t GetActionY() const { return m_data.moveData.actionY; }
+    inline void SetActionX(uint8_t actionX) {
+        m_data.moveData.actionX = actionX;
+    }
+    inline uint8_t GetActionX() const { return m_data.moveData.actionX; }
 
-    void SetAttackID(uint16_t attackID) { m_data.attackTargetID = attackID; }
-    uint16_t GetAttackID() const { return m_data.attackTargetID; }
+    inline void SetActionY(uint8_t actionY) {
+        m_data.moveData.actionY = actionY;
+    }
+    inline uint8_t GetActionY() const { return m_data.moveData.actionY; }
 
-    void SetData(const ShipData &data) { m_data = data; }
-    const ShipData &GetData() const { return m_data; }
+    inline void SetAttackID(uint16_t attackID) {
+        m_data.attackTargetID = attackID;
+    }
+    inline uint16_t GetAttackID() const { return m_data.attackTargetID; }
+
+    inline void SetData(const ShipData &data) { m_data = data; }
+    inline const ShipData &GetData() const { return m_data; }
 
     static Vector2 ShipTypeToTexOffset(uint16_t type);
 

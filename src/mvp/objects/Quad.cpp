@@ -1,4 +1,4 @@
-#include "Quad.hpp"
+#include "objects/Quad.hpp"
 #include "Renderer.hpp"
 #include "shared.hpp"
 

@@ -26,6 +26,8 @@ public:
     static constexpr float GridSize = GameData::CellSize * GameData::GridCells;
     inline static const Rect GridArea =
         Rect(0, GameData::CellSize, GameData::GridSize, GameData::GridSize);
+    static constexpr float TotalHeight =
+        GameData::GridSize + GameData::CellSize * 2;
 };
 
 } // namespace admirals::mvp

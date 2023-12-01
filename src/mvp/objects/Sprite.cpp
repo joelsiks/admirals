@@ -1,4 +1,4 @@
-#include "Sprite.hpp"
+#include "objects/Sprite.hpp"
 #include "Renderer.hpp"
 #include "shared.hpp"
 

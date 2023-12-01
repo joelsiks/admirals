@@ -1,6 +1,5 @@
 #include "objects/NetworkManager.hpp"
 #include "commontypes.hpp"
-#include "objects/GameManager.hpp"
 
 using namespace admirals::mvp::objects;
 using namespace admirals::net;

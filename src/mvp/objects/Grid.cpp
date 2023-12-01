@@ -1,4 +1,4 @@
-#include "Grid.hpp"
+#include "objects/Grid.hpp"
 #include "Renderer.hpp"
 #include "shared.hpp"
 

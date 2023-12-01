@@ -1,4 +1,4 @@
-#include "Ship.hpp"
+#include "objects/Ship.hpp"
 #include "shared.hpp"
 
 using namespace admirals;
@@ -11,17 +11,22 @@ Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
     : Sprite("ship-" + std::to_string(data.id), source, 3,
              Rect(data.x, data.y, size.x(), size.y()),
              Ship::ShipTypeToTexOffset(data.type)),
-      m_data(data) {}
+      m_data(data) {
+    if (IsOwned()) {
+        GameData::engine->onMouseClick += BIND_EVENT_HANDLER(Ship::HandleClick);
+    }
+}
 
 Ship::~Ship() {
-    GameData::engine->onMouseClick -=
-        BIND_EVENT_HANDLER_FROM(Ship::HandleClick, this);
+    if (IsOwned()) {
+        GameData::engine->onMouseClick -= BIND_EVENT_HANDLER(Ship::HandleClick);
+    }
 }
 
 void Ship::HandleAction() {
     switch (GetAction()) {
     case ShipAction::None:
-        if (GameData::selectedShip != m_name) {
+        if (!IsSelected()) {
             m_path.clear();
         }
         break;
@@ -58,7 +63,7 @@ void Ship::HandleAction() {
 }
 
 void Ship::OnUpdate(const EngineContext &) {
-    if (GameData::selectedShip == m_name) {
+    if (IsSelected()) {
         m_path = GameData::engine->GetScene()->FindPath(
             GetPosition(), GameData::mousePosition, GameData::CellSize,
             {1, 2, 3}, GameData::CellSize);
@@ -67,25 +72,36 @@ void Ship::OnUpdate(const EngineContext &) {
     HandleAction();
 }
 
-void Ship::OnClick(events::MouseClickEventArgs &) {
-    printf("My player id = %d\n", GetID());
-    if (GameData::selectedShip != m_name && GameData::playerId == GetID()) {
-        GameData::selectedShip = m_name;
-        GameData::engine->onMouseClick += BIND_EVENT_HANDLER(Ship::HandleClick);
+void Ship::OnClick(events::MouseClickEventArgs &args) {
+    if (args.button == events::MouseButton::Left && args.pressed) {
+        printf("Ship (%d): Player id = %d, Selected = %d\n", GetID(),
+               GetPlayerId(), IsSelected());
+        if (IsOwned()) {
+            if (IsSelected()) {
+                DeSelect();
+            } else {
+                Select();
+            }
+            args.handled = true;
+        }
     }
 }
 
 void Ship::HandleClick(void *, events::MouseClickEventArgs &args) {
-    if (args.button == events::MouseButton::Left && args.pressed) {
-        if (!GetBoundingBox().Contains(args.Location())) {
-            GameData::selectedShip = "";
-            if (!m_path.empty() &&
-                args.Location().Distance(m_path.back() + HalfCellSize) <
-                    GameData::CellSize / SameCellDistance) {
-                SetAction(ShipAction::Move);
-                // HandleAction();
-            }
+    printf("Ship (%d): Handling click...\n", GetID());
+    if (IsSelected() && args.button == events::MouseButton::Left &&
+        args.pressed) {
+        const Vector2 clickLocation = args.Location();
+        if (!m_path.empty() &&
+            clickLocation.Distance(m_path.back() + HalfCellSize) <
+                GameData::CellSize / SameCellDistance) {
+            SetAction(ShipAction::Move);
+            const Vector2 gridPosition =
+                GridObject::ConvertPositionWorldToGrid(clickLocation);
+            printf("Now moving to: (%d, %d)\n", gridPosition.x(),
+                   gridPosition.y());
         }
+        DeSelect();
     }
 }
 
@@ -98,11 +114,17 @@ void Ship::OnMouseLeave(events::MouseMotionEventArgs &) {
 }
 
 void Ship::Render(const EngineContext &ctx) const {
+    if (IsOwned()) {
+        renderer::Renderer::DrawRectangle(GetBoundingBox(), Color::BLUE);
+    } else {
+        renderer::Renderer::DrawRectangle(GetBoundingBox(), Color::RED);
+    }
+
     Sprite::Render(ctx);
-    if (GameData::selectedShip == m_name) {
+
+    if (IsSelected()) {
         renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
                                                  Color::BLUE);
-
     } else if (m_drawOutline) {
         renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
                                                  Color::WHITE);
@@ -114,15 +136,15 @@ void Ship::Render(const EngineContext &ctx) const {
 
         for (const Vector2 &part : m_path) {
             const Vector2 newPosition = part + GameData::CellSize / 2;
-            renderer::Renderer::DrawLine(position, newPosition, Color::BLUE);
+            renderer::Renderer::DrawLine(position, newPosition, Color::WHITE);
             position = newPosition;
         }
         // Draw square at destination
         renderer::Renderer::DrawRectangle(position - Vector2(10), Vector2(20),
-                                          Color::BLUE);
+                                          Color::WHITE);
         // Draw square at origin
         renderer::Renderer::DrawRectangle(origin - Vector2(10), Vector2(20),
-                                          Color::BLUE);
+                                          Color::WHITE);
     }
 }
 

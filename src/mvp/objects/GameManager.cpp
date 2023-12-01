@@ -1,4 +1,4 @@
-#include "GameManager.hpp"
+#include "objects/GameManager.hpp"
 #include "events/EventArgs.hpp"
 #include "objects/NetworkManager.hpp"
 
