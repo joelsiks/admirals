@@ -43,6 +43,7 @@ set(SOURCES
     src/engine/Renderer.cpp
     src/engine/Engine.cpp
     src/engine/QuadTree.cpp
+    src/engine/PathFinding.cpp
 )
 set(MVP_SOURCES 
     src/mvp/shared.cpp

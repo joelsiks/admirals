@@ -6,6 +6,7 @@
 #include "DataObjects.hpp"
 #include "UI/Element.hpp"
 #include "events/EventSystem.hpp"
+#include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
 
 namespace admirals::UI::menu {
@@ -23,12 +24,15 @@ public:
 
     void OnClick(events::MouseClickEventArgs &args) override;
 
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override;
+
+    virtual void OnShown() override;
+    virtual void OnHidden() override;
+
     virtual std::string GetOptionText() const = 0;
     inline void SetTextColor(const Color &color) { m_textColor = color; }
-
-    inline void SetDrawBackground(bool value) {
-        m_clickedAndShouldDrawBackground = value;
-    }
 
     template <typename T>
     static std::shared_ptr<MenuOption>
@@ -39,9 +43,9 @@ public:
         return element;
     }
 
-private:
+protected:
     Color m_textColor;
-    bool m_clickedAndShouldDrawBackground = false;
+    bool m_shouldDrawBackground = false;
 };
 
 // Text Option, is non-interactive.
@@ -50,6 +54,10 @@ public:
     TextOption(const std::string &name, float order, const std::string &text);
 
     std::string GetOptionText() const override;
+
+    void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
+    void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
+    void OnMouseMove(events::MouseMotionEventArgs &args) override {}
 
     inline void SetText(const std::string &text) { m_text = text; }
 };
@@ -93,6 +101,26 @@ public:
 private:
     size_t m_currentOption;
     std::vector<std::string> m_cycleOptions;
+};
+
+class InputOption : public MenuOption {
+public:
+    InputOption(const std::string &name, float order,
+                const std::string &placeholder = "...");
+
+    virtual void Render(const EngineContext &ctx) const override;
+
+    std::string GetOptionText() const override;
+
+    inline bool IsActive() const { return m_isActive; }
+    inline void ToggleActive() { m_isActive = !m_isActive; }
+
+    void HandleKeyPressEvent(void *sender, events::KeyPressEventArgs &args);
+
+private:
+    std::string m_placeholderText;
+    std::string m_inputText;
+    bool m_isActive = false;
 };
 
 } // namespace admirals::UI::menu

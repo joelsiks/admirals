@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <queue>
+#include <unordered_set>
 #include <vector>
 
 #include "IDisplayable.hpp"
@@ -27,6 +28,12 @@ public:
     std::vector<std::shared_ptr<IDisplayable>>
     GetObjectsAtPosition(const Vector2 &position) const;
 
+    /// @brief Gets objects at a location inside the QuadTree
+    /// @param location The location to check against in the QuadTree
+    /// @return A vector of objects that overlap the position
+    std::unordered_set<std::shared_ptr<IDisplayable>>
+    GetObjectsInArea(const Rect &location) const;
+
     inline void PrintTree() const {
         if (m_rootNode != nullptr && m_size != Vector2(0)) {
             PrintNode(m_rootNode, 0, m_size);
@@ -38,6 +45,8 @@ public:
             DrawNode(m_rootNode, 0, m_size);
         }
     }
+
+    inline Vector2 GetSize() const { return m_size; }
 
 private:
     static constexpr int NUM_QUADRANTS = 4;

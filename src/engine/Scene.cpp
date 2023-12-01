@@ -1,6 +1,9 @@
-#include "Scene.hpp"
 #include <stdio.h>
 
+#include "PathFinding.hpp"
+#include "Scene.hpp"
+
+using namespace admirals;
 using namespace admirals::scene;
 
 void Scene::AddObject(std::shared_ptr<GameObject> object) {
@@ -55,6 +58,13 @@ std::vector<std::string> Scene::GetSceneObjectNames() {
         vec.emplace_back(value->name());
     }
     return vec;
+}
+
+std::deque<Vector2> Scene::FindPath(
+    const Vector2 &start, const Vector2 &dest, const Vector2 &pathSize,
+    const std::unordered_set<float> &checkedOrders, float detailLevel) const {
+    return PathFinding::FindPath(m_quadtree, start, dest, pathSize,
+                                 checkedOrders, detailLevel);
 }
 
 void Scene::OnStart(const EngineContext &ctx) {
@@ -120,6 +130,18 @@ void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
         } else {
             it++;
         }
+    }
+}
+
+void Scene::OnShown() {
+    for (const auto &obj : m_objects) {
+        obj->OnShown();
+    }
+}
+
+void Scene::OnHidden() {
+    for (const auto &obj : m_objects) {
+        obj->OnHidden();
     }
 }
 

@@ -4,7 +4,6 @@
 
 #include "UI/DisplayLayout.hpp"
 #include "UI/menu/MenuOption.hpp"
-#include "events/EventSystem.hpp"
 
 namespace admirals::UI::menu {
 

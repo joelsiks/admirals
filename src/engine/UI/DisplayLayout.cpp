@@ -64,6 +64,9 @@ void DisplayLayout::OnClick(events::MouseClickEventArgs &args) {
 }
 
 void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
+    // TODO: This currently handles MouseEnter/MouseMove before any MouseLeave
+    // events, which is reverse of what is happening chronologically. Instead,
+    // one might want to handle MouseLeave events first.
     const Vector2 mouseLocation = args.Location();
     std::unordered_set<std::string> currentMouseOverElements;
 
@@ -101,6 +104,20 @@ void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
             it++;
         }
     }
+}
+
+void DisplayLayout::OnShown() {
+    for (const auto &el : m_elements) {
+        el->OnShown();
+    }
+}
+
+void DisplayLayout::OnHidden() {
+    for (const auto &el : m_elements) {
+        el->OnHidden();
+    }
+
+    m_mouseOverSet.clear();
 }
 
 void DisplayLayout::AddElement(std::shared_ptr<Element> element) {

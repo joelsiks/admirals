@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include <SDL_mouse.h>
 #include <SDL_video.h>
 #include <VK2D/Texture.h>
 
@@ -15,12 +16,21 @@ namespace admirals::renderer {
 
 typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
 
+enum Cursor {
+    Arrow = SDL_SYSTEM_CURSOR_ARROW,
+    Crosshair = SDL_SYSTEM_CURSOR_CROSSHAIR,
+    Hand = SDL_SYSTEM_CURSOR_HAND,
+    IBeam = SDL_SYSTEM_CURSOR_IBEAM, // Also known as "text-cursor".
+    No = SDL_SYSTEM_CURSOR_NO,
+    Wait = SDL_SYSTEM_CURSOR_WAIT,
+};
+
 class Renderer {
 public:
     Renderer(const std::string &name, int width, int height);
     ~Renderer();
 
-    int Init(const EngineContext &context);
+    int Init(const EngineContext &ctx);
     static void Render(const EngineContext &context,
                        const DrawableCollection &drawables);
 
@@ -50,6 +60,8 @@ public:
 
     static void DrawText(const Texture &font, const Vector2 &position,
                          const Color &color, const std::string &text);
+
+    static void SetCursor(Cursor cursor);
 
     static inline Vector2 TextFontSize(const std::string &text, float width,
                                        float height) {
