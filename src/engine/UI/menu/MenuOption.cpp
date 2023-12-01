@@ -97,8 +97,8 @@ size_t CycleOption::CurrentIndex() const { return m_currentOption; }
 InputOption::InputOption(
     const std::string &name, float order,
     events::EventSystem<events::KeyPressEventArgs> &eventHandler,
-    const std::string &placeholder)
-    : MenuOption(name, order, ""), m_placeholderText(placeholder),
+    const std::string &initString, const std::string &placeholder)
+    : MenuOption(name, order, initString), m_placeholderText(placeholder),
       m_keyPressEventHandler(eventHandler) {
 
     onClick.Subscribe([](void *sender, events::MouseClickEventArgs &args) {
@@ -154,11 +154,11 @@ void InputOption::OnHidden() {
 }
 
 std::string InputOption::GetOptionText() const {
-    if (m_inputText.length() == 0) {
+    if (m_text.length() == 0) {
         return m_placeholderText;
     }
 
-    return m_inputText;
+    return m_text;
 }
 
 void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
@@ -167,16 +167,16 @@ void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
     }
 
     // TODO: This only handles ASCII-values...
-    if (args.key == SDLK_BACKSPACE && m_inputText.length() > 0) {
-        m_inputText.pop_back();
+    if (args.key == SDLK_BACKSPACE && m_text.length() > 0) {
+        m_text.pop_back();
         args.handled = true;
     } else if (args.key >= 32 && args.key <= 126) {
-        m_inputText.push_back(static_cast<char>(args.key));
+        m_text.push_back(static_cast<char>(args.key));
         args.handled = true;
     }
 
     if (args.handled) {
-        events::TextEventArgs args(m_inputText);
+        events::TextEventArgs args(m_text);
         onInput.Invoke(this, args);
     }
 }

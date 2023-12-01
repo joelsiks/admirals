@@ -111,6 +111,7 @@ public:
 
     InputOption(const std::string &name, float order,
                 events::EventSystem<events::KeyPressEventArgs> &eventHandler,
+                const std::string &initString = "",
                 const std::string &placeholder = "...");
 
     virtual void Render(const EngineContext &ctx) const override;
@@ -128,11 +129,10 @@ public:
 
     void HandleKeyPressEvent(void *sender, events::KeyPressEventArgs &args);
 
-    inline std::string GetInputText() const { return m_inputText; }
+    inline std::string GetInputText() const { return m_text; }
 
 private:
     std::string m_placeholderText;
-    std::string m_inputText;
     bool m_isActive = false;
 
     events::EventSystem<events::KeyPressEventArgs> &m_keyPressEventHandler;
