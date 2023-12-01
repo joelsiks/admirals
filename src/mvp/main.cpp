@@ -26,7 +26,7 @@ const Color blue = Color::FromHEX("#3283cf");
 const Color green = Color::FromHEX("#087311");
 
 static std::shared_ptr<UI::DisplayLayout> g_dlStore;
-static std::shared_ptr<scene::Scene> g_sStore;
+static std::shared_ptr<Scene> g_sStore;
 
 void SwapEngineLayers() {
     g_dlStore = GameData::engine->SetAndGetDisplayLayout(g_dlStore);
@@ -93,7 +93,7 @@ void CreateUI(const Texture &atlas,
 }
 
 void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
-    GameData::startMenuScene = std::make_shared<scene::Scene>();
+    GameData::startMenuScene = std::make_shared<Scene>();
 
     GameData::startMenu = std::make_shared<UI::menu::Menu>(
         "Admirals Conquest (MVP)", Color::BLACK,

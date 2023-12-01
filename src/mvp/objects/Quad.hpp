@@ -3,7 +3,7 @@
 
 namespace admirals::mvp::objects {
 
-class Quad : public scene::GameObject {
+class Quad : public GameObject {
 public:
     Quad(const std::string &name, float order = 0, const Rect &bounds = Rect(),
          const Color &color = Color::WHITE);

@@ -9,16 +9,9 @@
 #include "IDisplayable.hpp"
 #include "IInteractiveDisplayable.hpp"
 #include "IOrdered.hpp"
+#include "UI/Data.hpp"
 
 namespace admirals::UI {
-
-enum DisplayOrientation {
-    UpperLeft = 0,
-    UpperRight = 1,
-    LowerLeft = 2,
-    LowerRight = 3,
-    Center = 4,
-};
 
 // General UI element that can be rendered.
 class Element : public IInteractiveDisplayable {

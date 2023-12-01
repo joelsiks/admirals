@@ -30,10 +30,12 @@ message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(SOURCES 
     src/engine/DataObjects.cpp
+    src/engine/IDisplayLayer.cpp
     src/engine/UI/Button.cpp
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
     src/engine/UI/TextElement.cpp
+    src/engine/UI/Data.cpp
     src/engine/UI/menu/Menu.cpp
     src/engine/UI/menu/MenuOption.cpp
     src/engine/net/Connection.cpp

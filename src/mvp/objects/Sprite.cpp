@@ -8,7 +8,7 @@ using namespace admirals::mvp::objects;
 Sprite::Sprite(const std::string &name, const Texture &source, float order,
                const Rect &bounds, const Vector2 &texOffset,
                const Vector2 &texSize)
-    : scene::GameObject(name, order, bounds), m_source(source),
+    : GameObject(name, order, bounds), m_source(source),
       m_texSize(texSize), m_texOffset(texOffset) {}
 
 void Sprite::Render(const EngineContext &ctx) const {

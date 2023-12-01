@@ -4,7 +4,7 @@
 
 using namespace admirals::mvp::objects;
 
-GameManager::GameManager(const std::string &name) : scene::GameObject(name) {
+GameManager::GameManager(const std::string &name) : GameObject(name) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
 }

@@ -2,15 +2,14 @@
 
 #include <unordered_set>
 
-#include "IDisplayable.hpp"
 #include "OrderedCollection.hpp"
 #include "QuadTree.hpp"
-#include "UI/Element.hpp"
 #include "events/MouseClickEvent.hpp"
+#include "events/MouseMotionEvent.hpp"
 
 namespace admirals {
 
-class DisplayLayer {
+template <typename T = IInteractiveDisplayable> class IDisplayLayer {
 public:
     virtual void Render(const EngineContext &ctx) const = 0;
 
@@ -20,25 +19,17 @@ public:
     virtual void OnShown();
     virtual void OnHidden();
 
-    // Collection
-    void AddDisplayable(std::shared_ptr<IInteractiveDisplayable> displayble);
-    void RemoveDisplayable(const std::string &identifier);
-    bool ExistsDisplayable(const std::string &identifier);
+    virtual void AddDisplayable(std::shared_ptr<T> displayable);
+    virtual void RemoveDisplayable(const std::string &identifier);
+    virtual bool ExistsDisplayable(const std::string &identifier);
 
     inline size_t NumDisplayables() const { return m_displayables.Size(); }
-
-    std::vector<std::string> GetSceneObjectNames() const {
-        std::vector<std::string> vec = {};
-        for (const auto &value : this->m_displayables) {
-            vec.emplace_back(value->identifier());
-        }
-        return vec;
-    }
+    std::vector<std::string> GetDisplayableNames();
 
     void RebuildQuadTree(const Vector2 &windowSize);
 
 protected:
-    OrderedCollection<IInteractiveDisplayable> m_displayables;
+    OrderedCollection<T> m_displayables;
 
     QuadTree m_quadtree;
     std::unordered_set<std::string> m_mouseOverSet;

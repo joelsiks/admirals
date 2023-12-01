@@ -21,13 +21,13 @@ const float CELL_SPEED = 300.f;
 const std::vector<Color> COLOR_LOOP = {Color::BLUE, Color::RED, Color::GREEN,
                                        Color::BLACK};
 
-class CellObject : public scene::GameObject {
+class CellObject : public GameObject {
 private:
     Color m_color;
 
 public:
     CellObject(const std::string &name, const Vector3 &pos, const Color &color)
-        : scene::GameObject(name, pos.z(), pos.xy(), Vector2(CELL_SIZE)),
+        : GameObject(name, pos.z(), pos.xy(), Vector2(CELL_SIZE)),
           m_color(color) {}
 
     void OnStart(const EngineContext &c) override {}
@@ -89,11 +89,11 @@ private:
     bool m_drawOutline = false;
 };
 
-class PathFindingObject : public scene::GameObject {
+class PathFindingObject : public GameObject {
 public:
     PathFindingObject(const std::string &name, const Vector2 &position,
-                      const std::shared_ptr<scene::Scene> &scene)
-        : scene::GameObject(name, 10.f, position, Vector2(0)), m_scene(scene) {}
+                      const std::shared_ptr<Scene> &scene)
+        : GameObject(name, 10.f, position, Vector2(0)), m_scene(scene) {}
 
     void HandleMouseMove(void *, events::MouseMotionEventArgs args) {
         m_mousePosition = args.Location();
@@ -132,14 +132,14 @@ public:
 
 private:
     Vector2 m_mousePosition;
-    const std::shared_ptr<scene::Scene> m_scene;
+    const std::shared_ptr<Scene> m_scene;
 };
 
 int main(int, char *[]) {
     Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT, false);
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+    engine.AddGameObject(GameObject::CreateFromDerived(
         CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
-    engine.AddGameObject(scene::GameObject::CreateFromDerived(
+    engine.AddGameObject(GameObject::CreateFromDerived(
         CellObject("2", Vector3(50, 50, 3), Color::RED)));
     auto c1 = engine.MakeGameObject<CellObject>("3", Vector3(100, 100, 1),
                                                 Color::BLACK);

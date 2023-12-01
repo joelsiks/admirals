@@ -4,7 +4,7 @@
 
 namespace admirals::mvp::objects {
 
-class Sprite : public scene::GameObject {
+class Sprite : public GameObject {
 public:
     Sprite(const std::string &name, const Texture &source, float order = 0,
            const Rect &bounds = Rect(), const Vector2 &texOffset = Vector2(),

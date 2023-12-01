@@ -18,11 +18,11 @@ using namespace admirals::UI;
 const int WINDOW_WIDTH = 600;
 const int WINDOW_HEIGHT = 600;
 
-class TextureObject : public scene::GameObject {
+class TextureObject : public GameObject {
 public:
     TextureObject(const std::string &name, const char *texturePath,
                   bool keepAspectRatio = true)
-        : scene::GameObject(name), m_keepAspectRatio(keepAspectRatio),
+        : GameObject(name), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
 
     void ButtonClickHandler(void *sender, events::MouseClickEventArgs &args) {
@@ -135,7 +135,7 @@ int main(int, char **) {
         "Pause Menu", Color::BLACK, Color::FromRGBA(50, 50, 50, 100));
 
     std::shared_ptr<DisplayLayout> displayLayoutStore;
-    std::shared_ptr<scene::Scene> sceneStore;
+    std::shared_ptr<Scene> sceneStore;
     engine.onKeyPress.Subscribe([&escapeMenu, &displayLayoutStore,
                                  &sceneStore](void *sender,
                                               events::KeyPressEventArgs &args) {

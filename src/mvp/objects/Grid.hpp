@@ -3,7 +3,7 @@
 
 namespace admirals::mvp::objects {
 
-class Grid : public scene::GameObject {
+class Grid : public GameObject {
 public:
     Grid(const std::string &name, const Color &color);
 

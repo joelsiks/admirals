@@ -7,7 +7,7 @@ using namespace admirals::mvp::objects;
 
 Quad::Quad(const std::string &name, float order, const Rect &bounds,
            const Color &color)
-    : scene::GameObject(name, order, bounds), m_color(color) {}
+    : GameObject(name, order, bounds), m_color(color) {}
 
 void Quad::Render(const EngineContext &ctx) const {
     const Vector2 pos = this->GetPosition();

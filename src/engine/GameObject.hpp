@@ -6,7 +6,7 @@
 #include "IInteractiveDisplayable.hpp"
 #include "IOrdered.hpp"
 
-namespace admirals::scene {
+namespace admirals {
 
 class GameObject : public IInteractiveDisplayable {
 public:
@@ -43,4 +43,4 @@ public:
     }
 };
 
-} // namespace admirals::scene
+} // namespace admirals

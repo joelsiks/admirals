@@ -1,7 +1,9 @@
 #include "UI/menu/Menu.hpp"
-#include "DataObjects.hpp"
-#include "Renderer.hpp"
 
+#include "Renderer.hpp"
+#include "UI/Data.hpp"
+
+using namespace admirals::UI;
 using namespace admirals::UI::menu;
 
 Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
@@ -12,13 +14,7 @@ Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
     const TextOption titleOption =
         TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle);
 
-    this->AddMenuOption(MenuOption::CreateFromDerived(titleOption));
-}
-
-void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
-    menuOption->SetDisplayOrientation(DisplayOrientation::Center);
-
-    this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
+    this->AddDisplayable(MenuOption::CreateFromDerived(titleOption));
 }
 
 void Menu::Render(const EngineContext &ctx) const {
@@ -28,15 +24,18 @@ void Menu::Render(const EngineContext &ctx) const {
     // Draw background.
     renderer::Renderer::DrawRectangle(Vector2(0, 0), ctx.windowSize, m_bgColor);
 
-    for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
-        auto option = std::dynamic_pointer_cast<MenuOption>(*it);
+    for (auto it = m_displayables.rbegin(); it != m_displayables.rend(); ++it) {
+        auto option = *it;
+
+        // TODO: This should be fixed somewhere else in the future.
+        option->SetDisplayOrientation(DisplayOrientation::Center);
 
         const DisplayOrientation orientation = option->GetDisplayOrientation();
         Vector2 displaySize = option->GetSize();
 
         // Calculate the position with respect to the matching positionOffset.
-        Vector2 position = DisplayLayout::GetPositionFromOrientation(
-            orientation, displaySize, ctx);
+        Vector2 position =
+            GetPositionFromOrientation(orientation, displaySize, ctx);
         position[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.

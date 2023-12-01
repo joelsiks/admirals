@@ -33,20 +33,19 @@ public:
         return m_displayLayout;
     }
 
-    std::shared_ptr<scene::Scene>
-    SetAndGetScene(const std::shared_ptr<scene::Scene> &scene);
+    std::shared_ptr<Scene> SetAndGetScene(const std::shared_ptr<Scene> &scene);
 
-    inline std::shared_ptr<scene::Scene> GetScene() { return m_scene; }
+    inline std::shared_ptr<Scene> GetScene() { return m_scene; }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element) {
         if (hasDisplayLayout()) {
-            m_displayLayout->AddElement(std::move(element));
+            m_displayLayout->AddDisplayable(std::move(element));
         }
     }
 
-    inline void AddGameObject(std::shared_ptr<scene::GameObject> object) {
+    inline void AddGameObject(std::shared_ptr<GameObject> object) {
         if (hasScene()) {
-            m_scene->AddObject(std::move(object));
+            m_scene->AddDisplayable(std::move(object));
         }
     }
 
@@ -82,8 +81,8 @@ private:
     inline bool hasScene() { return m_scene != nullptr; }
 
     // Drawables
-    std::shared_ptr<UI::DisplayLayout> m_displayLayout;
-    std::shared_ptr<scene::Scene> m_scene;
+    std::shared_ptr<Scene> m_scene;
+    std::map<int, std::shared_ptr<IDisplayLayer>> m_layers;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
     EngineContext m_context;

@@ -26,7 +26,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
 
     m_displayLayout = std::make_shared<UI::DisplayLayout>();
 
-    m_scene = std::make_shared<scene::Scene>();
+    m_scene = std::make_shared<Scene>();
 }
 
 std::shared_ptr<UI::DisplayLayout> Engine::SetAndGetDisplayLayout(
@@ -45,8 +45,8 @@ std::shared_ptr<UI::DisplayLayout> Engine::SetAndGetDisplayLayout(
     return currentLayout;
 }
 
-std::shared_ptr<scene::Scene>
-Engine::SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
+std::shared_ptr<Scene>
+Engine::SetAndGetScene(const std::shared_ptr<Scene> &scene) {
     auto currentScene = m_scene;
     currentScene->OnHidden();
 
@@ -124,7 +124,8 @@ void Engine::StartGameLoop() {
         m_scene->OnStart(GetContext());
     }
 
-    std::vector<std::shared_ptr<IDisplayable>> layers(2);
+    std::vector<std::shared_ptr<IDisplayLayer<IInteractiveDisplayable>>> layers(
+        2);
 
     // Start render loop
     bool quit = false;

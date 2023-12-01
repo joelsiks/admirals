@@ -6,10 +6,10 @@
 using namespace admirals;
 using namespace admirals::test;
 
-class TestObject : public scene::GameObject {
+class TestObject : public GameObject {
 public:
     TestObject(const std::string &name, float order)
-        : scene::GameObject(name, order) {}
+        : GameObject(name, order) {}
     void Render(const EngineContext &c) const override {}
 };
 
@@ -30,7 +30,7 @@ public:
     void test() override {
         OrderedCollection collection = OrderedCollection();
         const TestObject t1 = TestObject("a", 0);
-        collection.Insert(scene::GameObject::CreateFromDerived(t1));
+        collection.Insert(GameObject::CreateFromDerived(t1));
         const size_t size = collection.Size();
         assert(size == 1, "collection size not 1 after insert, was: " +
                               std::to_string(size));
@@ -44,8 +44,8 @@ public:
         OrderedCollection collection = OrderedCollection();
         const TestObject t1 = TestObject("a", 0);
         const TestObject t2 = TestObject("a", 1);
-        collection.Insert(scene::GameObject::CreateFromDerived(t1));
-        collection.Insert(scene::GameObject::CreateFromDerived(t2));
+        collection.Insert(GameObject::CreateFromDerived(t1));
+        collection.Insert(GameObject::CreateFromDerived(t2));
         const size_t size = collection.Size();
         assert(size == 1, "collection size not 1 after insert, was: " +
                               std::to_string(size));
@@ -59,8 +59,8 @@ public:
         OrderedCollection collection = OrderedCollection();
         const TestObject t1 = TestObject("a", 0);
         const TestObject t2 = TestObject("b", 0);
-        collection.Insert(scene::GameObject::CreateFromDerived(t1));
-        collection.Insert(scene::GameObject::CreateFromDerived(t2));
+        collection.Insert(GameObject::CreateFromDerived(t1));
+        collection.Insert(GameObject::CreateFromDerived(t2));
         const size_t size = collection.Size();
         assert(size == 2, "collection size not 2 after insert, was: " +
                               std::to_string(size));
@@ -75,9 +75,9 @@ public:
         const TestObject t1 = TestObject("a", 0);
         const TestObject t2 = TestObject("b", 1);
         const TestObject t3 = TestObject("c", 2);
-        collection.Insert(scene::GameObject::CreateFromDerived(t1));
-        collection.Insert(scene::GameObject::CreateFromDerived(t2));
-        collection.Insert(scene::GameObject::CreateFromDerived(t3));
+        collection.Insert(GameObject::CreateFromDerived(t1));
+        collection.Insert(GameObject::CreateFromDerived(t2));
+        collection.Insert(GameObject::CreateFromDerived(t3));
         const size_t size = collection.Size();
         assert(size == 3, "collection size not 3 after insert, was: " +
                               std::to_string(size));
@@ -92,9 +92,9 @@ public:
         const TestObject t1 = TestObject("a", 0);
         const TestObject t2 = TestObject("b", 1);
         const TestObject t3 = TestObject("c", 2);
-        collection.Insert(scene::GameObject::CreateFromDerived(t1));
-        collection.Insert(scene::GameObject::CreateFromDerived(t2));
-        collection.Insert(scene::GameObject::CreateFromDerived(t3));
+        collection.Insert(GameObject::CreateFromDerived(t1));
+        collection.Insert(GameObject::CreateFromDerived(t2));
+        collection.Insert(GameObject::CreateFromDerived(t3));
 
         float prev = -1;
         for (const auto &o : collection) {
@@ -111,11 +111,11 @@ class TestTypedObjects : public TestCaseBase {
 public:
     TestTypedObjects() : TestCaseBase("typed objects") {}
     void test() override {
-        OrderedCollection collection = OrderedCollection<scene::GameObject>();
+        OrderedCollection collection = OrderedCollection<GameObject>();
         const Vector2 pos = Vector2(2, 4);
         TestObject t1 = TestObject("a", 0);
         t1.SetPosition(pos);
-        collection.Insert(scene::GameObject::CreateFromDerived(t1));
+        collection.Insert(GameObject::CreateFromDerived(t1));
 
         for (const auto &o : collection) {
             const Vector2 p = o->GetPosition();

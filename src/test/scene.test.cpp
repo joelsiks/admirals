@@ -6,18 +6,18 @@
 
 using namespace admirals;
 
-class CellObject : public scene::GameObject {
+class CellObject : public GameObject {
 
 public:
     CellObject(const std::string &name, const Vector3 &pos)
-        : scene::GameObject(name, pos.z(), pos.xy(), Vector2()) {}
+        : GameObject(name, pos.z(), pos.xy(), Vector2()) {}
 
     void Render(const EngineContext &c) const {}
 };
 
 int test_add() {
 
-    scene::Scene *scene = new scene::Scene();
+    Scene *scene = new Scene();
 
     Vector3 pos1 = {0, 0, 2};
     CellObject cell1 = CellObject("a", pos1);
@@ -26,9 +26,9 @@ int test_add() {
     Vector3 pos3 = {100, 100, 1};
     CellObject cell3 = CellObject("b", pos3);
 
-    auto go1 = scene::GameObject::CreateFromDerived(cell1);
-    auto go2 = scene::GameObject::CreateFromDerived(cell2);
-    auto go3 = scene::GameObject::CreateFromDerived(cell3);
+    auto go1 = GameObject::CreateFromDerived(cell1);
+    auto go2 = GameObject::CreateFromDerived(cell2);
+    auto go3 = GameObject::CreateFromDerived(cell3);
     scene->AddObject(go1);
     scene->AddObject(go2);
     if (scene->NumObjectsInScene() != 2) {
@@ -48,7 +48,7 @@ int test_add() {
 
 int test_remove() {
 
-    scene::Scene *scene = new scene::Scene();
+    Scene *scene = new Scene();
 
     Vector3 pos1 = {0, 0, 2};
     CellObject cell1 = CellObject("a", pos1);
@@ -59,11 +59,11 @@ int test_remove() {
     Vector3 pos3 = {100, 100, 1};
     CellObject cell3 = CellObject("c", pos3);
 
-    auto go1 = scene::GameObject::CreateFromDerived(cell1);
-    auto go1_1 = scene::GameObject::CreateFromDerived(cell1_1);
-    auto go2 = scene::GameObject::CreateFromDerived(cell2);
-    auto go2_1 = scene::GameObject::CreateFromDerived(cell2_1);
-    auto go3 = scene::GameObject::CreateFromDerived(cell3);
+    auto go1 = GameObject::CreateFromDerived(cell1);
+    auto go1_1 = GameObject::CreateFromDerived(cell1_1);
+    auto go2 = GameObject::CreateFromDerived(cell2);
+    auto go2_1 = GameObject::CreateFromDerived(cell2_1);
+    auto go3 = GameObject::CreateFromDerived(cell3);
     scene->AddObject(go1);
     scene->AddObject(go1_1);
     scene->AddObject(go2);
@@ -96,7 +96,7 @@ int test_remove() {
 
 int test_exist() {
 
-    scene::Scene *scene = new scene::Scene();
+    Scene *scene = new Scene();
 
     Vector3 pos1 = {0, 0, 2};
     CellObject cell1 = CellObject("a", pos1);
@@ -106,9 +106,9 @@ int test_exist() {
     Vector3 pos3 = {100, 100, 1};
     CellObject cell3 = CellObject("c", pos3);
 
-    auto go1 = scene::GameObject::CreateFromDerived(cell1);
-    auto go1_1 = scene::GameObject::CreateFromDerived(cell1_1);
-    auto go2 = scene::GameObject::CreateFromDerived(cell2);
+    auto go1 = GameObject::CreateFromDerived(cell1);
+    auto go1_1 = GameObject::CreateFromDerived(cell1_1);
+    auto go2 = GameObject::CreateFromDerived(cell2);
     scene->AddObject(go1);
 
     bool exist = scene->ExistObject(go1);

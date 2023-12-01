@@ -10,11 +10,12 @@
 
 #include "DataObjects.hpp"
 #include "EngineContext.hpp"
-#include "IDisplayable.hpp"
+#include "IDisplayLayer.hpp"
 
 namespace admirals::renderer {
 
-typedef std::vector<std::shared_ptr<IDisplayable>> DrawableCollection;
+typedef std::vector<std::shared_ptr<IDisplayLayer<IInteractiveDisplayable>>>
+    DrawableLayers;
 
 enum Cursor {
     Arrow = SDL_SYSTEM_CURSOR_ARROW,
@@ -32,7 +33,7 @@ public:
 
     int Init(const EngineContext &ctx);
     static void Render(const EngineContext &context,
-                       const DrawableCollection &drawables);
+                       const DrawableLayers &drawables);
 
     Vector2 GetWindowSize() const;
 

@@ -14,7 +14,7 @@ public:
     ~GameData(){};
 
     static std::shared_ptr<UI::menu::Menu> startMenu;
-    static std::shared_ptr<scene::Scene> startMenuScene;
+    static std::shared_ptr<Scene> startMenuScene;
 
     static std::unique_ptr<Engine> engine;
     static const float CellSize;

@@ -15,7 +15,7 @@ public:
     const int coins;
 };
 
-class GameManager : public scene::GameObject {
+class GameManager : public GameObject {
 public:
     GameManager(const std::string &name);
     ~GameManager();

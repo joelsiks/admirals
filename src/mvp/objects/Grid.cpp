@@ -6,7 +6,7 @@ using namespace admirals;
 using namespace admirals::mvp::objects;
 
 Grid::Grid(const std::string &name, const Color &color)
-    : scene::GameObject(name, 1000), m_color(color) {}
+    : GameObject(name, 1000), m_color(color) {}
 
 void Grid::Render(const EngineContext &ctx) const {
     const Vector2 offset = (ctx.windowSize - Vector2(GameData::GridSize)) / 2.f;
