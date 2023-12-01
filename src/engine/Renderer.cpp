@@ -67,6 +67,14 @@ Vector2 Renderer::GetWindowSize() const {
     return Vector2(static_cast<float>(width), static_cast<float>(height));
 }
 
+void DrawDebugFpsInformation(const EngineContext &ctx) {
+    const std::string fpsString =
+        "DT = " + std::to_string(ctx.deltaTime) +
+        ", FPS: " + std::to_string(1.f / ctx.deltaTime);
+
+    Renderer::DrawText(*ctx.fontTexture, Vector2(0), Color::RED, fpsString);
+}
+
 void Renderer::Render(const EngineContext &context,
                       const DrawableCollection &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
@@ -79,13 +87,7 @@ void Renderer::Render(const EngineContext &context,
     }
 
     if (context.debug) {
-        char fpsString[FPS_BUFFER_SIZE];
-        if (sprintf(fpsString, "DT = %f, FPS: %f", context.deltaTime,
-                    1.f / context.deltaTime) > 0) {
-            DrawText(*context.fontTexture,
-                     Vector2(0, context.windowSize.y() - context.fontHeight),
-                     Color::RED, fpsString);
-        }
+        DrawDebugFpsInformation(context);
     }
 
     vk2dRendererEndFrame();
