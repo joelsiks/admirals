@@ -9,8 +9,6 @@
 using namespace admirals;
 using namespace admirals::renderer;
 
-#define FPS_BUFFER_SIZE 100
-
 void RenderFont(VK2DTexture font, const Vector2 &postion, const char *text) {
     float x = postion.x();
     float y = postion.y();
