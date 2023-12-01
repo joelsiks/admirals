@@ -120,7 +120,7 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
 
         if (ships.find(id) == ships.end()) {
             if (m_debug) {
-                printf("Removing ship %s\n", it->second->name().c_str());
+                printf("Removing ship %s\n", it->second->identifier().c_str());
             }
             it = m_ships.erase(it);
         } else {

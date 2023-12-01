@@ -10,10 +10,9 @@
 
 namespace admirals {
 
-class DisplayLayer : public IDisplayable {
+class DisplayLayer {
 public:
-    // Engine events
-    void Render(const EngineContext &ctx) const = 0;
+    virtual void Render(const EngineContext &ctx) const = 0;
 
     virtual void OnClick(events::MouseClickEventArgs &args);
     virtual void OnMouseMove(events::MouseMotionEventArgs &args);
@@ -22,18 +21,24 @@ public:
     virtual void OnHidden();
 
     // Collection
-    // void AddElement(std::shared_ptr<IDisplayable> element);
+    void AddDisplayable(std::shared_ptr<IInteractiveDisplayable> displayble);
+    void RemoveDisplayable(const std::string &identifier);
+    bool ExistsDisplayable(const std::string &identifier);
 
-    static Vector2
-    GetPositionFromOrientation(UI::DisplayOrientation orientation,
-                               const Vector2 &displaySize,
-                               const EngineContext &ctx);
+    inline size_t NumDisplayables() const { return m_displayables.Size(); }
 
-    // Initialization
+    std::vector<std::string> GetSceneObjectNames() const {
+        std::vector<std::string> vec = {};
+        for (const auto &value : this->m_displayables) {
+            vec.emplace_back(value->identifier());
+        }
+        return vec;
+    }
+
     void RebuildQuadTree(const Vector2 &windowSize);
 
 protected:
-    OrderedCollection<IDisplayable> m_displayables;
+    OrderedCollection<IInteractiveDisplayable> m_displayables;
 
     QuadTree m_quadtree;
     std::unordered_set<std::string> m_mouseOverSet;

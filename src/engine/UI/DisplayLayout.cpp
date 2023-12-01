@@ -78,7 +78,7 @@ void DisplayLayout::OnMouseMove(events::MouseMotionEventArgs &args) {
         }
 
         auto el = static_pointer_cast<Element>(element);
-        const std::string name = el->name();
+        const std::string name = el->identifier();
         if (el->IsVisible() && el->GetBoundingBox().Contains(mouseLocation)) {
             currentMouseOverElements.insert(name);
             if (m_mouseOverSet.insert(name).second) {

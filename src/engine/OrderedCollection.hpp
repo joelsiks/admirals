@@ -134,7 +134,7 @@ public:
     /// @param object The `IOrdered` object pointer to insert into the
     /// collection.
     inline void Insert(const std::shared_ptr<T> object) {
-        const std::string key = object->name();
+        const std::string key = object->identifier();
         if (!m_objects.contains(key)) {
             m_objects[key] = std::move(object); // object stored in m_objects
             m_ordered.insert(key);              // object name is sorted

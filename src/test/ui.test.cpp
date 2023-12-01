@@ -31,9 +31,9 @@ public:
         }
 
         auto *button = static_cast<Button *>(sender);
-        if (button->name() == "btn1") {
+        if (button->identifier() == "btn1") {
             SetPosition(Vector2(GetPosition().x() - 100, 0));
-        } else if (button->name() == "btn2") {
+        } else if (button->identifier() == "btn2") {
             SetPosition(Vector2(GetPosition().x() + 100, 0));
         }
     }

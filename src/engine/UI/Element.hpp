@@ -21,7 +21,7 @@ enum DisplayOrientation {
 };
 
 // General UI element that can be rendered.
-class Element : public IOrdered, public IInteractiveDisplayable {
+class Element : public IInteractiveDisplayable {
 public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);

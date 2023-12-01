@@ -48,7 +48,7 @@ void Menu::Render(const EngineContext &ctx) const {
         option->Render(ctx);
 
         // If we're rendering the menu title, add a line below it.
-        if (option->name() == MENU_TITLE_NAME) {
+        if (option->identifier() == MENU_TITLE_NAME) {
             renderer::Renderer::DrawLine(
                 Vector2(position[0], position[1] + displaySize[1]),
                 Vector2(position[0] + displaySize[0],

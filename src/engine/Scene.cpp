@@ -26,7 +26,7 @@ void Scene::Render(const EngineContext &ctx) const {
  */
 void Scene::RemoveObject(const std::shared_ptr<GameObject> &object) {
     if (ExistObject(object)) {
-        this->m_objects.Erase(object->name());
+        this->m_objects.Erase(object->identifier());
     }
 }
 void Scene::RemoveObject(const std::string &key) { this->m_objects.Erase(key); }
@@ -36,7 +36,7 @@ void Scene::RemoveObject(const std::string &key) { this->m_objects.Erase(key); }
  * multiset
  */
 bool Scene::ExistObject(const std::shared_ptr<GameObject> &object) {
-    auto obj = this->m_objects.Find(object->name());
+    auto obj = this->m_objects.Find(object->identifier());
     if (obj != nullptr) {
         // if another that doesn't exist in m_objects have an identical name to
         // on e that does. check if the pointer is the same as the desired
@@ -56,7 +56,7 @@ size_t Scene::NumObjectsInScene() { return this->m_objects.Size(); }
 std::vector<std::string> Scene::GetSceneObjectNames() {
     std::vector<std::string> vec = {};
     for (const auto &value : this->m_objects) {
-        vec.emplace_back(value->name());
+        vec.emplace_back(value->identifier());
     }
     return vec;
 }
@@ -104,7 +104,7 @@ void Scene::OnMouseMove(events::MouseMotionEventArgs &args) {
         }
 
         auto obj = static_pointer_cast<GameObject>(object);
-        const std::string name = obj->name();
+        const std::string name = obj->identifier();
         if (obj->IsVisible() && obj->GetBoundingBox().Contains(mouseLocation)) {
             currentMouseOverObjects.insert(name);
             if (m_mouseOverSet.insert(name).second) {

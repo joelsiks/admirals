@@ -8,7 +8,7 @@
 
 namespace admirals::scene {
 
-class GameObject : public IOrdered, public IInteractiveDisplayable {
+class GameObject : public IInteractiveDisplayable {
 public:
     GameObject(const std::string &name, float order, const Vector2 &position,
                const Vector2 &size)
@@ -16,7 +16,7 @@ public:
 
     GameObject(const std::string &name, float order = 0.f,
                const Rect &bounds = Rect())
-        : IOrdered(name, order), IInteractiveDisplayable(bounds) {}
+        : IInteractiveDisplayable(name, order, bounds) {}
 
     // Engine event handlers
     virtual void OnStart(const EngineContext &ctx) {}
