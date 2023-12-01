@@ -22,8 +22,14 @@ public:
 
     class EventHandlerWrapper : public EventHandler {
     public:
-        EventHandlerWrapper(const EventHandler &handler, void *source)
+        EventHandlerWrapper(const EventHandler &handler, void *source) noexcept
             : EventHandler(handler), m_source(source) {}
+        EventHandlerWrapper(const EventHandler &handler,
+                            std::shared_ptr<void> source)
+            : EventHandlerWrapper(handler, source.get()) {}
+        EventHandlerWrapper(const EventHandler &handler,
+                            std::unique_ptr<void> source)
+            : EventHandlerWrapper(handler, source.get()) {}
 
         const void *m_source;
     };
