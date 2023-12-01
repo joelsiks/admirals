@@ -41,6 +41,9 @@ public:
     uint32_t GetPlayerId() const { return m_playerId; }
     void SetPlayerId(uint32_t id) { m_playerId = id; }
 
+    bool IsPlayer1() const { return m_isPlayer1; }
+    void SetIsPlayer1(bool isPlayer1) { m_isPlayer1 = isPlayer1; }
+
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, int x, int y);
     void AttackShip(uint16_t id, uint16_t targetId);
@@ -63,6 +66,7 @@ private:
     int m_baseHealth = 0;
     int m_enemyBaseHealth = 0;
     uint32_t m_playerId = 0;
+    bool m_isPlayer1 = true;
 
     std::map<uint16_t, std::shared_ptr<Ship>> m_ships;
 

@@ -146,13 +146,15 @@ void NetworkManager::HandleMessages() {
 
 void NetworkManager::ReadyUpResponse(Message &msg) {
     uint32_t playerId;
-    msg >> playerId;
+    uint8_t isPlayer1;
+    msg >> isPlayer1 >> playerId;
 
     m_playerId = playerId;
     m_gameManager.SetPlayerId(playerId);
+    m_gameManager.SetIsPlayer1(static_cast<bool>(isPlayer1));
 
     if (m_debug) {
-        printf("ReadyConfirmation: %d\n", playerId);
+        printf("ReadyConfirmation: %d, Player 1: %d\n", playerId, isPlayer1);
     }
 }
 

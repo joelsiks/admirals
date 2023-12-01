@@ -200,14 +200,15 @@ void MvpServer::UpdatePlayer(uint32_t oldOwner, uint32_t newOwner) {
 }
 
 void MvpServer::PlayerReady(std::shared_ptr<Connection> client) {
-    if (client->GetID() == m_player1.id) {
+    const uint8_t isPlayer1 = client->GetID() == m_player1.id;
+    if (isPlayer1) {
         m_player1.ready = true;
     } else {
         m_player2.ready = true;
     }
     Message msg;
     msg.header.id = NetworkMessageTypes::ReadyConfirmation;
-    msg << client->GetID();
+    msg << client->GetID() << isPlayer1;
     MessageClient(client, msg);
 
     // Should probably be moved somewhere else
