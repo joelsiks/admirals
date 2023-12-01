@@ -51,6 +51,7 @@ private:
     OrderedCollection<GameObject> m_objects;
     QuadTree m_quadtree;
     std::unordered_set<std::string> m_mouseOverSet;
+    std::unordered_set<std::string> m_insertedSet;
     bool m_isInitialized;
 };
 

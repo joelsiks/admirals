@@ -1,4 +1,5 @@
 #include "objects/Ship.hpp"
+#include "Ship.hpp"
 #include "shared.hpp"
 
 using namespace admirals;
@@ -11,11 +12,7 @@ Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
     : Sprite("ship-" + std::to_string(data.id), source, 3,
              Rect(data.x, data.y, size.x(), size.y()),
              Ship::ShipTypeToTexOffset(data.type)),
-      m_data(data) {
-    if (IsOwned()) {
-        GameData::engine->onMouseClick += BIND_EVENT_HANDLER(Ship::HandleClick);
-    }
-}
+      m_data(data) {}
 
 Ship::~Ship() {
     if (IsOwned()) {
@@ -62,7 +59,15 @@ void Ship::HandleAction() {
     }
 }
 
+void Ship::OnStart(const EngineContext &) {
+    // if (IsOwned()) {
+    //     GameData::engine->onMouseClick +=
+    //     BIND_EVENT_HANDLER(Ship::HandleClick);
+    // }
+}
+
 void Ship::OnUpdate(const EngineContext &) {
+
     if (IsSelected()) {
         m_path = GameData::engine->GetScene()->FindPath(
             GetPosition(), GameData::mousePosition, GameData::CellSize,
@@ -79,8 +84,12 @@ void Ship::OnClick(events::MouseClickEventArgs &args) {
         if (IsOwned()) {
             if (IsSelected()) {
                 DeSelect();
+                GameData::engine->onMouseClick -=
+                    BIND_EVENT_HANDLER(Ship::HandleClick);
             } else {
                 Select();
+                GameData::engine->onMouseClick +=
+                    BIND_EVENT_HANDLER(Ship::HandleClick);
             }
             args.handled = true;
         }
@@ -89,20 +98,28 @@ void Ship::OnClick(events::MouseClickEventArgs &args) {
 
 void Ship::HandleClick(void *, events::MouseClickEventArgs &args) {
     printf("Ship (%d): Handling click...\n", GetID());
-    if (IsSelected() && args.button == events::MouseButton::Left &&
-        args.pressed) {
-        const Vector2 clickLocation = args.Location();
-        if (!m_path.empty() &&
-            clickLocation.Distance(m_path.back() + HalfCellSize) <
-                GameData::CellSize / SameCellDistance) {
-            SetAction(ShipAction::Move);
-            const Vector2 gridPosition =
-                GridObject::ConvertPositionWorldToGrid(clickLocation);
-            printf("Now moving to: (%d, %d)\n", gridPosition.x(),
-                   gridPosition.y());
-        }
-        DeSelect();
+    if (!IsSelected()) {
+        GameData::engine->onMouseClick -= BIND_EVENT_HANDLER(Ship::HandleClick);
+        args.handled = true;
+        return;
     }
+
+    if (args.button != events::MouseButton::Left || !args.pressed) {
+        return;
+    }
+
+    const Vector2 clickLocation = args.Location();
+    if (!m_path.empty() &&
+        clickLocation.Distance(m_path.back() + HalfCellSize) <
+            GameData::CellSize / SameCellDistance) {
+        SetAction(ShipAction::Move);
+        const Vector2 gridPosition =
+            GridObject::ConvertPositionWorldToGrid(clickLocation);
+        printf("Now moving to: (%d, %d)\n", gridPosition.x(), gridPosition.y());
+        args.handled = true;
+    }
+
+    DeSelect();
 }
 
 void Ship::OnMouseEnter(events::MouseMotionEventArgs &) {

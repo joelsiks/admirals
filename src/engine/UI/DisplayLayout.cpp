@@ -42,6 +42,7 @@ void DisplayLayout::Render(const EngineContext &ctx) const {
         m_quadtree.DrawTree();
     }
 }
+
 void DisplayLayout::RebuildQuadTree(const Vector2 &windowSize) {
     // build a QuadTree to find out what elements to handle click events on.
     std::vector<std::shared_ptr<IDisplayable>> elements;
