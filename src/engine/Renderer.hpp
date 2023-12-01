@@ -10,11 +10,11 @@
 
 #include "DataObjects.hpp"
 #include "EngineContext.hpp"
-#include "IDrawable.hpp"
+#include "IDisplayable.hpp"
 
 namespace admirals::renderer {
 
-typedef std::vector<std::shared_ptr<IDrawable>> DrawableCollection;
+typedef std::vector<std::shared_ptr<IDisplayable>> DrawableCollection;
 
 enum Cursor {
     Arrow = SDL_SYSTEM_CURSOR_ARROW,

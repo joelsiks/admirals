@@ -1,22 +1,19 @@
 #pragma once
 
-#include <memory>
 #include <unordered_set>
 
 #include "IDisplayable.hpp"
 #include "OrderedCollection.hpp"
 #include "QuadTree.hpp"
 #include "UI/Element.hpp"
-#include "events/EventSystem.hpp"
 #include "events/MouseClickEvent.hpp"
-#include "events/MouseMotionEvent.hpp"
 
-namespace admirals::UI {
+namespace admirals {
 
-class DisplayLayout : public IDisplayable {
+class DisplayLayer : public IDisplayable {
 public:
     // Engine events
-    void Render(const EngineContext &ctx) const override;
+    void Render(const EngineContext &ctx) const = 0;
 
     virtual void OnClick(events::MouseClickEventArgs &args);
     virtual void OnMouseMove(events::MouseMotionEventArgs &args);
@@ -25,19 +22,21 @@ public:
     virtual void OnHidden();
 
     // Collection
-    void AddElement(std::shared_ptr<Element> element);
+    // void AddElement(std::shared_ptr<IDisplayable> element);
 
-    static Vector2 GetPositionFromOrientation(DisplayOrientation orientation,
-                                              const Vector2 &displaySize,
-                                              const EngineContext &ctx);
+    static Vector2
+    GetPositionFromOrientation(UI::DisplayOrientation orientation,
+                               const Vector2 &displaySize,
+                               const EngineContext &ctx);
 
     // Initialization
     void RebuildQuadTree(const Vector2 &windowSize);
 
 protected:
-    OrderedCollection<Element> m_elements;
+    OrderedCollection<IDisplayable> m_displayables;
+
     QuadTree m_quadtree;
     std::unordered_set<std::string> m_mouseOverSet;
 };
 
-} // namespace admirals::UI
+} // namespace admirals

@@ -3,14 +3,12 @@
 
 #include "DataObjects.hpp"
 #include "IDisplayable.hpp"
-#include "IInteractiveDrawable.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "IOrdered.hpp"
 
 namespace admirals::scene {
 
-class GameObject : public IOrdered,
-                   public IInteractiveDrawable,
-                   public IDisplayable {
+class GameObject : public IOrdered, public IInteractiveDisplayable {
 public:
     GameObject(const std::string &name, float order, const Vector2 &position,
                const Vector2 &size)
@@ -18,7 +16,7 @@ public:
 
     GameObject(const std::string &name, float order = 0.f,
                const Rect &bounds = Rect())
-        : IOrdered(name, order), IDisplayable(bounds) {}
+        : IOrdered(name, order), IInteractiveDisplayable(bounds) {}
 
     // Engine event handlers
     virtual void OnStart(const EngineContext &ctx) {}

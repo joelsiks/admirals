@@ -7,7 +7,7 @@
 
 #include "DataObjects.hpp"
 #include "IDisplayable.hpp"
-#include "IInteractiveDrawable.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "IOrdered.hpp"
 
 namespace admirals::UI {
@@ -21,9 +21,7 @@ enum DisplayOrientation {
 };
 
 // General UI element that can be rendered.
-class Element : public IOrdered,
-                public IInteractiveDrawable,
-                public IDisplayable {
+class Element : public IOrdered, public IInteractiveDisplayable {
 public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);

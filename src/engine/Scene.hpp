@@ -5,8 +5,9 @@
 #include <unordered_set>
 #include <vector>
 
+#include "EngineContext.hpp"
 #include "GameObject.hpp"
-#include "IInteractiveDrawable.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "OrderedCollection.hpp"
 #include "QuadTree.hpp"
 #include "events/EventSystem.hpp"
@@ -15,7 +16,7 @@
 
 namespace admirals::scene {
 
-class Scene : public renderer::IDrawable {
+class Scene : public IDisplayable {
 public:
     // Engine events
     virtual void Render(const EngineContext &ctx) const override;

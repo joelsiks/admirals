@@ -1,13 +1,15 @@
 #pragma once
 
-#include "IDrawable.hpp"
+#include "IDisplayable.hpp"
 #include "events/MouseClickEvent.hpp"
 #include "events/MouseMotionEvent.hpp"
 
 namespace admirals {
 
-class IInteractiveDrawable : public renderer::IDrawable {
+class IInteractiveDisplayable : public IDisplayable {
 public:
+    IInteractiveDisplayable(const Rect &bounds) : IDisplayable(bounds) {}
+
     virtual void OnClick(events::MouseClickEventArgs &args) = 0;
 
     virtual void OnMouseEnter(events::MouseMotionEventArgs &args) = 0;

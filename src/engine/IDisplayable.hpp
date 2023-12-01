@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DataObjects.hpp"
+#include "EngineContext.hpp"
 
 namespace admirals {
 
@@ -8,6 +9,8 @@ class IDisplayable {
 public:
     IDisplayable() {}
     IDisplayable(const Rect &bounds) : m_boundingBox(bounds) {}
+
+    virtual void Render(const EngineContext &ctx) const = 0;
 
     virtual inline bool IsVisible() const {
         return m_boundingBox.Width() > 0 && m_boundingBox.Height() > 0;

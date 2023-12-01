@@ -124,7 +124,7 @@ void Engine::StartGameLoop() {
         m_scene->OnStart(GetContext());
     }
 
-    std::vector<std::shared_ptr<renderer::IDrawable>> layers(2);
+    std::vector<std::shared_ptr<IDisplayable>> layers(2);
 
     // Start render loop
     bool quit = false;
