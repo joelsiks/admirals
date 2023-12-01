@@ -1,6 +1,7 @@
 #include <vector>
 
 #include "DisplayLayout.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "Renderer.hpp"
 #include "UI/DisplayLayout.hpp"
 
@@ -44,9 +45,10 @@ void DisplayLayout::Render(const EngineContext &ctx) const {
 }
 void DisplayLayout::RebuildQuadTree(const Vector2 &windowSize) {
     // build a QuadTree to find out what elements to handle click events on.
-    std::vector<std::shared_ptr<IDisplayable>> elements;
+    std::vector<std::shared_ptr<IInteractiveDisplayable>> elements;
     for (const auto &element : m_elements) {
-        elements.push_back(dynamic_pointer_cast<IDisplayable>(element));
+        elements.push_back(
+            dynamic_pointer_cast<IInteractiveDisplayable>(element));
     }
     m_quadtree.BuildTree(windowSize, elements);
 }

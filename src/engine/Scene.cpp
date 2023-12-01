@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "IInteractiveDisplayable.hpp"
 #include "PathFinding.hpp"
 #include "Scene.hpp"
 
@@ -147,9 +148,10 @@ void Scene::OnHidden() {
 
 void Scene::RebuildQuadTree(const Vector2 &windowSize) {
     // build a QuadTree to find out what objects to handle click events on.
-    std::vector<std::shared_ptr<IDisplayable>> objects;
+    std::vector<std::shared_ptr<IInteractiveDisplayable>> objects;
     for (const auto &element : m_objects) {
-        objects.push_back(dynamic_pointer_cast<IDisplayable>(element));
+        objects.push_back(
+            dynamic_pointer_cast<IInteractiveDisplayable>(element));
     }
     m_quadtree.BuildTree(windowSize, objects);
 }

@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "IDisplayable.hpp"
+#include "IInteractiveDisplayable.hpp"
 
 namespace admirals {
 
@@ -20,18 +20,18 @@ public:
     /// placed.
     /// @param objects A vector containing all objects to place inside the tree.
     void BuildTree(const Vector2 &windowSize,
-                   const std::vector<std::shared_ptr<IDisplayable>> &objects);
+                   const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects);
 
     /// @brief Gets objects at a position inside the QuadTree
     /// @param position The position to check against in the QuadTree
     /// @return A vector of objects that overlap the position
-    std::vector<std::shared_ptr<IDisplayable>>
+    std::vector<std::shared_ptr<IInteractiveDisplayable>>
     GetObjectsAtPosition(const Vector2 &position) const;
 
     /// @brief Gets objects at a location inside the QuadTree
     /// @param location The location to check against in the QuadTree
     /// @return A vector of objects that overlap the position
-    std::unordered_set<std::shared_ptr<IDisplayable>>
+    std::unordered_set<std::shared_ptr<IInteractiveDisplayable>>
     GetObjectsInArea(const Rect &location) const;
 
     inline void PrintTree() const {
@@ -57,12 +57,12 @@ private:
     // If data is a nullptr, the quadrants are populated instead.
     struct Node {
         Vector2 origin;
-        std::vector<std::shared_ptr<IDisplayable>> data;
+        std::vector<std::shared_ptr<IInteractiveDisplayable>> data;
         Node *quadrants[NUM_QUADRANTS] = {nullptr};
     };
 
     struct BuildData {
-        std::vector<std::shared_ptr<IDisplayable>> objects;
+        std::vector<std::shared_ptr<IInteractiveDisplayable>> objects;
         Node *node;
         Rect bounds;
     };
@@ -70,7 +70,7 @@ private:
 
     void
     InitializeTree(const Vector2 &windowSize,
-                   const std::vector<std::shared_ptr<IDisplayable>> &objects);
+                   const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects);
 
     void DestroyTree();
 

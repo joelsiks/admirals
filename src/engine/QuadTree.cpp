@@ -47,7 +47,7 @@ QuadTree::QuadTree() {}
 
 QuadTree::~QuadTree() { DestroyTree(); }
 
-std::vector<std::shared_ptr<IDisplayable>>
+std::vector<std::shared_ptr<IInteractiveDisplayable>>
 QuadTree::GetObjectsAtPosition(const Vector2 &position) const {
     Rect currentBoundingBox(Vector2(0), m_size);
 
@@ -68,18 +68,18 @@ QuadTree::GetObjectsAtPosition(const Vector2 &position) const {
     }
 
     if (prev == nullptr) {
-        return std::vector<std::shared_ptr<IDisplayable>>();
+        return std::vector<std::shared_ptr<IInteractiveDisplayable>>();
     }
 
     return prev->data;
 }
 
-std::unordered_set<std::shared_ptr<IDisplayable>>
+std::unordered_set<std::shared_ptr<IInteractiveDisplayable>>
 QuadTree::GetObjectsInArea(const Rect &location) const {
     Vector2 size = m_size;
 
     Node *current = nullptr;
-    std::unordered_set<std::shared_ptr<IDisplayable>> found;
+    std::unordered_set<std::shared_ptr<IInteractiveDisplayable>> found;
     std::deque<Node *> visitQueue = {m_rootNode};
     while (!visitQueue.empty()) {
         current = visitQueue.back();
@@ -108,7 +108,7 @@ QuadTree::GetObjectsInArea(const Rect &location) const {
 
 void QuadTree::BuildTree(
     const Vector2 &windowSize,
-    const std::vector<std::shared_ptr<IDisplayable>> &objects) {
+    const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects) {
 
     // Destroy the previous tree, if constructed.
     DestroyTree();
@@ -118,7 +118,7 @@ void QuadTree::BuildTree(
         const BuildData data = m_buildQueue.front();
         m_buildQueue.pop();
 
-        std::vector<std::shared_ptr<IDisplayable>>
+        std::vector<std::shared_ptr<IInteractiveDisplayable>>
             quadrantObjects[NUM_QUADRANTS];
 
         const Vector2 upperQuadrantPosition = data.bounds.Position();
@@ -189,17 +189,18 @@ void QuadTree::BuildTree(
 
 void QuadTree::InitializeTree(
     const Vector2 &windowSize,
-    const std::vector<std::shared_ptr<IDisplayable>> &objects) {
+    const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects) {
     // Initialize values.
     m_rootNode = new Node();
     m_size = windowSize;
     const Rect windowBounds = Rect(Vector2(0), m_size);
 
     // Filter out objects that are not inside the window.
-    std::vector<std::shared_ptr<IDisplayable>> filteredObjects;
+    std::vector<std::shared_ptr<IInteractiveDisplayable>> filteredObjects;
     std::copy_if(objects.begin(), objects.end(),
                  std::back_inserter(filteredObjects),
-                 [&windowBounds](const std::shared_ptr<IDisplayable> &object) {
+                 [&windowBounds](
+                     const std::shared_ptr<IInteractiveDisplayable> &object) {
                      return windowBounds.Overlaps(object->GetBoundingBox());
                  });
 
