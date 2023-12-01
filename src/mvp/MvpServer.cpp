@@ -15,7 +15,7 @@ void MvpServer::OnClientDisconnect(std::shared_ptr<Connection> client) {
         // TODO: Reset game
         // ResetGame();
     }
-    
+
     if (client->GetID() == m_player1.id) {
         m_player1.ready = false;
         m_player1.connected = false;
@@ -100,9 +100,9 @@ void MvpServer::ProcessTurn() {
         std::cout << "Player 1, connected: " << m_player1.connected
                   << " ready: " << m_player1.ready << std::endl;
         std::cout << "Player 2, connected: " << m_player2.connected
-                    << " ready: " << m_player2.ready << std::endl;
+                  << " ready: " << m_player2.ready << std::endl;
         std::cout << "Game, started: " << m_gameStarted
-                    << " paused: " << m_gamePaused << std::endl;
+                  << " paused: " << m_gamePaused << std::endl;
     }
 
     if (!m_gameStarted || m_gamePaused) {

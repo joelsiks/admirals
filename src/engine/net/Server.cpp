@@ -96,7 +96,7 @@ void Server::MessageAllClients(const Message &message,
             m_connections.erase(
                 std::remove(m_connections.begin(), m_connections.end(), temp),
                 m_connections.end());
-            
+
             OnClientDisconnect(temp);
             temp.reset();
         }
