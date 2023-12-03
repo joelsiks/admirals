@@ -47,6 +47,10 @@ public:
                                  const std::unordered_set<float> &checkedOrders,
                                  float detailLevel) const;
 
+    std::deque<std::shared_ptr<admirals::scene::GameObject>>
+    FindNearbyEntities(const Vector2 &currentPosition, const Vector2 &cellsize,
+                       const std::unordered_set<float> &checkedOrders);
+
 private:
     OrderedCollection<GameObject> m_objects;
     QuadTree m_quadtree;

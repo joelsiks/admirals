@@ -29,6 +29,7 @@ void Ship::HandleAction() {
         if (!IsSelected()) {
             m_path.clear();
         }
+        SetAttackID(0); // clear attack id;
         break;
     case ShipAction::Move: {
         if (m_path.empty()) {
@@ -57,6 +58,26 @@ void Ship::HandleAction() {
             onChanged.Invoke(this, e);
         }
     } break;
+    case ShipAction::Attack: {
+        if (!IsSelected()) {
+            m_path.clear();
+        }
+        const std::deque<std::shared_ptr<admirals::scene::GameObject>>
+            entityList = GameData::engine->GetScene()->FindNearbyEntities(
+                GetPosition(), GameData::CellSize, {3});
+        for (auto object : entityList) {
+            const auto &o = std::dynamic_pointer_cast<Ship>(object);
+            if (o != nullptr) { // check if object is a ship object
+                if (!o->IsOwned()) {
+                    SetAttackID(o->GetID());
+                    events::EventArgs e;
+                    onChanged.Invoke(this, e);
+                    break;
+                }
+            }
+        }
+
+    } break;
     default:
         break;
     }
@@ -68,7 +89,6 @@ void Ship::OnUpdate(const EngineContext &) {
             GetPosition(), GameData::mousePosition, GameData::CellSize,
             {1, 2, 3}, GameData::CellSize);
     }
-
     HandleAction();
 }
 
@@ -83,6 +103,14 @@ void Ship::OnClick(events::MouseClickEventArgs &args) {
                 Select();
             }
             args.handled = true;
+        }
+    } else if (IsSelected() && args.button == events::MouseButton::Right &&
+               args.pressed) {
+        if (IsOwned()) {
+            printf("Ship (%d): Player id = %d, Selected = %d, set to attack\n",
+                   GetID(), GetPlayerId(), IsSelected());
+            SetAction(ShipAction::Attack);
+            DeSelect();
         }
     }
 }

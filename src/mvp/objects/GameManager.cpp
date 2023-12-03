@@ -70,7 +70,7 @@ void GameManager::AttackShip(uint16_t id, uint16_t targetId) {
         m_ships[id]->GetPlayerId() != m_playerId) {
         return;
     }
-
+    printf("AttackShip\n");
     m_networkManager->AttackShip(id, targetId);
 }
 
@@ -83,8 +83,9 @@ void GameManager::ShipChangeEventHandler(void *sender,
         MoveShip(ship->GetID(), ship->GetActionX(), ship->GetActionY());
         break;
     }
-    // case ShipAction::Attack:
-    //     break;
+    case ShipAction::Attack:
+        AttackShip(ship->GetID(), ship->GetAttackID());
+        break;
     default:
         break;
     }
@@ -130,6 +131,8 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
     }
 
     // Remove ships in m_ships that are not in ships
+    std::map<uint16_t, std::shared_ptr<admirals::mvp::objects::Ship>>
+        removedShips;
     for (auto it = m_ships.begin(); it != m_ships.end();) {
         const uint16_t id = it->first;
 
@@ -137,9 +140,20 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
             if (m_debug) {
                 printf("Removing ship %s\n", it->second->name().c_str());
             }
-            it = m_ships.erase(it);
+            removedShips.emplace(*it);
+            it++;
+            // m_ships.erase(it);
         } else {
             it++;
         }
+    }
+    for (auto it = removedShips.begin(); it != removedShips.end();) {
+        // how do we know if the current scene have the object?
+        it->second->onChanged -=
+            BIND_EVENT_HANDLER(GameManager::ShipChangeEventHandler);
+        // const auto &o = std::dynamic_pointer_cast<GameObject>(it->second);
+        GameData::engine->GetScene()->RemoveObject(it->second);
+        m_ships.erase(it->first);
+        it++;
     }
 }

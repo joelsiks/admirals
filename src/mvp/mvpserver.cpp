@@ -95,13 +95,16 @@ public:
 
         // Give coins every second
         if (m_turn % TICK_RATE == 0) {
-            m_player1.coins += 10;
-            m_player2.coins += 10;
+            m_player1.coins += 3;
+            m_player2.coins += 3;
         }
 
         // Process ship actions
-        ProcessShips(m_player1.ships);
-        ProcessShips(m_player2.ships);
+        ProcessShips(m_player1.ships, m_player2.ships);
+        ProcessShips(m_player2.ships, m_player1.ships);
+
+        // Remove ships with 0 health
+        ProcessDeadShips();
 
         // Broadcast state
         BroadcastState();
@@ -175,7 +178,7 @@ private:
         }
 
         const ShipData ship(m_shipID++, type, x, y, ShipInfoMap[type].Health,
-                            player.id);
+                            ShipInfoMap[type].Damage, player.id);
 
         player.coins -= ShipInfoMap[type].Cost;
         player.ships[ship.id] = ship;
@@ -254,9 +257,25 @@ private:
         ship.attackTargetID = targetID;
     }
 
-    void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships) {
+    void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships,
+                      std::map<uint16_t, admirals::mvp::ShipData> &Enemyships) {
         // TODO: Process ship actions correctly
         for (auto &ship : ships) {
+            if (ship.second.action == ShipAction::Attack) {
+                if (ship.second.attackTargetID == 0) {
+                    continue;
+                }
+                const auto enemyShip =
+                    Enemyships.find(ship.second.attackTargetID);
+                if (ship.second.damage > enemyShip->second.health) {
+                    enemyShip->second.health = 0;
+                } else {
+                    enemyShip->second.health =
+                        enemyShip->second.health - ship.second.damage;
+                }
+                continue;
+            }
+
             if (ship.second.moveData.actionX == ship.second.x &&
                 ship.second.moveData.actionY == ship.second.y) {
                 ship.second.action = ShipAction::None;
@@ -274,6 +293,34 @@ private:
                 m_board[ship.second.x][ship.second.y] = ship.second.id;
             }
         }
+    }
+
+    void ProcessDeadShips() {
+        std::map<uint16_t, admirals::mvp::ShipData> deadShips;
+        // player 1 check
+        for (auto &ship : m_player1.ships) {
+            if (ship.second.health == 0) {
+                deadShips.emplace(ship);
+            }
+        }
+        for (auto &ship : deadShips) {
+            m_board[ship.second.x][ship.second.y] = 0;
+            m_player1.numShips--;
+            m_player1.ships.erase(ship.first);
+        }
+        deadShips.clear();
+        // player 2 check
+        for (auto &ship : m_player2.ships) {
+            if (ship.second.health == 0) {
+                deadShips.emplace(ship);
+            }
+        }
+        for (auto &ship : deadShips) {
+            m_board[ship.second.x][ship.second.y] = 0;
+            m_player2.numShips--;
+            m_player2.ships.erase(ship.first);
+        }
+        deadShips.clear();
     }
 
     void BroadcastState() {
