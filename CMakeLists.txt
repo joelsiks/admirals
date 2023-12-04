@@ -30,33 +30,33 @@ message("CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(SOURCES 
     src/engine/DataObjects.cpp
+    src/engine/Engine.cpp
     src/engine/IDisplayLayer.cpp
+    src/engine/PathFinding.cpp
+    src/engine/QuadTree.cpp
+    src/engine/Renderer.cpp
+    src/engine/Scene.cpp
     src/engine/UI/Button.cpp
+    src/engine/UI/Data.cpp
     src/engine/UI/DisplayLayout.cpp
     src/engine/UI/Element.cpp
     src/engine/UI/TextElement.cpp
-    src/engine/UI/Data.cpp
     src/engine/UI/menu/Menu.cpp
     src/engine/UI/menu/MenuOption.cpp
-    src/engine/net/Connection.cpp
     src/engine/net/Client.cpp
+    src/engine/net/Connection.cpp
     src/engine/net/Server.cpp
-    src/engine/Scene.cpp
-    src/engine/Renderer.cpp
-    src/engine/Engine.cpp
-    src/engine/QuadTree.cpp
-    src/engine/PathFinding.cpp
 )
 set(MVP_SOURCES 
-    src/mvp/shared.cpp
-    src/mvp/objects/Sprite.cpp
+    src/mvp/MvpServer.cpp
     src/mvp/objects/Background.cpp
+    src/mvp/objects/GameManager.cpp
     src/mvp/objects/Grid.cpp
+    src/mvp/objects/NetworkManager.cpp
     src/mvp/objects/Quad.cpp
     src/mvp/objects/Ship.cpp
-    src/mvp/objects/GameManager.cpp
-    src/mvp/objects/NetworkManager.cpp
-    src/mvp/MvpServer.cpp
+    src/mvp/objects/Sprite.cpp
+    src/mvp/shared.cpp
 )
 
 set(INCLUDE_DIRS
