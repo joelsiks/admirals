@@ -4,9 +4,9 @@
 
 #include "EngineContext.hpp"
 #include "GameObject.hpp"
+#include "IDisplayLayer.hpp"
 #include "Renderer.hpp"
 #include "Scene.hpp"
-#include "UI/DisplayLayout.hpp"
 #include "UI/Element.hpp"
 #include "events/EventSystem.hpp"
 #include "events/KeyPressEvent.hpp"
@@ -26,22 +26,54 @@ public:
 
     inline const EngineContext &GetContext() const { return m_context; }
 
-    std::shared_ptr<UI::DisplayLayout>
-    SetAndGetDisplayLayout(const std::shared_ptr<UI::DisplayLayout> &layout);
+    inline void AddLayer(size_t idx,
+                         std::shared_ptr<IDisplayLayer<UI::Element>> layer) {
+        m_layers[idx] = std::move(layer);
+        m_activeLayers.insert(idx);
+    }
 
-    inline std::shared_ptr<UI::DisplayLayout> GetDisplayLayout() {
-        return m_displayLayout;
+    inline void DeleteLayer(size_t idx) {
+        if (m_layers.contains(idx)) {
+            m_layers.erase(idx);
+        }
+
+        if (m_activeLayers.contains(idx)) {
+            m_activeLayers.erase(idx);
+        }
+    }
+
+    inline std::shared_ptr<IDisplayLayer<UI::Element>> GetLayer(size_t idx) {
+        return m_layers[idx];
+    }
+
+    inline void ActivateLayer(size_t idx) {
+        if (m_layers.contains(idx) && !m_activeLayers.contains(idx)) {
+            m_layers[idx]->OnShown();
+            m_activeLayers.insert(idx);
+        }
+    }
+
+    inline void DeactivateLayer(size_t idx) {
+        if (m_activeLayers.contains(idx)) {
+            m_layers[idx]->OnHidden();
+            m_activeLayers.insert(idx);
+        }
+    }
+
+    inline bool LayerIsActive(size_t idx) {
+        return m_layers.contains(idx) && m_activeLayers.contains(idx);
+    }
+
+    inline void AddUIElement(std::shared_ptr<UI::Element> element,
+                             size_t layerIdx) {
+        if (hasLayers() && m_layers.contains(layerIdx)) {
+            m_layers[layerIdx]->AddDisplayable(std::move(element));
+        }
     }
 
     std::shared_ptr<Scene> SetAndGetScene(const std::shared_ptr<Scene> &scene);
 
     inline std::shared_ptr<Scene> GetScene() { return m_scene; }
-
-    inline void AddUIElement(std::shared_ptr<UI::Element> element) {
-        if (hasDisplayLayout()) {
-            m_displayLayout->AddDisplayable(std::move(element));
-        }
-    }
 
     inline void AddGameObject(std::shared_ptr<GameObject> object) {
         if (hasScene()) {
@@ -77,12 +109,15 @@ private:
 
     std::string m_gameName;
 
-    inline bool hasDisplayLayout() { return m_displayLayout != nullptr; }
     inline bool hasScene() { return m_scene != nullptr; }
+
+    inline bool hasLayers() { return !m_layers.empty(); }
+    inline bool hasActiveLayers() { return !m_activeLayers.empty(); }
 
     // Drawables
     std::shared_ptr<Scene> m_scene;
-    std::map<int, std::shared_ptr<IDisplayLayer>> m_layers;
+    std::map<size_t, std::shared_ptr<IDisplayLayer<UI::Element>>> m_layers;
+    std::unordered_set<size_t> m_activeLayers;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
     EngineContext m_context;

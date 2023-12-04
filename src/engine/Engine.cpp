@@ -1,5 +1,8 @@
-#include "Engine.hpp"
 #include <chrono>
+
+#include "Engine.hpp"
+
+#include "UI/DisplayLayout.hpp"
 
 using namespace admirals;
 using namespace admirals::events;
@@ -24,25 +27,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_context.fontWidth = FONT_CHAR_WIDTH;
     m_context.fontHeight = FONT_CHAR_HEIGHT;
 
-    m_displayLayout = std::make_shared<UI::DisplayLayout>();
-
     m_scene = std::make_shared<Scene>();
-}
-
-std::shared_ptr<UI::DisplayLayout> Engine::SetAndGetDisplayLayout(
-    const std::shared_ptr<UI::DisplayLayout> &layout) {
-    auto currentLayout = m_displayLayout;
-    currentLayout->OnHidden();
-
-    m_displayLayout = layout;
-    m_displayLayout->OnShown();
-
-    SDL_MouseMotionEvent motionEvent;
-    motionEvent.state = SDL_GetMouseState(&motionEvent.x, &motionEvent.y);
-    events::MouseMotionEventArgs args(motionEvent);
-    m_displayLayout->OnMouseMove(args);
-
-    return currentLayout;
 }
 
 std::shared_ptr<Scene>
@@ -80,8 +65,10 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEBUTTONUP: {
             auto args = MouseClickEventArgs(e.button);
 
-            if (hasDisplayLayout()) {
-                m_displayLayout->OnClick(args);
+            if (hasLayers()) {
+                for (const auto &activeLayerIdx : m_activeLayers) {
+                    m_layers[activeLayerIdx]->OnClick(args);
+                }
             }
 
             if (hasScene() && !args.handled) {
@@ -93,8 +80,10 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEMOTION: {
             auto args = MouseMotionEventArgs(e.motion);
 
-            if (hasDisplayLayout()) {
-                m_displayLayout->OnMouseMove(args);
+            if (hasLayers()) {
+                for (const auto &activeLayerIdx : m_activeLayers) {
+                    m_layers[activeLayerIdx]->OnMouseMove(args);
+                }
             }
 
             if (hasScene() && !args.handled) {
@@ -124,16 +113,23 @@ void Engine::StartGameLoop() {
         m_scene->OnStart(GetContext());
     }
 
-    std::vector<std::shared_ptr<IDisplayLayer<IInteractiveDisplayable>>> layers(
-        2);
+    std::vector<std::shared_ptr<IDisplayLayer<IInteractiveDisplayable>>> layers;
+    layers.reserve(m_layers.size() + 1);
 
     // Start render loop
     bool quit = false;
     std::chrono::time_point<std::chrono::high_resolution_clock> lastTime =
         std::chrono::high_resolution_clock::now();
     while (!quit) {
-        layers[0] = m_scene;
-        layers[1] = m_displayLayout;
+        layers.push_back(
+            std::dynamic_pointer_cast<IDisplayLayer<IInteractiveDisplayable>>(
+                m_scene));
+
+        for (const auto &layer : m_layers) {
+            layers.push_back(
+                std::dynamic_pointer_cast<
+                    IDisplayLayer<IInteractiveDisplayable>>(layer.second));
+        }
 
         const auto now = std::chrono::high_resolution_clock::now();
         m_context.deltaTime =
@@ -148,8 +144,10 @@ void Engine::StartGameLoop() {
             m_scene->RebuildQuadTree(m_context.windowSize);
         }
 
-        if (hasDisplayLayout()) {
-            m_displayLayout->RebuildQuadTree(m_context.windowSize);
+        if (hasLayers()) {
+            for (const auto &activeLayerIdx : m_activeLayers) {
+                m_layers[activeLayerIdx]->RebuildQuadTree(m_context.windowSize);
+            }
         }
 
         m_renderer->Render(GetContext(), layers);
