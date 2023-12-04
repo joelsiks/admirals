@@ -52,46 +52,50 @@ private:
     bool m_keepAspectRatio;
 };
 
-void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
-                             Engine &engine, bool initialDebugValue) {
-    menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
-    exitOption.onClick.Subscribe(
+std::shared_ptr<menu::Menu> CreateEscapeMenu(Engine &engine,
+                                             bool initialDebugValue) {
+    auto escapeMenu = std::make_shared<menu::Menu>(
+        "Pause Menu", Color::BLACK, Color::FromRGBA(50, 50, 50, 100));
+
+    const auto exitOption =
+        std::make_shared<menu::ClickOption>("exitOption", 1.0, "Exit...");
+    exitOption->onClick.Subscribe(
         [&engine](void *, events::MouseClickEventArgs &args) {
             if (!args.pressed)
                 return;
 
             engine.StopGameLoop();
         });
-    escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(exitOption));
+    escapeMenu->AddDisplayable(exitOption);
 
-    const std::shared_ptr<menu::InputOption> inputOption =
-        std::make_shared<menu::InputOption>("inputOption", 1.0,
-                                            engine.onKeyPress);
+    const auto inputOption = std::make_shared<menu::InputOption>(
+        "inputOption", 1.0, engine.onKeyPress);
     inputOption->onInput.Subscribe([](void *, events::TextEventArgs &args) {
         printf("Input was changed: %s\n", args.text.c_str());
     });
-    escapeMenu->AddMenuOption(inputOption);
+    escapeMenu->AddDisplayable(inputOption);
 
-    menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
-                                         "Debug Rendering", initialDebugValue);
-    toggleDebugOption.onClick.Subscribe(
+    const auto toggleDebugOption = std::make_shared<menu::ToggleOption>(
+        "toggleDebugRenderingOption", 1.0, "Debug Rendering",
+        initialDebugValue);
+    toggleDebugOption->onClick.Subscribe(
         [&engine](void *, events::MouseClickEventArgs &args) {
             if (args.pressed)
                 return;
 
             engine.ToggleDebugRendering();
         });
-    escapeMenu->AddMenuOption(
-        menu::MenuOption::CreateFromDerived(toggleDebugOption));
+    escapeMenu->AddDisplayable(toggleDebugOption);
 
     const std::vector<Color> cycleColors = {Color::RED, Color::BLACK,
                                             Color::WHITE};
-    menu::CycleOption cycleColorOption("cycleMenuColorOption", 1.0,
-                                       "Menu Color", {"Red", "Black", "White"},
-                                       1);
-    cycleColorOption.onClick.Subscribe([&escapeMenu, cycleColors](
-                                           void *sender,
-                                           events::MouseClickEventArgs &args) {
+    const std::vector<std::string> cycleColorsNames = {"Red", "Black", "White"};
+
+    auto cycleColorOption = std::make_shared<menu::CycleOption>(
+        "cycleMenuColorOption", 1.0, "Menu Color", cycleColorsNames, 1);
+    cycleColorOption->onClick.Subscribe([&escapeMenu, cycleColors](
+                                            void *sender,
+                                            events::MouseClickEventArgs &args) {
         if (args.pressed)
             return;
 
@@ -100,8 +104,9 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
         const size_t idx = (cycleOption->CurrentIndex()) % cycleColors.size();
         escapeMenu->SetTextColor(cycleColors[idx]);
     });
-    escapeMenu->AddMenuOption(
-        menu::MenuOption::CreateFromDerived(cycleColorOption));
+    escapeMenu->AddDisplayable(cycleColorOption);
+
+    return escapeMenu;
 }
 
 void CreateUIElements(Engine &engine,
@@ -131,26 +136,22 @@ int main(int, char **) {
     const bool debug = true;
     Engine engine("UI Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
 
-    auto escapeMenu = std::make_shared<menu::Menu>(
-        "Pause Menu", Color::BLACK, Color::FromRGBA(50, 50, 50, 100));
+    const size_t escapeMenuIdx = 0;
 
-    std::shared_ptr<DisplayLayout> displayLayoutStore;
-    std::shared_ptr<Scene> sceneStore;
-    engine.onKeyPress.Subscribe([&escapeMenu, &displayLayoutStore,
-                                 &sceneStore](void *sender,
-                                              events::KeyPressEventArgs &args) {
-        auto *engine = static_cast<Engine *>(sender);
+    auto escapeMenu = CreateEscapeMenu(engine, debug);
+    engine.AddLayer(
+        escapeMenuIdx,
+        std::dynamic_pointer_cast<IDisplayLayer<UI::Element>>(escapeMenu));
 
-        if (args.key == SDLK_ESCAPE && args.isKeyUp) {
-            if (engine->GetDisplayLayout() == escapeMenu) {
-                engine->SetAndGetDisplayLayout(displayLayoutStore);
-            } else {
-                displayLayoutStore = engine->SetAndGetDisplayLayout(escapeMenu);
+    engine.onKeyPress.Subscribe(
+        [&engine, escapeMenuIdx](void *sender,
+                                 events::KeyPressEventArgs &args) {
+            auto *engine = static_cast<Engine *>(sender);
+
+            if (args.key == SDLK_ESCAPE && args.isKeyUp) {
+                engine->ToggleLayer(escapeMenuIdx);
             }
-        }
-    });
-
-    CreateEscapeMenuOptions(escapeMenu, engine, debug);
+        });
 
     auto texture =
         engine.MakeGameObject<TextureObject>("image", "assets/admirals.png");

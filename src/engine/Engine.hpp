@@ -26,47 +26,70 @@ public:
 
     inline const EngineContext &GetContext() const { return m_context; }
 
-    inline void AddLayer(size_t idx,
+    inline bool AddLayer(size_t idx,
                          std::shared_ptr<IDisplayLayer<UI::Element>> layer) {
-        m_layers[idx] = std::move(layer);
-        m_activeLayers.insert(idx);
+        const bool wasInserted = m_layers.emplace(idx, std::move(layer)).second;
+        if (wasInserted) {
+            m_activeLayers.insert(idx);
+        }
+
+        return wasInserted;
     }
 
-    inline void DeleteLayer(size_t idx) {
-        if (m_layers.contains(idx)) {
-            m_layers.erase(idx);
-        }
-
-        if (m_activeLayers.contains(idx)) {
+    inline bool DeleteLayer(size_t idx) {
+        const size_t elementsRemoved = m_layers.erase(idx);
+        if (elementsRemoved != 0) {
+            // Note: we assume that this erase removes the layer if it's in the
+            // set and does not fail.
             m_activeLayers.erase(idx);
         }
+
+        return elementsRemoved != 0;
     }
 
     inline std::shared_ptr<IDisplayLayer<UI::Element>> GetLayer(size_t idx) {
         return m_layers[idx];
     }
 
-    inline void ActivateLayer(size_t idx) {
-        if (m_layers.contains(idx) && !m_activeLayers.contains(idx)) {
-            m_layers[idx]->OnShown();
-            m_activeLayers.insert(idx);
+    inline bool LayerIsActive(size_t idx) {
+        return m_activeLayers.find(idx) != m_activeLayers.end();
+    }
+
+    inline bool ActivateLayer(size_t idx) {
+        if (m_layers.find(idx) != m_layers.end() &&
+            !(m_activeLayers.find(idx) != m_activeLayers.end())) {
+            const bool wasInserted = m_activeLayers.insert(idx).second;
+
+            if (wasInserted) {
+                m_layers[idx]->OnShown();
+            }
+
+            return wasInserted;
         }
+
+        return false;
     }
 
     inline void DeactivateLayer(size_t idx) {
-        if (m_activeLayers.contains(idx)) {
+        if (m_activeLayers.find(idx) != m_activeLayers.end()) {
             m_layers[idx]->OnHidden();
-            m_activeLayers.insert(idx);
+            m_activeLayers.erase(idx);
         }
     }
 
-    inline bool LayerIsActive(size_t idx) {
-        return m_layers.contains(idx) && m_activeLayers.contains(idx);
+    inline void ToggleLayer(size_t idx) {
+        if (m_layers.find(idx) != m_layers.end()) {
+            if (LayerIsActive(idx)) {
+                DeactivateLayer(idx);
+            } else {
+                ActivateLayer(idx);
+            }
+        }
     }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element,
                              size_t layerIdx) {
-        if (hasLayers() && m_layers.contains(layerIdx)) {
+        if (hasLayers() && m_layers.find(layerIdx) != m_layers.end()) {
             m_layers[layerIdx]->AddDisplayable(std::move(element));
         }
     }
@@ -83,13 +106,15 @@ public:
 
     inline void ToggleDebugRendering() { m_context.debug = !m_context.debug; }
 
+    // TODO: This is broken.
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {
         auto object = std::make_shared<T>(_args...);
-        AddUIElement(object);
+        AddUIElement(object, 0);
         return object;
     }
 
+    // TODO: This is broken.
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeGameObject(_Args &&..._args) {
         auto object = std::make_shared<T>(std::forward<_Args>(_args)...);

@@ -11,10 +11,10 @@ Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
     : m_menuTitle(menuTitle), m_fgColor(foregroundColor),
       m_bgColor(backgroundColor), m_topPadding(topPadding) {
 
-    const TextOption titleOption =
-        TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle);
+    const auto titleOption = std::make_shared<TextOption>(
+        TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle));
 
-    this->AddDisplayable(MenuOption::CreateFromDerived(titleOption));
+    this->AddDisplayable(titleOption);
 }
 
 void Menu::Render(const EngineContext &ctx) const {
