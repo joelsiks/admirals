@@ -29,17 +29,17 @@ int test_add() {
     auto go1 = GameObject::CreateFromDerived(cell1);
     auto go2 = GameObject::CreateFromDerived(cell2);
     auto go3 = GameObject::CreateFromDerived(cell3);
-    scene->AddObject(go1);
-    scene->AddObject(go2);
-    if (scene->NumObjectsInScene() != 2) {
+    scene->AddDisplayable(go1);
+    scene->AddDisplayable(go2);
+    if (scene->NumDisplayables() != 2) {
         return EXIT_FAILURE;
     }
     // try adding duplicate item
-    scene->AddObject(go1);
+    scene->AddDisplayable(go1);
     // try adding new object with the same name as one already existing in the
     // list
-    scene->AddObject(go3);
-    if (scene->NumObjectsInScene() != 2) {
+    scene->AddDisplayable(go3);
+    if (scene->NumDisplayables() != 2) {
         return EXIT_FAILURE;
     }
 
@@ -64,31 +64,31 @@ int test_remove() {
     auto go2 = GameObject::CreateFromDerived(cell2);
     auto go2_1 = GameObject::CreateFromDerived(cell2_1);
     auto go3 = GameObject::CreateFromDerived(cell3);
-    scene->AddObject(go1);
-    scene->AddObject(go1_1);
-    scene->AddObject(go2);
-    scene->AddObject(go3);
+    scene->AddDisplayable(go1);
+    scene->AddDisplayable(go1_1);
+    scene->AddDisplayable(go2);
+    scene->AddDisplayable(go3);
 
     std::vector<std::string> str = {"c", "a", "a_1", "b"};
-    if (scene->GetSceneObjectNames() != str) {
+    if (scene->GetDisplayableNames() != str) {
         return EXIT_FAILURE;
     }
-    if (scene->NumObjectsInScene() != 4) {
+    if (scene->NumDisplayables() != 4) {
         return EXIT_FAILURE;
     }
-    scene->RemoveObject(go1_1);
-    scene->RemoveObject(go1_1);
+    scene->RemoveDisplayable(go1_1->identifier());
+    scene->RemoveDisplayable(go1_1->identifier());
 
     str = {"c", "a", "b"};
-    if (scene->GetSceneObjectNames() != str) {
+    if (scene->GetDisplayableNames() != str) {
         return EXIT_FAILURE;
     }
-    if (scene->NumObjectsInScene() != 3) {
+    if (scene->NumDisplayables() != 3) {
         return EXIT_FAILURE;
     }
 
-    scene->RemoveObject(go2_1);
-    if (scene->NumObjectsInScene() != 3) {
+    scene->RemoveDisplayable(go2_1->identifier());
+    if (scene->NumDisplayables() != 3) {
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
@@ -109,26 +109,26 @@ int test_exist() {
     auto go1 = GameObject::CreateFromDerived(cell1);
     auto go1_1 = GameObject::CreateFromDerived(cell1_1);
     auto go2 = GameObject::CreateFromDerived(cell2);
-    scene->AddObject(go1);
+    scene->AddDisplayable(go1);
 
-    bool exist = scene->ExistObject(go1);
+    bool exist = scene->ExistsDisplayable(go1->identifier());
     if (exist != true) {
         return EXIT_FAILURE;
     }
-    exist = scene->ExistObject(go1_1);
+    exist = scene->ExistsDisplayable(go1_1->identifier());
     if (exist != false) {
         return EXIT_FAILURE;
     }
-    exist = scene->ExistObject(go2);
+    exist = scene->ExistsDisplayable(go2->identifier());
     if (exist != false) {
         return EXIT_FAILURE;
     }
 
-    exist = scene->ExistObject("a");
+    exist = scene->ExistsDisplayable("a");
     if (exist != true) {
         return EXIT_FAILURE;
     }
-    exist = scene->ExistObject("b");
+    exist = scene->ExistsDisplayable("b");
     if (exist != false) {
         return EXIT_FAILURE;
     }

@@ -13,8 +13,10 @@ public:
     GameData(){};
     ~GameData(){};
 
-    static std::shared_ptr<UI::menu::Menu> startMenu;
+    static const size_t startMenuIdx;
     static std::shared_ptr<Scene> startMenuScene;
+
+    static const size_t gameUIIdx;
 
     static std::unique_ptr<Engine> engine;
     static const float CellSize;

@@ -1,5 +1,7 @@
 #include "Engine.hpp"
+#include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
+#include "UI/menu/Menu.hpp"
 #include "UI/menu/MenuOption.hpp"
 
 #include "objects/Background.hpp"
@@ -25,12 +27,12 @@ const Vector2 cellSize = Vector2(GameData::CellSize);
 const Color blue = Color::FromHEX("#3283cf");
 const Color green = Color::FromHEX("#087311");
 
-static std::shared_ptr<UI::DisplayLayout> g_dlStore;
-static std::shared_ptr<Scene> g_sStore;
+static std::shared_ptr<Scene> g_sceneStore;
 
-void SwapEngineLayers() {
-    g_dlStore = GameData::engine->SetAndGetDisplayLayout(g_dlStore);
-    g_sStore = GameData::engine->SetAndGetScene(g_sStore);
+void SwapEngineScene() {
+    g_sceneStore = GameData::engine->SetAndGetScene(g_sceneStore);
+    GameData::engine->ToggleLayer(GameData::startMenuIdx);
+    GameData::engine->ToggleLayer(GameData::gameUIIdx);
 }
 
 void CreateGameBoard() {
@@ -69,85 +71,96 @@ void CreateBases(const Texture &atlas) {
              cellSize));
 }
 
-void CreateUI(const Texture &atlas,
-              const std::shared_ptr<GameManager> &gameManager) {
-    auto coinText = GameData::engine->MakeUIElement<UI::TextElement>(
-        "coinText", 0, "Coins: 0", Vector2(100, 20), Color::WHITE);
+void CreateGameUI(const Texture &atlas,
+                  const std::shared_ptr<GameManager> &gameManager) {
+    auto gameUI = std::make_shared<UI::DisplayLayout>();
+    GameData::engine->AddLayer(GameData::gameUIIdx, gameUI);
 
-    gameManager->onCoinsChanged += [coinText](void *, auto e) {
+    auto coinText = std::make_shared<UI::TextElement>(
+        "coinText", 0, "Coins: 0", Vector2(100, 20), Color::WHITE);
+    gameManager->onCoinsChanged.Subscribe([coinText](void *, auto e) {
         coinText->SetText("Coins: " + std::to_string(e.coins));
-    };
+    });
+    gameUI->AddDisplayable(coinText);
 
     for (auto &[shipType, ship] : ShipInfoMap) {
-        auto buyShipButton =
-            GameData::engine->MakeUIElement<objects::IconifiedButton>(
-                "buyShip" + std::to_string(shipType), 0,
-                std::to_string(ship.Cost), Vector2(GameData::CellSize),
-                Color::WHITE, Color::BLACK, atlas,
-                Vector2(Ship::ShipTypeToTexOffset(shipType)));
+        auto buyShipButton = std::make_shared<objects::IconifiedButton>(
+            "buyShip" + std::to_string(shipType), 0, std::to_string(ship.Cost),
+            Vector2(GameData::CellSize), Color::WHITE, Color::BLACK, atlas,
+            Vector2(Ship::ShipTypeToTexOffset(shipType)));
+
         buyShipButton->SetDisplayOrientation(UI::DisplayOrientation::LowerLeft);
-        buyShipButton->onClick += [gameManager, shipType](void *, auto) {
+        buyShipButton->onClick.Subscribe([gameManager, shipType](void *, auto) {
             gameManager->BuyShip(shipType);
-        };
+        });
+
+        gameUI->AddDisplayable(buyShipButton);
     }
 }
 
 void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
-    GameData::startMenuScene = std::make_shared<Scene>();
-
-    GameData::startMenu = std::make_shared<UI::menu::Menu>(
+    auto startMenu = std::make_shared<UI::menu::Menu>(
         "Admirals Conquest (MVP)", Color::BLACK,
         Color::FromRGBA(20, 20, 20, 140), 100);
+    GameData::engine->AddLayer(GameData::startMenuIdx, startMenu, false);
 
-    UI::menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
-    exitOption.onClick.Subscribe([](void *, events::MouseClickEventArgs &args) {
-        if (!args.pressed)
-            return;
+    auto exitOption =
+        std::make_shared<UI::menu::ClickOption>("exitOption", 1.0, "Exit...");
+    exitOption->onClick.Subscribe(
+        [](void *, events::MouseClickEventArgs &args) {
+            if (!args.pressed)
+                return;
 
-        GameData::engine->StopGameLoop();
-    });
-    GameData::startMenu->AddMenuOption(
-        UI::menu::MenuOption::CreateFromDerived(exitOption));
+            GameData::engine->StopGameLoop();
+        });
+    startMenu->AddDisplayable(exitOption);
 
-    UI::menu::ClickOption connectOption("connectOption", 1.0,
-                                        "Connect to server");
-    connectOption.onClick.Subscribe(
+    auto connectOption = std::make_shared<UI::menu::ClickOption>(
+        "connectOption", 1.0, "Connect to server");
+    connectOption->onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                bool connected = gameManager->ConnectToServer();
+                const bool connected = gameManager->ConnectToServer();
                 if (connected) {
-                    SwapEngineLayers();
+                    SwapEngineScene();
                 }
             }
         });
-    GameData::startMenu->AddMenuOption(
-        UI::menu::MenuOption::CreateFromDerived(connectOption));
+    startMenu->AddDisplayable(connectOption);
 
-    UI::menu::ClickOption startOption("startOption", 1.0, "Start server");
-    startOption.onClick.Subscribe(
+    auto startOption = std::make_shared<UI::menu::ClickOption>(
+        "startOption", 1.0, "Start server");
+    startOption->onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                bool connected = gameManager->StartAndConnectToServer();
+                const bool connected = gameManager->StartAndConnectToServer();
                 if (connected) {
-                    SwapEngineLayers();
+                    SwapEngineScene();
                 }
             }
         });
-    GameData::startMenu->AddMenuOption(
-        UI::menu::MenuOption::CreateFromDerived(startOption));
+    startMenu->AddDisplayable(startOption);
 }
 
 void CreateStartMenuScene(const Texture &atlas) {
-    GameData::engine->MakeGameObject<Background>("background", blue);
-    GameData::engine->MakeGameObject<MenuMovingShip>(
+    auto startMenuScene = std::make_shared<Scene>();
+
+    startMenuScene->AddDisplayable(
+        std::make_shared<Background>("background", blue));
+
+    startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
         "movingShip1", atlas, 1, Rect(Vector2(0, 0), Vector2(80, 80)),
-        ShipType::Cruiser, 70);
-    GameData::engine->MakeGameObject<MenuMovingShip>(
+        ShipType::Cruiser, 70));
+
+    startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
         "movingShip2", atlas, 1, Rect(Vector2(500, 300), Vector2(80, 80)),
-        ShipType::Destroyer, 150);
-    GameData::engine->MakeGameObject<MenuMovingShip>(
+        ShipType::Destroyer, 150));
+
+    startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
         "movingShip3", atlas, 1, Rect(Vector2(200, 500), Vector2(80, 80)),
-        ShipType::Cruiser, 80);
+        ShipType::Cruiser, 80));
+
+    GameData::startMenuScene = startMenuScene;
 }
 
 int main(int, char *[]) {
@@ -158,19 +171,17 @@ int main(int, char *[]) {
 
     const Texture atlas =
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
-
     CreateBases(atlas);
 
     auto gameManager =
         GameData::engine->MakeGameObject<GameManager>("gameManager");
-
-    CreateUI(atlas, gameManager);
+    CreateGameUI(atlas, gameManager);
 
     CreateStartMenu(gameManager);
-    g_dlStore = GameData::startMenu;
-    g_sStore = GameData::startMenuScene;
-    SwapEngineLayers();
     CreateStartMenuScene(atlas);
+
+    g_sceneStore = GameData::startMenuScene;
+    SwapEngineScene();
 
     GameData::engine->StartGameLoop();
 

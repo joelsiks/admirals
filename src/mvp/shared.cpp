@@ -3,8 +3,10 @@
 using namespace admirals;
 using namespace admirals::mvp;
 
-std::shared_ptr<UI::menu::Menu> GameData::startMenu = nullptr;
+const size_t GameData::startMenuIdx = 0;
 std::shared_ptr<Scene> GameData::startMenuScene = nullptr;
+
+const size_t GameData::gameUIIdx = 1;
 
 std::unique_ptr<Engine> GameData::engine = nullptr;
 const float GameData::CellSize = 64;
