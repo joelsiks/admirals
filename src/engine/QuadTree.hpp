@@ -19,8 +19,9 @@ public:
     /// @param windowSize The size of the (SDL) window where objects can be
     /// placed.
     /// @param objects A vector containing all objects to place inside the tree.
-    void BuildTree(const Vector2 &windowSize,
-                   const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects);
+    void BuildTree(
+        const Vector2 &windowSize,
+        const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects);
 
     /// @brief Gets objects at a position inside the QuadTree
     /// @param position The position to check against in the QuadTree
@@ -68,9 +69,9 @@ private:
     };
     std::queue<BuildData> m_buildQueue;
 
-    void
-    InitializeTree(const Vector2 &windowSize,
-                   const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects);
+    void InitializeTree(
+        const Vector2 &windowSize,
+        const std::vector<std::shared_ptr<IInteractiveDisplayable>> &objects);
 
     void DestroyTree();
 
