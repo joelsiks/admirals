@@ -8,7 +8,7 @@
 
 namespace admirals {
 
-class Scene : public IDisplayLayer<GameObject> {
+class Scene : public IDisplayLayer {
 public:
     virtual void Render(const EngineContext &ctx) const override;
 

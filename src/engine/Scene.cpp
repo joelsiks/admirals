@@ -5,7 +5,8 @@
 using namespace admirals;
 
 void Scene::Render(const EngineContext &ctx) const {
-    for (const auto &object : m_displayables) {
+    for (const auto &displayable : m_displayables) {
+        auto object = std::dynamic_pointer_cast<GameObject>(displayable);
         object->Render(ctx);
     }
 
@@ -17,13 +18,15 @@ void Scene::Render(const EngineContext &ctx) const {
 void Scene::OnStart(const EngineContext &ctx) {
     m_isInitialized = true;
 
-    for (const auto &object : m_displayables) {
+    for (const auto &displayable : m_displayables) {
+        auto object = std::dynamic_pointer_cast<GameObject>(displayable);
         object->OnStart(ctx);
     }
 }
 
 void Scene::OnUpdate(const EngineContext &ctx) {
-    for (const auto &object : m_displayables) {
+    for (const auto &displayable : m_displayables) {
+        auto object = std::dynamic_pointer_cast<GameObject>(displayable);
         object->OnUpdate(ctx);
     }
 }

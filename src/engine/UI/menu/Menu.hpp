@@ -5,7 +5,7 @@
 
 namespace admirals::UI::menu {
 
-class Menu : public IDisplayLayer<MenuOption> {
+class Menu : public IDisplayLayer {
 public:
     Menu(const std::string &menuTitle, const Color &foregroundColor,
          const Color &backgroundColor, float topPadding = 0);

@@ -7,7 +7,7 @@
 
 namespace admirals::UI {
 
-class DisplayLayout : public IDisplayLayer<Element> {
+class DisplayLayout : public IDisplayLayer {
 public:
     void Render(const EngineContext &ctx) const override;
 };

@@ -25,7 +25,12 @@ void Menu::Render(const EngineContext &ctx) const {
     renderer::Renderer::DrawRectangle(Vector2(0, 0), ctx.windowSize, m_bgColor);
 
     for (auto it = m_displayables.rbegin(); it != m_displayables.rend(); ++it) {
-        auto option = *it;
+        if (*it == nullptr) {
+            continue;
+        }
+
+        auto element = std::dynamic_pointer_cast<UI::Element>(*it);
+        auto option = std::dynamic_pointer_cast<menu::MenuOption>(element);
 
         // TODO: This should be fixed somewhere else in the future.
         option->SetDisplayOrientation(DisplayOrientation::Center);

@@ -1,11 +1,10 @@
 #include "UI/Data.hpp"
 
 using namespace admirals;
-using namespace admirals::UI;
 
-Vector2 GetPositionFromOrientation(DisplayOrientation orientation,
-                                   const Vector2 &displaySize,
-                                   const EngineContext &ctx) {
+Vector2 admirals::UI::GetPositionFromOrientation(DisplayOrientation orientation,
+                                                 const Vector2 &displaySize,
+                                                 const EngineContext &ctx) {
     Vector2 position(0, 0);
 
     // Handle center.

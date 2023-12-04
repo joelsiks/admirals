@@ -9,7 +9,8 @@ using namespace admirals::UI;
 void DisplayLayout::Render(const EngineContext &ctx) const {
     Vector4 positionOffsets = Vector4(0);
 
-    for (const auto &element : m_displayables) {
+    for (const auto &displayable : m_displayables) {
+        auto element = std::dynamic_pointer_cast<UI::Element>(displayable);
         const DisplayOrientation orientation = element->GetDisplayOrientation();
         const Vector2 displaySize = element->GetSize();
 

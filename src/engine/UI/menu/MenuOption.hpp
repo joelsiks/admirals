@@ -32,7 +32,7 @@ public:
     virtual void OnShown() override;
     virtual void OnHidden() override;
 
-    virtual std::string GetOptionText() const = 0;
+    virtual std::string GetOptionText() const { return ""; }
     inline void SetTextColor(const Color &color) { m_textColor = color; }
 
 protected:

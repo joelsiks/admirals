@@ -9,7 +9,7 @@
 
 namespace admirals {
 
-template <typename T = IInteractiveDisplayable> class IDisplayLayer {
+class IDisplayLayer {
 public:
     virtual void Render(const EngineContext &ctx) const = 0;
 
@@ -19,7 +19,8 @@ public:
     virtual void OnShown();
     virtual void OnHidden();
 
-    virtual void AddDisplayable(std::shared_ptr<T> displayable);
+    virtual void
+    AddDisplayable(std::shared_ptr<IInteractiveDisplayable> displayable);
     virtual void RemoveDisplayable(const std::string &identifier);
     virtual bool ExistsDisplayable(const std::string &identifier);
 
@@ -29,7 +30,7 @@ public:
     void RebuildQuadTree(const Vector2 &windowSize);
 
 protected:
-    OrderedCollection<T> m_displayables;
+    OrderedCollection<IInteractiveDisplayable> m_displayables;
 
     QuadTree m_quadtree;
     std::unordered_set<std::string> m_mouseOverSet;

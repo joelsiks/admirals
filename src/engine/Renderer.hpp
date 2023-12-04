@@ -14,8 +14,7 @@
 
 namespace admirals::renderer {
 
-typedef std::vector<std::shared_ptr<IDisplayLayer<IInteractiveDisplayable>>>
-    DrawableLayers;
+typedef std::vector<std::shared_ptr<IDisplayLayer>> DrawableLayers;
 
 enum Cursor {
     Arrow = SDL_SYSTEM_CURSOR_ARROW,

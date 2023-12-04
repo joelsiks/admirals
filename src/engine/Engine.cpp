@@ -113,22 +113,20 @@ void Engine::StartGameLoop() {
         m_scene->OnStart(GetContext());
     }
 
-    std::vector<std::shared_ptr<IDisplayLayer<IInteractiveDisplayable>>> layers;
-    layers.reserve(m_layers.size() + 1);
+    std::vector<std::shared_ptr<IDisplayLayer>> layers(m_activeLayers.size() +
+                                                       1);
 
     // Start render loop
     bool quit = false;
     std::chrono::time_point<std::chrono::high_resolution_clock> lastTime =
         std::chrono::high_resolution_clock::now();
     while (!quit) {
-        layers.push_back(
-            std::dynamic_pointer_cast<IDisplayLayer<IInteractiveDisplayable>>(
-                m_scene));
+        layers[0] = std::dynamic_pointer_cast<IDisplayLayer>(m_scene);
 
-        for (const auto &layer : m_layers) {
-            layers.push_back(
-                std::dynamic_pointer_cast<
-                    IDisplayLayer<IInteractiveDisplayable>>(layer.second));
+        size_t i = 1;
+        for (const auto &layerIdx : m_activeLayers) {
+            layers[i] = m_layers[layerIdx];
+            i++;
         }
 
         const auto now = std::chrono::high_resolution_clock::now();

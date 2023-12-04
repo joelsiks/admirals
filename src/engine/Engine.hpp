@@ -26,10 +26,11 @@ public:
 
     inline const EngineContext &GetContext() const { return m_context; }
 
-    inline bool AddLayer(size_t idx,
-                         std::shared_ptr<IDisplayLayer<UI::Element>> layer) {
+    inline bool AddLayer(size_t idx, std::shared_ptr<IDisplayLayer> layer,
+                         bool active = true) {
         const bool wasInserted = m_layers.emplace(idx, std::move(layer)).second;
-        if (wasInserted) {
+
+        if (wasInserted && active) {
             m_activeLayers.insert(idx);
         }
 
@@ -47,7 +48,7 @@ public:
         return elementsRemoved != 0;
     }
 
-    inline std::shared_ptr<IDisplayLayer<UI::Element>> GetLayer(size_t idx) {
+    inline std::shared_ptr<IDisplayLayer> GetLayer(size_t idx) {
         return m_layers[idx];
     }
 
@@ -141,7 +142,7 @@ private:
 
     // Drawables
     std::shared_ptr<Scene> m_scene;
-    std::map<size_t, std::shared_ptr<IDisplayLayer<UI::Element>>> m_layers;
+    std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;
     std::unordered_set<size_t> m_activeLayers;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
