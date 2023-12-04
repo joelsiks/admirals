@@ -69,15 +69,6 @@ std::deque<Vector2> Scene::FindPath(
                                  checkedOrders, detailLevel);
 }
 
-/*
-std::unordered_set<std::shared_ptr<scene::GameObject>>
-Scene::FindNearbyEntities(const Vector2 &position, const float range) {
-    const Rect bounds = Rect(position, range);
-    const auto result = m_quadtree.GetObjectsInArea(bounds);
-    return static_cast<std::unordered_set<std::shared_ptr<scene::GameObject>>>(
-        result);
-}*/
-
 void Scene::OnStart(const EngineContext &ctx) {
     m_isInitialized = true;
 

@@ -47,9 +47,6 @@ public:
                                  const std::unordered_set<float> &checkedOrders,
                                  float detailLevel) const;
 
-    // std::unordered_set<std::shared_ptr<scene::GameObject>>
-    // FindNearbyEntities(const Vector2 &position, const float range);
-
 private:
     OrderedCollection<GameObject> m_objects;
     QuadTree m_quadtree;
