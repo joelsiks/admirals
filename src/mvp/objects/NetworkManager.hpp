@@ -17,6 +17,11 @@ public:
     void OnUpdate(const EngineContext &ctx) override;
     void Render(const EngineContext &ctx) const override {}
 
+    bool StartAndConnectToServer(uint16_t port, const size_t maxTries);
+
+    bool ConnectToServer(const std::string &ip, uint16_t port,
+                         const size_t maxTries);
+
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);
     void AttackShip(uint16_t id, uint16_t targetId);
@@ -31,6 +36,9 @@ private:
 
     GameManager &m_gameManager;
     uint32_t m_playerId = 0;
+
+    bool m_isHost = false;
+    std::thread m_serverThread;
 
     bool m_debug = false;
 };

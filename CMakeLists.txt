@@ -53,6 +53,7 @@ set(MVP_SOURCES
     src/mvp/objects/Ship.cpp
     src/mvp/objects/GameManager.cpp
     src/mvp/objects/NetworkManager.cpp
+    src/mvp/MvpServer.cpp
 )
 
 set(INCLUDE_DIRS
@@ -104,16 +105,16 @@ target_include_directories(mvp PRIVATE
 )
 
 # Create mvp server
-add_executable(mvp_server src/mvp/mvpserver.cpp)
+add_executable(mvp_server src/mvp/DedicatedServer.cpp src/mvp/MvpServer.cpp)
 target_link_libraries(mvp_server engine)
 target_include_directories(mvp_server PRIVATE
     "src/mvp/"
 )
 
 # Create test executable
-add_executable(renderer_test src/test/renderer.test.cpp)
-target_link_libraries(renderer_test engine)
-target_include_directories(renderer_test PRIVATE 
+add_executable(ui_test src/test/ui.test.cpp)
+target_link_libraries(ui_test engine)
+target_include_directories(ui_test PRIVATE 
     "src/test/"
 )
 
@@ -153,8 +154,8 @@ target_include_directories(scene_test PRIVATE
 )
 
 # Copy SDL2.dll to the output directory after the executable is built
-add_custom_command(TARGET renderer_test POST_BUILD
+add_custom_command(TARGET ui_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SDL2_DLL}"
-        $<TARGET_FILE_DIR:renderer_test>
+        $<TARGET_FILE_DIR:ui_test>
 )

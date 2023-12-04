@@ -7,7 +7,9 @@ using namespace admirals;
 using namespace admirals::scene;
 
 void Scene::AddObject(std::shared_ptr<GameObject> object) {
+    const std::string key = object->name();
     this->m_objects.Insert(std::move(object));
+    m_insertedSet.insert(key);
 }
 
 void Scene::Render(const EngineContext &ctx) const {
@@ -97,9 +99,20 @@ void Scene::OnStart(const EngineContext &ctx) {
     for (const auto &object : this->m_objects) {
         object->OnStart(ctx);
     }
+
+    m_insertedSet.clear();
 }
 
 void Scene::OnUpdate(const EngineContext &ctx) {
+    for (const std::string &key : m_insertedSet) {
+        const auto object = m_objects.Find(key);
+        if (object != nullptr) {
+            object->OnStart(ctx);
+        }
+    }
+
+    m_insertedSet.clear();
+
     for (const auto &object : this->m_objects) {
         object->OnUpdate(ctx);
     }

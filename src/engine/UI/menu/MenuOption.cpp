@@ -94,9 +94,30 @@ void CycleOption::Cycle() {
 
 size_t CycleOption::CurrentIndex() const { return m_currentOption; }
 
-InputOption::InputOption(const std::string &name, float order,
-                         const std::string &placeholder)
-    : MenuOption(name, order, ""), m_placeholderText(placeholder) {}
+InputOption::InputOption(
+    const std::string &name, float order,
+    events::EventSystem<events::KeyPressEventArgs> &eventHandler,
+    const std::string &initString, const std::string &placeholder)
+    : MenuOption(name, order, initString), m_placeholderText(placeholder),
+      m_keyPressEventHandler(eventHandler) {
+
+    onClick.Subscribe([](void *sender, events::MouseClickEventArgs &args) {
+        if (args.pressed) {
+            auto *inputOption = static_cast<menu::InputOption *>(sender);
+            inputOption->ToggleActive();
+
+            if (inputOption->IsActive()) {
+                inputOption->m_keyPressEventHandler.Subscribe(
+                    BIND_EVENT_HANDLER_FROM(
+                        menu::InputOption::HandleKeyPressEvent, inputOption));
+            } else {
+                inputOption->m_keyPressEventHandler.Unsubscribe(
+                    BIND_EVENT_HANDLER_FROM(
+                        menu::InputOption::HandleKeyPressEvent, inputOption));
+            }
+        }
+    });
+}
 
 void InputOption::Render(const EngineContext &ctx) const {
     if (m_isActive || m_shouldDrawBackground) {
@@ -107,12 +128,37 @@ void InputOption::Render(const EngineContext &ctx) const {
                                  m_textColor, GetOptionText());
 }
 
+void InputOption::OnMouseEnter(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = true;
+    renderer::Renderer::SetCursor(renderer::Cursor::IBeam);
+}
+
+void InputOption::OnMouseLeave(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = false;
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+}
+
+void InputOption::OnMouseMove(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = true;
+    renderer::Renderer::SetCursor(renderer::Cursor::IBeam);
+}
+
+void InputOption::OnHidden() {
+    renderer::Renderer::SetCursor(renderer::Cursor::Arrow);
+
+    if (m_isActive) {
+        m_keyPressEventHandler.Unsubscribe(BIND_EVENT_HANDLER_FROM(
+            menu::InputOption::HandleKeyPressEvent, this));
+        m_isActive = false;
+    }
+}
+
 std::string InputOption::GetOptionText() const {
-    if (m_inputText.length() == 0) {
+    if (m_text.length() == 0) {
         return m_placeholderText;
     }
 
-    return m_inputText;
+    return m_text;
 }
 
 void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
@@ -121,11 +167,16 @@ void InputOption::HandleKeyPressEvent(void *, events::KeyPressEventArgs &args) {
     }
 
     // TODO: This only handles ASCII-values...
-    if (args.key == SDLK_BACKSPACE && m_inputText.length() > 0) {
-        m_inputText.pop_back();
+    if (args.key == SDLK_BACKSPACE && m_text.length() > 0) {
+        m_text.pop_back();
         args.handled = true;
     } else if (args.key >= 32 && args.key <= 126) {
-        m_inputText.push_back(static_cast<char>(args.key));
+        m_text.push_back(static_cast<char>(args.key));
         args.handled = true;
+    }
+
+    if (args.handled) {
+        events::TextEventArgs args(m_text);
+        onInput.Invoke(this, args);
     }
 }

@@ -13,29 +13,16 @@ GameManager::~GameManager() {}
 
 void GameManager::OnStart(const EngineContext &) { srand(time(NULL)); }
 
-void GameManager::OnUpdate(const EngineContext &) {
-    if (!m_gameStarted) {
-        return;
-    }
+void GameManager::OnUpdate(const EngineContext &) {}
 
-    // Tests for actions
-    // if (m_turn % 10 == 5 && !m_testActionDone) {
-    //     m_networkManager->BuyShip(ShipType::Destroyer);
-    //     m_testActionDone = true;
-    // }
+bool GameManager::StartAndConnectToServer(uint16_t port,
+                                          const size_t maxTries) {
+    return m_networkManager->StartAndConnectToServer(port, maxTries);
+}
 
-    // if (m_turn % 10 == 0 && m_testActionDone) {
-    //     auto it = std::find_if(
-    //         m_ships.begin(), m_ships.end(),
-    //         [this](const std::pair<uint16_t, std::shared_ptr<Ship>> &pair) {
-    //             return pair.second->GetPlayerId() == m_playerId;
-    //         });
-
-    //     uint16_t id = it->second->GetId();
-
-    //     m_networkManager->MoveShip(id, rand() % 10, rand() % 10);
-    //     m_testActionDone = false;
-    // }
+bool GameManager::ConnectToServer(const std::string &ip, uint16_t port,
+                                  const size_t maxTries) {
+    return m_networkManager->ConnectToServer(ip, port, maxTries);
 }
 
 void GameManager::StopGame() {
@@ -60,7 +47,6 @@ void GameManager::MoveShip(uint16_t id, uint8_t x, uint8_t y) {
         return;
     }
 
-    printf("MoveShip\n");
     m_networkManager->MoveShip(id, x, y);
 }
 
@@ -76,7 +62,6 @@ void GameManager::AttackShip(uint16_t id, uint16_t targetId) {
 
 void GameManager::ShipChangeEventHandler(void *sender,
                                          admirals::events::EventArgs) {
-    printf("ShipChangeEventHandler\n");
     const Ship *ship = static_cast<Ship *>(sender);
     switch (ship->GetAction()) {
     case ShipAction::Move: {

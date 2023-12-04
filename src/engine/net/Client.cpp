@@ -16,9 +16,11 @@ bool Client::Connect(const std::string &host, const std::string &port) {
         m_connection = std::make_unique<Connection>(
             Connection::Owner::CLIENT, m_ioContext,
             asio::ip::tcp::socket(m_ioContext), m_incomingMessages);
-        m_connection->ConnectToServer(endpoints);
+        bool connected = m_connection->ConnectToServer(endpoints);
 
-        m_contextThread = std::thread([this]() { m_ioContext.run(); });
+        if (!m_contextThread.joinable() && connected) {
+            m_contextThread = std::thread([this]() { m_ioContext.run(); });
+        }
 
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;

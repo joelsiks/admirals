@@ -4,55 +4,59 @@
 using namespace admirals;
 
 // Vector 2
-Vector2::Vector2() {}
+Vector2::Vector2() noexcept {}
 
-Vector2::Vector2(float v) : Vector2(v, v) {}
+Vector2::Vector2(float v) noexcept : Vector2(v, v) {}
 
-Vector2::Vector2(float x, float y) {
+Vector2::Vector2(float x, float y) noexcept {
     this->m_0 = x;
     this->m_1 = y;
 }
-Vector2::~Vector2() {}
+Vector2::~Vector2() noexcept {}
 
 // Vector 3
-Vector3::Vector3() {}
+Vector3::Vector3() noexcept {}
 
-Vector3::Vector3(float v) : Vector3(v, v, v) {}
+Vector3::Vector3(float v) noexcept : Vector3(v, v, v) {}
 
-Vector3::Vector3(float x, float y, float z) : Vector2(x, y) { this->m_2 = z; }
+Vector3::Vector3(float x, float y, float z) noexcept : Vector2(x, y) {
+    this->m_2 = z;
+}
 
-Vector3::~Vector3() {}
+Vector3::~Vector3() noexcept {}
 
 // Vector 4
-Vector4::Vector4() {}
+Vector4::Vector4() noexcept {}
 
-Vector4::Vector4(float v) : Vector4(v, v, v, v) {}
+Vector4::Vector4(float v) noexcept : Vector4(v, v, v, v) {}
 
-Vector4::Vector4(float x, float y, float z, float w) : Vector3(x, y, z) {
+Vector4::Vector4(float x, float y, float z, float w) noexcept
+    : Vector3(x, y, z) {
     this->m_3 = w;
 }
 
-Vector4::~Vector4() {}
+Vector4::~Vector4() noexcept {}
 
 // Rect
 
-Rect::Rect(const Vector2 &position, const Vector2 &size)
+Rect::Rect(const Vector2 &position, const Vector2 &size) noexcept
     : Rect(position.x(), position.y(), size.x(), size.y()) {}
 
-Rect::Rect(float x, float y, float w, float h)
+Rect::Rect(float x, float y, float w, float h) noexcept
     : m_x(x), m_y(y), m_w(w), m_h(h) {}
 
-Rect::Rect() : Rect(0, 0, 0, 0) {}
-Rect::~Rect() {}
+Rect::Rect() noexcept : Rect(0, 0, 0, 0) {}
+Rect::~Rect() noexcept {}
 
 // Color
-Color::Color() {}
+Color::Color() noexcept {}
 
-Color::Color(float r, float g, float b, float a) : Vector4(r, g, b, a) {}
+Color::Color(float r, float g, float b, float a) noexcept
+    : Vector4(r, g, b, a) {}
 
-Color::Color(const Vector4 &vec) : Vector4(vec) {}
+Color::Color(const Vector4 &vec) noexcept : Vector4(vec) {}
 
-Color::~Color() {}
+Color::~Color() noexcept {}
 
 Color Color::FromHEX(const char *hex) {
     const Color c = Color();
@@ -76,7 +80,7 @@ const Color Color::GREY = Color::FromRGBA(80, 80, 80, 255);
 const Color Color::LIGHT_GREY = Color::FromRGBA(180, 180, 180, 255);
 
 // Texture
-Texture::Texture(VK2DTexture m_texture) : m_texture(m_texture) {}
+Texture::Texture(VK2DTexture m_texture) noexcept : m_texture(m_texture) {}
 
 Texture::~Texture() { vk2dTextureFree(m_texture); }
 
