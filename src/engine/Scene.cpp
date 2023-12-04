@@ -69,29 +69,14 @@ std::deque<Vector2> Scene::FindPath(
                                  checkedOrders, detailLevel);
 }
 
-std::deque<std::shared_ptr<admirals::scene::GameObject>>
-Scene::FindNearbyEntities(const Vector2 &currentPosition,
-                          const Vector2 &cellsize,
-                          const std::unordered_set<float> &checkedOrders) {
-    // checks all eight cells around the current Position.
-    const Rect bounds =
-        Rect(currentPosition - cellsize, currentPosition + cellsize);
-    // const Rect bounds = Rect(Vector2(), m_quadtree.GetSize());
-
-    if (!bounds.Contains(currentPosition)) {
-        return std::deque<std::shared_ptr<admirals::scene::GameObject>>();
-    }
-
-    std::deque<std::shared_ptr<admirals::scene::GameObject>> entityList;
-    for (const auto &object : m_quadtree.GetObjectsInArea(bounds)) {
-        const auto &o = std::dynamic_pointer_cast<scene::GameObject>(object);
-        if (checkedOrders.contains(o->order()) &&
-            bounds.Overlaps(o->GetBoundingBox())) {
-            entityList.push_back(o);
-        }
-    }
-    return entityList;
-}
+/*
+std::unordered_set<std::shared_ptr<scene::GameObject>>
+Scene::FindNearbyEntities(const Vector2 &position, const float range) {
+    const Rect bounds = Rect(position, range);
+    const auto result = m_quadtree.GetObjectsInArea(bounds);
+    return static_cast<std::unordered_set<std::shared_ptr<scene::GameObject>>>(
+        result);
+}*/
 
 void Scene::OnStart(const EngineContext &ctx) {
     m_isInitialized = true;

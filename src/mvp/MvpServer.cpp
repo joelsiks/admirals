@@ -79,6 +79,10 @@ void MvpServer::ProcessTurn() {
     ProcessShips(m_player1.ships);
     ProcessShips(m_player2.ships);
 
+    // Remove ships with 0 health
+    ProcessDeadShips(m_player1.ships);
+    ProcessDeadShips(m_player2.ships);
+
     // Broadcast state
     BroadcastState();
 }
@@ -241,17 +245,49 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
     ship.attackTargetID = targetID;
 }
 
+void MvpServer::DamageNearybyShips(admirals::mvp::ShipData &ship) {
+    std::map<uint16_t, admirals::mvp::ShipData> &enemyShips =
+        ship.owner == m_player1.id ? m_player2.ships : m_player1.ships;
+    for (int y = ship.y - 1; y < ship.y + 1; y++) {
+        if (y < 0 || y >= BOARD_SIZE) {
+            continue;
+        }
+
+        for (int x = ship.x - 1; x < ship.x + 1; x++) {
+            if (x < 0 || x >= BOARD_SIZE) {
+                continue;
+            }
+
+            const uint16_t shipId = m_board[x][y];
+            if (auto it = enemyShips.find(shipId); it != enemyShips.end()) {
+                auto *enemy = &it->second;
+                if (enemy->health < ShipInfoMap[ship.type].Damage) {
+                    enemy->health = 0;
+                } else {
+                    enemy->health -= ShipInfoMap[ship.type].Damage;
+                }
+            }
+        }
+    }
+}
+
 void MvpServer::ProcessShips(
     std::map<uint16_t, admirals::mvp::ShipData> &ships) {
     // TODO: Process ship actions correctly
     for (auto &ship : ships) {
-        if (ship.second.moveData.actionX == ship.second.x &&
-            ship.second.moveData.actionY == ship.second.y) {
+        if (ship.second.action == ShipAction::Move &&
+            ship.second.moveData.actionY == ship.second.y &&
+            ship.second.moveData.actionX == ship.second.x) {
             ship.second.action = ShipAction::None;
             continue;
         }
-
-        if (ship.second.action == ShipAction::Move) {
+        switch (ship.second.action) {
+        case ShipAction::None:
+            DamageNearybyShips(ship.second);
+            break;
+        case ShipAction::Attack:
+            break;
+        case ShipAction::Move:
             if (m_board[ship.second.moveData.actionX]
                        [ship.second.moveData.actionY] != 0) {
                 continue;
@@ -260,6 +296,20 @@ void MvpServer::ProcessShips(
             ship.second.x = ship.second.moveData.actionX;
             ship.second.y = ship.second.moveData.actionY;
             m_board[ship.second.x][ship.second.y] = ship.second.id;
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void MvpServer::ProcessDeadShips(
+    std::map<uint16_t, admirals::mvp::ShipData> &ships) {
+    for (auto it = ships.begin(); it != ships.end(); it++) {
+        if (it->second.health == 0) {
+            const auto owner = it->second.owner;
+            it = ships.erase(it);
+            (owner == m_player1.id ? m_player1 : m_player2).numShips--;
         }
     }
 }

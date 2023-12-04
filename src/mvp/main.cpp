@@ -64,7 +64,7 @@ void CreateBases(const Texture &atlas) {
         Rect(static_cast<float>(GameData::GridCells) - 1,
              static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
              GameData::CellSize));
-    const ShipData data = {0, 1, 3, 3, ShipType::Cruiser, 0};
+    // const ShipData data = {0, 1, 3, 3, ShipType::Cruiser, 0};
 }
 
 void CreateUI(const Texture &atlas,

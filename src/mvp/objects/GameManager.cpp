@@ -91,10 +91,13 @@ void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
 }
 
 void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
+    std::unordered_set<uint16_t> keepSet;
     for (const auto &[_, ship] : ships) {
         if (ship.id == 0) {
             continue;
         }
+
+        keepSet.insert(ship.id);
 
         auto it = m_ships.find(ship.id);
 
@@ -116,29 +119,13 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
     }
 
     // Remove ships in m_ships that are not in ships
-    std::map<uint16_t, std::shared_ptr<admirals::mvp::objects::Ship>>
-        removedShips;
-    for (auto it = m_ships.begin(); it != m_ships.end();) {
-        const uint16_t id = it->first;
-
-        if (ships.find(id) == ships.end()) {
-            if (m_debug) {
-                printf("Removing ship %s\n", it->second->name().c_str());
-            }
-            removedShips.emplace(*it);
-            it++;
-            // m_ships.erase(it);
-        } else {
-            it++;
+    for (auto it = m_ships.begin(); it != m_ships.end(); it++) {
+        const auto ship = it->second;
+        if (!keepSet.contains(ship->GetID())) {
+            if (m_debug)
+                printf("Removing ship %d\n", ship->GetID());
+            GameData::engine->GetScene()->RemoveObject(it->second);
+            it = m_ships.erase(it);
         }
-    }
-    for (auto it = removedShips.begin(); it != removedShips.end();) {
-        // how do we know if the current scene have the object?
-        it->second->onChanged -=
-            BIND_EVENT_HANDLER(GameManager::ShipChangeEventHandler);
-        // const auto &o = std::dynamic_pointer_cast<GameObject>(it->second);
-        GameData::engine->GetScene()->RemoveObject(it->second);
-        m_ships.erase(it->first);
-        it++;
     }
 }

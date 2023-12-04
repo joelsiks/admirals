@@ -45,7 +45,9 @@ private:
                   admirals::net::Message &message);
     void AttackShip(std::shared_ptr<admirals::net::Connection> client,
                     admirals::net::Message &message);
+    void DamageNearybyShips(admirals::mvp::ShipData &ship);
     void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
+    void ProcessDeadShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void BroadcastState();
 
     uint16_t m_turn = 0;

@@ -47,9 +47,8 @@ public:
                                  const std::unordered_set<float> &checkedOrders,
                                  float detailLevel) const;
 
-    std::deque<std::shared_ptr<admirals::scene::GameObject>>
-    FindNearbyEntities(const Vector2 &currentPosition, const Vector2 &cellsize,
-                       const std::unordered_set<float> &checkedOrders);
+    // std::unordered_set<std::shared_ptr<scene::GameObject>>
+    // FindNearbyEntities(const Vector2 &position, const float range);
 
 private:
     OrderedCollection<GameObject> m_objects;

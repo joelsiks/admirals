@@ -35,6 +35,7 @@ struct ShipInfo {
 
 inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
     // ShipType, {damage, health, cost}
+    {ShipType::None, {0, 0, 0}},
     {ShipType::Cruiser, {90, 500, 10}},
     {ShipType::Destroyer, {180, 300, 12}},
 };
@@ -42,13 +43,11 @@ inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
 struct ShipData {
     ShipData() {}
     ShipData(uint16_t id, uint8_t type, uint8_t x, uint8_t y, uint16_t health,
-             uint16_t damage, uint8_t owner)
-        : id(id), type(type), x(x), y(y), health(health), damage(damage),
-          owner(owner) {}
+             uint8_t owner)
+        : id(id), type(type), x(x), y(y), health(health), owner(owner) {}
 
     uint16_t id = 0;
     uint16_t health = 0;
-    uint16_t damage = 0;
     uint8_t x = 0;
     uint8_t y = 0;
     uint8_t type = ShipType::None;
