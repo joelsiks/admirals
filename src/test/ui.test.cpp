@@ -7,6 +7,7 @@
 #include "Engine.hpp"
 #include "GameObject.hpp"
 #include "UI/Button.hpp"
+#include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
 #include "UI/menu/Menu.hpp"
 #include "UI/menu/MenuOption.hpp"
@@ -109,26 +110,34 @@ std::shared_ptr<menu::Menu> CreateEscapeMenu(Engine &engine,
     return escapeMenu;
 }
 
-void CreateUIElements(Engine &engine,
-                      std::shared_ptr<TextureObject> textureObj) {
+std::shared_ptr<DisplayLayout>
+CreateTestUI(std::shared_ptr<TextureObject> textureObj) {
+    auto testUI = std::make_shared<DisplayLayout>();
+
     const Vector2 elementSize = Vector2(300, 40);
 
-    auto btn1 = engine.MakeUIElement<Button>(
+    auto btn1 = std::make_shared<Button>(
         "btn1", 0, "Move Image Left", elementSize, Color::BLACK, Color::WHITE);
     btn1->onClick.Subscribe(
         BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, textureObj));
+    testUI->AddDisplayable(btn1);
 
-    auto btn2 = engine.MakeUIElement<Button>(
+    auto btn2 = std::make_shared<Button>(
         "btn2", 0, "Move Image Right", elementSize, Color::BLACK, Color::WHITE);
     btn2->onClick.Subscribe(
         BIND_EVENT_HANDLER_FROM(TextureObject::ButtonClickHandler, textureObj));
+    testUI->AddDisplayable(btn2);
 
-    auto testText1 = engine.MakeUIElement<TextElement>(
+    auto testText1 = std::make_shared<TextElement>(
         "text1", 0, "Le", Vector2(32, 40), Color::BLACK);
-    auto testText2 = engine.MakeUIElement<TextElement>(
-        "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
     testText1->SetDisplayOrientation(DisplayOrientation::LowerLeft);
+    testUI->AddDisplayable(testText1);
+    auto testText2 = std::make_shared<TextElement>(
+        "text2", 0, "Right aligned", Vector2(220, 40), Color::BLACK);
     testText2->SetDisplayOrientation(DisplayOrientation::LowerRight);
+    testUI->AddDisplayable(testText2);
+
+    return testUI;
 }
 
 int main(int, char **) {
@@ -137,25 +146,29 @@ int main(int, char **) {
     Engine engine("UI Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
 
     const size_t escapeMenuIdx = 0;
+    const size_t testUIIdx = 1;
 
     auto escapeMenu = CreateEscapeMenu(engine, debug);
-    engine.AddLayer(
-        escapeMenuIdx,
-        std::dynamic_pointer_cast<IDisplayLayer<UI::Element>>(escapeMenu));
+    engine.AddLayer(escapeMenuIdx,
+                    std::dynamic_pointer_cast<IDisplayLayer>(escapeMenu),
+                    false);
+
+    auto texture =
+        engine.MakeGameObject<TextureObject>("image", "assets/admirals.png");
+    auto testUI = CreateTestUI(texture);
+    engine.AddLayer(testUIIdx,
+                    std::dynamic_pointer_cast<IDisplayLayer>(testUI));
 
     engine.onKeyPress.Subscribe(
-        [&engine, escapeMenuIdx](void *sender,
-                                 events::KeyPressEventArgs &args) {
+        [&engine, escapeMenuIdx, testUIIdx](void *sender,
+                                            events::KeyPressEventArgs &args) {
             auto *engine = static_cast<Engine *>(sender);
 
             if (args.key == SDLK_ESCAPE && args.isKeyUp) {
                 engine->ToggleLayer(escapeMenuIdx);
+                engine->ToggleLayer(testUIIdx);
             }
         });
-
-    auto texture =
-        engine.MakeGameObject<TextureObject>("image", "assets/admirals.png");
-    CreateUIElements(engine, texture);
 
     engine.StartGameLoop();
 
