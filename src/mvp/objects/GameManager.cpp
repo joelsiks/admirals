@@ -4,7 +4,8 @@
 
 using namespace admirals::mvp::objects;
 
-GameManager::GameManager(const std::string &name) : scene::GameObject(name) {
+GameManager::GameManager(const std::string &name, const Texture &atlas)
+    : scene::GameObject(name), m_atlas(atlas) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
 }
@@ -78,15 +79,28 @@ void GameManager::ShipChangeEventHandler(void *sender,
 
 void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
                               int enemyBaseHealth,
-                              const std::map<uint16_t, ShipData> &ships) {
+                              const std::map<uint16_t, ShipData> &ships,
+                              bool isTopPlayer) {
     if (coins != m_coins) {
-        CoinsChangesEventArgs e = CoinsChangesEventArgs(coins);
+        CoinsChangedEventArgs e = CoinsChangedEventArgs(coins);
         onCoinsChanged.Invoke(this, e);
         m_coins = coins;
     }
+    const auto playerBase = isTopPlayer ? m_baseTop : m_baseBottom;
+    const auto enemyBase = isTopPlayer ? m_baseBottom : m_baseTop;
+    if (m_baseHealth != baseHealth) {
+        m_baseHealth = baseHealth;
+        if (playerBase != nullptr) {
+            playerBase->SetHealth(static_cast<float>(baseHealth));
+        }
+    }
+    if (m_enemyBaseHealth != enemyBaseHealth) {
+        m_enemyBaseHealth = enemyBaseHealth;
+        if (enemyBase != nullptr) {
+            enemyBase->SetHealth(static_cast<float>(enemyBaseHealth));
+        }
+    }
     m_turn = turn;
-    m_baseHealth = baseHealth;
-    m_enemyBaseHealth = enemyBaseHealth;
     ModifyShips(ships);
 }
 
@@ -119,13 +133,15 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
     }
 
     // Remove ships in m_ships that are not in ships
-    for (auto it = m_ships.begin(); it != m_ships.end(); it++) {
+    for (auto it = m_ships.begin(); it != m_ships.end();) {
         const auto ship = it->second;
         if (!keepSet.contains(ship->GetID())) {
             if (m_debug)
                 printf("Removing ship %d\n", ship->GetID());
             GameData::engine->GetScene()->RemoveObject(it->second);
             it = m_ships.erase(it);
+        } else {
+            it++;
         }
     }
 }

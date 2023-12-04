@@ -4,7 +4,7 @@
 
 namespace admirals::mvp {
 
-const int GridCells = 10;
+const uint16_t BaseMaxHealth = 1000;
 
 namespace NetworkMessageTypes {
 enum NetworkMessageTypes : uint16_t {

@@ -22,6 +22,7 @@ public:
     inline static uint16_t playerId;
     static constexpr float SpriteSize = 64;
     static constexpr float CellSize = 64;
+    static constexpr float HealthBarSize = 10;
     static constexpr int GridCells = 10;
     static constexpr float GridSize = GameData::CellSize * GameData::GridCells;
     inline static const Rect GridArea =

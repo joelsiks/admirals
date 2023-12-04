@@ -1,4 +1,5 @@
 #pragma once
+#include "Base.hpp"
 #include "GameObject.hpp"
 #include "commontypes.hpp"
 #include "events/EventSystem.hpp"
@@ -9,9 +10,9 @@ namespace admirals::mvp::objects {
 
 class NetworkManager;
 
-class CoinsChangesEventArgs : public events::EventArgs {
+class CoinsChangedEventArgs : public events::EventArgs {
 public:
-    CoinsChangesEventArgs(int ctx) : coins(ctx) {}
+    CoinsChangedEventArgs(int ctx) : coins(ctx) {}
     const int coins;
 };
 
@@ -23,10 +24,10 @@ public:
 
 class GameManager : public scene::GameObject {
 public:
-    GameManager(const std::string &name);
+    GameManager(const std::string &name, const Texture &m_atlas);
     ~GameManager();
 
-    events::EventSystem<CoinsChangesEventArgs> onCoinsChanged;
+    events::EventSystem<CoinsChangedEventArgs> onCoinsChanged;
     events::EventSystem<PlayerIdChangedEventArgs> onPlayerIdChanged;
 
     void OnStart(const EngineContext &ctx) override;
@@ -50,12 +51,19 @@ public:
         onPlayerIdChanged.Invoke(this, args);
     }
 
+    void SetBaseTop(const std::shared_ptr<Base> &base) { m_baseTop = base; }
+
+    void SetBaseBottom(const std::shared_ptr<Base> &base) {
+        m_baseBottom = base;
+    }
+
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);
     void AttackShip(uint16_t id, uint16_t targetId);
 
     void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,
-                     const std::map<uint16_t, ShipData> &ships);
+                     const std::map<uint16_t, ShipData> &ships,
+                     bool isTopPlayer);
 
 private:
     void ModifyShips(const std::map<uint16_t, ShipData> &new_ships);
@@ -74,11 +82,12 @@ private:
 
     std::map<uint16_t, std::shared_ptr<Ship>> m_ships;
 
-    Texture m_atlas =
-        Texture::LoadFromPath("assets/admirals_texture_atlas.png");
+    const Texture &m_atlas;
     Vector2 m_cellSize = Vector2(GameData::CellSize);
 
     std::shared_ptr<NetworkManager> m_networkManager;
+    std::shared_ptr<Base> m_baseTop = nullptr;
+    std::shared_ptr<Base> m_baseBottom = nullptr;
 
     bool m_debug = true;
 };

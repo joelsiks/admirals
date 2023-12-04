@@ -102,8 +102,6 @@ void Ship::OnUpdate(const EngineContext &) {
 
 void Ship::OnClick(events::MouseClickEventArgs &args) {
     if (args.button == events::MouseButton::Left && args.pressed) {
-        printf("Ship (%d): Player id = %d, Selected = %d\n", GetID(),
-               GetPlayerId(), IsSelected());
         if (IsOwned()) {
             if (IsSelected()) {
                 DeSelect();
@@ -119,8 +117,6 @@ void Ship::OnClick(events::MouseClickEventArgs &args) {
     } else if (IsSelected() && args.button == events::MouseButton::Right &&
                args.pressed) {
         if (IsOwned()) {
-            printf("Ship (%d): Player id = %d, Selected = %d, set to attack\n",
-                   GetID(), GetPlayerId(), IsSelected());
             SetAction(ShipAction::Attack);
             DeSelect();
         }
@@ -178,8 +174,24 @@ void Ship::Render(const EngineContext &ctx) const {
                                                  Color::WHITE);
     }
 
+    const auto position = GetPosition();
+    const auto size = GetSize();
+
+    // Healthbar
+    const float healthPercentage =
+        static_cast<float>(GetHealth()) /
+        static_cast<float>(ShipInfoMap[GetType()].Health);
+    const Vector2 healthOrigin =
+        position + Vector2(0, size.y() - GameData::HealthBarSize);
+    renderer::Renderer::DrawRectangle(
+        healthOrigin, Vector2(size.x(), GameData::HealthBarSize), Color::WHITE);
+    renderer::Renderer::DrawRectangle(
+        healthOrigin + Vector2(size.x() * (1 - healthPercentage), 0),
+        Vector2(size.x() * healthPercentage, GameData::HealthBarSize),
+        Color::BLACK);
+
     if (!m_path.empty()) {
-        const Vector2 origin = GetPosition() + HalfCellSize;
+        const Vector2 origin = position + HalfCellSize;
         Vector2 position = origin;
 
         for (const Vector2 &part : m_path) {
