@@ -136,9 +136,8 @@ public:
     inline void Insert(const std::shared_ptr<T> object) {
         const std::string key = object->name();
         if (!m_objects.contains(key)) {
-            const auto res = m_objects[key] =
-                std::move(object); // object stored in m_objects
-            m_ordered.insert(key); // object name is sorted
+            m_objects[key] = std::move(object); // object stored in m_objects
+            m_ordered.insert(key);              // object name is sorted
         }
     }
 

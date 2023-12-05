@@ -24,12 +24,15 @@ public:
 
     virtual void OnHidden() override;
 
-    inline void SetBackgroundColor(const Color &color) { m_bgColor = color; }
+    inline void SetBackgroundColor(const Color &color) {
+        m_bgColor = color;
+        m_bgColorFaded = color * Vector4(1, 1, 1, 0.75);
+    }
 
     inline void SetForegroundColor(const Color &color) { m_fgColor = color; }
 
 protected:
-    Color m_bgColor, m_fgColor;
+    Color m_bgColor, m_bgColorFaded, m_fgColor;
     bool m_shouldFadeBackground = false;
 };
 
