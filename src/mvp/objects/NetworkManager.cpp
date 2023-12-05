@@ -134,11 +134,15 @@ void NetworkManager::HandleMessages() {
 }
 
 void NetworkManager::ReadyUpResponse(Message &msg) {
+    bool isTopPlayer;
+    msg >> isTopPlayer;
+
     uint32_t playerId;
     msg >> playerId;
 
     m_playerId = playerId;
     m_gameManager.SetPlayerId(playerId);
+    m_gameManager.SetIsTopPlayer(isTopPlayer);
 
     if (m_debug) {
         printf("ReadyConfirmation: %d\n", playerId);
@@ -158,40 +162,41 @@ void NetworkManager::GameStop() {
 }
 
 void NetworkManager::UpdateBoard(Message &msg) {
-    uint8_t player1Ships;
-    uint8_t player2Ships;
-    msg >> player1Ships >> player2Ships;
+    uint8_t playerTopShips;
+    uint8_t playerBottomShips;
+    msg >> playerBottomShips >> playerTopShips;
 
     std::map<uint16_t, ShipData> ships;
-    for (int i = 0; i < player1Ships + player2Ships; i++) {
+    for (int i = 0; i < playerTopShips + playerBottomShips; i++) {
         ShipData ship;
         msg >> ship;
         ships[ship.id] = ship;
     }
 
     uint16_t turn;
-    uint16_t player1Coins;
-    uint16_t player2Coins;
-    uint16_t player1BaseHealth;
-    uint16_t player2BaseHealth;
-    msg >> player2BaseHealth >> player1BaseHealth >> player2Coins >>
-        player1Coins >> turn;
+    uint16_t playerTopCoins;
+    uint16_t playerBottomCoins;
+    uint16_t playerTopBaseHealth;
+    uint16_t playerBottomBaseHealth;
+    msg >> playerBottomBaseHealth >> playerTopBaseHealth >> playerBottomCoins >>
+        playerTopCoins >> turn;
 
     const bool isPlayer1 = m_playerId % 2 == 1;
-    const int player_coins = isPlayer1 ? player1Coins : player2Coins;
+    const int player_coins = isPlayer1 ? playerTopCoins : playerBottomCoins;
 
-    const int base_health = isPlayer1 ? player1BaseHealth : player2BaseHealth;
+    const int base_health =
+        isPlayer1 ? playerTopBaseHealth : playerBottomBaseHealth;
     const int enemy_base_health =
-        isPlayer1 ? player2BaseHealth : player1BaseHealth;
+        isPlayer1 ? playerBottomBaseHealth : playerTopBaseHealth;
 
     if (m_debug) {
         printf("Turn: %d\n", turn);
-        printf("Player 1 coins: %d\tPlayer 2 coins: %d\n", player1Coins,
-               player2Coins);
-        printf("Player 1 ships: %d\tPlayer 2 ships: %d\n", player1Ships,
-               player2Ships);
+        printf("Player 1 coins: %d\tPlayer 2 coins: %d\n", playerTopCoins,
+               playerBottomCoins);
+        printf("Player 1 ships: %d\tPlayer 2 ships: %d\n", playerTopShips,
+               playerBottomShips);
         printf("Player 1 base health: %d\tPlayer 2 base health: %d\n",
-               player1BaseHealth, player2BaseHealth);
+               playerTopBaseHealth, playerBottomBaseHealth);
     }
 
     m_gameManager.UpdateBoard(turn, player_coins, base_health,

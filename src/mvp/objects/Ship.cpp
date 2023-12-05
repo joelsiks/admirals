@@ -54,39 +54,36 @@ void Ship::HandleAction() {
             onChanged.Invoke(this, e);
         }
     } break;
+    case ShipAction::Attack: {
+        // TODO: Implement
+        if (!IsSelected()) {
+            m_path.clear();
+        }
+    } break;
     default:
         break;
     }
 }
 
-void Ship::OnStart(const EngineContext &) {
-    // if (IsOwned()) {
-    //     GameData::engine->onMouseClick +=
-    //     BIND_EVENT_HANDLER(Ship::HandleClick);
-    // }
-}
-
 void Ship::OnUpdate(const EngineContext &) {
-
     if (IsSelected()) {
         m_path = GameData::engine->GetScene()->FindPath(
             GetPosition(), GameData::mousePosition, GameData::CellSize,
             {1, 2, 3}, GameData::CellSize);
     }
-
     HandleAction();
 }
 
 void Ship::OnClick(events::MouseClickEventArgs &args) {
     if (args.button == events::MouseButton::Left && args.pressed) {
-        printf("Ship (%d): Player id = %d, Selected = %d\n", GetID(),
-               GetPlayerId(), IsSelected());
         if (IsOwned()) {
             if (IsSelected()) {
+                printf("Ship (%d): Deselected...\n", GetID());
                 DeSelect();
                 GameData::engine->onMouseClick -=
                     BIND_EVENT_HANDLER(Ship::HandleClick);
             } else {
+                printf("Ship (%d): Selected...\n", GetID());
                 Select();
                 GameData::engine->onMouseClick +=
                     BIND_EVENT_HANDLER(Ship::HandleClick);
@@ -147,10 +144,26 @@ void Ship::Render(const EngineContext &ctx) const {
                                                  Color::WHITE);
     }
 
-    if (!m_path.empty()) {
-        const Vector2 origin = GetPosition() + HalfCellSize;
-        Vector2 position = origin;
+    const auto position = GetPosition();
+    const auto size = GetSize();
 
+    // HealthBar
+    const float healthPercentage =
+        static_cast<float>(GetHealth()) /
+        static_cast<float>(ShipInfoMap[GetType()].Health);
+    const Vector2 healthOrigin =
+        position + Vector2(0, size.y() - GameData::HealthBarSize);
+    renderer::Renderer::DrawRectangle(
+        healthOrigin, Vector2(size.x(), GameData::HealthBarSize), Color::WHITE);
+    renderer::Renderer::DrawRectangle(
+        healthOrigin + Vector2(size.x() * (1 - healthPercentage), 0),
+        Vector2(size.x() * healthPercentage, GameData::HealthBarSize),
+        Color::BLACK);
+
+    if (!m_path.empty()) {
+        const Vector2 origin = position + HalfCellSize;
+        Vector2 position = origin;
+        // Draw path
         for (const Vector2 &part : m_path) {
             const Vector2 newPosition = part + GameData::CellSize / 2;
             renderer::Renderer::DrawLine(position, newPosition, Color::WHITE);

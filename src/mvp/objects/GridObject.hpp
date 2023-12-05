@@ -8,7 +8,7 @@ class GridObject : public scene::GameObject {
     using scene::GameObject::GameObject; // Inherit constructors
 
 public:
-    inline Rect GetBoundingBox() const override {
+    virtual inline Rect GetBoundingBox() const override {
         return Rect(GetPosition(), GetSize());
     };
 
@@ -16,25 +16,26 @@ public:
         return ConvertPositionGridToWorld(m_boundingBox.Position());
     };
 
+    virtual inline Vector2 GetSize() const override {
+        return m_boundingBox.Size() * GetGridScale();
+    };
+
     static inline float GetGridScale() {
         const Vector2 windowSize = GameData::engine->GetWindowSize();
-        const float dim =
-            std::min(windowSize.x() + GameData::CellSize * 2, windowSize.y());
-        return std::max<float>(0, dim) / GameData::TotalHeight;
+        return GetGridScale(windowSize);
     }
 
     static inline Vector2 GetGridOffset() {
         const Vector2 windowSize = GameData::engine->GetWindowSize();
-        const float scale = GetGridScale();
-        return (windowSize -
-                Vector2(GameData::GridSize, GameData::TotalHeight) * scale) /
-               2.f;
+        const float scale = GetGridScale(windowSize);
+        return GetGridOffset(windowSize, scale);
     }
 
     static inline Vector2
     ConvertPositionGridToWorld(const Vector2 &gridPosition) {
-        const float scale = GetGridScale();
-        const Vector2 offset = GetGridOffset();
+        const Vector2 windowSize = GameData::engine->GetWindowSize();
+        const float scale = GetGridScale(windowSize);
+        const Vector2 offset = GetGridOffset(windowSize, scale);
         return offset + (GameData::GridArea.Position() +
                          gridPosition * GameData::CellSize) *
                             scale;
@@ -42,16 +43,27 @@ public:
 
     static inline Vector2
     ConvertPositionWorldToGrid(const Vector2 &worldPosition) {
-        const float scale = GetGridScale();
-        const Vector2 offset = GetGridOffset();
+        const Vector2 windowSize = GameData::engine->GetWindowSize();
+        const float scale = GetGridScale(windowSize);
+        const Vector2 offset = GetGridOffset(windowSize, scale);
         const Vector2 res = (((worldPosition - offset) / scale) -
                              GameData::GridArea.Position()) /
                             GameData::CellSize;
         return res;
     }
 
-    virtual inline Vector2 GetSize() const override {
-        return m_boundingBox.Size() * GetGridScale();
-    };
+private:
+    static inline float GetGridScale(const Vector2 &windowSize) {
+        const float dim =
+            std::min(windowSize.x() + GameData::CellSize * 2, windowSize.y());
+        return std::max<float>(0, dim) / GameData::TotalHeight;
+    }
+
+    static inline Vector2 GetGridOffset(const Vector2 &windowSize,
+                                        float scale) {
+        return (windowSize -
+                Vector2(GameData::GridSize, GameData::TotalHeight) * scale) /
+               2.f;
+    }
 };
 } // namespace admirals::mvp::objects
