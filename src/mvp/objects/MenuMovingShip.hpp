@@ -2,6 +2,7 @@
 
 #include "objects/Ship.hpp"
 #include "objects/Sprite.hpp"
+#include "shared.hpp"
 
 namespace admirals::mvp::objects {
 
@@ -13,16 +14,15 @@ public:
           m_shipSpeed(shipSpeed) {}
 
     void OnUpdate(const EngineContext &ctx) override {
-        Vector2 position = this->GetPosition();
+        Sprite::OnUpdate(ctx);
 
-        float newX =
-            position.x() + m_shipSpeed * static_cast<float>(ctx.deltaTime);
-        if (newX > ctx.windowSize.x()) {
-            newX = -GetSize().x();
+        float newX = m_boundingBox.PositionX() +
+                     m_shipSpeed * static_cast<float>(ctx.deltaTime);
+        if (newX > static_cast<float>(GameData::GridCells)) {
+            newX = -1;
         }
 
-        position.SetX(newX);
-        this->SetPosition(position);
+        m_boundingBox.SetPositionX(newX);
     }
 
 private:

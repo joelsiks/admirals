@@ -1,4 +1,5 @@
 #pragma once
+#include "Base.hpp"
 #include "GameObject.hpp"
 #include "commontypes.hpp"
 #include "events/EventSystem.hpp"
@@ -9,18 +10,25 @@ namespace admirals::mvp::objects {
 
 class NetworkManager;
 
-class CoinsChangesEventArgs : public events::EventArgs {
+class CoinsChangedEventArgs : public events::EventArgs {
 public:
-    CoinsChangesEventArgs(int ctx) : coins(ctx) {}
+    CoinsChangedEventArgs(int ctx) : coins(ctx) {}
     const int coins;
+};
+
+class PlayerIdChangedEventArgs : public events::EventArgs {
+public:
+    PlayerIdChangedEventArgs(uint32_t id) : playerId(id) {}
+    const uint32_t playerId;
 };
 
 class GameManager : public scene::GameObject {
 public:
-    GameManager(const std::string &name);
+    GameManager(const std::string &name, const Texture &m_atlas);
     ~GameManager();
 
-    events::EventSystem<CoinsChangesEventArgs> onCoinsChanged;
+    events::EventSystem<CoinsChangedEventArgs> onCoinsChanged;
+    events::EventSystem<PlayerIdChangedEventArgs> onPlayerIdChanged;
 
     void OnStart(const EngineContext &ctx) override;
     void OnUpdate(const EngineContext &ctx) override;
@@ -37,10 +45,23 @@ public:
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }
-    void SetPlayerId(uint32_t id) { m_playerId = id; }
+    void SetPlayerId(uint32_t id) {
+        m_playerId = id;
+        PlayerIdChangedEventArgs args(m_playerId);
+        onPlayerIdChanged.Invoke(this, args);
+    }
+
+    bool GetIsTopPlayer() const { return m_isTopPlayer; }
+    void SetIsTopPlayer(bool isTopPlayer) { m_isTopPlayer = isTopPlayer; }
+
+    void SetBases(const std::shared_ptr<Base> &baseTop,
+                  const std::shared_ptr<Base> &baseBottom) {
+        m_baseTop = baseTop;
+        m_baseBottom = baseBottom;
+    }
 
     void BuyShip(uint8_t type);
-    void MoveShip(uint16_t id, int x, int y);
+    void MoveShip(uint16_t id, uint8_t x, uint8_t y);
     void AttackShip(uint16_t id, uint16_t targetId);
 
     void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,
@@ -60,14 +81,16 @@ private:
     int m_baseHealth = 0;
     int m_enemyBaseHealth = 0;
     uint32_t m_playerId = 0;
+    bool m_isTopPlayer = false;
 
     std::map<uint16_t, std::shared_ptr<Ship>> m_ships;
 
-    Texture m_atlas =
-        Texture::LoadFromPath("assets/admirals_texture_atlas.png");
+    const Texture &m_atlas;
     Vector2 m_cellSize = Vector2(GameData::CellSize);
 
     std::shared_ptr<NetworkManager> m_networkManager;
+    std::shared_ptr<Base> m_baseTop = nullptr;
+    std::shared_ptr<Base> m_baseBottom = nullptr;
 
     bool m_debug = true;
 };

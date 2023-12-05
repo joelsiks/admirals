@@ -14,6 +14,7 @@
 
 using namespace admirals;
 using namespace admirals::UI;
+using namespace admirals::events;
 
 const int WINDOW_WIDTH = 600;
 const int WINDOW_HEIGHT = 600;
@@ -25,7 +26,7 @@ public:
         : scene::GameObject(name), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
 
-    void ButtonClickHandler(void *sender, events::MouseClickEventArgs &args) {
+    void ButtonClickHandler(void *sender, MouseClickEventArgs &args) {
         if (args.pressed) {
             return;
         }
@@ -55,19 +56,18 @@ private:
 void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
                              Engine &engine, bool initialDebugValue) {
     menu::ClickOption exitOption("exitOption", 1.0, "Exit...");
-    exitOption.onClick.Subscribe(
-        [&engine](void *, events::MouseClickEventArgs &args) {
-            if (!args.pressed)
-                return;
+    exitOption.onClick.Subscribe([&engine](void *, MouseClickEventArgs &args) {
+        if (!args.pressed)
+            return;
 
-            engine.StopGameLoop();
-        });
+        engine.StopGameLoop();
+    });
     escapeMenu->AddMenuOption(menu::MenuOption::CreateFromDerived(exitOption));
 
     const std::shared_ptr<menu::InputOption> inputOption =
         std::make_shared<menu::InputOption>("inputOption", 1.0,
                                             engine.onKeyPress);
-    inputOption->onInput.Subscribe([](void *, events::TextEventArgs &args) {
+    inputOption->onInput.Subscribe([](void *, TextEventArgs &args) {
         printf("Input was changed: %s\n", args.text.c_str());
     });
     escapeMenu->AddMenuOption(inputOption);
@@ -75,7 +75,7 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
     menu::ToggleOption toggleDebugOption("toggleDebugRenderingOption", 1.0,
                                          "Debug Rendering", initialDebugValue);
     toggleDebugOption.onClick.Subscribe(
-        [&engine](void *, events::MouseClickEventArgs &args) {
+        [&engine](void *, MouseClickEventArgs &args) {
             if (args.pressed)
                 return;
 
@@ -89,17 +89,17 @@ void CreateEscapeMenuOptions(std::shared_ptr<menu::Menu> escapeMenu,
     menu::CycleOption cycleColorOption("cycleMenuColorOption", 1.0,
                                        "Menu Color", {"Red", "Black", "White"},
                                        1);
-    cycleColorOption.onClick.Subscribe([&escapeMenu, cycleColors](
-                                           void *sender,
-                                           events::MouseClickEventArgs &args) {
-        if (args.pressed)
-            return;
+    cycleColorOption.onClick.Subscribe(
+        [&escapeMenu, cycleColors](void *sender, MouseClickEventArgs &args) {
+            if (args.pressed)
+                return;
 
-        auto *cycleOption = static_cast<menu::CycleOption *>(sender);
-        cycleOption->Cycle();
-        const size_t idx = (cycleOption->CurrentIndex()) % cycleColors.size();
-        escapeMenu->SetTextColor(cycleColors[idx]);
-    });
+            auto *cycleOption = static_cast<menu::CycleOption *>(sender);
+            cycleOption->Cycle();
+            const size_t idx =
+                (cycleOption->CurrentIndex()) % cycleColors.size();
+            escapeMenu->SetTextColor(cycleColors[idx]);
+        });
     escapeMenu->AddMenuOption(
         menu::MenuOption::CreateFromDerived(cycleColorOption));
 }
@@ -136,9 +136,8 @@ int main(int, char **) {
 
     std::shared_ptr<DisplayLayout> displayLayoutStore;
     std::shared_ptr<scene::Scene> sceneStore;
-    engine.onKeyPress.Subscribe([&escapeMenu, &displayLayoutStore,
-                                 &sceneStore](void *sender,
-                                              events::KeyPressEventArgs &args) {
+    engine.onKeyPress.Subscribe([&escapeMenu, &displayLayoutStore, &sceneStore](
+                                    void *sender, KeyPressEventArgs &args) {
         auto *engine = static_cast<Engine *>(sender);
 
         if (args.key == SDLK_ESCAPE && args.isKeyUp) {
