@@ -32,17 +32,8 @@ public:
     virtual void OnShown() override;
     virtual void OnHidden() override;
 
-    virtual std::string GetOptionText() const = 0;
+    virtual std::string GetOptionText() const { return ""; }
     inline void SetTextColor(const Color &color) { m_textColor = color; }
-
-    template <typename T>
-    static std::shared_ptr<MenuOption>
-    CreateFromDerived(const T &derivedObject) {
-        // Assuming T is derived from Element
-        std::shared_ptr<MenuOption> element =
-            std::make_shared<T>(derivedObject);
-        return element;
-    }
 
 protected:
     Color m_textColor;

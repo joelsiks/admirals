@@ -78,7 +78,7 @@ private:
                     const std::unordered_set<float> &checkedOrders) {
         const Rect bounds = Rect(position, pathSize);
         for (const auto &object : quadTree.GetObjectsInArea(bounds)) {
-            const auto &o = dynamic_pointer_cast<scene::GameObject>(object);
+            const auto &o = dynamic_pointer_cast<GameObject>(object);
             if (checkedOrders.contains(o->order()) &&
                 bounds.Overlaps(o->GetBoundingBox())) {
                 return false;

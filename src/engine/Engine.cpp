@@ -1,5 +1,6 @@
-#include "Engine.hpp"
 #include <chrono>
+
+#include "Engine.hpp"
 
 using namespace admirals;
 using namespace admirals::events;
@@ -17,36 +18,18 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_renderer = std::make_shared<renderer::Renderer>(gameName, windowWidth,
                                                       windowHeight);
     // Initialize the renderer right after creating it. Necessary in cases where
-    // DisplayLayout requires vk2d to be initialized.
+    // a layer requires vk2d to be initialized.
     m_renderer->Init(m_context);
 
     m_context.fontTexture = new Texture(vk2dTextureLoad(FONT_PATH));
     m_context.fontWidth = FONT_CHAR_WIDTH;
     m_context.fontHeight = FONT_CHAR_HEIGHT;
 
-    m_displayLayout = std::make_shared<UI::DisplayLayout>();
-
-    m_scene = std::make_shared<scene::Scene>();
+    m_scene = std::make_shared<Scene>();
 }
 
-std::shared_ptr<UI::DisplayLayout> Engine::SetAndGetDisplayLayout(
-    const std::shared_ptr<UI::DisplayLayout> &layout) {
-    auto currentLayout = m_displayLayout;
-    currentLayout->OnHidden();
-
-    m_displayLayout = layout;
-    m_displayLayout->OnShown();
-
-    SDL_MouseMotionEvent motionEvent;
-    motionEvent.state = SDL_GetMouseState(&motionEvent.x, &motionEvent.y);
-    events::MouseMotionEventArgs args(motionEvent);
-    m_displayLayout->OnMouseMove(args);
-
-    return currentLayout;
-}
-
-std::shared_ptr<scene::Scene>
-Engine::SetAndGetScene(const std::shared_ptr<scene::Scene> &scene) {
+std::shared_ptr<Scene>
+Engine::SetAndGetScene(const std::shared_ptr<Scene> &scene) {
     auto currentScene = m_scene;
     currentScene->OnHidden();
 
@@ -80,8 +63,8 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEBUTTONUP: {
             auto args = MouseClickEventArgs(e.button);
 
-            if (hasDisplayLayout()) {
-                m_displayLayout->OnClick(args);
+            for (const auto &activeLayerIdx : m_activeLayers) {
+                m_layers[activeLayerIdx]->OnClick(args);
             }
 
             if (hasScene() && !args.handled) {
@@ -93,8 +76,8 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEMOTION: {
             auto args = MouseMotionEventArgs(e.motion);
 
-            if (hasDisplayLayout()) {
-                m_displayLayout->OnMouseMove(args);
+            for (const auto &activeLayerIdx : m_activeLayers) {
+                m_layers[activeLayerIdx]->OnMouseMove(args);
             }
 
             if (hasScene() && !args.handled) {
@@ -124,15 +107,22 @@ void Engine::StartGameLoop() {
         m_scene->OnStart(GetContext());
     }
 
-    std::vector<std::shared_ptr<renderer::IDrawable>> layers(2);
+    std::vector<std::shared_ptr<IDisplayLayer>> layers(m_activeLayers.size() +
+                                                       1);
 
     // Start render loop
     bool quit = false;
     std::chrono::time_point<std::chrono::high_resolution_clock> lastTime =
         std::chrono::high_resolution_clock::now();
+
     while (!quit) {
         layers[0] = m_scene;
-        layers[1] = m_displayLayout;
+
+        size_t i = 1;
+        for (const auto &layerIdx : m_activeLayers) {
+            layers[i] = m_layers[layerIdx];
+            i++;
+        }
 
         const auto now = std::chrono::high_resolution_clock::now();
         m_context.deltaTime =
@@ -147,8 +137,8 @@ void Engine::StartGameLoop() {
             m_scene->RebuildQuadTree(m_context.windowSize);
         }
 
-        if (hasDisplayLayout()) {
-            m_displayLayout->RebuildQuadTree(m_context.windowSize);
+        for (const auto &activeLayerIdx : m_activeLayers) {
+            m_layers[activeLayerIdx]->RebuildQuadTree(m_context.windowSize);
         }
 
         m_renderer->Render(GetContext(), layers);

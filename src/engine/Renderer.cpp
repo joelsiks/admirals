@@ -74,7 +74,7 @@ void DrawDebugFpsInformation(const EngineContext &ctx) {
 }
 
 void Renderer::Render(const EngineContext &context,
-                      const DrawableCollection &drawables) {
+                      const DrawableLayers &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
     for (const auto &drawable : drawables) {
         if (drawable == nullptr) {

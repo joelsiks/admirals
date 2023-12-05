@@ -5,7 +5,7 @@
 using namespace admirals::mvp::objects;
 
 GameManager::GameManager(const std::string &name, const Texture &atlas)
-    : scene::GameObject(name), m_atlas(atlas) {
+    : GameObject(name), m_atlas(atlas) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
 }
@@ -138,7 +138,8 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
         if (!keepSet.contains(ship->GetID())) {
             if (m_debug)
                 printf("Removing ship %d\n", ship->GetID());
-            GameData::engine->GetScene()->RemoveObject(it->second);
+            GameData::engine->GetScene()->RemoveDisplayable(
+                it->second->identifier());
             it = m_ships.erase(it);
         } else {
             it++;
