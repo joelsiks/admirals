@@ -36,7 +36,7 @@ void SwapEngineScene() {
     GameData::engine->ToggleLayer(GameData::gameUIIdx);
 }
 
-void CreateGameBoard() {
+void CreateGameBoard(const Texture &atlas) {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
@@ -66,6 +66,16 @@ void CreateGameBoard() {
         Rect(static_cast<float>(GameData::GridCells) - 3, 2, GameData::CellSize,
              GameData::CellSize),
         gold);
+    GameData::engine->MakeGameObject<Sprite>(
+        "treasureIslandLeftSprite", atlas, 2,
+        Rect(2, static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
+             GameData::CellSize),
+        Vector2(GameData::SpriteSize * 2, 0));
+    GameData::engine->MakeGameObject<Sprite>(
+        "treasureIslandRightSprite", atlas, 2,
+        Rect(static_cast<float>(GameData::GridCells) - 3, 2, GameData::CellSize,
+             GameData::CellSize),
+        Vector2(GameData::SpriteSize * 2, 0));
 }
 
 void CreateBases(const Texture &atlas,
@@ -189,13 +199,12 @@ int main(int, char *[]) {
     GameData::engine =
         std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
 
-    CreateGameBoard();
-
     const Texture atlas =
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
     auto gameManager =
         GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
 
+    CreateGameBoard(atlas);
     CreateBases(atlas, gameManager);
 
     CreateGameUI(atlas, gameManager);
