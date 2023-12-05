@@ -20,7 +20,6 @@ public:
     enum WarningCase { MismatchOfValues = 101, WrongIdentifiers = 102 };
 
 private:
-    Logger(){};
     static std::string GetCurrentTime() {
         const std::time_t time = std::time(nullptr);
         std::string time_string(std::asctime(std::localtime(&time)));
