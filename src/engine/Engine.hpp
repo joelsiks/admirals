@@ -90,7 +90,9 @@ public:
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element,
                              size_t layerIdx) {
-        m_layers[layerIdx]->AddDisplayable(std::move(element));
+        if (m_layers.find(layerIdx) != m_layers.end()) {
+            m_layers[layerIdx]->AddDisplayable(std::move(element));
+        }
     }
 
     std::shared_ptr<Scene> SetAndGetScene(const std::shared_ptr<Scene> &scene);
@@ -107,9 +109,9 @@ public:
 
     // TODO: This is broken.
     template <typename T, typename... _Args>
-    inline std::shared_ptr<T> MakeUIElement(_Args &&..._args) {
+    inline std::shared_ptr<T> MakeUIElement(size_t layerIdx, _Args &&..._args) {
         auto object = std::make_shared<T>(_args...);
-        AddUIElement(object, 0);
+        AddUIElement(object, layerIdx);
         return object;
     }
 
