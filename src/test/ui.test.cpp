@@ -15,6 +15,7 @@
 
 using namespace admirals;
 using namespace admirals::UI;
+using namespace admirals::events;
 
 const int WINDOW_WIDTH = 600;
 const int WINDOW_HEIGHT = 600;
@@ -26,7 +27,7 @@ public:
         : GameObject(name), m_keepAspectRatio(keepAspectRatio),
           m_texture(Texture::LoadFromPath(texturePath)) {}
 
-    void ButtonClickHandler(void *sender, events::MouseClickEventArgs &args) {
+    void ButtonClickHandler(void *sender, MouseClickEventArgs &args) {
         if (args.pressed) {
             return;
         }

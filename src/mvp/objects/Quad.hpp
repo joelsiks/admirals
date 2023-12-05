@@ -1,9 +1,9 @@
 #pragma once
-#include "GameObject.hpp"
+#include "objects/GridObject.hpp"
 
 namespace admirals::mvp::objects {
 
-class Quad : public GameObject {
+class Quad : public GridObject {
 public:
     Quad(const std::string &name, float order = 0, const Rect &bounds = Rect(),
          const Color &color = Color::WHITE);

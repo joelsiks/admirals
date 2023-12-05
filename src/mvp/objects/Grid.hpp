@@ -1,9 +1,9 @@
 #pragma once
-#include "GameObject.hpp"
+#include "objects/GridObject.hpp"
 
 namespace admirals::mvp::objects {
 
-class Grid : public GameObject {
+class Grid : public GridObject {
 public:
     Grid(const std::string &name, const Color &color);
 

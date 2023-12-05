@@ -15,10 +15,10 @@ protected:
     float m_1;
 
 public:
-    Vector2();
-    Vector2(float v);
-    Vector2(float x, float y);
-    ~Vector2();
+    Vector2() noexcept;
+    Vector2(float v) noexcept;
+    Vector2(float x, float y) noexcept;
+    virtual ~Vector2() noexcept;
 
     inline float x() const { return this->m_0; }
     inline void SetX(float value) { this->m_0 = value; }
@@ -133,10 +133,10 @@ protected:
     float m_2;
 
 public:
-    Vector3();
-    Vector3(float v);
-    Vector3(float x, float y, float z);
-    ~Vector3();
+    Vector3() noexcept;
+    Vector3(float v) noexcept;
+    Vector3(float x, float y, float z) noexcept;
+    virtual ~Vector3() noexcept;
 
     inline float z() const { return this->m_2; }
     inline void SetZ(float value) { this->m_2 = value; }
@@ -255,10 +255,10 @@ protected:
     float m_3;
 
 public:
-    Vector4();
-    Vector4(float v);
-    Vector4(float x, float y, float z, float w);
-    ~Vector4();
+    Vector4() noexcept;
+    Vector4(float v) noexcept;
+    Vector4(float x, float y, float z, float w) noexcept;
+    virtual ~Vector4() noexcept;
 
     inline float w() const { return m_3; }
     inline void SetW(float value) { m_3 = value; }
@@ -389,15 +389,15 @@ public:
 
 class Color : public Vector4 {
 public:
-    Color();
-    Color(float r, float g, float b, float a);
+    Color() noexcept;
+    Color(float r, float g, float b, float a) noexcept;
 
     /// @brief Constructs a Color object from a Vector4. This assumes that the
     /// Vector4 contains values from 0.0-1.0.
     /// @param vec A vector containing the data to put in the Color.
-    Color(const Vector4 &vec);
+    Color(const Vector4 &vec) noexcept;
 
-    ~Color();
+    virtual ~Color() noexcept;
 
     inline float r() const { return m_0; }
     inline void SetR(float value) { m_0 = value; }
@@ -410,6 +410,18 @@ public:
 
     inline float a() const { return m_3; }
     inline void SetA(float value) { m_3 = value; }
+
+    inline Color operator*(const Vector4 &r) const {
+        return Color(m_0 * r.x(), m_1 * r.y(), m_2 * r.z(), m_3 * r.w());
+    }
+
+    inline Color &operator*=(const Vector4 &r) {
+        m_0 *= r.x();
+        m_1 *= r.y();
+        m_2 *= r.z();
+        m_3 *= r.w();
+        return *this;
+    }
 
     static Color FromHEX(const char *hex);
     static Color FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
@@ -429,18 +441,18 @@ public:
     /// @brief Creates a `Rect` object representing an area in 2d space
     /// @param position The position of the top-left corner in the `Rect`
     /// @param size The size of the `Rect`
-    Rect(const Vector2 &position, const Vector2 &size);
+    Rect(const Vector2 &position, const Vector2 &size) noexcept;
 
     /// @brief Creates a `Rect` object representing an area in 2d space
     /// @param x The x-coordinate of the top-left corner in the `Rect`
     /// @param y The y-coordinate of the top-left corner in the `Rect`
     /// @param w The width of the `Rect`
     /// @param h The height of the `Rect`
-    Rect(float x, float y, float w, float h);
+    Rect(float x, float y, float w, float h) noexcept;
 
     /// @brief Creates a `Rect` object representing an area in 2d space
-    Rect();
-    ~Rect();
+    Rect() noexcept;
+    virtual ~Rect() noexcept;
 
     /// @brief Checks if a given point is located inside the bounds of the
     /// `Rect`.
@@ -509,8 +521,8 @@ class Texture {
 public:
     // Do not initialize to NULL, deconstructor will break renderer as the next
     // texture is not loaded before the next frame.
-    Texture(VK2DTexture m_texture);
-    ~Texture();
+    Texture(VK2DTexture m_texture) noexcept;
+    virtual ~Texture() noexcept;
 
     // should be uint32
     float Width() const;

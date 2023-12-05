@@ -11,7 +11,7 @@ namespace admirals::mvp {
 
 struct PlayerData {
     uint16_t coins = 0;
-    uint16_t baseHealth = 0;
+    uint16_t baseHealth = BaseMaxHealth;
     uint32_t id = 0;
     uint8_t numShips = 0;
     std::map<uint16_t, ShipData> ships = {};
@@ -19,7 +19,8 @@ struct PlayerData {
 
 class MvpServer : public net::Server {
 public:
-    MvpServer(uint16_t port) : Server(port), m_turn(0) {}
+    MvpServer(uint16_t port, bool debug = false)
+        : Server(port), m_turn(0), m_debug(debug) {}
 
     bool OnClientConnect(std::shared_ptr<admirals::net::Connection>) override;
     void
@@ -44,20 +45,22 @@ private:
                   admirals::net::Message &message);
     void AttackShip(std::shared_ptr<admirals::net::Connection> client,
                     admirals::net::Message &message);
-    void ProcessShips();
+    void DamageNearbyEnemies(admirals::mvp::ShipData &ship);
+    void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
+    void ProcessDeadShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void BroadcastState();
 
     uint16_t m_turn = 0;
-    PlayerData m_player1;
-    PlayerData m_player2;
+    PlayerData m_playerTop;
+    PlayerData m_playerBottom;
 
     // 2D array of ship ids
     uint16_t m_board[BOARD_SIZE][BOARD_SIZE] = {};
 
     int m_connectedPlayers = 0;
     bool m_gameStarted = false;
-    bool m_player1Ready = false;
-    bool m_player2Ready = false;
+    bool m_playerTopReady = false;
+    bool m_playerBottomReady = false;
 
     int m_shipID = 1;
 

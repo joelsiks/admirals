@@ -1,10 +1,11 @@
-#include "GameManager.hpp"
+#include "objects/GameManager.hpp"
 #include "events/EventArgs.hpp"
 #include "objects/NetworkManager.hpp"
 
 using namespace admirals::mvp::objects;
 
-GameManager::GameManager(const std::string &name) : GameObject(name) {
+GameManager::GameManager(const std::string &name, const Texture &atlas)
+    : GameObject(name), m_atlas(atlas) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
 }
@@ -41,7 +42,7 @@ void GameManager::BuyShip(uint8_t type) {
     m_networkManager->BuyShip(type);
 }
 
-void GameManager::MoveShip(uint16_t id, int x, int y) {
+void GameManager::MoveShip(uint16_t id, uint8_t x, uint8_t y) {
     if (m_ships.find(id) == m_ships.end() ||
         m_ships[id]->GetPlayerId() != m_playerId) {
         return;
@@ -56,7 +57,7 @@ void GameManager::AttackShip(uint16_t id, uint16_t targetId) {
         m_ships[id]->GetPlayerId() != m_playerId) {
         return;
     }
-
+    printf("AttackShip\n");
     m_networkManager->AttackShip(id, targetId);
 }
 
@@ -68,8 +69,9 @@ void GameManager::ShipChangeEventHandler(void *sender,
         MoveShip(ship->GetID(), ship->GetActionX(), ship->GetActionY());
         break;
     }
-    // case ShipAction::Attack:
-    //     break;
+    case ShipAction::Attack:
+        AttackShip(ship->GetID(), ship->GetAttackID());
+        break;
     default:
         break;
     }
@@ -79,21 +81,36 @@ void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
                               int enemyBaseHealth,
                               const std::map<uint16_t, ShipData> &ships) {
     if (coins != m_coins) {
-        CoinsChangesEventArgs e = CoinsChangesEventArgs(coins);
+        CoinsChangedEventArgs e = CoinsChangedEventArgs(coins);
         onCoinsChanged.Invoke(this, e);
         m_coins = coins;
     }
+    const auto playerBase = m_isTopPlayer ? m_baseTop : m_baseBottom;
+    const auto enemyBase = m_isTopPlayer ? m_baseBottom : m_baseTop;
+    if (m_baseHealth != baseHealth) {
+        m_baseHealth = baseHealth;
+        if (playerBase != nullptr) {
+            playerBase->SetHealth(static_cast<float>(baseHealth));
+        }
+    }
+    if (m_enemyBaseHealth != enemyBaseHealth) {
+        m_enemyBaseHealth = enemyBaseHealth;
+        if (enemyBase != nullptr) {
+            enemyBase->SetHealth(static_cast<float>(enemyBaseHealth));
+        }
+    }
     m_turn = turn;
-    m_baseHealth = baseHealth;
-    m_enemyBaseHealth = enemyBaseHealth;
     ModifyShips(ships);
 }
 
 void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
+    std::unordered_set<uint16_t> keepSet;
     for (const auto &[_, ship] : ships) {
         if (ship.id == 0) {
             continue;
         }
+
+        keepSet.insert(ship.id);
 
         auto it = m_ships.find(ship.id);
 
@@ -116,12 +133,11 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
 
     // Remove ships in m_ships that are not in ships
     for (auto it = m_ships.begin(); it != m_ships.end();) {
-        const uint16_t id = it->first;
-
-        if (ships.find(id) == ships.end()) {
-            if (m_debug) {
-                printf("Removing ship %s\n", it->second->identifier().c_str());
-            }
+        const auto ship = it->second;
+        if (!keepSet.contains(ship->GetID())) {
+            if (m_debug)
+                printf("Removing ship %d\n", ship->GetID());
+            GameData::engine->GetScene()->RemoveDisplayable(it->second->identifier());
             it = m_ships.erase(it);
         } else {
             it++;
