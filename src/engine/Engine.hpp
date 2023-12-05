@@ -90,9 +90,7 @@ public:
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element,
                              size_t layerIdx) {
-        if (hasLayers() && m_layers.find(layerIdx) != m_layers.end()) {
-            m_layers[layerIdx]->AddDisplayable(std::move(element));
-        }
+        m_layers[layerIdx]->AddDisplayable(std::move(element));
     }
 
     std::shared_ptr<Scene> SetAndGetScene(const std::shared_ptr<Scene> &scene);

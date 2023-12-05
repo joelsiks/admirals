@@ -2,8 +2,6 @@
 
 #include "Engine.hpp"
 
-#include "UI/DisplayLayout.hpp"
-
 using namespace admirals;
 using namespace admirals::events;
 
@@ -20,7 +18,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_renderer = std::make_shared<renderer::Renderer>(gameName, windowWidth,
                                                       windowHeight);
     // Initialize the renderer right after creating it. Necessary in cases where
-    // DisplayLayout requires vk2d to be initialized.
+    // a layer requires vk2d to be initialized.
     m_renderer->Init(m_context);
 
     m_context.fontTexture = new Texture(vk2dTextureLoad(FONT_PATH));
@@ -65,10 +63,8 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEBUTTONUP: {
             auto args = MouseClickEventArgs(e.button);
 
-            if (hasLayers()) {
-                for (const auto &activeLayerIdx : m_activeLayers) {
-                    m_layers[activeLayerIdx]->OnClick(args);
-                }
+            for (const auto &activeLayerIdx : m_activeLayers) {
+                m_layers[activeLayerIdx]->OnClick(args);
             }
 
             if (hasScene() && !args.handled) {
@@ -80,10 +76,8 @@ bool Engine::PollAndHandleEvent() {
         case SDL_MOUSEMOTION: {
             auto args = MouseMotionEventArgs(e.motion);
 
-            if (hasLayers()) {
-                for (const auto &activeLayerIdx : m_activeLayers) {
-                    m_layers[activeLayerIdx]->OnMouseMove(args);
-                }
+            for (const auto &activeLayerIdx : m_activeLayers) {
+                m_layers[activeLayerIdx]->OnMouseMove(args);
             }
 
             if (hasScene() && !args.handled) {
@@ -120,8 +114,9 @@ void Engine::StartGameLoop() {
     bool quit = false;
     std::chrono::time_point<std::chrono::high_resolution_clock> lastTime =
         std::chrono::high_resolution_clock::now();
+
     while (!quit) {
-        layers[0] = std::dynamic_pointer_cast<IDisplayLayer>(m_scene);
+        layers[0] = m_scene;
 
         size_t i = 1;
         for (const auto &layerIdx : m_activeLayers) {
@@ -142,10 +137,8 @@ void Engine::StartGameLoop() {
             m_scene->RebuildQuadTree(m_context.windowSize);
         }
 
-        if (hasLayers()) {
-            for (const auto &activeLayerIdx : m_activeLayers) {
-                m_layers[activeLayerIdx]->RebuildQuadTree(m_context.windowSize);
-            }
+        for (const auto &activeLayerIdx : m_activeLayers) {
+            m_layers[activeLayerIdx]->RebuildQuadTree(m_context.windowSize);
         }
 
         m_renderer->Render(GetContext(), layers);

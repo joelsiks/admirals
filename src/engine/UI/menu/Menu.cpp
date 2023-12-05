@@ -32,7 +32,9 @@ void Menu::Render(const EngineContext &ctx) const {
         auto element = std::dynamic_pointer_cast<UI::Element>(*it);
         auto option = std::dynamic_pointer_cast<menu::MenuOption>(element);
 
-        // TODO: This should be fixed somewhere else in the future.
+        // TODO: This should be fixed somewhere else in the future. This is
+        // needed to make sure that all elements are displayed in a center
+        // orientation, even if it is changed externally.
         option->SetDisplayOrientation(DisplayOrientation::Center);
 
         const DisplayOrientation orientation = option->GetDisplayOrientation();
