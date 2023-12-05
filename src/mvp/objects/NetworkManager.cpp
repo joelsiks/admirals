@@ -102,6 +102,12 @@ void NetworkManager::ReadyUp() {
 }
 
 void NetworkManager::HandleMessages() {
+    if (!IsConnected()) {
+        if (m_gameManager.GameStarted())
+            m_gameManager.AbortGame();
+        return;
+    }
+
     const size_t size = Incoming().Size();
     for (size_t i = 0; i < size; i++) {
         auto msg = Incoming().Front().message;

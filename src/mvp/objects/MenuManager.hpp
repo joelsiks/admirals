@@ -12,20 +12,24 @@ public:
     MenuManager(const std::string &name, GameManager &gameManager);
     ~MenuManager();
 
-    void OnStart(const EngineContext &ctx) override;
-    void OnUpdate(const EngineContext &ctx) override;
-    void Render(const EngineContext &ctx) const override {}
+    void OnStart(const EngineContext &) override {}
+    void OnUpdate(const EngineContext &) override;
+    void Render(const EngineContext &) const override {}
 
-    void ToggleDisconnectMenu();
+    void ToggleOpponentDisconnectMenu();
+    void ToggleServerDisconnectMenu();
     void ToggleEndGameMenu(bool won = false);
 
 private:
+    void ReturnToMenu();
+
     GameManager &m_gameManager;
-    std::shared_ptr<admirals::UI::menu::Menu> m_disconnectMenu;
+    std::shared_ptr<admirals::UI::menu::Menu> m_opponentDisconnectMenu;
+    std::shared_ptr<admirals::UI::menu::Menu> m_serverDisconnectMenu;
     std::shared_ptr<admirals::UI::menu::Menu> m_endGameMenu;
-    // std::shared_ptr<admirals::UI::DisplayLayout> m_displayLayoutStore;
-    const size_t m_disconnectIdx = 11;
-    const size_t m_endGameIdx = 12;
+    const size_t m_opponentDisconnectIdx = 11;
+    const size_t m_serverDisconnectIdx = 12;
+    const size_t m_endGameIdx = 13;
     bool m_debug = false;
 };
 

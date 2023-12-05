@@ -8,20 +8,13 @@ using namespace admirals::UI::menu;
 
 Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
            const Color &backgroundColor, float topPadding)
-    : m_menuTitle(menuTitle), m_fgColor(foregroundColor),
-      m_bgColor(backgroundColor), m_topPadding(topPadding) {
+    : m_fgColor(foregroundColor), m_bgColor(backgroundColor),
+      m_topPadding(topPadding) {
 
-    const auto titleOption = std::make_shared<TextOption>(
+    const auto m_titleOption = std::make_shared<TextOption>(
         TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle));
 
-    m_titleOption = titleOption;
-
-    this->AddDisplayable(titleOption);
-}
-
-void Menu::SetMenuTitle(const std::string &title) {
-    m_menuTitle = title;
-    m_titleOption->SetText(title);
+    this->AddDisplayable(m_titleOption);
 }
 
 void Menu::Render(const EngineContext &ctx) const {

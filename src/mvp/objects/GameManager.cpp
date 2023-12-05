@@ -34,21 +34,31 @@ void GameManager::StopGame(uint8_t winner) {
         return;
     }
     m_gameStarted = false;
-    m_ships.clear();
     m_menuManager->ToggleEndGameMenu(winner == m_playerId);
     if (m_debug) {
         printf("Game stopped\n");
     }
 }
 
+void GameManager::AbortGame() {
+    if (!m_gameStarted) {
+        return;
+    }
+    m_gameStarted = false;
+    m_menuManager->ToggleServerDisconnectMenu();
+    if (m_debug) {
+        printf("Game aborted\n");
+    }
+}
+
 void GameManager::PauseGame() {
     m_gamePaused = true;
-    m_menuManager->ToggleDisconnectMenu();
+    m_menuManager->ToggleOpponentDisconnectMenu();
 }
 
 void GameManager::ResumeGame() {
     if (m_gamePaused)
-        m_menuManager->ToggleDisconnectMenu();
+        m_menuManager->ToggleOpponentDisconnectMenu();
     m_gamePaused = false;
     m_gameStarted = true;
 }

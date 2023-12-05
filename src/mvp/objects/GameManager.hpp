@@ -42,6 +42,7 @@ public:
 
     void StartGame() { m_gameStarted = true; }
     void StopGame(uint8_t winner);
+    void AbortGame();
     void PauseGame();
     void ResumeGame();
     bool GameStarted() const { return m_gameStarted; }
