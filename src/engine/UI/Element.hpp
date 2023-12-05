@@ -36,13 +36,6 @@ public:
         m_dispOrient = pos;
     }
 
-    template <typename T>
-    static std::shared_ptr<Element> CreateFromDerived(const T &derivedObject) {
-        // Assuming T is derived from Element
-        std::shared_ptr<Element> element = std::make_shared<T>(derivedObject);
-        return element;
-    }
-
 protected:
     // Text to be displayed on the Element.
     std::string m_text;
