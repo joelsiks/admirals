@@ -123,6 +123,16 @@ void NetworkManager::HandleMessages() {
             break;
         }
 
+        case NetworkMessageTypes::GamePause: {
+            GamePause();
+            break;
+        }
+
+        case NetworkMessageTypes::GameResume: {
+            GameResume();
+            break;
+        }
+
         case NetworkMessageTypes::BoardUpdate: {
             UpdateBoard(msg);
             break;
@@ -134,18 +144,17 @@ void NetworkManager::HandleMessages() {
 }
 
 void NetworkManager::ReadyUpResponse(Message &msg) {
-    bool isTopPlayer;
-    msg >> isTopPlayer;
-
     uint32_t playerId;
-    msg >> playerId;
+    uint8_t isTopPlayer;
+    msg >> isTopPlayer >> playerId;
 
     m_playerId = playerId;
     m_gameManager.SetPlayerId(playerId);
-    m_gameManager.SetIsTopPlayer(isTopPlayer);
+    m_gameManager.SetIsTopPlayer(static_cast<bool>(isTopPlayer));
 
     if (m_debug) {
-        printf("ReadyConfirmation: %d\n", playerId);
+        printf("ReadyConfirmation: %d, Is top player: %d\n", playerId,
+               isTopPlayer);
     }
 }
 
@@ -159,6 +168,18 @@ void NetworkManager::GameStop() {
     if (m_debug)
         printf("StopGame\n");
     m_gameManager.StopGame();
+}
+
+void NetworkManager::GamePause() {
+    if (m_debug)
+        printf("PauseGame\n");
+    m_gameManager.PauseGame();
+}
+
+void NetworkManager::GameResume() {
+    if (m_debug)
+        printf("ResumeGame\n");
+    m_gameManager.ResumeGame();
 }
 
 void NetworkManager::UpdateBoard(Message &msg) {
@@ -181,13 +202,13 @@ void NetworkManager::UpdateBoard(Message &msg) {
     msg >> playerBottomBaseHealth >> playerTopBaseHealth >> playerBottomCoins >>
         playerTopCoins >> turn;
 
-    const bool isPlayer1 = m_playerId % 2 == 1;
-    const int player_coins = isPlayer1 ? playerTopCoins : playerBottomCoins;
+    const bool isTopPlayer = m_gameManager.GetIsTopPlayer();
+    const int player_coins = isTopPlayer ? playerTopCoins : playerBottomCoins;
 
-    const int base_health =
-        isPlayer1 ? playerTopBaseHealth : playerBottomBaseHealth;
-    const int enemy_base_health =
-        isPlayer1 ? playerBottomBaseHealth : playerTopBaseHealth;
+    const int baseHealth =
+        isTopPlayer ? playerTopBaseHealth : playerBottomBaseHealth;
+    const int enemyBaseHealth =
+        isTopPlayer ? playerBottomBaseHealth : playerTopBaseHealth;
 
     if (m_debug) {
         printf("Turn: %d\n", turn);
@@ -199,6 +220,6 @@ void NetworkManager::UpdateBoard(Message &msg) {
                playerTopBaseHealth, playerBottomBaseHealth);
     }
 
-    m_gameManager.UpdateBoard(turn, player_coins, base_health,
-                              enemy_base_health, ships);
+    m_gameManager.UpdateBoard(turn, player_coins, baseHealth, enemyBaseHealth,
+                              ships);
 }

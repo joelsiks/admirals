@@ -117,6 +117,7 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
         if (it != m_ships.end()) {
             it->second->SetPosition(ship.x, ship.y);
             it->second->SetHealth(ship.health);
+            it->second->SetOwner(ship.owner);
             it->second->SetAction(ship.action);
         } else {
             if (m_debug)

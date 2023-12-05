@@ -112,7 +112,7 @@ void Ship::HandleClick(void *, events::MouseClickEventArgs &args) {
         SetAction(ShipAction::Move);
         const Vector2 gridPosition =
             GridObject::ConvertPositionWorldToGrid(clickLocation);
-        printf("Now moving to: (%d, %d)\n", gridPosition.x(), gridPosition.y());
+        printf("Now moving to: (%f, %f)\n", gridPosition.x(), gridPosition.y());
         args.handled = true;
     }
 
@@ -154,9 +154,9 @@ void Ship::Render(const EngineContext &ctx) const {
     const Vector2 healthOrigin =
         position + Vector2(0, size.y() - GameData::HealthBarSize);
     renderer::Renderer::DrawRectangle(
-        healthOrigin, Vector2(size.x(), GameData::HealthBarSize), Color::WHITE);
+        healthOrigin, Vector2(size.x(), GameData::HealthBarSize), Color::GREY);
     renderer::Renderer::DrawRectangle(
-        healthOrigin + Vector2(size.x() * (1 - healthPercentage), 0),
+        healthOrigin,
         Vector2(size.x() * healthPercentage, GameData::HealthBarSize),
         Color::BLACK);
 

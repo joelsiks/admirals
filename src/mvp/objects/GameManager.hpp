@@ -41,6 +41,8 @@ public:
 
     void StartGame() { m_gameStarted = true; }
     void StopGame();
+    void PauseGame() { m_gamePaused = true; }
+    void ResumeGame() { m_gamePaused = false; }
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }
@@ -72,6 +74,7 @@ private:
 
     bool m_testActionDone = false;
     bool m_gameStarted = false;
+    bool m_gamePaused = false;
 
     int m_turn = 0;
     int m_coins = 0;

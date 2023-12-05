@@ -32,6 +32,8 @@ private:
     void ReadyUpResponse(net::Message &msg);
     void GameStart();
     void GameStop();
+    void GamePause();
+    void GameResume();
     void UpdateBoard(net::Message &msg);
 
     GameManager &m_gameManager;

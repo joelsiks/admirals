@@ -28,6 +28,9 @@ public:
     inline void Select() const { GameData::selectedShip = m_identifier; }
     inline static void DeSelect() { GameData::selectedShip = ""; }
 
+    inline void SetOwner(uint8_t owner) { m_data.owner = owner; }
+    inline uint8_t GetOwner() const { return m_data.owner; }
+
     inline void SetHealth(uint16_t health) { m_data.health = health; }
     inline uint16_t GetHealth() const { return m_data.health; }
 
