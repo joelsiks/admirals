@@ -1,5 +1,6 @@
-#include "GameManager.hpp"
+#include "objects/GameManager.hpp"
 #include "events/EventArgs.hpp"
+#include "objects/MenuManager.hpp"
 #include "objects/NetworkManager.hpp"
 
 using namespace admirals::mvp::objects;
@@ -7,6 +8,8 @@ using namespace admirals::mvp::objects;
 GameManager::GameManager(const std::string &name) : scene::GameObject(name) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
+    m_menuManager =
+        GameData::engine->MakeGameObject<MenuManager>("menuManager", (*this));
 }
 
 GameManager::~GameManager() {}
@@ -39,6 +42,17 @@ void GameManager::BuyShip(uint8_t type) {
     }
 
     m_networkManager->BuyShip(type);
+
+    // if (type == ShipType::Cruiser) {
+        // m_menuManager->ToggleDisconnectMenu();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        // m_menuManager->ToggleDisconnectMenu();
+    // }
+    // else {
+        // m_menuManager->ToggleEndGameMenu(false);
+        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        // m_menuManager->ToggleEndGameMenu(false);
+    // }
 }
 
 void GameManager::MoveShip(uint16_t id, int x, int y) {

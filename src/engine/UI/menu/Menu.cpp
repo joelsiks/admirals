@@ -11,14 +11,22 @@ Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
 
     const TextOption titleOption =
         TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle);
+    auto createdOption = MenuOption::CreateFromDerived(titleOption);
 
-    this->AddMenuOption(MenuOption::CreateFromDerived(titleOption));
+    m_titleOption = std::dynamic_pointer_cast<TextOption>(createdOption);
+
+    this->AddMenuOption(createdOption);
 }
 
 void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
     menuOption->SetDisplayOrientation(DisplayOrientation::Center);
 
     this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
+}
+
+void Menu::SetMenuTitle(const std::string &title) {
+    m_menuTitle = title;
+    m_titleOption->SetText(title);
 }
 
 void Menu::Render(const EngineContext &ctx) const {

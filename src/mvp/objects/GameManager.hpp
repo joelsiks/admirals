@@ -8,6 +8,7 @@
 namespace admirals::mvp::objects {
 
 class NetworkManager;
+class MenuManager;
 
 class CoinsChangesEventArgs : public events::EventArgs {
 public:
@@ -68,6 +69,7 @@ private:
     Vector2 m_cellSize = Vector2(GameData::CellSize);
 
     std::shared_ptr<NetworkManager> m_networkManager;
+    std::shared_ptr<MenuManager> m_menuManager;
 
     bool m_debug = true;
 };

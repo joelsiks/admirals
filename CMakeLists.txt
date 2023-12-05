@@ -54,6 +54,7 @@ set(MVP_SOURCES
     src/mvp/objects/Ship.cpp
     src/mvp/objects/GameManager.cpp
     src/mvp/objects/NetworkManager.cpp
+    src/mvp/objects/MenuManager.cpp
     src/mvp/MvpServer.cpp
 )
 

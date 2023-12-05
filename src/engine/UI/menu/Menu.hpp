@@ -13,6 +13,7 @@ public:
          const Color &backgroundColor, float topPadding = 0);
 
     void AddMenuOption(const std::shared_ptr<MenuOption> &menuOption);
+    void SetMenuTitle(const std::string &title);
 
     void Render(const EngineContext &ctx) const override;
 
@@ -29,6 +30,7 @@ private:
     static constexpr float commonDepthOrder = 10;
 
     std::string m_menuTitle;
+    std::shared_ptr<TextOption> m_titleOption;
     Color m_fgColor, m_bgColor;
     float m_topPadding;
 };
