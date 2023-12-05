@@ -33,9 +33,7 @@ public:
 
 protected:
     // Called when a client connects
-    virtual bool OnClientConnect(std::shared_ptr<Connection> client) {
-        return false;
-    }
+    virtual bool OnClientConnect(std::shared_ptr<Connection>) { return false; }
     // Called when a client disconnects
     virtual void OnClientDisconnect(std::shared_ptr<Connection> client) = 0;
     // Called when a message is received

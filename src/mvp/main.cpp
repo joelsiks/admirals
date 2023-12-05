@@ -55,16 +55,19 @@ void CreateGameBoard() {
         green);
 }
 
-void CreateBases(const Texture &atlas) {
+void CreateBases(const Texture &atlas,
+                 const std::shared_ptr<GameManager> &gameManager) {
     const Vector2 cellSize = Vector2(GameData::CellSize);
-    GameData::engine->MakeGameObject<Sprite>(
-        "base0", atlas, 2, Rect(0, 1, GameData::CellSize, GameData::CellSize));
-    GameData::engine->MakeGameObject<Sprite>(
-        "base1", atlas, 2,
+    const auto baseTop = GameData::engine->MakeGameObject<Base>(
+        "baseTop", atlas, 2,
+        Rect(0, 1, GameData::CellSize, GameData::CellSize));
+
+    const auto baseBottom = GameData::engine->MakeGameObject<Base>(
+        "baseBottom", atlas, 2,
         Rect(static_cast<float>(GameData::GridCells) - 1,
              static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
              GameData::CellSize));
-    const ShipData data = {0, 1, 3, 3, ShipType::Cruiser, 0};
+    gameManager->SetBases(baseTop, baseBottom);
 }
 
 void CreateUI(const Texture &atlas,
@@ -85,6 +88,10 @@ void CreateUI(const Texture &atlas,
     };
 
     for (auto &[shipType, ship] : ShipInfoMap) {
+        if (shipType == ShipType::None) {
+            continue;
+        }
+
         auto buyShipButton =
             GameData::engine->MakeUIElement<objects::IconifiedButton>(
                 "buyShip" + std::to_string(shipType), 0,
@@ -120,7 +127,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     connectOption.onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                bool connected = gameManager->ConnectToServer();
+                const bool connected = gameManager->ConnectToServer();
                 if (connected) {
                     SwapEngineLayers();
                 }
@@ -133,7 +140,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     startOption.onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                bool connected = gameManager->StartAndConnectToServer();
+                const bool connected = gameManager->StartAndConnectToServer();
                 if (connected) {
                     SwapEngineLayers();
                 }
@@ -162,10 +169,10 @@ int main(int, char *[]) {
     const Texture atlas =
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
 
-    CreateBases(atlas);
-
     auto gameManager =
-        GameData::engine->MakeGameObject<GameManager>("gameManager");
+        GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
+
+    CreateBases(atlas, gameManager);
 
     CreateUI(atlas, gameManager);
 
