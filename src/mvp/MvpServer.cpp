@@ -157,7 +157,7 @@ void MvpServer::StartGame() {
     MessageAllClients(msg);
 }
 
-void MvpServer::StopGame() {
+void MvpServer::StopGame(uint8_t winner) {
     if (m_debug) {
         std::cout << "Stopping game" << std::endl;
     }
@@ -166,6 +166,7 @@ void MvpServer::StopGame() {
     // ResetGame();
     Message msg;
     msg.header.id = NetworkMessageTypes::GameStop;
+    msg << winner;
     MessageAllClients(msg);
 }
 
@@ -359,6 +360,8 @@ void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
             if (!isTopPlayer && x == 0 && y == 1) {
                 if (m_playerTop.baseHealth < ShipInfoMap[ship.type].Damage) {
                     m_playerTop.baseHealth = 0;
+                    StopGame(m_playerBottom.id);
+                    return;
                 } else {
                     m_playerTop.baseHealth -= ShipInfoMap[ship.type].Damage;
                 }
@@ -368,6 +371,8 @@ void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
             if (isTopPlayer && x == BOARD_SIZE - 1 && y == BOARD_SIZE - 2) {
                 if (m_playerBottom.baseHealth < ShipInfoMap[ship.type].Damage) {
                     m_playerBottom.baseHealth = 0;
+                    StopGame(m_playerTop.id);
+                    return;
                 } else {
                     m_playerBottom.baseHealth -= ShipInfoMap[ship.type].Damage;
                 }

@@ -17,6 +17,7 @@ public:
 
     inline static const size_t startMenuIdx = 0;
     inline static std::shared_ptr<Scene> startMenuScene = nullptr;
+    inline static std::shared_ptr<Scene> g_sceneStore = nullptr;
 
     inline static const size_t gameUIIdx = 1;
 

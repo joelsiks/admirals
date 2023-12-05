@@ -31,7 +31,7 @@ private:
     void HandleMessages();
     void ReadyUpResponse(net::Message &msg);
     void GameStart();
-    void GameStop();
+    void GameStop(net::Message &msg);
     void GamePause();
     void GameResume();
     void UpdateBoard(net::Message &msg);
@@ -42,6 +42,6 @@ private:
     bool m_isHost = false;
     std::thread m_serverThread;
 
-    bool m_debug = false;
+    bool m_debug = true;
 };
 } // namespace admirals::mvp::objects

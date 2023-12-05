@@ -27,10 +27,9 @@ const Vector2 cellSize = Vector2(GameData::CellSize);
 const Color blue = Color::FromHEX("#3283cf");
 const Color green = Color::FromHEX("#087311");
 
-static std::shared_ptr<Scene> g_sceneStore;
-
 void SwapEngineScene() {
-    g_sceneStore = GameData::engine->SetAndGetScene(g_sceneStore);
+    GameData::g_sceneStore =
+        GameData::engine->SetAndGetScene(GameData::g_sceneStore);
     GameData::engine->ToggleLayer(GameData::startMenuIdx);
     GameData::engine->ToggleLayer(GameData::gameUIIdx);
 }
@@ -192,7 +191,7 @@ int main(int, char *[]) {
     CreateStartMenu(gameManager);
     CreateStartMenuScene(atlas);
 
-    g_sceneStore = GameData::startMenuScene;
+    GameData::g_sceneStore = GameData::startMenuScene;
     SwapEngineScene();
 
     GameData::engine->onMouseMove +=
@@ -201,6 +200,7 @@ int main(int, char *[]) {
         };
 
     GameData::engine->StartGameLoop();
+    GameData::engine.release();
 
     return EXIT_SUCCESS;
 }

@@ -49,11 +49,11 @@ set(SOURCES
 )
 set(MVP_SOURCES 
     src/mvp/MvpServer.cpp
-    src/mvp/objects/Sprite.cpp
     src/mvp/objects/Base.cpp
     src/mvp/objects/Background.cpp
     src/mvp/objects/GameManager.cpp
     src/mvp/objects/Grid.cpp
+    src/mvp/objects/MenuManager.cpp
     src/mvp/objects/NetworkManager.cpp
     src/mvp/objects/Quad.cpp
     src/mvp/objects/Ship.cpp

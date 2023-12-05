@@ -1,5 +1,6 @@
 #include "objects/GameManager.hpp"
 #include "events/EventArgs.hpp"
+#include "objects/MenuManager.hpp"
 #include "objects/NetworkManager.hpp"
 
 using namespace admirals::mvp::objects;
@@ -8,6 +9,8 @@ GameManager::GameManager(const std::string &name, const Texture &atlas)
     : GameObject(name), m_atlas(atlas) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
+    m_menuManager =
+        GameData::engine->MakeGameObject<MenuManager>("menuManager", (*this));
 }
 
 GameManager::~GameManager() {}
@@ -26,12 +29,38 @@ bool GameManager::ConnectToServer(const std::string &ip, uint16_t port,
     return m_networkManager->ConnectToServer(ip, port, maxTries);
 }
 
-void GameManager::StopGame() {
+void GameManager::StopGame(uint8_t winner) {
+    if (!m_gameStarted) {
+        return;
+    }
     m_gameStarted = false;
-    m_ships.clear();
+    m_menuManager->ToggleEndGameMenu(winner == m_playerId);
     if (m_debug) {
         printf("Game stopped\n");
     }
+}
+
+void GameManager::AbortGame() {
+    if (!m_gameStarted) {
+        return;
+    }
+    m_gameStarted = false;
+    m_menuManager->ToggleServerDisconnectMenu();
+    if (m_debug) {
+        printf("Game aborted\n");
+    }
+}
+
+void GameManager::PauseGame() {
+    m_gamePaused = true;
+    m_menuManager->ToggleOpponentDisconnectMenu();
+}
+
+void GameManager::ResumeGame() {
+    if (m_gamePaused)
+        m_menuManager->ToggleOpponentDisconnectMenu();
+    m_gamePaused = false;
+    m_gameStarted = true;
 }
 
 void GameManager::BuyShip(uint8_t type) {

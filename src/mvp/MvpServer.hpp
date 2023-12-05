@@ -39,7 +39,7 @@ private:
     bool ShipAtLocation(int x, int y);
     bool ShipExists(PlayerData &player, uint16_t id);
     void StartGame();
-    void StopGame();
+    void StopGame(uint8_t winner = 0);
     void PauseGame();
     void ResumeGame();
     void UpdatePlayer(uint32_t oldOwner, uint32_t newOwner);

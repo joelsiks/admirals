@@ -102,6 +102,12 @@ void NetworkManager::ReadyUp() {
 }
 
 void NetworkManager::HandleMessages() {
+    if (!IsConnected()) {
+        if (m_gameManager.GameStarted())
+            m_gameManager.AbortGame();
+        return;
+    }
+
     const size_t size = Incoming().Size();
     for (size_t i = 0; i < size; i++) {
         auto msg = Incoming().Front().message;
@@ -119,7 +125,7 @@ void NetworkManager::HandleMessages() {
         }
 
         case NetworkMessageTypes::GameStop: {
-            GameStop();
+            GameStop(msg);
             break;
         }
 
@@ -164,10 +170,12 @@ void NetworkManager::GameStart() {
     m_gameManager.StartGame();
 }
 
-void NetworkManager::GameStop() {
+void NetworkManager::GameStop(Message &msg) {
+    uint8_t winner;
+    msg >> winner;
     if (m_debug)
         printf("StopGame\n");
-    m_gameManager.StopGame();
+    m_gameManager.StopGame(winner);
 }
 
 void NetworkManager::GamePause() {

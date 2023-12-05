@@ -14,11 +14,19 @@ public:
 
     inline void SetTextColor(const Color &color) { m_fgColor = color; }
 
+    inline std::string GetTitle() const {
+        return m_titleOption->GetOptionText();
+    }
+
+    inline void SetTitle(const std::string &title) {
+        m_titleOption->SetText(title);
+    }
+
     // TODO: This should probably be handled some other way..
     static constexpr float commonDepthOrder = 10;
 
 private:
-    std::string m_menuTitle;
+    std::shared_ptr<TextOption> m_titleOption;
     Color m_fgColor, m_bgColor;
     float m_topPadding;
 };
