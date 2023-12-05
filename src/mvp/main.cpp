@@ -93,7 +93,6 @@ void CreateGameUI(const Texture &atlas,
     });
     gameUI->AddDisplayable(coinText);
 
-
     for (auto &[shipType, ship] : ShipInfoMap) {
         if (shipType == ShipType::None) {
             continue;
@@ -164,16 +163,13 @@ void CreateStartMenuScene(const Texture &atlas) {
         std::make_shared<Background>("background", blue));
 
     startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
-        "movingShip1", atlas, 1, Rect(0, -1, 80, 80),
-        ShipType::Cruiser, 1));
+        "movingShip1", atlas, 1, Rect(0, -1, 80, 80), ShipType::Cruiser, 1));
 
     startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
-        "movingShip2", atlas, 1, Rect(3, 3, 80, 80),
-        ShipType::Destroyer, 1.7));
+        "movingShip2", atlas, 1, Rect(3, 3, 80, 80), ShipType::Destroyer, 1.7));
 
     startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
-        "movingShip3", atlas, 1, Rect(5, 7, 80, 80),
-        ShipType::Cruiser, 0.9));
+        "movingShip3", atlas, 1, Rect(5, 7, 80, 80), ShipType::Cruiser, 0.9));
 
     GameData::startMenuScene = startMenuScene;
 }

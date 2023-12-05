@@ -137,7 +137,8 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
         if (!keepSet.contains(ship->GetID())) {
             if (m_debug)
                 printf("Removing ship %d\n", ship->GetID());
-            GameData::engine->GetScene()->RemoveDisplayable(it->second->identifier());
+            GameData::engine->GetScene()->RemoveDisplayable(
+                it->second->identifier());
             it = m_ships.erase(it);
         } else {
             it++;

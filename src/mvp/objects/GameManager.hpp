@@ -34,8 +34,7 @@ public:
     void OnUpdate(const EngineContext &ctx) override;
     void Render(const EngineContext &ctx) const override {}
 
-    bool StartAndConnectToServer(uint16_t port = 60000,
-                                 size_t maxTries = -1);
+    bool StartAndConnectToServer(uint16_t port = 60000, size_t maxTries = -1);
 
     bool ConnectToServer(const std::string &ip = "127.0.0.1",
                          uint16_t port = 60000, size_t maxTries = -1);
