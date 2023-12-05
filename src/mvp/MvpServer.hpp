@@ -45,7 +45,7 @@ private:
                   admirals::net::Message &message);
     void AttackShip(std::shared_ptr<admirals::net::Connection> client,
                     admirals::net::Message &message);
-    void DamageNearbyShips(admirals::mvp::ShipData &ship);
+    void DamageNearbyEnemies(admirals::mvp::ShipData &ship);
     void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void ProcessDeadShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void BroadcastState();
@@ -59,8 +59,8 @@ private:
 
     int m_connectedPlayers = 0;
     bool m_gameStarted = false;
-    bool m_player1Ready = false;
-    bool m_player2Ready = false;
+    bool m_playerTopReady = false;
+    bool m_playerBottomReady = false;
 
     int m_shipID = 1;
 

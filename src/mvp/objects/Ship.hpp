@@ -11,7 +11,6 @@ public:
     Ship(const ShipData &data, const Vector2 &size, const Texture &source);
     ~Ship();
 
-    void OnStart(const EngineContext &ctx) override;
     void OnUpdate(const EngineContext &ctx) override;
 
     void OnClick(events::MouseClickEventArgs &args) override;

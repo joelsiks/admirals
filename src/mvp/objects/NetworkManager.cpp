@@ -134,11 +134,15 @@ void NetworkManager::HandleMessages() {
 }
 
 void NetworkManager::ReadyUpResponse(Message &msg) {
+    bool isTopPlayer;
+    msg >> isTopPlayer;
+
     uint32_t playerId;
     msg >> playerId;
 
     m_playerId = playerId;
     m_gameManager.SetPlayerId(playerId);
+    m_gameManager.SetIsTopPlayer(isTopPlayer);
 
     if (m_debug) {
         printf("ReadyConfirmation: %d\n", playerId);
@@ -158,9 +162,6 @@ void NetworkManager::GameStop() {
 }
 
 void NetworkManager::UpdateBoard(Message &msg) {
-    uint32_t playerTopId;
-    uint32_t playerBottomId;
-    msg >> playerBottomId >> playerTopId;
     uint8_t playerTopShips;
     uint8_t playerBottomShips;
     msg >> playerBottomShips >> playerTopShips;
@@ -199,6 +200,5 @@ void NetworkManager::UpdateBoard(Message &msg) {
     }
 
     m_gameManager.UpdateBoard(turn, player_coins, base_health,
-                              enemy_base_health, ships,
-                              m_gameManager.GetPlayerId() == playerTopId);
+                              enemy_base_health, ships);
 }

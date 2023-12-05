@@ -79,15 +79,14 @@ void GameManager::ShipChangeEventHandler(void *sender,
 
 void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
                               int enemyBaseHealth,
-                              const std::map<uint16_t, ShipData> &ships,
-                              bool isTopPlayer) {
+                              const std::map<uint16_t, ShipData> &ships) {
     if (coins != m_coins) {
         CoinsChangedEventArgs e = CoinsChangedEventArgs(coins);
         onCoinsChanged.Invoke(this, e);
         m_coins = coins;
     }
-    const auto playerBase = isTopPlayer ? m_baseTop : m_baseBottom;
-    const auto enemyBase = isTopPlayer ? m_baseBottom : m_baseTop;
+    const auto playerBase = m_isTopPlayer ? m_baseTop : m_baseBottom;
+    const auto enemyBase = m_isTopPlayer ? m_baseBottom : m_baseTop;
     if (m_baseHealth != baseHealth) {
         m_baseHealth = baseHealth;
         if (playerBase != nullptr) {

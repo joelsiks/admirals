@@ -67,8 +67,7 @@ void CreateBases(const Texture &atlas,
         Rect(static_cast<float>(GameData::GridCells) - 1,
              static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
              GameData::CellSize));
-    gameManager->SetBaseTop(baseTop);
-    gameManager->SetBaseBottom(baseBottom);
+    gameManager->SetBases(baseTop, baseBottom);
 }
 
 void CreateUI(const Texture &atlas,

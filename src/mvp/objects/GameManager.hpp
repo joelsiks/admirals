@@ -51,10 +51,13 @@ public:
         onPlayerIdChanged.Invoke(this, args);
     }
 
-    void SetBaseTop(const std::shared_ptr<Base> &base) { m_baseTop = base; }
+    bool GetIsTopPlayer() const { return m_isTopPlayer; }
+    void SetIsTopPlayer(bool isTopPlayer) { m_isTopPlayer = isTopPlayer; }
 
-    void SetBaseBottom(const std::shared_ptr<Base> &base) {
-        m_baseBottom = base;
+    void SetBases(const std::shared_ptr<Base> &baseTop,
+                  const std::shared_ptr<Base> &baseBottom) {
+        m_baseTop = baseTop;
+        m_baseBottom = baseBottom;
     }
 
     void BuyShip(uint8_t type);
@@ -62,8 +65,7 @@ public:
     void AttackShip(uint16_t id, uint16_t targetId);
 
     void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,
-                     const std::map<uint16_t, ShipData> &ships,
-                     bool isTopPlayer);
+                     const std::map<uint16_t, ShipData> &ships);
 
 private:
     void ModifyShips(const std::map<uint16_t, ShipData> &new_ships);
@@ -79,6 +81,7 @@ private:
     int m_baseHealth = 0;
     int m_enemyBaseHealth = 0;
     uint32_t m_playerId = 0;
+    bool m_isTopPlayer = false;
 
     std::map<uint16_t, std::shared_ptr<Ship>> m_ships;
 

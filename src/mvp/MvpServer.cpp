@@ -123,18 +123,20 @@ void MvpServer::StopGame() {
 }
 
 void MvpServer::PlayerReady(std::shared_ptr<Connection> client) {
-    if (client->GetID() == m_playerTop.id) {
-        m_player1Ready = true;
+    const bool isTopPlayer = client->GetID() == m_playerTop.id;
+    if (isTopPlayer) {
+        m_playerTopReady = true;
     } else {
-        m_player2Ready = true;
+        m_playerBottomReady = true;
     }
     Message msg;
     msg.header.id = NetworkMessageTypes::ReadyConfirmation;
     msg << client->GetID();
+    msg << isTopPlayer;
     MessageClient(client, msg);
 
     // Should probably be moved somewhere else
-    if (m_player1Ready && m_player2Ready) {
+    if (m_playerTopReady && m_playerBottomReady) {
         StartGame();
     }
 }
@@ -249,7 +251,7 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
     ship.attackTargetID = targetID;
 }
 
-void MvpServer::DamageNearbyShips(admirals::mvp::ShipData &ship) {
+void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
     const bool isTopPlayer = ship.owner == m_playerTop.id;
     std::map<uint16_t, admirals::mvp::ShipData> &enemyShips =
         isTopPlayer ? m_playerBottom.ships : m_playerTop.ships;
@@ -263,7 +265,8 @@ void MvpServer::DamageNearbyShips(admirals::mvp::ShipData &ship) {
                 continue;
             }
 
-            if (x == 0 && y == 1 && !isTopPlayer) {
+            // If bottom player, damage top player base if nearby
+            if (!isTopPlayer && x == 0 && y == 1) {
                 if (m_playerTop.baseHealth < ShipInfoMap[ship.type].Damage) {
                     m_playerTop.baseHealth = 0;
                 } else {
@@ -271,7 +274,8 @@ void MvpServer::DamageNearbyShips(admirals::mvp::ShipData &ship) {
                 }
             }
 
-            if (x == BOARD_SIZE - 1 && y == BOARD_SIZE - 2 && isTopPlayer) {
+            // If top player, damage bottom player base if nearby
+            if (isTopPlayer && x == BOARD_SIZE - 1 && y == BOARD_SIZE - 2) {
                 if (m_playerBottom.baseHealth < ShipInfoMap[ship.type].Damage) {
                     m_playerBottom.baseHealth = 0;
                 } else {
@@ -304,7 +308,7 @@ void MvpServer::ProcessShips(
         }
         switch (ship.second.action) {
         case ShipAction::None:
-            DamageNearbyShips(ship.second);
+            DamageNearbyEnemies(ship.second);
             break;
         case ShipAction::Attack:
             break;
@@ -353,7 +357,6 @@ void MvpServer::BroadcastState() {
     }
 
     msg << m_playerTop.numShips << m_playerBottom.numShips;
-    msg << m_playerTop.id << m_playerBottom.id;
 
     if (m_debug) {
         std::cout << "Turn: " << m_turn << std::endl;
