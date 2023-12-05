@@ -7,23 +7,14 @@
 
 #include "DataObjects.hpp"
 #include "IDisplayable.hpp"
-#include "IInteractiveDrawable.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "IOrdered.hpp"
+#include "UI/Data.hpp"
 
 namespace admirals::UI {
 
-enum DisplayOrientation {
-    UpperLeft = 0,
-    UpperRight = 1,
-    LowerLeft = 2,
-    LowerRight = 3,
-    Center = 4,
-};
-
 // General UI element that can be rendered.
-class Element : public IOrdered,
-                public IInteractiveDrawable,
-                public IDisplayable {
+class Element : public IInteractiveDisplayable {
 public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);
@@ -43,13 +34,6 @@ public:
 
     virtual void SetDisplayOrientation(DisplayOrientation pos) {
         m_dispOrient = pos;
-    }
-
-    template <typename T>
-    static std::shared_ptr<Element> CreateFromDerived(const T &derivedObject) {
-        // Assuming T is derived from Element
-        std::shared_ptr<Element> element = std::make_shared<T>(derivedObject);
-        return element;
     }
 
 protected:

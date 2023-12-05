@@ -22,8 +22,10 @@ public:
     void Render(const EngineContext &ctx) const;
 
     inline bool IsOwned() const { return GameData::playerId == GetPlayerId(); }
-    inline bool IsSelected() const { return GameData::selectedShip == m_name; }
-    inline void Select() const { GameData::selectedShip = m_name; }
+    inline bool IsSelected() const {
+        return GameData::selectedShip == m_identifier;
+    }
+    inline void Select() const { GameData::selectedShip = m_identifier; }
     inline static void DeSelect() { GameData::selectedShip = ""; }
 
     inline void SetHealth(uint16_t health) { m_data.health = health; }

@@ -4,8 +4,8 @@
 
 namespace admirals::mvp::objects {
 
-class GridObject : public scene::GameObject {
-    using scene::GameObject::GameObject; // Inherit constructors
+class GridObject : public GameObject {
+    using GameObject::GameObject; // Inherit constructors
 
 public:
     virtual inline Rect GetBoundingBox() const override {

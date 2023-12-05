@@ -13,9 +13,13 @@ public:
     GameData(){};
     ~GameData(){};
 
-    inline static std::shared_ptr<UI::menu::Menu> startMenu = nullptr;
-    inline static std::shared_ptr<scene::Scene> startMenuScene = nullptr;
     inline static std::unique_ptr<Engine> engine = nullptr;
+
+    inline static const size_t startMenuIdx = 0;
+    inline static std::shared_ptr<Scene> startMenuScene = nullptr;
+
+    inline static const size_t gameUIIdx = 1;
+
     inline static std::string selectedShip;
     inline static Vector2 mousePosition;
 

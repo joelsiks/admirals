@@ -7,7 +7,7 @@
 
 namespace admirals::mvp::objects {
 
-class NetworkManager : public scene::GameObject, public net::Client {
+class NetworkManager : public GameObject, public net::Client {
 
 public:
     NetworkManager(const std::string &name, GameManager &gameManager);
