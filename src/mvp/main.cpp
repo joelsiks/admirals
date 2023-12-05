@@ -26,6 +26,7 @@ const float GridHeight = GameData::GridSize + 2 * GameData::CellSize;
 const Vector2 cellSize = Vector2(GameData::CellSize);
 const Color blue = Color::FromHEX("#3283cf");
 const Color green = Color::FromHEX("#087311");
+const Color gold = Color::FromHEX("#FFD700");
 
 static std::shared_ptr<Scene> g_sceneStore;
 
@@ -55,6 +56,16 @@ void CreateGameBoard() {
              static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
              GameData::CellSize * 3),
         green);
+    GameData::engine->MakeGameObject<Quad>(
+        "treasureIslandLeft", 1,
+        Rect(2, static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
+             GameData::CellSize),
+        gold);
+    GameData::engine->MakeGameObject<Quad>(
+        "treasureIslandRight", 1,
+        Rect(static_cast<float>(GameData::GridCells) - 3, 2, GameData::CellSize,
+             GameData::CellSize),
+        gold);
 }
 
 void CreateBases(const Texture &atlas,

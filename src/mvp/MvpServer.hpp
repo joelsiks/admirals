@@ -10,7 +10,7 @@
 namespace admirals::mvp {
 
 struct PlayerData {
-    uint16_t coins = 0;
+    uint16_t coins = 20;
     uint16_t baseHealth = BaseMaxHealth;
     uint8_t id = 0;
     uint8_t numShips = 0;
@@ -50,6 +50,9 @@ private:
                   admirals::net::Message &message);
     void AttackShip(std::shared_ptr<admirals::net::Connection> client,
                     admirals::net::Message &message);
+    void CheckTreasureIsland(int treasure_x, int treasure_y,
+                             PlayerData &player);
+    void ProcessGoldGeneration(PlayerData &player);
     void DamageNearbyEnemies(admirals::mvp::ShipData &ship);
     void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void ProcessDeadShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
