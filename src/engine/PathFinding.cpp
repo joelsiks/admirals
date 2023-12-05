@@ -9,13 +9,9 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
                       const Vector2 &dest, const Vector2 &pathSize,
                       const std::unordered_set<float> &checkedOrders,
                       float detailLevel) {
-    const Rect bounds = Rect(Vector2(), quadTree.GetSize());
+    const Rect bounds = Rect(Vector2(0), quadTree.GetSize());
 
-    if (!bounds.Contains(start) || !bounds.Contains(dest) ||
-        !IsValidPosition(start, Vector2(__FLT_EPSILON__), quadTree,
-                         checkedOrders) ||
-        !IsValidPosition(dest, Vector2(__FLT_EPSILON__), quadTree,
-                         checkedOrders)) {
+    if (!bounds.Contains(start) || !bounds.Contains(dest)) {
         return std::deque<Vector2>();
     }
 

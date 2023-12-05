@@ -8,6 +8,7 @@
 #include "events/EventSystem.hpp"
 #include "events/KeyPressEvent.hpp"
 #include "events/MouseClickEvent.hpp"
+#include "events/TextEvent.hpp"
 
 namespace admirals::UI::menu {
 
@@ -105,10 +106,21 @@ private:
 
 class InputOption : public MenuOption {
 public:
+    // Invoked when the text in the input is changed.
+    events::EventSystem<events::TextEventArgs> onInput;
+
     InputOption(const std::string &name, float order,
+                events::EventSystem<events::KeyPressEventArgs> &eventHandler,
+                const std::string &initString = "",
                 const std::string &placeholder = "...");
 
     virtual void Render(const EngineContext &ctx) const override;
+
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override;
+
+    virtual void OnHidden() override;
 
     std::string GetOptionText() const override;
 
@@ -117,10 +129,13 @@ public:
 
     void HandleKeyPressEvent(void *sender, events::KeyPressEventArgs &args);
 
+    inline std::string GetInputText() const { return m_text; }
+
 private:
     std::string m_placeholderText;
-    std::string m_inputText;
     bool m_isActive = false;
+
+    events::EventSystem<events::KeyPressEventArgs> &m_keyPressEventHandler;
 };
 
 } // namespace admirals::UI::menu

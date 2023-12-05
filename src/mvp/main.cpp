@@ -37,48 +37,61 @@ void CreateGameBoard() {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "overlayTop", 1,
-        Rect(Vector2(0, 0), Vector2(GridWidth, GameData::CellSize)),
+        "overlayTop", 1, Rect(0, -1, GridWidth, GameData::CellSize),
         Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
         "overlayBottom", 1,
-        Rect(Vector2(0, GridHeight - GameData::CellSize),
-             Vector2(GridWidth, GameData::CellSize)),
+        Rect(0, static_cast<float>(GameData::GridCells), GridWidth,
+             GameData::CellSize),
         Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "islandLeft", 1,
-        Rect(Vector2(0, GameData::CellSize),
-             Vector2(GameData::CellSize, GameData::CellSize * 3)),
+        "islandLeft", 1, Rect(0, 0, GameData::CellSize, GameData::CellSize * 3),
         green);
     GameData::engine->MakeGameObject<Quad>(
         "islandRight", 1,
-        Rect(Vector2(GridWidth - GameData::CellSize,
-                     GridHeight - 4 * GameData::CellSize),
-             Vector2(GameData::CellSize, GameData::CellSize * 3)),
+        Rect(static_cast<float>(GameData::GridCells) - 1,
+             static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
+             GameData::CellSize * 3),
         green);
 }
 
-void CreateBases(const Texture &atlas) {
+void CreateBases(const Texture &atlas,
+                 const std::shared_ptr<GameManager> &gameManager) {
     const Vector2 cellSize = Vector2(GameData::CellSize);
-    GameData::engine->MakeGameObject<Sprite>(
-        "base0", atlas, 2, Rect(Vector2(0, 2 * GameData::CellSize), cellSize));
-    GameData::engine->MakeGameObject<Sprite>(
-        "base1", atlas, 2,
-        Rect(Vector2(GridWidth - GameData::CellSize,
-                     GridHeight - 3 * GameData::CellSize),
-             cellSize));
+    const auto baseTop = GameData::engine->MakeGameObject<Base>(
+        "baseTop", atlas, 2,
+        Rect(0, 1, GameData::CellSize, GameData::CellSize));
+
+    const auto baseBottom = GameData::engine->MakeGameObject<Base>(
+        "baseBottom", atlas, 2,
+        Rect(static_cast<float>(GameData::GridCells) - 1,
+             static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
+             GameData::CellSize));
+    gameManager->SetBases(baseTop, baseBottom);
 }
 
 void CreateUI(const Texture &atlas,
               const std::shared_ptr<GameManager> &gameManager) {
     auto coinText = GameData::engine->MakeUIElement<UI::TextElement>(
-        "coinText", 0, "Coins: 0", Vector2(100, 20), Color::WHITE);
+        "coinText", 0, "Coins: 0", Vector2(200, 40), Color::WHITE);
+
+    auto idText = GameData::engine->MakeUIElement<UI::TextElement>(
+        "idText", 0, "Player: X", Vector2(200, 40), Color::WHITE);
+    idText->SetDisplayOrientation(UI::DisplayOrientation::UpperRight);
 
     gameManager->onCoinsChanged += [coinText](void *, auto e) {
         coinText->SetText("Coins: " + std::to_string(e.coins));
     };
+    gameManager->onPlayerIdChanged += [idText](void *, auto e) {
+        GameData::playerId = e.playerId;
+        idText->SetText("Player: " + std::to_string(e.playerId));
+    };
 
     for (auto &[shipType, ship] : ShipInfoMap) {
+        if (shipType == ShipType::None) {
+            continue;
+        }
+
         auto buyShipButton =
             GameData::engine->MakeUIElement<objects::IconifiedButton>(
                 "buyShip" + std::to_string(shipType), 0,
@@ -114,7 +127,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     connectOption.onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                bool connected = gameManager->ConnectToServer();
+                const bool connected = gameManager->ConnectToServer();
                 if (connected) {
                     SwapEngineLayers();
                 }
@@ -127,7 +140,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     startOption.onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed) {
-                bool connected = gameManager->StartAndConnectToServer();
+                const bool connected = gameManager->StartAndConnectToServer();
                 if (connected) {
                     SwapEngineLayers();
                 }
@@ -140,29 +153,26 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
 void CreateStartMenuScene(const Texture &atlas) {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip1", atlas, 1, Rect(Vector2(0, 0), Vector2(80, 80)),
-        ShipType::Cruiser, 70);
+        "movingShip1", atlas, 1, Rect(0, 0, 80, 80), ShipType::Cruiser, 1);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip2", atlas, 1, Rect(Vector2(500, 300), Vector2(80, 80)),
-        ShipType::Destroyer, 150);
+        "movingShip2", atlas, 1, Rect(3, 2, 80, 80), ShipType::Destroyer, 1.7);
     GameData::engine->MakeGameObject<MenuMovingShip>(
-        "movingShip3", atlas, 1, Rect(Vector2(200, 500), Vector2(80, 80)),
-        ShipType::Cruiser, 80);
+        "movingShip3", atlas, 1, Rect(5, 7, 80, 80), ShipType::Cruiser, 0.9);
 }
 
 int main(int, char *[]) {
     GameData::engine =
-        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, true);
+        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
 
     CreateGameBoard();
 
     const Texture atlas =
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
 
-    CreateBases(atlas);
-
     auto gameManager =
-        GameData::engine->MakeGameObject<GameManager>("gameManager");
+        GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
+
+    CreateBases(atlas, gameManager);
 
     CreateUI(atlas, gameManager);
 
@@ -171,6 +181,11 @@ int main(int, char *[]) {
     g_sStore = GameData::startMenuScene;
     SwapEngineLayers();
     CreateStartMenuScene(atlas);
+
+    GameData::engine->onMouseMove +=
+        [](void *, events::MouseMotionEventArgs args) {
+            GameData::mousePosition = args.Location();
+        };
 
     GameData::engine->StartGameLoop();
 
