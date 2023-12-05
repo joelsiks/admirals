@@ -4,7 +4,7 @@
 
 namespace admirals::mvp {
 
-const int GridCells = 10;
+const uint16_t BaseMaxHealth = 1000;
 
 namespace NetworkMessageTypes {
 enum NetworkMessageTypes : uint16_t {
@@ -12,6 +12,8 @@ enum NetworkMessageTypes : uint16_t {
     ReadyConfirmation,
     GameStart,
     GameStop,
+    GamePause,
+    GameResume,
     BuyShip,
     MoveShip,
     AttackShip,
@@ -35,6 +37,7 @@ struct ShipInfo {
 
 inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
     // ShipType, {damage, health, cost}
+    {ShipType::None, {0, 0, 0}},
     {ShipType::Cruiser, {90, 500, 10}},
     {ShipType::Destroyer, {180, 300, 12}},
 };

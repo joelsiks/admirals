@@ -2,13 +2,12 @@
 #include "Client.hpp"
 #include "GameObject.hpp"
 #include "UI/TextElement.hpp"
+#include "objects/GameManager.hpp"
 #include "shared.hpp"
 
 namespace admirals::mvp::objects {
 
-class GameManager;
-
-class NetworkManager : public scene::GameObject, public net::Client {
+class NetworkManager : public GameObject, public net::Client {
 
 public:
     NetworkManager(const std::string &name, GameManager &gameManager);
@@ -33,6 +32,8 @@ private:
     void ReadyUpResponse(net::Message &msg);
     void GameStart();
     void GameStop();
+    void GamePause();
+    void GameResume();
     void UpdateBoard(net::Message &msg);
 
     GameManager &m_gameManager;

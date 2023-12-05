@@ -3,14 +3,12 @@
 
 #include "DataObjects.hpp"
 #include "IDisplayable.hpp"
-#include "IInteractiveDrawable.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "IOrdered.hpp"
 
-namespace admirals::scene {
+namespace admirals {
 
-class GameObject : public IOrdered,
-                   public IInteractiveDrawable,
-                   public IDisplayable {
+class GameObject : public IInteractiveDisplayable {
 public:
     GameObject(const std::string &name, float order, const Vector2 &position,
                const Vector2 &size)
@@ -18,7 +16,7 @@ public:
 
     GameObject(const std::string &name, float order = 0.f,
                const Rect &bounds = Rect())
-        : IOrdered(name, order), IDisplayable(bounds) {}
+        : IInteractiveDisplayable(name, order, bounds) {}
 
     // Engine event handlers
     virtual void OnStart(const EngineContext &ctx) {}
@@ -34,15 +32,6 @@ public:
     virtual void OnHidden() override {}
 
     virtual void Render(const EngineContext &ctx) const = 0;
-
-    template <typename T>
-    static std::shared_ptr<GameObject>
-    CreateFromDerived(const T &derivedObject) {
-        // Assuming T is derived from GameObject
-        std::shared_ptr<GameObject> gameObject =
-            std::make_shared<T>(derivedObject);
-        return gameObject;
-    }
 };
 
-} // namespace admirals::scene
+} // namespace admirals

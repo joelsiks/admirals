@@ -20,22 +20,23 @@ void MenuManager::OnStart(const EngineContext &) {
         GameData::engine->GetWindowSize().y() / 3.0);
 
     m_endGameMenu = std::make_shared<menu::Menu>(
-        "dwa", Color::BLACK,
-        Color::FromRGBA(50, 50, 50, 240),
+        "dwa", Color::BLACK, Color::FromRGBA(50, 50, 50, 240),
         GameData::engine->GetWindowSize().y() / 3.0);
 
-    menu::ClickOption playAgainOption("playAgainOption", 1.0, "Play again");
-    playAgainOption.onClick.Subscribe(
+    const auto playAgainOption = std::make_shared<menu::ClickOption>(
+        "playAgainOption", 1.0, "Play again");
+    playAgainOption->onClick.Subscribe(
         [this](void *, events::MouseClickEventArgs &args) {
             if (!args.pressed)
                 return;
 
             // TODO: implement restart
-            //m_gameManager.PlayAgain();
+            // m_gameManager.PlayAgain();
         });
 
-    menu::ClickOption exitOption("exitOption", 1.0, "Exit game");
-    exitOption.onClick.Subscribe(
+    const auto exitOption =
+        std::make_shared<menu::ClickOption>("exitOption", 1.0, "Exit game");
+    exitOption->onClick.Subscribe(
         [](void *, events::MouseClickEventArgs &args) {
             if (!args.pressed)
                 return;
@@ -43,32 +44,36 @@ void MenuManager::OnStart(const EngineContext &) {
             GameData::engine->StopGameLoop();
         });
 
-    m_disconnectMenu->AddMenuOption(
-        menu::MenuOption::CreateFromDerived(exitOption));
+    m_disconnectMenu->AddDisplayable(exitOption);
 
-    m_endGameMenu->AddMenuOption(
-        menu::MenuOption::CreateFromDerived(exitOption));
-    m_endGameMenu->AddMenuOption(
-        menu::MenuOption::CreateFromDerived(playAgainOption));
+    m_endGameMenu->AddDisplayable(exitOption);
+    m_endGameMenu->AddDisplayable(playAgainOption);
+
+    GameData::engine->AddLayer(m_disconnectIdx, std::dynamic_pointer_cast<IDisplayLayer>(m_disconnectMenu), false);
+    GameData::engine->AddLayer(m_endGameIdx, std::dynamic_pointer_cast<IDisplayLayer>(m_endGameMenu), false);
 }
 
 void MenuManager::OnUpdate(const EngineContext &) {}
 
 void MenuManager::ToggleDisconnectMenu() {
-    if (GameData::engine->GetDisplayLayout() == m_disconnectMenu) {
-        GameData::engine->SetAndGetDisplayLayout(m_displayLayoutStore);
-    } else {
-        m_displayLayoutStore =
-            GameData::engine->SetAndGetDisplayLayout(m_disconnectMenu);
-    }
+    // if (GameData::engine->GetDisplayLayout() == m_disconnectMenu) {
+    //     GameData::engine->SetAndGetDisplayLayout(m_displayLayoutStore);
+    // } else {
+    //     m_displayLayoutStore =
+    //         GameData::engine->SetAndGetDisplayLayout(m_disconnectMenu);
+    // } 
+    GameData::engine->ToggleLayer(GameData::gameUIIdx);
+    GameData::engine->ToggleLayer(m_disconnectIdx);
 }
 
 void MenuManager::ToggleEndGameMenu(bool won) {
     m_endGameMenu->SetMenuTitle(won ? "You won!" : "You lost!");
-    if (GameData::engine->GetDisplayLayout() == m_endGameMenu) {
-        GameData::engine->SetAndGetDisplayLayout(m_displayLayoutStore);
-    } else {
-        m_displayLayoutStore =
-            GameData::engine->SetAndGetDisplayLayout(m_endGameMenu);
-    }
+    // if (GameData::engine->GetDisplayLayout() == m_endGameMenu) {
+    //     GameData::engine->SetAndGetDisplayLayout(m_displayLayoutStore);
+    // } else {
+    //     m_displayLayoutStore =
+    //         GameData::engine->SetAndGetDisplayLayout(m_endGameMenu);
+    // }
+    GameData::engine->ToggleLayer(GameData::gameUIIdx);
+    GameData::engine->ToggleLayer(m_endGameIdx);
 }

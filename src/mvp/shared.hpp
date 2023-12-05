@@ -13,14 +13,26 @@ public:
     GameData(){};
     ~GameData(){};
 
-    static std::shared_ptr<UI::menu::Menu> startMenu;
-    static std::shared_ptr<scene::Scene> startMenuScene;
+    inline static std::unique_ptr<Engine> engine = nullptr;
 
-    static std::unique_ptr<Engine> engine;
-    static const float CellSize;
-    static const float GridSize;
-    static const int GridCells;
-    static const float SpriteSize;
+    inline static const size_t startMenuIdx = 0;
+    inline static std::shared_ptr<Scene> startMenuScene = nullptr;
+
+    inline static const size_t gameUIIdx = 1;
+
+    inline static std::string selectedShip;
+    inline static Vector2 mousePosition;
+
+    inline static uint16_t playerId;
+    static constexpr float SpriteSize = 64;
+    static constexpr float CellSize = 64;
+    static constexpr float HealthBarSize = 10;
+    static constexpr int GridCells = 10;
+    static constexpr float GridSize = GameData::CellSize * GameData::GridCells;
+    inline static const Rect GridArea =
+        Rect(0, GameData::CellSize, GameData::GridSize, GameData::GridSize);
+    static constexpr float TotalHeight =
+        GameData::GridSize + GameData::CellSize * 2;
 };
 
 } // namespace admirals::mvp

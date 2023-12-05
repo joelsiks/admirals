@@ -1,7 +1,6 @@
 #include "objects/NetworkManager.hpp"
 #include "MvpServer.hpp"
 #include "commontypes.hpp"
-#include "objects/GameManager.hpp"
 
 using namespace admirals::mvp::objects;
 using namespace admirals::net;
@@ -124,6 +123,16 @@ void NetworkManager::HandleMessages() {
             break;
         }
 
+        case NetworkMessageTypes::GamePause: {
+            GamePause();
+            break;
+        }
+
+        case NetworkMessageTypes::GameResume: {
+            GameResume();
+            break;
+        }
+
         case NetworkMessageTypes::BoardUpdate: {
             UpdateBoard(msg);
             break;
@@ -136,13 +145,16 @@ void NetworkManager::HandleMessages() {
 
 void NetworkManager::ReadyUpResponse(Message &msg) {
     uint32_t playerId;
-    msg >> playerId;
+    uint8_t isTopPlayer;
+    msg >> isTopPlayer >> playerId;
 
     m_playerId = playerId;
     m_gameManager.SetPlayerId(playerId);
+    m_gameManager.SetIsTopPlayer(static_cast<bool>(isTopPlayer));
 
     if (m_debug) {
-        printf("ReadyConfirmation: %d\n", playerId);
+        printf("ReadyConfirmation: %d, Is top player: %d\n", playerId,
+               isTopPlayer);
     }
 }
 
@@ -158,43 +170,56 @@ void NetworkManager::GameStop() {
     m_gameManager.StopGame();
 }
 
+void NetworkManager::GamePause() {
+    if (m_debug)
+        printf("PauseGame\n");
+    m_gameManager.PauseGame();
+}
+
+void NetworkManager::GameResume() {
+    if (m_debug)
+        printf("ResumeGame\n");
+    m_gameManager.ResumeGame();
+}
+
 void NetworkManager::UpdateBoard(Message &msg) {
-    uint8_t player1Ships;
-    uint8_t player2Ships;
-    msg >> player1Ships >> player2Ships;
+    uint8_t playerTopShips;
+    uint8_t playerBottomShips;
+    msg >> playerBottomShips >> playerTopShips;
 
     std::map<uint16_t, ShipData> ships;
-    for (int i = 0; i < player1Ships + player2Ships; i++) {
+    for (int i = 0; i < playerTopShips + playerBottomShips; i++) {
         ShipData ship;
         msg >> ship;
         ships[ship.id] = ship;
     }
 
     uint16_t turn;
-    uint16_t player1Coins;
-    uint16_t player2Coins;
-    uint16_t player1BaseHealth;
-    uint16_t player2BaseHealth;
-    msg >> player2BaseHealth >> player1BaseHealth >> player2Coins >>
-        player1Coins >> turn;
+    uint16_t playerTopCoins;
+    uint16_t playerBottomCoins;
+    uint16_t playerTopBaseHealth;
+    uint16_t playerBottomBaseHealth;
+    msg >> playerBottomBaseHealth >> playerTopBaseHealth >> playerBottomCoins >>
+        playerTopCoins >> turn;
 
-    const int player_coins = m_playerId % 2 == 0 ? player1Coins : player2Coins;
+    const bool isTopPlayer = m_gameManager.GetIsTopPlayer();
+    const int player_coins = isTopPlayer ? playerTopCoins : playerBottomCoins;
 
-    const int base_health =
-        m_playerId % 2 == 0 ? player1BaseHealth : player2BaseHealth;
-    const int enemy_base_health =
-        m_playerId % 2 == 0 ? player2BaseHealth : player1BaseHealth;
+    const int baseHealth =
+        isTopPlayer ? playerTopBaseHealth : playerBottomBaseHealth;
+    const int enemyBaseHealth =
+        isTopPlayer ? playerBottomBaseHealth : playerTopBaseHealth;
 
     if (m_debug) {
         printf("Turn: %d\n", turn);
-        printf("Player 1 coins: %d\tPlayer 2 coins: %d\n", player1Coins,
-               player2Coins);
-        printf("Player 1 ships: %d\tPlayer 2 ships: %d\n", player1Ships,
-               player2Ships);
+        printf("Player 1 coins: %d\tPlayer 2 coins: %d\n", playerTopCoins,
+               playerBottomCoins);
+        printf("Player 1 ships: %d\tPlayer 2 ships: %d\n", playerTopShips,
+               playerBottomShips);
         printf("Player 1 base health: %d\tPlayer 2 base health: %d\n",
-               player1BaseHealth, player2BaseHealth);
+               playerTopBaseHealth, playerBottomBaseHealth);
     }
 
-    m_gameManager.UpdateBoard(turn, player_coins, base_health,
-                              enemy_base_health, ships);
+    m_gameManager.UpdateBoard(turn, player_coins, baseHealth, enemyBaseHealth,
+                              ships);
 }
