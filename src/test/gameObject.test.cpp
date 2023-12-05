@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Engine.hpp"
+#include "Logger.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
 
@@ -137,6 +138,9 @@ int main(int argc, char *argv[]) {
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c3);
     engine.onMouseClick += BIND_EVENT_HANDLER_FROM(CellObject::OnClick, c4);
     engine.StartGameLoop();
+
+    Logger::ClearLogFile();
+    Logger::LogMessage("gete");
 
     return EXIT_SUCCESS;
 }

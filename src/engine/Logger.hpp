@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
@@ -18,12 +19,28 @@ public:
         NetworkConnectionLost = 201
     };
     enum WarningCase { MismatchOfValues = 101, WrongIdentifiers = 102 };
+    inline static std::chrono::time_point m_startTime =
+        std::chrono::system_clock::now();
 
 private:
     static std::string GetCurrentTime() {
         const std::time_t time = std::time(nullptr);
         std::string time_string(std::asctime(std::localtime(&time)));
         return time_string;
+    }
+
+    static std::string GetTimeSinceStart() {
+        const std::time_t time =
+            std::time(nullptr) -
+            std::chrono::system_clock::to_time_t(m_startTime);
+        long time_taken = time;
+        const long sec = time_taken % 60;
+        const long min = (time_taken / 60) % 60;
+        const long hour = (time_taken / 3600) % 60;
+        std::string return_str = std::to_string(hour) + ":" +
+                                 std::to_string(min) + ":" +
+                                 std::to_string(sec);
+        return return_str;
     }
 
     static std::string GetErrorMessage(ErrorCase ec) {
@@ -55,7 +72,7 @@ private:
     static void AppendToLogFile(const std::string &text) {
         std::ofstream file1;
         file1.open("logFile.txt", std::ios::app);
-        file1 << GetCurrentTime();
+        file1 << GetCurrentTime() << GetTimeSinceStart() << "\n";
         file1 << text + "\n\n";
         file1.close();
     }
