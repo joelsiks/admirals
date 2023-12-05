@@ -32,15 +32,6 @@ public:
     virtual void OnHidden() override {}
 
     virtual void Render(const EngineContext &ctx) const = 0;
-
-    template <typename T>
-    static std::shared_ptr<GameObject>
-    CreateFromDerived(const T &derivedObject) {
-        // Assuming T is derived from GameObject
-        std::shared_ptr<GameObject> gameObject =
-            std::make_shared<T>(derivedObject);
-        return gameObject;
-    }
 };
 
 } // namespace admirals

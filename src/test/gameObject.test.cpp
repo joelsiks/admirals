@@ -137,10 +137,11 @@ private:
 
 int main(int, char *[]) {
     Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT, false);
-    engine.AddGameObject(GameObject::CreateFromDerived(
-        CellObject("1", Vector3(0, 0, 2), Color::BLUE)));
-    engine.AddGameObject(GameObject::CreateFromDerived(
-        CellObject("2", Vector3(50, 50, 3), Color::RED)));
+    engine.AddGameObject(
+        std::make_shared<CellObject>("1", Vector3(0, 0, 2), Color::BLUE));
+    engine.AddGameObject(
+        std::make_shared<CellObject>("2", Vector3(50, 50, 3), Color::RED));
+
     auto c1 = engine.MakeGameObject<CellObject>("3", Vector3(100, 100, 1),
                                                 Color::BLACK);
     auto c2 = engine.MakeGameObject<CellObject>("4", Vector3(100, 200, 0),
