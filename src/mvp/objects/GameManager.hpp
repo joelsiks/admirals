@@ -41,9 +41,9 @@ public:
                          uint16_t port = 60000, size_t maxTries = -1);
 
     void StartGame() { m_gameStarted = true; }
-    void StopGame();
-    void PauseGame() { m_gamePaused = true; }
-    void ResumeGame() { m_gamePaused = false; }
+    void StopGame(uint8_t winner);
+    void PauseGame();
+    void ResumeGame();
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }

@@ -119,7 +119,7 @@ void NetworkManager::HandleMessages() {
         }
 
         case NetworkMessageTypes::GameStop: {
-            GameStop();
+            GameStop(msg);
             break;
         }
 
@@ -164,10 +164,12 @@ void NetworkManager::GameStart() {
     m_gameManager.StartGame();
 }
 
-void NetworkManager::GameStop() {
+void NetworkManager::GameStop(Message &msg) {
+    uint8_t winner;
+    msg >> winner;
     if (m_debug)
         printf("StopGame\n");
-    m_gameManager.StopGame();
+    m_gameManager.StopGame(winner);
 }
 
 void NetworkManager::GamePause() {

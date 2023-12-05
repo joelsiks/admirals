@@ -29,12 +29,28 @@ bool GameManager::ConnectToServer(const std::string &ip, uint16_t port,
     return m_networkManager->ConnectToServer(ip, port, maxTries);
 }
 
-void GameManager::StopGame() {
+void GameManager::StopGame(uint8_t winner) {
+    if (!m_gameStarted) {
+        return;
+    }
     m_gameStarted = false;
     m_ships.clear();
+    m_menuManager->ToggleEndGameMenu(winner == m_playerId);
     if (m_debug) {
         printf("Game stopped\n");
     }
+}
+
+void GameManager::PauseGame() {
+    m_gamePaused = true;
+    m_menuManager->ToggleDisconnectMenu();
+}
+
+void GameManager::ResumeGame() {
+    if (m_gamePaused)
+        m_menuManager->ToggleDisconnectMenu();
+    m_gamePaused = false;
+    m_gameStarted = true;
 }
 
 void GameManager::BuyShip(uint8_t type) {
@@ -43,17 +59,6 @@ void GameManager::BuyShip(uint8_t type) {
     }
 
     m_networkManager->BuyShip(type);
-
-    // if (type == ShipType::Cruiser) {
-        // m_menuManager->ToggleDisconnectMenu();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-        // m_menuManager->ToggleDisconnectMenu();
-    // }
-    // else {
-        // m_menuManager->ToggleEndGameMenu(true);
-        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-        // m_menuManager->ToggleEndGameMenu(false);
-    // }
 }
 
 void GameManager::MoveShip(uint16_t id, uint8_t x, uint8_t y) {
