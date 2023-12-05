@@ -12,7 +12,7 @@ public:
     MenuManager(const std::string &name, GameManager &gameManager);
     ~MenuManager();
 
-    void OnStart(const EngineContext &) override {}
+    void OnStart(const EngineContext &) override;
     void OnUpdate(const EngineContext &) override;
     void Render(const EngineContext &) const override {}
 
