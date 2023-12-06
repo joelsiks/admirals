@@ -346,25 +346,29 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
 
 void MvpServer::IncrementGoldByShipId(uint16_t shipId) {
     // find invalid shipIds
-    if (shipId != 0) {
-        if (m_playerTop.ships.contains(shipId)) {
-            if (m_playerTop.ships[shipId].action == ShipAction::None)
-                m_playerTop.coins += ISLAND_INCOME;
-        } else {
-            // m_playerBottom
-            if (m_playerBottom.ships[shipId].action == ShipAction::None)
-                m_playerBottom.coins += ISLAND_INCOME;
-        }
+    if (shipId == 0) {
+        return;
+    }
+    if (m_playerTop.ships.contains(shipId)) {
+        if (m_playerTop.ships[shipId].action == ShipAction::None)
+            m_playerTop.coins += ISLAND_INCOME;
+    } else {
+        // m_playerBottom
+        if (m_playerBottom.ships[shipId].action == ShipAction::None)
+            m_playerBottom.coins += ISLAND_INCOME;
     }
 }
 
-void MvpServer::CheckTreasureIsland(int treasure_x, int treasure_y) {
-    for (int y = treasure_y - 1; y <= treasure_y + 1; y++) {
-        for (int x = treasure_x - 1; x <= treasure_x + 1; x++) {
-            if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) {
-                continue;
+static bool coordinateInBounds(int x, int y) {
+    return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
+}
+
+void MvpServer::CheckTreasureIsland(int tx, int ty) {
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            if ((dx != 0 || dy != 0) && coordinateInBounds(tx + dx, ty + dy)) {
+                IncrementGoldByShipId(m_board[tx + dx][ty + dy]);
             }
-            IncrementGoldByShipId(m_board[x][y]);
         }
     }
 }
