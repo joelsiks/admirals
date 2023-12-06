@@ -1,6 +1,6 @@
 #pragma once
 #include "Sprite.hpp"
-#include "commontypes.hpp"
+#include "CommonTypes.hpp"
 
 namespace admirals::mvp::objects {
 

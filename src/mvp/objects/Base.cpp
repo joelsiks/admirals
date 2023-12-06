@@ -1,6 +1,6 @@
 #include "Base.hpp"
-#include "commontypes.hpp"
-#include "shared.hpp"
+#include "CommonTypes.hpp"
+#include "GameData.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;

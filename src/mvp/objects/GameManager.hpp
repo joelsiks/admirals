@@ -1,9 +1,9 @@
 #pragma once
 #include "GameObject.hpp"
-#include "commontypes.hpp"
+#include "CommonTypes.hpp"
 #include "events/EventSystem.hpp"
 #include "objects/Ship.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 namespace admirals::mvp::objects {
 

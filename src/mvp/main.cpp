@@ -11,7 +11,7 @@
 #include "objects/MenuMovingShip.hpp"
 #include "objects/Quad.hpp"
 #include "objects/Ship.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 // Undefine macro from msys
 #undef TRANSPARENT

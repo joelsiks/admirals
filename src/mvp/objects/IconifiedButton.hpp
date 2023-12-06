@@ -1,7 +1,7 @@
 #pragma once
 #include "Renderer.hpp"
 #include "UI/Button.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 namespace admirals::mvp::objects {
 

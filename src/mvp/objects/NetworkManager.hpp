@@ -3,7 +3,7 @@
 #include "GameObject.hpp"
 #include "UI/TextElement.hpp"
 #include "objects/GameManager.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 namespace admirals::mvp::objects {
 

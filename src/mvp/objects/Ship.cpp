@@ -1,6 +1,6 @@
 #include "objects/Ship.hpp"
 #include "PathFinding.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 #include <sstream>
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "Server.hpp"
-#include "commontypes.hpp"
+#include "CommonTypes.hpp"
 
 // Number of ticks per second
 #define TICK_RATE 1

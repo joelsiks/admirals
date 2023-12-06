@@ -2,7 +2,7 @@
 
 #include "objects/Ship.hpp"
 #include "objects/Sprite.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 namespace admirals::mvp::objects {
 

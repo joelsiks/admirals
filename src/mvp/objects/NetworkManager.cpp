@@ -1,6 +1,6 @@
 #include "objects/NetworkManager.hpp"
 #include "MvpServer.hpp"
-#include "commontypes.hpp"
+#include "CommonTypes.hpp"
 
 using namespace admirals::mvp::objects;
 using namespace admirals::net;

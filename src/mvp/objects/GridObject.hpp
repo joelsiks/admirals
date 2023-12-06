@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 namespace admirals::mvp::objects {
 

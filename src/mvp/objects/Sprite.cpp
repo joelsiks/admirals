@@ -1,6 +1,6 @@
 #include "objects/Sprite.hpp"
 #include "Renderer.hpp"
-#include "shared.hpp"
+#include "GameData.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;
