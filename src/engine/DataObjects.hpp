@@ -473,6 +473,7 @@ public:
     /// @param h The height of the `Rect`
     constexpr Rect(float x, float y, float w, float h) noexcept
         : m_x(x), m_y(y), m_w(w), m_h(h) {}
+
     constexpr virtual ~Rect() noexcept {}
 
     /// @brief Checks if a given point is located inside the bounds of the
