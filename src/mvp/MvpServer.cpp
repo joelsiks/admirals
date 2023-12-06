@@ -113,9 +113,12 @@ void MvpServer::ProcessTurn() {
 
     // Give coins every second
     if (m_turn % TICK_RATE == 0) {
-        m_playerTop.coins += 10;
-        m_playerBottom.coins += 10;
+        m_playerTop.coins += PASSIVE_INCOME;
+        m_playerBottom.coins += PASSIVE_INCOME;
     }
+
+    // Give coins from tresure islands
+    ProcessGoldGeneration();
 
     // Process ship actions
     ProcessShips(m_playerTop.ships);
@@ -340,6 +343,40 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
     ShipData &ship = player.ships[id];
     ship.action = ShipAction::Attack;
     ship.attackTargetID = targetID;
+}
+
+void MvpServer::IncrementGoldByShipId(uint16_t shipId) {
+    // find invalid shipIds
+    if (shipId == 0) {
+        return;
+    }
+    if (m_playerTop.ships.contains(shipId)) {
+        if (m_playerTop.ships[shipId].action == ShipAction::None)
+            m_playerTop.coins += ISLAND_INCOME;
+    } else {
+        // m_playerBottom
+        if (m_playerBottom.ships[shipId].action == ShipAction::None)
+            m_playerBottom.coins += ISLAND_INCOME;
+    }
+}
+
+static bool coordinateInBounds(int x, int y) {
+    return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
+}
+
+void MvpServer::CheckTreasureIsland(int tx, int ty) {
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            if ((dx != 0 || dy != 0) && coordinateInBounds(tx + dx, ty + dy)) {
+                IncrementGoldByShipId(m_board[tx + dx][ty + dy]);
+            }
+        }
+    }
+}
+
+void MvpServer::ProcessGoldGeneration() {
+    CheckTreasureIsland(2, 7);
+    CheckTreasureIsland(7, 2);
 }
 
 void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
