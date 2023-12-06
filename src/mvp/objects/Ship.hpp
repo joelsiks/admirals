@@ -1,6 +1,6 @@
 #pragma once
+#include "CommonTypes.hpp"
 #include "Sprite.hpp"
-#include "commontypes.hpp"
 
 namespace admirals::mvp::objects {
 
@@ -9,7 +9,7 @@ public:
     events::EventSystem<events::EventArgs> onChanged;
 
     Ship(const ShipData &data, const Vector2 &size, const Texture &source);
-    ~Ship();
+    virtual ~Ship();
 
     void OnUpdate(const EngineContext &ctx) override;
 
@@ -21,7 +21,7 @@ public:
 
     void Render(const EngineContext &ctx) const;
 
-    inline bool IsOwned() const { return GameData::playerId == GetPlayerId(); }
+    inline bool IsOwned() const { return GameData::PlayerId == GetPlayerId(); }
     inline bool IsSelected() const {
         return GameData::selectedShip == m_identifier;
     }
@@ -71,8 +71,11 @@ private:
     bool m_drawOutline = false;
     bool m_selected = false;
     std::deque<admirals::Vector2> m_path;
+    std::string m_target;
+    std::shared_ptr<NavMesh> m_navMesh;
 
     void HandleAction();
+    void HandlePathTarget();
 };
 
 } // namespace admirals::mvp::objects

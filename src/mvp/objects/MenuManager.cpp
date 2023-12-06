@@ -1,7 +1,7 @@
 #include "objects/MenuManager.hpp"
+#include "CommonTypes.hpp"
 #include "UI/menu/Menu.hpp"
 #include "UI/menu/MenuOption.hpp"
-#include "commontypes.hpp"
 #include "objects/GameManager.hpp"
 
 using namespace admirals;

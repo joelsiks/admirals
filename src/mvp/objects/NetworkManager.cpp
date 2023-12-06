@@ -1,6 +1,6 @@
 #include "objects/NetworkManager.hpp"
+#include "CommonTypes.hpp"
 #include "MvpServer.hpp"
-#include "commontypes.hpp"
 
 using namespace admirals::mvp::objects;
 using namespace admirals::net;
@@ -155,8 +155,7 @@ void NetworkManager::ReadyUpResponse(Message &msg) {
     msg >> isTopPlayer >> playerId;
 
     m_playerId = playerId;
-    m_gameManager.SetPlayerId(playerId);
-    m_gameManager.SetIsTopPlayer(static_cast<bool>(isTopPlayer));
+    m_gameManager.SetPlayerId(playerId, static_cast<bool>(isTopPlayer));
 
     if (m_debug) {
         printf("ReadyConfirmation: %d, Is top player: %d\n", playerId,
@@ -205,18 +204,10 @@ void NetworkManager::UpdateBoard(Message &msg) {
     uint16_t turn;
     uint16_t playerTopCoins;
     uint16_t playerBottomCoins;
-    uint16_t playerTopBaseHealth;
-    uint16_t playerBottomBaseHealth;
-    msg >> playerBottomBaseHealth >> playerTopBaseHealth >> playerBottomCoins >>
-        playerTopCoins >> turn;
+    msg >> playerBottomCoins >> playerTopCoins >> turn;
 
     const bool isTopPlayer = m_gameManager.GetIsTopPlayer();
     const int player_coins = isTopPlayer ? playerTopCoins : playerBottomCoins;
-
-    const int baseHealth =
-        isTopPlayer ? playerTopBaseHealth : playerBottomBaseHealth;
-    const int enemyBaseHealth =
-        isTopPlayer ? playerBottomBaseHealth : playerTopBaseHealth;
 
     if (m_debug) {
         printf("Turn: %d\n", turn);
@@ -224,10 +215,7 @@ void NetworkManager::UpdateBoard(Message &msg) {
                playerBottomCoins);
         printf("Player 1 ships: %d\tPlayer 2 ships: %d\n", playerTopShips,
                playerBottomShips);
-        printf("Player 1 base health: %d\tPlayer 2 base health: %d\n",
-               playerTopBaseHealth, playerBottomBaseHealth);
     }
 
-    m_gameManager.UpdateBoard(turn, player_coins, baseHealth, enemyBaseHealth,
-                              ships);
+    m_gameManager.UpdateBoard(turn, player_coins, ships);
 }

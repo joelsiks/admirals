@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Engine.hpp"
+#include "PathFinding.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
 
@@ -89,6 +90,19 @@ private:
     bool m_drawOutline = false;
 };
 
+bool PathValidator(
+    const Rect &bounds,
+    const std::unordered_set<std::shared_ptr<IInteractiveDisplayable>>
+        &objects) {
+
+    for (const auto &o : objects) {
+        if (o->GetBoundingBox().Overlaps(bounds) && o->order() < 10.f) {
+            return false;
+        }
+    }
+    return true;
+}
+
 class PathFindingObject : public GameObject {
 public:
     PathFindingObject(const std::string &name, const Vector2 &position,
@@ -103,19 +117,19 @@ public:
         const Vector2 scale =
             ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
                                      static_cast<float>(WINDOW_HEIGHT));
-        const Vector2 pathSize = Vector2(CELL_SIZE - __FLT_EPSILON__);
-        const auto path =
-            m_scene->FindPath(GetPosition(), m_mousePosition, pathSize,
-                              {0, 1, 2, 3}, pathSize.x());
+        const auto navMesh = m_scene->BuildNavMesh(
+            Rect(0, ctx.windowSize), CELL_SIZE, CELL_SIZE, PathValidator);
+        const auto path = PathFinding::FindPath(GetPosition(), m_mousePosition,
+                                                *navMesh, false);
 
         Vector2 prev = GetPosition();
         for (const Vector2 &part : path) {
-            renderer::Renderer::DrawRectangleOutline(part, pathSize, 1,
+            renderer::Renderer::DrawRectangleOutline(part, CELL_SIZE, 1,
                                                      Color::BLUE);
         }
 
         for (const Vector2 &part : path) {
-            const Vector2 newPosition = part + pathSize / 2;
+            const Vector2 newPosition = part + CELL_SIZE / 2;
             renderer::Renderer::DrawLine(prev, newPosition, Color::BLUE);
             prev = newPosition;
         }
