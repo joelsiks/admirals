@@ -11,8 +11,8 @@ namespace admirals {
 
 class Vector2 {
 protected:
-    float m_0;
-    float m_1;
+    float m_0 = 0;
+    float m_1 = 0;
 
 public:
     Vector2() noexcept;
@@ -130,7 +130,7 @@ public:
 
 class Vector3 : public Vector2 {
 protected:
-    float m_2;
+    float m_2 = 0;
 
 public:
     Vector3() noexcept;
@@ -252,7 +252,7 @@ public:
 
 class Vector4 : public Vector3 {
 protected:
-    float m_3;
+    float m_3 = 0;
 
 public:
     Vector4() noexcept;
@@ -439,6 +439,9 @@ public:
 class Rect {
 public:
     /// @brief Creates a `Rect` object representing an area in 2d space
+    Rect() noexcept;
+
+    /// @brief Creates a `Rect` object representing an area in 2d space
     /// @param position The position of the top-left corner in the `Rect`
     /// @param size The size of the `Rect`
     Rect(const Vector2 &position, const Vector2 &size) noexcept;
@@ -448,11 +451,9 @@ public:
     /// @param y The y-coordinate of the top-left corner in the `Rect`
     /// @param w The width of the `Rect`
     /// @param h The height of the `Rect`
-    Rect(float x, float y, float w, float h) noexcept;
-
-    /// @brief Creates a `Rect` object representing an area in 2d space
-    Rect() noexcept;
-    virtual ~Rect() noexcept;
+    constexpr Rect(float x, float y, float w, float h) noexcept
+        : m_x(x), m_y(y), m_w(w), m_h(h) {}
+    constexpr virtual ~Rect() noexcept {}
 
     /// @brief Checks if a given point is located inside the bounds of the
     /// `Rect`.
@@ -514,7 +515,7 @@ public:
     }
 
 private:
-    float m_x, m_y, m_w, m_h;
+    float m_x, m_y, m_w, m_h = 0;
 };
 
 class Texture {

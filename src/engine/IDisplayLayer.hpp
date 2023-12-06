@@ -28,6 +28,7 @@ public:
     std::vector<std::string> GetDisplayableNames();
 
     void RebuildQuadTree(const Vector2 &windowSize);
+    inline const QuadTree &GetQuadTree() const { return m_quadtree; }
 
 protected:
     OrderedCollection<IInteractiveDisplayable> m_displayables;

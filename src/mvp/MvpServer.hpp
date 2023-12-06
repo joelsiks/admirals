@@ -5,13 +5,11 @@
 // Number of ticks per second
 #define TICK_RATE 1
 
-#define BOARD_SIZE 10
-
 namespace admirals::mvp {
 
 struct PlayerData {
     uint16_t coins = 0;
-    uint16_t baseHealth = BaseMaxHealth;
+    uint16_t baseId = 0;
     uint8_t id = 0;
     uint8_t numShips = 0;
     std::map<uint16_t, ShipData> ships = {};
@@ -60,7 +58,7 @@ private:
     PlayerData m_playerBottom;
 
     // 2D array of ship ids
-    uint16_t m_board[BOARD_SIZE][BOARD_SIZE] = {};
+    uint16_t m_board[BoardSize][BoardSize] = {};
 
     int m_connectedPlayers = 0;
     bool m_gameStarted = false;

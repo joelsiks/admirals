@@ -4,7 +4,7 @@
 using namespace admirals;
 
 // Vector 2
-Vector2::Vector2() noexcept : Vector2(0) {}
+Vector2::Vector2() noexcept {}
 
 Vector2::Vector2(float v) noexcept : Vector2(v, v) {}
 
@@ -15,7 +15,7 @@ Vector2::Vector2(float x, float y) noexcept {
 Vector2::~Vector2() noexcept {}
 
 // Vector 3
-Vector3::Vector3() noexcept : Vector3(0) {}
+Vector3::Vector3() noexcept {}
 
 Vector3::Vector3(float v) noexcept : Vector3(v, v, v) {}
 
@@ -26,7 +26,7 @@ Vector3::Vector3(float x, float y, float z) noexcept : Vector2(x, y) {
 Vector3::~Vector3() noexcept {}
 
 // Vector 4
-Vector4::Vector4() noexcept : Vector4(0) {}
+Vector4::Vector4() noexcept {}
 
 Vector4::Vector4(float v) noexcept : Vector4(v, v, v, v) {}
 
@@ -39,17 +39,13 @@ Vector4::~Vector4() noexcept {}
 
 // Rect
 
+Rect::Rect() noexcept {}
+
 Rect::Rect(const Vector2 &position, const Vector2 &size) noexcept
     : Rect(position.x(), position.y(), size.x(), size.y()) {}
 
-Rect::Rect(float x, float y, float w, float h) noexcept
-    : m_x(x), m_y(y), m_w(w), m_h(h) {}
-
-Rect::Rect() noexcept : Rect(0, 0, 0, 0) {}
-Rect::~Rect() noexcept {}
-
 // Color
-Color::Color() noexcept : Color(0) {}
+Color::Color() noexcept {}
 
 Color::Color(float r, float g, float b, float a) noexcept
     : Vector4(r, g, b, a) {}

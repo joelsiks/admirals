@@ -52,7 +52,7 @@ public:
         return res;
     }
 
-private:
+protected:
     static inline float GetGridScale(const Vector2 &windowSize) {
         const float dim =
             std::min(windowSize.x() + GameData::CellSize * 2, windowSize.y());

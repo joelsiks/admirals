@@ -1,19 +1,16 @@
 #pragma once
-#include "objects/Sprite.hpp"
+#include "objects/Ship.hpp"
 
 namespace admirals::mvp::objects {
 
-class Base : public Sprite {
+class Base : public Ship {
 public:
-    Base(const std::string &name, const Texture &source, float order = 0,
-         const Rect &bounds = Rect());
+    Base(const ShipData &data, const Vector2 &size, const Texture &source);
+    ~Base() override;
 
+    inline void OnUpdate(const EngineContext &ctx) override {}
+    inline void OnClick(events::MouseClickEventArgs &args) override {}
     void Render(const EngineContext &ctx) const override;
-
-    inline void SetHealth(float health) { m_health = health; }
-
-private:
-    float m_health;
 };
 
 } // namespace admirals::mvp::objects

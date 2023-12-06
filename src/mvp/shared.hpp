@@ -23,13 +23,14 @@ public:
     inline static std::string selectedShip;
     inline static Vector2 mousePosition;
 
-    inline static uint16_t playerId;
+    inline static uint16_t PlayerId = 0;
+    inline static bool IsTopPlayer = false;
     static constexpr float SpriteSize = 64;
     static constexpr float CellSize = 64;
     static constexpr float HealthBarSize = 10;
     static constexpr int GridCells = 10;
     static constexpr float GridSize = GameData::CellSize * GameData::GridCells;
-    inline static const Rect GridArea =
+    static constexpr Rect GridArea =
         Rect(0, GameData::CellSize, GameData::GridSize, GameData::GridSize);
     static constexpr float TotalHeight =
         GameData::GridSize + GameData::CellSize * 2;

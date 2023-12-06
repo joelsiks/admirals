@@ -151,6 +151,27 @@ void MvpServer::StartGame() {
     if (m_debug) {
         std::cout << "Starting game" << std::endl;
     }
+    const auto baseData = ShipInfoMap[ShipType::Base];
+
+    // Add top player base
+    const ShipData baseTop =
+        ShipData(m_shipID++, ShipType::Base, baseData.TopSpawns[0].x,
+                 baseData.TopSpawns[0].y, baseData.Health, m_playerTop.id);
+    m_playerTop.baseId = baseTop.id;
+    m_playerTop.ships[baseTop.id] = baseTop;
+    m_playerTop.numShips++;
+    m_board[baseData.TopSpawns[0].x][baseData.TopSpawns[0].y] = baseTop.id;
+
+    // Add bottom player base
+    const ShipData baseBottom = ShipData(
+        m_shipID++, ShipType::Base, baseData.BottomSpawns[0].x,
+        baseData.BottomSpawns[0].y, baseData.Health, m_playerBottom.id);
+    m_playerBottom.baseId = baseBottom.id;
+    m_playerBottom.ships[baseBottom.id] = baseBottom;
+    m_playerBottom.numShips++;
+    m_board[baseData.BottomSpawns[0].x][baseData.BottomSpawns[0].y] =
+        baseBottom.id;
+
     m_gameStarted = true;
     Message msg;
     msg.header.id = NetworkMessageTypes::GameStart;
@@ -232,35 +253,39 @@ void MvpServer::BuyShip(std::shared_ptr<Connection> &client, Message &message) {
     message >> type;
 
     const uint32_t clientID = client->GetID();
-    PlayerData &player =
-        clientID == m_playerTop.id ? m_playerTop : m_playerBottom;
+    const bool isTopPlayer = clientID == m_playerTop.id;
+    PlayerData &player = isTopPlayer ? m_playerTop : m_playerBottom;
     if (player.coins < ShipInfoMap[type].Cost) {
         return;
     }
 
-    // Assumed that the ship is spawned besides the base
-    // Could do other logic instead
-    // Ship spawn location is (1, 0) or (-2, -1)
-    const int x = clientID == m_playerTop.id ? 1 : BOARD_SIZE - 2;
-    const int y = clientID == m_playerTop.id ? 0 : BOARD_SIZE - 1;
+    // Check if there is a ship in the way
+    bool hasValidSpawnLocation = false;
+    Location spawnLocation;
+    const auto *spawns = isTopPlayer ? ShipInfoMap[type].TopSpawns
+                                     : ShipInfoMap[type].BottomSpawns;
+    for (int i = 0; i < ShipInfoMap[type].NumberOfSpawnLocations; i++) {
+        if (!ShipAtLocation(spawns[i].x, spawns[i].y)) {
+            hasValidSpawnLocation = true;
+            spawnLocation = {spawns[i].x, spawns[i].y};
+            break;
+        }
+    }
 
     if (m_debug) {
         std::cout << "Player " << clientID << " bought ship " << type << "at ("
-                  << x << ", " << y << ")\n";
+                  << spawnLocation.x << ", " << spawnLocation.y << ")\n";
     }
 
-    // Check if there is a ship in the way
-    if (ShipAtLocation(x, y)) {
-        return;
+    if (hasValidSpawnLocation) {
+        const ShipData ship(m_shipID++, type, spawnLocation.x, spawnLocation.y,
+                            ShipInfoMap[type].Health, clientID);
+
+        player.coins -= ShipInfoMap[type].Cost;
+        player.ships[ship.id] = ship;
+        player.numShips++;
+        m_board[spawnLocation.x][spawnLocation.y] = ship.id;
     }
-
-    const ShipData ship(m_shipID++, type, x, y, ShipInfoMap[type].Health,
-                        clientID);
-
-    player.coins -= ShipInfoMap[type].Cost;
-    player.ships[ship.id] = ship;
-    player.numShips++;
-    m_board[x][y] = ship.id;
 }
 
 void MvpServer::MoveShip(std::shared_ptr<Connection> client, Message &message) {
@@ -275,7 +300,7 @@ void MvpServer::MoveShip(std::shared_ptr<Connection> client, Message &message) {
     }
 
     // Must be within the board
-    if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) {
+    if (x < 0 || x >= BoardSize || y < 0 || y >= BoardSize) {
         return;
     }
 
@@ -311,8 +336,8 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
     if (m_gamePaused) {
         return;
     }
-    uint16_t id, targetID;
-
+    uint16_t id;
+    uint16_t targetID;
     message >> targetID >> id;
 
     // Ship ID 0 is invalid
@@ -320,7 +345,7 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
         return;
     }
 
-    int clientID = client->GetID();
+    const int clientID = client->GetID();
     PlayerData &player =
         clientID == m_playerTop.id ? m_playerTop : m_playerBottom;
     PlayerData &targetPlayer =
@@ -343,34 +368,17 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
 
 void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
     const bool isTopPlayer = ship.owner == m_playerTop.id;
-    std::map<uint16_t, admirals::mvp::ShipData> &enemyShips =
-        isTopPlayer ? m_playerBottom.ships : m_playerTop.ships;
-    for (int y = ship.y - 1; y <= ship.y + 1; y++) {
-        if (y < 0 || y >= BOARD_SIZE) {
+    auto &enemy = isTopPlayer ? m_playerBottom : m_playerTop;
+    auto &enemyShips = enemy.ships;
+
+    for (int y = ship.location.y - 1; y <= ship.location.y + 1; y++) {
+        if (y < 0 || y >= BoardSize) {
             continue;
         }
 
-        for (int x = ship.x - 1; x <= ship.x + 1; x++) {
-            if (x < 0 || x >= BOARD_SIZE) {
+        for (int x = ship.location.x - 1; x <= ship.location.x + 1; x++) {
+            if (x < 0 || x >= BoardSize) {
                 continue;
-            }
-
-            // If bottom player, damage top player base if nearby
-            if (!isTopPlayer && x == 0 && y == 1) {
-                if (m_playerTop.baseHealth < ShipInfoMap[ship.type].Damage) {
-                    m_playerTop.baseHealth = 0;
-                } else {
-                    m_playerTop.baseHealth -= ShipInfoMap[ship.type].Damage;
-                }
-            }
-
-            // If top player, damage bottom player base if nearby
-            if (isTopPlayer && x == BOARD_SIZE - 1 && y == BOARD_SIZE - 2) {
-                if (m_playerBottom.baseHealth < ShipInfoMap[ship.type].Damage) {
-                    m_playerBottom.baseHealth = 0;
-                } else {
-                    m_playerBottom.baseHealth -= ShipInfoMap[ship.type].Damage;
-                }
             }
 
             const uint16_t shipId = m_board[x][y];
@@ -391,8 +399,8 @@ void MvpServer::ProcessShips(
     // TODO: Process ship actions correctly
     for (auto &ship : ships) {
         if (ship.second.action == ShipAction::Move &&
-            ship.second.moveData.actionY == ship.second.y &&
-            ship.second.moveData.actionX == ship.second.x) {
+            ship.second.moveData.actionY == ship.second.location.y &&
+            ship.second.moveData.actionX == ship.second.location.x) {
             ship.second.action = ShipAction::None;
             continue;
         }
@@ -407,10 +415,11 @@ void MvpServer::ProcessShips(
                        [ship.second.moveData.actionY] != 0) {
                 continue;
             }
-            m_board[ship.second.x][ship.second.y] = 0;
-            ship.second.x = ship.second.moveData.actionX;
-            ship.second.y = ship.second.moveData.actionY;
-            m_board[ship.second.x][ship.second.y] = ship.second.id;
+            m_board[ship.second.location.x][ship.second.location.y] = 0;
+            ship.second.location.x = ship.second.moveData.actionX;
+            ship.second.location.y = ship.second.moveData.actionY;
+            m_board[ship.second.location.x][ship.second.location.y] =
+                ship.second.id;
             break;
         default:
             break;
@@ -425,7 +434,7 @@ void MvpServer::ProcessDeadShips(
         if (ship.health == 0) {
             const auto owner = ship.owner;
             (owner == m_playerTop.id ? m_playerTop : m_playerBottom).numShips--;
-            m_board[ship.x][ship.y] = 0;
+            m_board[ship.location.x][ship.location.y] = 0;
             it = ships.erase(it);
         } else {
             it++;
@@ -436,12 +445,12 @@ void MvpServer::ProcessDeadShips(
 void MvpServer::BroadcastState() {
     Message msg;
     msg.header.id = NetworkMessageTypes::BoardUpdate;
-    msg << m_turn << m_playerTop.coins << m_playerBottom.coins
-        << m_playerTop.baseHealth << m_playerBottom.baseHealth;
+    msg << m_turn << m_playerTop.coins << m_playerBottom.coins;
 
     for (auto &ship : m_playerTop.ships) {
         msg << ship.second;
     }
+
     for (auto &ship : m_playerBottom.ships) {
         msg << ship.second;
     }
@@ -456,9 +465,6 @@ void MvpServer::BroadcastState() {
                   << static_cast<int>(m_playerTop.numShips)
                   << " Player 2 ships: "
                   << static_cast<int>(m_playerBottom.numShips) << std::endl;
-        std::cout << "Player 1 base health: " << m_playerTop.baseHealth
-                  << " Player 2 base health: " << m_playerBottom.baseHealth
-                  << std::endl;
     }
 
     MessageAllClients(msg);
