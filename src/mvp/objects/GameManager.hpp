@@ -8,6 +8,7 @@
 namespace admirals::mvp::objects {
 
 class NetworkManager;
+class MenuManager;
 
 class CoinsChangedEventArgs : public events::EventArgs {
 public:
@@ -41,9 +42,10 @@ public:
                          uint16_t port = 60000, size_t maxTries = -1);
 
     void StartGame() { m_gameStarted = true; }
-    void StopGame();
-    void PauseGame() { m_gamePaused = true; }
-    void ResumeGame() { m_gamePaused = false; }
+    void StopGame(uint8_t winner);
+    void AbortGame();
+    void PauseGame();
+    void ResumeGame();
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }
@@ -85,6 +87,7 @@ private:
     Vector2 m_cellSize = Vector2(GameData::CellSize);
 
     std::shared_ptr<NetworkManager> m_networkManager;
+    std::shared_ptr<MenuManager> m_menuManager;
 
     bool m_debug = true;
 };

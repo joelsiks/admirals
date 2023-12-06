@@ -125,6 +125,9 @@ void MvpServer::ProcessTurn() {
     ProcessDeadShips(m_playerTop.ships);
     ProcessDeadShips(m_playerBottom.ships);
 
+    // Check if player has won
+    ProcessWinCondition();
+
     // Broadcast state
     BroadcastState();
 }
@@ -178,7 +181,7 @@ void MvpServer::StartGame() {
     MessageAllClients(msg);
 }
 
-void MvpServer::StopGame() {
+void MvpServer::StopGame(uint8_t winner) {
     if (m_debug) {
         std::cout << "Stopping game" << std::endl;
     }
@@ -187,6 +190,7 @@ void MvpServer::StopGame() {
     // ResetGame();
     Message msg;
     msg.header.id = NetworkMessageTypes::GameStop;
+    msg << winner;
     MessageAllClients(msg);
 }
 
@@ -439,6 +443,26 @@ void MvpServer::ProcessDeadShips(
         } else {
             it++;
         }
+    }
+}
+
+void MvpServer::ProcessWinCondition() {
+    const bool playerTopWon =
+        m_playerBottom.ships[m_playerBottom.baseId].health == 0;
+    const bool playerBottomWon =
+        m_playerTop.ships[m_playerTop.baseId].health == 0;
+
+    if (playerTopWon && playerBottomWon) {
+        StopGame(0); // TODO: Find better value
+        return;
+    }
+    if (playerTopWon) {
+        StopGame(m_playerTop.id);
+        return;
+    }
+    if (playerBottomWon) {
+        StopGame(m_playerBottom.id);
+        return;
     }
 }
 

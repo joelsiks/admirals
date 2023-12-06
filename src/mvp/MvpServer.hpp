@@ -37,7 +37,7 @@ private:
     bool ShipAtLocation(int x, int y);
     bool ShipExists(PlayerData &player, uint16_t id);
     void StartGame();
-    void StopGame();
+    void StopGame(uint8_t winner = 0);
     void PauseGame();
     void ResumeGame();
     void UpdatePlayer(uint32_t oldOwner, uint32_t newOwner);
@@ -51,6 +51,7 @@ private:
     void DamageNearbyEnemies(admirals::mvp::ShipData &ship);
     void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void ProcessDeadShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
+    void ProcessWinCondition();
     void BroadcastState();
 
     uint16_t m_turn = 0;
