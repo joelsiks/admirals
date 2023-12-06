@@ -7,6 +7,9 @@
 
 #define BOARD_SIZE 10
 
+#define PASSIVE_INCOME 2
+#define ISLAND_INCOME 5
+
 namespace admirals::mvp {
 
 struct PlayerData {
@@ -50,9 +53,9 @@ private:
                   admirals::net::Message &message);
     void AttackShip(std::shared_ptr<admirals::net::Connection> client,
                     admirals::net::Message &message);
-    void CheckTreasureIsland(int treasure_x, int treasure_y,
-                             PlayerData &player);
-    void ProcessGoldGeneration(PlayerData &player);
+    void IncrementGoldByShipId(uint16_t shipId);
+    void CheckTreasureIsland(int treasure_x, int treasure_y);
+    void ProcessGoldGeneration();
     void DamageNearbyEnemies(admirals::mvp::ShipData &ship);
     void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void ProcessDeadShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);

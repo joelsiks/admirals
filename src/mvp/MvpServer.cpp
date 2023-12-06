@@ -113,13 +113,12 @@ void MvpServer::ProcessTurn() {
 
     // Give coins every second
     if (m_turn % TICK_RATE == 0) {
-        m_playerTop.coins += 2;
-        m_playerBottom.coins += 2;
+        m_playerTop.coins += PASSIVE_INCOME;
+        m_playerBottom.coins += PASSIVE_INCOME;
     }
 
     // Give coins from tresure islands
-    ProcessGoldGeneration(m_playerTop);
-    ProcessGoldGeneration(m_playerBottom);
+    ProcessGoldGeneration();
 
     // Process ship actions
     ProcessShips(m_playerTop.ships);
@@ -345,30 +344,34 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
     ship.attackTargetID = targetID;
 }
 
-void MvpServer::CheckTreasureIsland(int treasure_x, int treasure_y,
-                                    PlayerData &player) {
-    std::map<uint16_t, admirals::mvp::ShipData> &shipList = player.ships;
-    for (int y = treasure_y - 1; y <= treasure_y + 1; y++) {
-        if (y < 0 || y >= BOARD_SIZE) {
-            continue;
-        }
-        for (int x = treasure_x - 1; x <= treasure_x + 1; x++) {
-            if (x < 0 || x >= BOARD_SIZE) {
-                continue;
-            }
-            const uint16_t shipId = m_board[x][y];
-            if (shipId != 0) {
-                if (auto it = shipList.find(shipId); it != shipList.end()) {
-                    player.coins += 5;
-                }
-            }
+void MvpServer::IncrementGoldByShipId(uint16_t shipId) {
+    // find invalid shipIds
+    if (shipId != 0) {
+        if (m_playerTop.ships.contains(shipId)) {
+            if (m_playerTop.ships[shipId].action == ShipAction::None)
+                m_playerTop.coins += ISLAND_INCOME;
+        } else {
+            // m_playerBottom
+            if (m_playerBottom.ships[shipId].action == ShipAction::None)
+                m_playerBottom.coins += ISLAND_INCOME;
         }
     }
 }
 
-void MvpServer::ProcessGoldGeneration(PlayerData &player) {
-    CheckTreasureIsland(2, 7, player);
-    CheckTreasureIsland(7, 2, player);
+void MvpServer::CheckTreasureIsland(int treasure_x, int treasure_y) {
+    for (int y = treasure_y - 1; y <= treasure_y + 1; y++) {
+        for (int x = treasure_x - 1; x <= treasure_x + 1; x++) {
+            if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) {
+                continue;
+            }
+            IncrementGoldByShipId(m_board[x][y]);
+        }
+    }
+}
+
+void MvpServer::ProcessGoldGeneration() {
+    CheckTreasureIsland(2, 7);
+    CheckTreasureIsland(7, 2);
 }
 
 void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
