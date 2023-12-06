@@ -98,7 +98,7 @@ public:
     /// destination, or an empty queue if no valid path exists.
     static std::deque<Vector2>
     FindPath(const Vector2 &start, const Vector2 &dest, const NavMesh &navMesh,
-             bool validateStart = false, bool validateDest = false);
+             bool validateStart = false, bool validateDest = true);
 };
 
 } // namespace admirals
