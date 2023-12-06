@@ -24,7 +24,6 @@ public:
     inline static Vector2 mousePosition;
 
     inline static uint16_t PlayerId = 0;
-    inline static bool IsTopPlayer = false;
     static constexpr float SpriteSize = 64;
     static constexpr float CellSize = 64;
     static constexpr float HealthBarSize = 10;

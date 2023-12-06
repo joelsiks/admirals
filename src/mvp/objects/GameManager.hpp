@@ -1,9 +1,9 @@
 #pragma once
-#include "GameObject.hpp"
 #include "CommonTypes.hpp"
+#include "GameData.hpp"
+#include "GameObject.hpp"
 #include "events/EventSystem.hpp"
 #include "objects/Ship.hpp"
-#include "GameData.hpp"
 
 namespace admirals::mvp::objects {
 
@@ -51,6 +51,7 @@ public:
     uint32_t GetPlayerId() const { return m_playerId; }
     void SetPlayerId(uint32_t id, bool isTopPlayer) {
         m_playerId = id;
+        m_isTopPlayer = isTopPlayer;
         PlayerIdChangedEventArgs args(m_playerId, isTopPlayer);
         onPlayerIdChanged.Invoke(this, args);
     }

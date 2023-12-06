@@ -4,6 +4,7 @@
 #include "UI/menu/Menu.hpp"
 #include "UI/menu/MenuOption.hpp"
 
+#include "GameData.hpp"
 #include "objects/Background.hpp"
 #include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
@@ -11,7 +12,7 @@
 #include "objects/MenuMovingShip.hpp"
 #include "objects/Quad.hpp"
 #include "objects/Ship.hpp"
-#include "GameData.hpp"
+#include "objects/TreasureIsland.hpp"
 
 // Undefine macro from msys
 #undef TRANSPARENT
@@ -26,6 +27,7 @@ const float GridHeight = GameData::GridSize + 2 * GameData::CellSize;
 const Vector2 cellSize = Vector2(GameData::CellSize);
 const Color blue = Color::FromHEX("#3283cf");
 const Color green = Color::FromHEX("#087311");
+const Color gold = Color::FromHEX("#FFD700");
 
 void SwapEngineScene() {
     GameData::g_sceneStore =
@@ -34,7 +36,7 @@ void SwapEngineScene() {
     GameData::engine->ToggleLayer(GameData::gameUIIdx);
 }
 
-void CreateGameBoard() {
+void CreateGameBoard(const Texture &atlas) {
     GameData::engine->MakeGameObject<Background>("background", blue);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
@@ -54,6 +56,14 @@ void CreateGameBoard() {
              static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
              GameData::CellSize * 3),
         green);
+    int index = 0;
+    for (const auto &islandLocation : IslandLocations) {
+        GameData::engine->MakeGameObject<TreasureIsland>(
+            "treasureIsland" + std::to_string(index++), atlas, 2,
+            Rect(static_cast<float>(islandLocation.x),
+                 static_cast<float>(islandLocation.y), GameData::CellSize,
+                 GameData::CellSize));
+    }
 }
 
 void CreateGameUI(const Texture &atlas,
@@ -66,7 +76,6 @@ void CreateGameUI(const Texture &atlas,
     idText->SetDisplayOrientation(UI::DisplayOrientation::UpperRight);
     gameManager->onPlayerIdChanged += [idText](void *, auto e) {
         GameData::PlayerId = e.playerId;
-        GameData::IsTopPlayer = e.isTopPlayer;
         idText->SetText("Player: " + std::to_string(e.playerId));
     };
     gameUI->AddDisplayable(idText);
@@ -165,13 +174,12 @@ int main(int, char *[]) {
     GameData::engine =
         std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
 
-    CreateGameBoard();
-
     const Texture atlas =
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
     auto gameManager =
         GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
 
+    CreateGameBoard(atlas);
     CreateGameUI(atlas, gameManager);
 
     CreateStartMenu(gameManager);

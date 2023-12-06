@@ -2,10 +2,18 @@
 
 #include <map>
 #include <stdint.h>
+#include <vector>
 
 namespace admirals::mvp {
 
+struct Location {
+    uint8_t x = 0;
+    uint8_t y = 0;
+};
+
 const uint16_t BoardSize = 10;
+const std::vector<Location> IslandLocations = {{2, BoardSize - 3},
+                                               {BoardSize - 3, 2}};
 
 namespace NetworkMessageTypes {
 enum NetworkMessageTypes : uint16_t {
@@ -29,11 +37,6 @@ enum ShipType : uint16_t { None, Base, Cruiser, Destroyer };
 namespace ShipAction {
 enum ShipAction : uint16_t { None, Move, Attack };
 }
-
-struct Location {
-    uint8_t x = 0;
-    uint8_t y = 0;
-};
 
 struct ShipInfo {
     uint16_t Damage;

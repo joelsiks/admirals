@@ -1,6 +1,6 @@
 #include "objects/Ship.hpp"
-#include "PathFinding.hpp"
 #include "GameData.hpp"
+#include "PathFinding.hpp"
 
 #include <sstream>
 
@@ -129,7 +129,7 @@ void Ship::OnUpdate(const EngineContext &) {
             boardBounds, GetSize(),
             GameData::CellSize * GridObject::GetGridScale(), PathValidator);
         m_path = PathFinding::FindPath(GetPosition(), GameData::mousePosition,
-                                       *m_navMesh);
+                                       *m_navMesh, false, false);
         HandlePathTarget();
     }
 
