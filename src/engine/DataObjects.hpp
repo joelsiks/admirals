@@ -523,7 +523,10 @@ public:
     }
 
 private:
-    float m_x, m_y, m_w, m_h = 0;
+    float m_x = 0;
+    float m_y = 0;
+    float m_w = 0;
+    float m_h = 0;
 };
 
 class Texture {

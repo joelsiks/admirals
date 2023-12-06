@@ -1,6 +1,6 @@
 #include "objects/Quad.hpp"
-#include "Renderer.hpp"
 #include "GameData.hpp"
+#include "Renderer.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;

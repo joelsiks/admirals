@@ -1,9 +1,9 @@
 #pragma once
 #include "Client.hpp"
+#include "GameData.hpp"
 #include "GameObject.hpp"
 #include "UI/TextElement.hpp"
 #include "objects/GameManager.hpp"
-#include "GameData.hpp"
 
 namespace admirals::mvp::objects {
 
