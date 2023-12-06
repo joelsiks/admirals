@@ -121,12 +121,12 @@ void MvpServer::ProcessTurn() {
     ProcessShips(m_playerTop.ships);
     ProcessShips(m_playerBottom.ships);
 
+    // Check if player has won
+    ProcessWinCondition();
+
     // Remove ships with 0 health
     ProcessDeadShips(m_playerTop.ships);
     ProcessDeadShips(m_playerBottom.ships);
-
-    // Check if player has won
-    ProcessWinCondition();
 
     // Broadcast state
     BroadcastState();
