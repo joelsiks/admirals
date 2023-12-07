@@ -1,5 +1,5 @@
-#include "NetworkManager.hpp"
-#include "GameManager.hpp"
+#include "objects/NetworkManager.hpp"
+#include "MvpServer.hpp"
 #include "commontypes.hpp"
 
 using namespace admirals::mvp::objects;
@@ -7,26 +7,59 @@ using namespace admirals::net;
 
 NetworkManager::NetworkManager(const std::string &name,
                                GameManager &gameManager)
-    : GameObject(name, 0, Vector3(0)), m_gameManager(gameManager) {}
+    : GameObject(name), m_gameManager(gameManager) {}
 
-NetworkManager::~NetworkManager() {}
-
-void NetworkManager::OnStart() {
-    printf("NetworkManager::OnStart()\n");
-
-    // Should probably be called later and not here
-    while (!IsConnected()) {
-        Connect("127.0.0.1", "60000");
-        printf("Waiting for connection...\n");
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+NetworkManager::~NetworkManager() {
+    if (m_isHost) {
+        m_serverThread.join();
     }
-    printf("Connected!\n");
-
-    // Should probably be called later and not here
-    ReadyUp();
 }
 
-void NetworkManager::OnUpdate() { HandleMessages(); }
+void NetworkManager::OnStart(const EngineContext &) {}
+
+void NetworkManager::OnUpdate(const EngineContext &) { HandleMessages(); }
+
+bool NetworkManager::StartAndConnectToServer(uint16_t port,
+                                             const size_t maxTries) {
+    m_isHost = true;
+
+    m_serverThread = std::thread([this, port]() {
+        MvpServer server(port);
+        server.Start();
+        server.EnterServerLoop();
+    });
+
+    return ConnectToServer("127.0.0.1", port, maxTries);
+}
+
+bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
+                                     const size_t maxTries) {
+    for (size_t i = 0; i < maxTries; i++) {
+        if (m_debug) {
+            printf("Trying to connect to the server...\n");
+        }
+
+        Connect(ip, std::to_string(port));
+        if (IsConnected()) {
+            if (m_debug) {
+                printf("Connected to the server\n");
+            }
+
+            // Should probably be called later by the user conciously and not
+            // here
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            ReadyUp();
+
+            return true;
+        }
+    }
+
+    if (m_debug) {
+        printf("Failed to connect to the server\n");
+    }
+
+    return false;
+}
 
 void NetworkManager::BuyShip(uint8_t type) {
     if (m_debug)
@@ -69,6 +102,12 @@ void NetworkManager::ReadyUp() {
 }
 
 void NetworkManager::HandleMessages() {
+    if (!IsConnected()) {
+        if (m_gameManager.GameStarted())
+            m_gameManager.AbortGame();
+        return;
+    }
+
     const size_t size = Incoming().Size();
     for (size_t i = 0; i < size; i++) {
         auto msg = Incoming().Front().message;
@@ -86,7 +125,17 @@ void NetworkManager::HandleMessages() {
         }
 
         case NetworkMessageTypes::GameStop: {
-            GameStop();
+            GameStop(msg);
+            break;
+        }
+
+        case NetworkMessageTypes::GamePause: {
+            GamePause();
+            break;
+        }
+
+        case NetworkMessageTypes::GameResume: {
+            GameResume();
             break;
         }
 
@@ -102,13 +151,16 @@ void NetworkManager::HandleMessages() {
 
 void NetworkManager::ReadyUpResponse(Message &msg) {
     uint32_t playerId;
-    msg >> playerId;
+    uint8_t isTopPlayer;
+    msg >> isTopPlayer >> playerId;
 
     m_playerId = playerId;
     m_gameManager.SetPlayerId(playerId);
+    m_gameManager.SetIsTopPlayer(static_cast<bool>(isTopPlayer));
 
     if (m_debug) {
-        printf("ReadyConfirmation: %d\n", playerId);
+        printf("ReadyConfirmation: %d, Is top player: %d\n", playerId,
+               isTopPlayer);
     }
 }
 
@@ -118,49 +170,64 @@ void NetworkManager::GameStart() {
     m_gameManager.StartGame();
 }
 
-void NetworkManager::GameStop() {
+void NetworkManager::GameStop(Message &msg) {
+    uint8_t winner;
+    msg >> winner;
     if (m_debug)
         printf("StopGame\n");
-    m_gameManager.StopGame();
+    m_gameManager.StopGame(winner);
+}
+
+void NetworkManager::GamePause() {
+    if (m_debug)
+        printf("PauseGame\n");
+    m_gameManager.PauseGame();
+}
+
+void NetworkManager::GameResume() {
+    if (m_debug)
+        printf("ResumeGame\n");
+    m_gameManager.ResumeGame();
 }
 
 void NetworkManager::UpdateBoard(Message &msg) {
-    uint8_t player1Ships;
-    uint8_t player2Ships;
-    msg >> player1Ships >> player2Ships;
+    uint8_t playerTopShips;
+    uint8_t playerBottomShips;
+    msg >> playerBottomShips >> playerTopShips;
 
     std::map<uint16_t, ShipData> ships;
-    for (int i = 0; i < player1Ships + player2Ships; i++) {
+    for (int i = 0; i < playerTopShips + playerBottomShips; i++) {
         ShipData ship;
         msg >> ship;
         ships[ship.id] = ship;
     }
 
     uint16_t turn;
-    uint16_t player1Coins;
-    uint16_t player2Coins;
-    uint16_t player1BaseHealth;
-    uint16_t player2BaseHealth;
-    msg >> player2BaseHealth >> player1BaseHealth >> player2Coins >>
-        player1Coins >> turn;
+    uint16_t playerTopCoins;
+    uint16_t playerBottomCoins;
+    uint16_t playerTopBaseHealth;
+    uint16_t playerBottomBaseHealth;
+    msg >> playerBottomBaseHealth >> playerTopBaseHealth >> playerBottomCoins >>
+        playerTopCoins >> turn;
 
-    const int player_coins = m_playerId % 2 == 0 ? player1Coins : player2Coins;
+    const bool isTopPlayer = m_gameManager.GetIsTopPlayer();
+    const int player_coins = isTopPlayer ? playerTopCoins : playerBottomCoins;
 
-    const int base_health =
-        m_playerId % 2 == 0 ? player1BaseHealth : player2BaseHealth;
-    const int enemy_base_health =
-        m_playerId % 2 == 0 ? player2BaseHealth : player1BaseHealth;
+    const int baseHealth =
+        isTopPlayer ? playerTopBaseHealth : playerBottomBaseHealth;
+    const int enemyBaseHealth =
+        isTopPlayer ? playerBottomBaseHealth : playerTopBaseHealth;
 
     if (m_debug) {
         printf("Turn: %d\n", turn);
-        printf("Player 1 coins: %d\tPlayer 2 coins: %d\n", player1Coins,
-               player2Coins);
-        printf("Player 1 ships: %d\tPlayer 2 ships: %d\n", player1Ships,
-               player2Ships);
+        printf("Player 1 coins: %d\tPlayer 2 coins: %d\n", playerTopCoins,
+               playerBottomCoins);
+        printf("Player 1 ships: %d\tPlayer 2 ships: %d\n", playerTopShips,
+               playerBottomShips);
         printf("Player 1 base health: %d\tPlayer 2 base health: %d\n",
-               player1BaseHealth, player2BaseHealth);
+               playerTopBaseHealth, playerBottomBaseHealth);
     }
 
-    m_gameManager.UpdateBoard(turn, player_coins, base_health,
-                              enemy_base_health, ships);
+    m_gameManager.UpdateBoard(turn, player_coins, baseHealth, enemyBaseHealth,
+                              ships);
 }

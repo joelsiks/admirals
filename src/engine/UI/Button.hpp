@@ -3,27 +3,37 @@
 #include <functional>
 
 #include "Element.hpp"
-#include "events/ButtonCLickEvent.hpp"
 #include "events/EventSystem.hpp"
 
 namespace admirals::UI {
 
 class Button : public Element {
 public:
-    events::EventSystem<events::ButtonClickEventArgs> onClick;
+    events::EventSystem<events::MouseClickEventArgs> onClick;
 
     Button(const std::string &name, float order, const std::string &text,
            const Vector2 &size, const Color &bgColor, const Color &fgColor);
 
-    virtual void Render(const Texture &font) override;
+    virtual void Render(const EngineContext &ctx) const override;
 
-    bool HandleEvent(const SDL_Event &event) override;
+    void OnClick(events::MouseClickEventArgs &args) override;
 
-    inline void SetBackgroundColor(const Color &color) { m_bgColor = color; }
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override;
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override;
+
+    virtual void OnHidden() override;
+
+    inline void SetBackgroundColor(const Color &color) {
+        m_bgColor = color;
+        m_bgColorFaded = color * Vector4(1, 1, 1, 0.75);
+    }
+
     inline void SetForegroundColor(const Color &color) { m_fgColor = color; }
 
 protected:
-    Color m_bgColor, m_fgColor;
+    Color m_bgColor, m_bgColorFaded, m_fgColor;
+    bool m_shouldFadeBackground = false;
 };
 
 } // namespace admirals::UI

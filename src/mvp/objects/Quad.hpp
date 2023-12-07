@@ -1,20 +1,16 @@
 #pragma once
-#include "GameObject.hpp"
+#include "objects/GridObject.hpp"
 
 namespace admirals::mvp::objects {
 
-class Quad : public scene::GameObject {
+class Quad : public GridObject {
 public:
-    Quad(const std::string &name, const Vector3 &position, const Vector2 &size,
-         const Color &color);
-
-    void OnUpdate() override;
-    void OnStart() override;
-    void Render(const renderer::RendererContext &r) const override;
+    Quad(const std::string &name, float order = 0, const Rect &bounds = Rect(),
+         const Color &color = Color::WHITE);
+    void Render(const EngineContext &ctx) const override;
 
 private:
     Color m_color;
-    Vector2 m_size;
 };
 
 } // namespace admirals::mvp::objects

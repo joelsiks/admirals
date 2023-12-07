@@ -6,58 +6,41 @@
 #include <SDL_events.h>
 
 #include "DataObjects.hpp"
+#include "IDisplayable.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "IOrdered.hpp"
+#include "UI/Data.hpp"
 
 namespace admirals::UI {
 
-enum DisplayPosition {
-    UpperLeft = 0,
-    UpperRight = 1,
-    LowerLeft = 2,
-    LowerRight = 3,
-    Center = 4,
-};
-
 // General UI element that can be rendered.
-class Element : public IOrdered {
+class Element : public IInteractiveDisplayable {
 public:
     Element(const std::string &name, float order, const std::string &text,
             const Vector2 &size);
 
-    // Getters and setters
-    virtual const Vector2 &GetDisplaySize() const { return m_displaySize; }
-    virtual void SetDisplaySize(const Vector2 size) { m_displaySize = size; }
+    virtual void OnClick(events::MouseClickEventArgs &args) override {}
 
-    virtual const Vector2 &GetDisplayOrigin() const { return m_displayOrigin; }
-    virtual void SetDisplayOrigin(const Vector2 origin) {
-        m_displayOrigin = origin;
+    virtual void OnMouseEnter(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseLeave(events::MouseMotionEventArgs &args) override {}
+    virtual void OnMouseMove(events::MouseMotionEventArgs &args) override {}
+
+    virtual void OnShown() override {}
+    virtual void OnHidden() override {}
+
+    virtual DisplayOrientation GetDisplayOrientation() const {
+        return m_dispOrient;
     }
 
-    virtual DisplayPosition GetDisplayPosition() const { return m_displayPos; }
-    virtual void SetDisplayPosition(DisplayPosition pos) { m_displayPos = pos; }
-
-    // Pure virtual function for rendering the UI element
-    virtual void Render(const Texture &font) = 0;
-
-    // Input handling
-    virtual bool HandleEvent(const SDL_Event &event) { return false; }
-
-    template <typename T>
-    static std::shared_ptr<Element> CreateFromDerived(const T &derivedObject) {
-        // Assuming T is derived from Element
-        std::shared_ptr<Element> element = std::make_shared<T>(derivedObject);
-        return element;
+    virtual void SetDisplayOrientation(DisplayOrientation pos) {
+        m_dispOrient = pos;
     }
 
 protected:
     // Text to be displayed on the Element.
     std::string m_text;
 
-    // Origin and size and for displaying/rendering the element to the screen.
-    Vector2 m_displayOrigin;
-    Vector2 m_displaySize;
-
-    DisplayPosition m_displayPos = DisplayPosition::UpperLeft;
+    DisplayOrientation m_dispOrient = DisplayOrientation::UpperLeft;
 };
 
 } // namespace admirals::UI

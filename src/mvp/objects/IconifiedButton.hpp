@@ -15,17 +15,21 @@ public:
         : UI::Button(name, order, text, size, bgColor, fgColor),
           m_source(source), m_texOffset(texOffset), m_texSize(texSize) {}
 
-    void Render(const Texture &font) override {
-        renderer::Renderer::DrawRectangle(m_displayOrigin, m_displaySize,
-                                          m_bgColor);
+    void Render(const EngineContext &ctx) const override {
+        const Color &renderColor = m_shouldFadeBackground
+                                       ? m_bgColor * Vector4(1, 1, 1, 0.75)
+                                       : m_bgColor;
 
-        renderer::Renderer::DrawRectangleOutline(m_displayOrigin, m_displaySize,
-                                                 1, m_fgColor);
+        renderer::Renderer::DrawRectangle(m_boundingBox, renderColor);
 
-        renderer::Renderer::DrawSprite(m_source, m_displayOrigin, m_texOffset,
-                                       m_texSize, m_displaySize / m_texSize);
+        renderer::Renderer::DrawRectangleOutline(m_boundingBox, 1, m_fgColor);
 
-        renderer::Renderer::DrawText(font, m_displayOrigin, m_fgColor, m_text);
+        renderer::Renderer::DrawSprite(m_source, m_boundingBox.Position(),
+                                       m_texOffset, m_texSize,
+                                       m_boundingBox.Size() / m_texSize);
+
+        renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
+                                     m_fgColor, m_text);
     }
 
 private:

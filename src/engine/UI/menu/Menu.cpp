@@ -1,70 +1,78 @@
 #include "UI/menu/Menu.hpp"
-#include "DataObjects.hpp"
-#include "Renderer.hpp"
 
+#include "Renderer.hpp"
+#include "UI/Data.hpp"
+
+using namespace admirals::UI;
 using namespace admirals::UI::menu;
 
 Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
            const Color &backgroundColor, float topPadding)
-    : m_menuTitle(menuTitle), m_fgColor(foregroundColor),
-      m_bgColor(backgroundColor), m_topPadding(topPadding) {
+    : m_fgColor(foregroundColor), m_bgColor(backgroundColor),
+      m_topPadding(topPadding) {
 
-    const TextOption titleOption(MENU_TITLE_NAME, Menu::commonDepthOrder,
-                                 menuTitle);
+    const auto m_titleOption = std::make_shared<TextOption>(
+        TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle));
 
-    this->AddMenuOption(MenuOption::CreateFromDerived(titleOption));
+    this->AddDisplayable(m_titleOption);
 }
 
-void Menu::AddMenuOption(const std::shared_ptr<MenuOption> &menuOption) {
-    menuOption->SetDisplayPosition(DisplayPosition::Center);
-
-    this->AddElement(static_cast<std::shared_ptr<Element>>(menuOption));
-}
-
-void Menu::Render(const renderer::RendererContext &r) const {
+void Menu::Render(const EngineContext &ctx) const {
 
     float centerPositionOffset = m_topPadding;
 
     // Draw background.
-    renderer::Renderer::DrawRectangle(
-        Vector2(0, 0),
-        Vector2(static_cast<float>(r.windowWidth),
-                static_cast<float>(r.windowHeight)),
-        m_bgColor);
+    renderer::Renderer::DrawRectangle(Vector2(0, 0), ctx.windowSize, m_bgColor);
 
-    for (auto it = m_elements.rbegin(); it != m_elements.rend(); ++it) {
-        auto option = std::dynamic_pointer_cast<MenuOption>(*it);
+    for (auto it = m_displayables.rbegin(); it != m_displayables.rend(); ++it) {
+        if (*it == nullptr) {
+            continue;
+        }
 
-        const DisplayPosition pos = option->GetDisplayPosition();
-        Vector2 displaySize = option->GetDisplaySize();
+        auto element = std::dynamic_pointer_cast<UI::Element>(*it);
+        auto option = std::dynamic_pointer_cast<menu::MenuOption>(element);
 
-        // Calculate the origin with respect to the matching positionOffset.
-        Vector2 origin =
-            DisplayLayout::GetOriginFromDisplayPosition(pos, displaySize, r);
-        origin[1] += centerPositionOffset;
+        // TODO: This should be fixed somewhere else in the future. This is
+        // needed to make sure that all elements are displayed in a center
+        // orientation, even if it is changed externally.
+        option->SetDisplayOrientation(DisplayOrientation::Center);
+
+        const DisplayOrientation orientation = option->GetDisplayOrientation();
+        Vector2 displaySize = option->GetSize();
+
+        // Calculate the position with respect to the matching positionOffset.
+        Vector2 position =
+            GetPositionFromOrientation(orientation, displaySize, ctx);
+        position[1] += centerPositionOffset;
 
         // Update menu-dependent state of the options.
-        option->SetDisplaySize(TextFontSize(option->GetOptionText()));
+        option->SetSize(renderer::Renderer::TextFontSize(
+            option->GetOptionText(), ctx.fontWidth, ctx.fontHeight));
         option->SetTextColor(m_fgColor);
 
-        option->SetDisplayOrigin(origin);
-        option->Render(this->m_font);
+        option->SetPosition(position);
+        option->Render(ctx);
 
         // If we're rendering the menu title, add a line below it.
-        if (option->name() == MENU_TITLE_NAME) {
+        if (option->identifier() == MENU_TITLE_NAME) {
             renderer::Renderer::DrawLine(
-                Vector2(origin[0], origin[1] + displaySize[1]),
-                Vector2(origin[0] + displaySize[0], origin[1] + displaySize[1]),
+                Vector2(position[0], position[1] + displaySize[1]),
+                Vector2(position[0] + displaySize[0],
+                        position[1] + displaySize[1]),
                 m_fgColor);
             centerPositionOffset += MENU_TITLE_LINE_OFFSET;
         }
 
         // If debugging, render an outline around the UI Element.
-        if (r.renderDebugOutlines) {
-            renderer::Renderer::DrawRectangleOutline(origin, displaySize, 2,
+        if (ctx.debug) {
+            renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }
 
         centerPositionOffset += displaySize[1];
+    }
+
+    if (ctx.debug) {
+        m_quadtree.DrawTree();
     }
 }

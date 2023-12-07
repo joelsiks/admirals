@@ -1,30 +1,20 @@
 #pragma once
-#include "GameObject.hpp"
-#include "shared.hpp"
+#include "objects/GridObject.hpp"
 
 namespace admirals::mvp::objects {
 
-class Sprite : public scene::GameObject {
+class Sprite : public GridObject {
 public:
-    Sprite(const std::string &name, const Vector3 &position,
-           const Vector2 &size, const Texture &source, const Vector2 &texOffset,
-           const Vector2 &texSize = Vector2(GameData::SpriteSize));
-    Sprite(const std::string &name, float order, const Vector2 &position,
-           const Vector2 &size, const Texture &source, const Vector2 &texOffset,
+    Sprite(const std::string &name, const Texture &source, float order = 0,
+           const Rect &bounds = Rect(), const Vector2 &texOffset = Vector2(0),
            const Vector2 &texSize = Vector2(GameData::SpriteSize));
 
-    virtual void OnUpdate() override;
-    virtual void OnStart() override;
-    void Render(const renderer::RendererContext &r) const override;
-
-protected:
-    virtual inline Vector2 CalcOrigin() const { return GetPosition(); }
+    void Render(const EngineContext &ctx) const override;
 
 private:
     const Texture &m_source;
     const Vector2 m_texSize;
     const Vector2 m_texOffset;
-    Vector2 m_size;
 };
 
 } // namespace admirals::mvp::objects

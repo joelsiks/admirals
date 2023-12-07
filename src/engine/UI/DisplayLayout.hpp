@@ -1,38 +1,15 @@
 #pragma once
 
-#include <memory>
-#include <vector>
+#include <unordered_set>
 
-#include "InteractiveDrawable.hpp"
-#include "OrderedCollection.hpp"
+#include "IDisplayLayer.hpp"
 #include "UI/Element.hpp"
 
 namespace admirals::UI {
 
-class DisplayLayout : public InteractiveDrawable {
+class DisplayLayout : public IDisplayLayer {
 public:
-    DisplayLayout();
-
-    void Render(const renderer::RendererContext &r) const override;
-    void HandleEvent(SDL_Event &e) override;
-
-    void AddElement(std::shared_ptr<Element> element);
-
-    static Vector2
-    GetOriginFromDisplayPosition(DisplayPosition pos,
-                                 const Vector2 &displaySize,
-                                 const renderer::RendererContext &r);
-
-    inline Vector2 TextFontSize(const std::string &text) const {
-        return Vector2(static_cast<float>(text.length()) * m_fontWidth,
-                       m_fontHeight);
-    }
-
-protected:
-    Texture m_font;
-    float m_fontWidth, m_fontHeight;
-
-    OrderedCollection<Element> m_elements;
+    void Render(const EngineContext &ctx) const override;
 };
 
 } // namespace admirals::UI

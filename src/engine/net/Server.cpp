@@ -84,7 +84,6 @@ void Server::MessageClient(std::shared_ptr<Connection> client,
 
 void Server::MessageAllClients(const Message &message,
                                std::shared_ptr<Connection> ignore_client) {
-    bool client_disconnected = false;
     for (auto &connection : m_connections) {
         // Send the message to all connected clients
         if (connection && connection->IsConnected()) {
@@ -92,20 +91,15 @@ void Server::MessageAllClients(const Message &message,
                 connection->Send(message);
             }
         } else {
-            // If the client is not connected, flag it for removal
-            OnClientDisconnect(connection);
-            connection.reset();
-            client_disconnected = true;
-        }
-    }
+            // Extract and remove the connection
+            std::shared_ptr<Connection> temp = connection;
+            m_connections.erase(
+                std::remove(m_connections.begin(), m_connections.end(), temp),
+                m_connections.end());
 
-    if (client_disconnected) {
-        // Remove all disconnected clients
-        // Reorders the vector so that all bad clients are at the end, then
-        // erases them
-        m_connections.erase(
-            std::remove(m_connections.begin(), m_connections.end(), nullptr),
-            m_connections.end());
+            OnClientDisconnect(temp);
+            temp.reset();
+        }
     }
 }
 

@@ -1,35 +1,32 @@
 #pragma once
 
-#include <memory>
-
-#include "UI/DisplayLayout.hpp"
+#include "IDisplayLayer.hpp"
 #include "UI/menu/MenuOption.hpp"
-#include "events/EventSystem.hpp"
 
 namespace admirals::UI::menu {
 
-class Menu : public DisplayLayout {
+class Menu : public IDisplayLayer {
 public:
     Menu(const std::string &menuTitle, const Color &foregroundColor,
          const Color &backgroundColor, float topPadding = 0);
 
-    void AddMenuOption(const std::shared_ptr<MenuOption> &menuOption);
-
-    void Render(const renderer::RendererContext &r) const override;
+    void Render(const EngineContext &ctx) const override;
 
     inline void SetTextColor(const Color &color) { m_fgColor = color; }
 
-    template <typename T, typename... _Args>
-    inline std::shared_ptr<T> MakeMenuOption(_Args &&..._args) {
-        auto object = std::make_shared<T>(_args...);
-        AddMenuOption(object);
-        return object;
+    inline std::string GetTitle() const {
+        return m_titleOption->GetOptionText();
     }
 
-private:
+    inline void SetTitle(const std::string &title) {
+        m_titleOption->SetText(title);
+    }
+
+    // TODO: This should probably be handled some other way..
     static constexpr float commonDepthOrder = 10;
 
-    std::string m_menuTitle;
+private:
+    std::shared_ptr<TextOption> m_titleOption;
     Color m_fgColor, m_bgColor;
     float m_topPadding;
 };

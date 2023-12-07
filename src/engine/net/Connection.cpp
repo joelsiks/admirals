@@ -35,20 +35,24 @@ void Connection::ConnectToClient(admirals::net::Server *server, uint32_t uid) {
     }
 }
 
-void Connection::HandleConnectToserver(std::error_code ec) {
+bool Connection::HandleConnectToserver(std::error_code ec) {
     if (!ec) {
         // Read the validation number from the server and send it back
         // hashed
         ReadValidation();
+        return true;
     } else {
         std::cout << "Connect failed: " << ec.message() << std::endl;
+        m_socket.close();
+        return false;
     }
 }
 
-void Connection::ConnectToServer(
+bool Connection::ConnectToServer(
     const asio::ip::tcp::resolver::results_type &endpoints) {
-    asio::async_connect(m_socket, endpoints,
-                        BIND_HANDLER(Connection::HandleConnectToserver));
+    asio::error_code ec;
+    asio::connect(m_socket, endpoints, ec);
+    return HandleConnectToserver(ec);
 }
 
 bool Connection::Disconnect() {

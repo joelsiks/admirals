@@ -1,34 +1,29 @@
 #pragma once
 
-#include <memory>
-#include <set>
-#include <vector>
+#include <deque>
+#include <unordered_set>
 
 #include "GameObject.hpp"
-#include "IDrawable.hpp"
-#include "OrderedCollection.hpp"
+#include "IDisplayLayer.hpp"
 
-namespace admirals::scene {
+namespace admirals {
 
-class Scene : public renderer::IDrawable {
+class Scene : public IDisplayLayer {
 public:
-    void AddObject(std::shared_ptr<GameObject> object);
-    void RemoveObject(std::shared_ptr<GameObject> object);
-    void RemoveObject(const std::string &key);
-    bool ExistObject(std::shared_ptr<GameObject> object);
-    bool ExistObject(const std::string &key);
-    void Render(const renderer::RendererContext &r) const override;
-    int NumObjectsInScene();
+    virtual void Render(const EngineContext &ctx) const override;
 
-    std::vector<std::string> GetSceneObjectNames();
-    void OnStart();
-    void OnUpdate();
+    virtual void OnStart(const EngineContext &ctx);
+    virtual void OnUpdate(const EngineContext &ctx);
 
     bool IsInitialized() const { return m_isInitialized; }
 
+    std::deque<Vector2> FindPath(const Vector2 &start, const Vector2 &dest,
+                                 const Vector2 &pathSize,
+                                 const std::unordered_set<float> &checkedOrders,
+                                 float detailLevel) const;
+
 private:
-    OrderedCollection<GameObject> m_objects;
     bool m_isInitialized;
 };
 
-} // namespace admirals::scene
+} // namespace admirals
