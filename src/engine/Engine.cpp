@@ -114,6 +114,7 @@ void Engine::HandleDeferredToggleLayers() {
             break;
         case DeferType::Delete:
             m_activeLayers.erase(layerIdx);
+            m_layers.erase(layerIdx);
             break;
         case DeferType::Deactivate:
             if (m_layers.contains(layerIdx)) {

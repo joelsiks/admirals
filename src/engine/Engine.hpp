@@ -37,13 +37,8 @@ public:
         return wasInserted;
     }
 
-    inline bool DeleteLayer(size_t idx) {
-        const size_t elementsRemoved = m_layers.erase(idx);
-        if (elementsRemoved != 0) {
-            m_deferredToggleLayers.push_back({idx, DeferType::Delete});
-        }
-
-        return elementsRemoved != 0;
+    inline void DeleteLayer(size_t idx) {
+        m_deferredToggleLayers.push_back({idx, DeferType::Delete});
     }
 
     inline std::shared_ptr<IDisplayLayer> GetLayer(size_t idx) {
