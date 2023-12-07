@@ -24,14 +24,14 @@ public:
 
     bool IsInitialized() const { return m_isInitialized; }
 
-    /// @brief Builds a nav-mesh used in path-finding for objects on the scene.
+    /// @brief Builds a nav-mesh used in path-finding for objects in the scene.
     /// @param bounds The bounds to build the nav-mesh inside
     /// @param pathSize The width and height of the path, used when checking
     /// collisions.
     /// @param detailLevel The size of each individual step in the path.
     /// @param validator Function used to determine if a location on the mesh is
-    /// @return A queue containing the steps to take from the root node to the
-    /// node, or an empty queue if no valid path exists.
+    /// navigable or not.
+    /// @return A pointer to the built nav-mesh
     std::shared_ptr<NavMesh> BuildNavMesh(const Rect &bounds,
                                           const Vector2 &pathSize,
                                           float detailLevel,
