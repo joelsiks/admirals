@@ -100,6 +100,20 @@ bool Engine::PollAndHandleEvent() {
     return quit;
 }
 
+void Engine::HandleDeferredToggleLayers() {
+    for (const auto layerIdx : m_deferredToggleLayers) {
+        if (m_activeLayers.contains(layerIdx)) {
+            m_activeLayers.erase(layerIdx);
+            m_layers[layerIdx]->OnShown();
+        } else {
+            m_activeLayers.insert(layerIdx);
+            m_layers[layerIdx]->OnHidden();
+        }
+    }
+
+    m_deferredToggleLayers.clear();
+}
+
 void Engine::StartGameLoop() {
     m_running = true;
 
@@ -142,5 +156,7 @@ void Engine::StartGameLoop() {
         }
 
         m_renderer->Render(GetContext(), layers);
+
+        HandleDeferredToggleLayers();
     }
 }

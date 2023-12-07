@@ -56,25 +56,16 @@ public:
         return m_activeLayers.find(idx) != m_activeLayers.end();
     }
 
-    inline bool ActivateLayer(size_t idx) {
+    inline void ActivateLayer(size_t idx) {
         if (m_layers.find(idx) != m_layers.end() &&
             !(m_activeLayers.find(idx) != m_activeLayers.end())) {
-            const bool wasInserted = m_activeLayers.insert(idx).second;
-
-            if (wasInserted) {
-                m_layers[idx]->OnShown();
-            }
-
-            return wasInserted;
+            m_deferredToggleLayers.insert(idx);
         }
-
-        return false;
     }
 
     inline void DeactivateLayer(size_t idx) {
         if (m_activeLayers.find(idx) != m_activeLayers.end()) {
-            m_layers[idx]->OnHidden();
-            m_activeLayers.erase(idx);
+            m_deferredToggleLayers.insert(idx);
         }
     }
 
@@ -131,6 +122,8 @@ public:
 private:
     bool PollAndHandleEvent();
 
+    void HandleDeferredToggleLayers();
+
     bool m_running;
 
     std::string m_gameName;
@@ -143,7 +136,7 @@ private:
     // Drawables
     std::shared_ptr<Scene> m_scene;
     std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;
-    std::unordered_set<size_t> m_activeLayers;
+    std::unordered_set<size_t> m_activeLayers, m_deferredToggleLayers;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
     EngineContext m_context;
