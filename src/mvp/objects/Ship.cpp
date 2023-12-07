@@ -276,23 +276,45 @@ void Ship::Render(const EngineContext &ctx) const {
     }
 }
 
-Vector2 Ship::ShipTypeToTexOffset(uint16_t type, uint8_t owner) {
-    auto offset = GameData::SpriteSize;
+std::vector<Vector2> Ship::ShipTypeToTexOffset(uint16_t type, uint8_t owner) {
+    auto offset = GameData::SpriteSize * 2;
     if (GameData::PlayerId != owner) {
-        offset += GameData::SpriteSize;
+        offset += GameData::SpriteSize * 3;
     }
 
+    std::vector<Vector2> textureOffset;
     switch (type) {
     case ShipType::Cruiser:
-        return Vector2(GameData::SpriteSize, offset);
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize * 2, 0));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize * 2, GameData::SpriteSize));
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize * 2,
+                                        GameData::SpriteSize * 2));
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize * 2,
+                                        GameData::SpriteSize * 3));
+        break;
     case ShipType::Destroyer:
-        return Vector2(GameData::SpriteSize * 2, offset);
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize, 0));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize, GameData::SpriteSize));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize, GameData::SpriteSize * 2));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize, GameData::SpriteSize * 3));
+        break;
     case ShipType::Base:
-        return Vector2(0, offset);
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize));
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 2));
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 3));
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 4));
+        break;
     default:
-        return Vector2(0, GameData::SpriteSize);
+        textureOffset.push_back(Vector2(0, GameData::SpriteSize));
+        break;
     }
+    return textureOffset;
 }
+
 void Ship::DrawHealthBar() const {
     const auto offset = Vector2(1);
     const auto position = GetPosition();

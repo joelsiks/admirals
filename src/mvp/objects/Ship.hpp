@@ -64,7 +64,8 @@ public:
     inline void SetData(const ShipData &data) { m_data = data; }
     inline const ShipData &GetData() const { return m_data; }
 
-    static Vector2 ShipTypeToTexOffset(uint16_t type, uint8_t owner);
+    static std::vector<Vector2> ShipTypeToTexOffset(uint16_t type,
+                                                    uint8_t owner);
 
 protected:
     void DrawHealthBar() const;
