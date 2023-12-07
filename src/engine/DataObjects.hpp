@@ -34,10 +34,23 @@ public:
 
     inline float Magnitude() const { return std::sqrt(m_0 * m_0 + m_1 * m_1); }
 
+    /// @brief The Euclidean distance between two points.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
     inline float Distance(const Vector2 &v) const {
         const float a = m_0 - v.m_0;
         const float b = m_1 - v.m_1;
         return std::sqrt(a * a + b * b);
+    }
+
+    /// @brief A variant of the Manhattan distance between two points, giving
+    /// the maximum distance between each component in the vectors.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
+    inline float MaxDistance(const Vector2 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        return std::max(std::abs(a), std::abs(b));
     }
 
     inline Vector2 &operator=(float &in) {

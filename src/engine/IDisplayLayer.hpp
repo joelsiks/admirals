@@ -23,6 +23,8 @@ public:
     AddDisplayable(std::shared_ptr<IInteractiveDisplayable> displayable);
     virtual void RemoveDisplayable(const std::string &identifier);
     virtual bool ExistsDisplayable(const std::string &identifier);
+    virtual std::shared_ptr<IInteractiveDisplayable>
+    FindDisplayable(const std::string &identifier);
 
     inline size_t NumDisplayables() const { return m_displayables.Size(); }
     std::vector<std::string> GetDisplayableNames();
