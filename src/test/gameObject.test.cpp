@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Engine.hpp"
+#include "Logger.hpp"
 #include "UI/DisplayLayout.hpp"
 #include "UI/TextElement.hpp"
 
@@ -155,6 +156,9 @@ int main(int, char *[]) {
     engine.onMouseMove += BIND_EVENT_HANDLER_FROM(
         PathFindingObject::HandleMouseMove, pathFinding);
     engine.StartGameLoop();
+
+    Logger::ClearLogFile();
+    Logger::LogMessage("gete");
 
     return EXIT_SUCCESS;
 }
