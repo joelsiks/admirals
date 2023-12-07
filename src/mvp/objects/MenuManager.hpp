@@ -19,9 +19,9 @@ public:
     void ToggleOpponentDisconnectMenu();
     void ToggleServerDisconnectMenu();
     void ToggleEndGameMenu(bool won = false);
+    void ReturnToMenu();
 
 private:
-    void ReturnToMenu();
 
     GameManager &m_gameManager;
     std::shared_ptr<admirals::UI::menu::Menu> m_opponentDisconnectMenu;

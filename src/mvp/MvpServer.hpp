@@ -9,11 +9,12 @@
 
 #define PASSIVE_INCOME 1
 #define ISLAND_INCOME 3
+#define STARTING_COINS 20
 
 namespace admirals::mvp {
 
 struct PlayerData {
-    uint16_t coins = 20;
+    uint16_t coins = STARTING_COINS;
     uint16_t baseHealth = BaseMaxHealth;
     uint8_t id = 0;
     uint8_t numShips = 0;
@@ -36,7 +37,7 @@ public:
                    admirals::net::Message &message) override;
 
     void ProcessTurn();
-    void EnterServerLoop();
+    void EnterServerLoop(bool& stopServer);
 
 private:
     bool ShipAtLocation(int x, int y);
@@ -45,6 +46,7 @@ private:
     void StopGame(uint8_t winner = 0);
     void PauseGame();
     void ResumeGame();
+    void ResetState();
     void UpdatePlayer(uint32_t oldOwner, uint32_t newOwner);
     void PlayerReady(std::shared_ptr<admirals::net::Connection> client);
     void BuyShip(std::shared_ptr<admirals::net::Connection> &client,

@@ -70,7 +70,11 @@ public:
     void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,
                      const std::map<uint16_t, ShipData> &ships);
 
+    void PlayAgain();
+    void ExitToMenu();
+
 private:
+    void ResetState(bool removeConnection = false); 
     void ModifyShips(const std::map<uint16_t, ShipData> &new_ships);
     void ShipChangeEventHandler(void *sender, admirals::events::EventArgs e);
 

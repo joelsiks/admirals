@@ -24,7 +24,7 @@ void MenuManager::OnStart(const EngineContext &) {
         GameData::engine->GetWindowSize().y() / 3.0);
 
     m_endGameMenu = std::make_shared<menu::Menu>(
-        "", Color::BLACK, Color::FromRGBA(50, 50, 50, 240),
+        "dwa", Color::BLACK, Color::FromRGBA(50, 50, 50, 240),
         GameData::engine->GetWindowSize().y() / 3.0);
 
     const auto returnToMenuOption = std::make_shared<menu::ClickOption>(
@@ -33,12 +33,7 @@ void MenuManager::OnStart(const EngineContext &) {
         [this](void *, events::MouseClickEventArgs &args) {
             if (!args.pressed)
                 return;
-
-            // TODO: reset game state
-            // should also close the server if hosting
-            // m_gameManager.Reset();
-
-            ReturnToMenu();
+            m_gameManager.ExitToMenu();
         });
 
     const auto playAgainOption = std::make_shared<menu::ClickOption>(
@@ -49,6 +44,7 @@ void MenuManager::OnStart(const EngineContext &) {
                 return;
 
             // TODO: implement restart
+            ToggleEndGameMenu();
             // m_gameManager.PlayAgain();
         });
 

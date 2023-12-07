@@ -7,24 +7,33 @@ using namespace admirals::mvp;
 bool MvpServer::OnClientConnect(std::shared_ptr<Connection>) { return true; }
 
 void MvpServer::OnClientDisconnect(std::shared_ptr<Connection> client) {
-    if (!m_gameStarted || m_gamePaused) {
-        return;
-    }
-
-    if (--m_connectedPlayers == 0) {
-        // TODO: Reset game
-        // ResetGame();
-    }
+    printf("Client %d disconnected\n", client->GetID());
 
     if (client->GetID() == m_playerTop.id) {
         m_playerTop.ready = false;
         m_playerTop.connected = false;
-    } else {
+        m_playerTop.id = 0;
+        m_connectedPlayers--;
+    } else if (client->GetID() == m_playerBottom.id) {
         m_playerBottom.ready = false;
         m_playerBottom.connected = false;
+        m_playerBottom.id = 0;
+        m_connectedPlayers--;
     }
 
-    PauseGame();
+    if (m_connectedPlayers == 0 && m_gameStarted) {
+        // TODO: Reset game
+        // ResetGame();
+        ResetState();
+        return;
+    }
+
+    // if (!m_gameStarted || m_gamePaused) {
+    //     return;
+    // }
+
+    if (m_gameStarted && !m_gamePaused)
+        PauseGame();
 }
 
 void MvpServer::OnClientValidated(std::shared_ptr<Connection> client) {
@@ -36,7 +45,7 @@ void MvpServer::OnClientValidated(std::shared_ptr<Connection> client) {
     m_connectedPlayers++;
 
     // Set the previous owner to the first player not connected, or 0 if none
-    // are not connected
+    // are connected
     uint32_t oldOwner;
     if (!m_playerTop.connected && !m_playerBottom.connected) {
         oldOwner = 0;
@@ -95,6 +104,7 @@ void MvpServer::OnMessage(std::shared_ptr<Connection> client,
 void MvpServer::ProcessTurn() {
     // Process incoming actions
     Update();
+    ClearDisconnectedClients();
 
     if (m_debug) {
         std::cout << "Player 1, connected: " << m_playerTop.connected
@@ -132,8 +142,8 @@ void MvpServer::ProcessTurn() {
     BroadcastState();
 }
 
-void MvpServer::EnterServerLoop() {
-    while (true) {
+void MvpServer::EnterServerLoop(bool &stopServer) {
+    while (!stopServer) {
         auto start = std::chrono::high_resolution_clock::now();
         ProcessTurn();
         auto end = std::chrono::high_resolution_clock::now();
@@ -164,13 +174,12 @@ void MvpServer::StopGame(uint8_t winner) {
     if (m_debug) {
         std::cout << "Stopping game" << std::endl;
     }
-    m_gameStarted = false;
-    // TODO: Reset game
-    // ResetGame();
     Message msg;
     msg.header.id = NetworkMessageTypes::GameStop;
     msg << winner;
     MessageAllClients(msg);
+
+    ResetState();
 }
 
 void MvpServer::PauseGame() {
@@ -191,6 +200,29 @@ void MvpServer::ResumeGame() {
     Message msg;
     msg.header.id = NetworkMessageTypes::GameResume;
     MessageAllClients(msg);
+}
+
+void MvpServer::ResetState() {
+    if (m_debug) {
+        std::cout << "Resetting game" << std::endl;
+    }
+    m_turn = 0;
+    m_playerTop.coins = STARTING_COINS;
+    m_playerBottom.coins = STARTING_COINS;
+    m_playerTop.baseHealth = BaseMaxHealth;
+    m_playerBottom.baseHealth = BaseMaxHealth;
+    m_playerTop.ships.clear();
+    m_playerBottom.ships.clear();
+    m_playerTop.numShips = 0;
+    m_playerBottom.numShips = 0;
+    m_playerTop.ready = false;
+    m_playerBottom.ready = false;
+    // m_playerTop.connected = false;
+    // m_playerBottom.connected = false;
+    m_gameStarted = false;
+    m_gamePaused = false;
+    m_shipID = 1;
+    memset(m_board, 0, sizeof(m_board));
 }
 
 void MvpServer::UpdatePlayer(uint32_t oldOwner, uint32_t newOwner) {
@@ -476,6 +508,10 @@ void MvpServer::ProcessDeadShips(
 }
 
 void MvpServer::BroadcastState() {
+    if (!m_gameStarted || m_gamePaused) {
+        return;
+    }
+
     Message msg;
     msg.header.id = NetworkMessageTypes::BoardUpdate;
     msg << m_turn << m_playerTop.coins << m_playerBottom.coins

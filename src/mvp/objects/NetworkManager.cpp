@@ -11,6 +11,7 @@ NetworkManager::NetworkManager(const std::string &name,
 
 NetworkManager::~NetworkManager() {
     if (m_isHost) {
+        m_stopServer = true;
         m_serverThread.join();
     }
 }
@@ -26,7 +27,7 @@ bool NetworkManager::StartAndConnectToServer(uint16_t port,
     m_serverThread = std::thread([this, port]() {
         MvpServer server(port);
         server.Start();
-        server.EnterServerLoop();
+        server.EnterServerLoop(m_stopServer);
     });
 
     return ConnectToServer("127.0.0.1", port, maxTries);
