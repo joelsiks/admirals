@@ -115,10 +115,10 @@ void MvpServer::ProcessTurn() {
     if (m_turn % TICK_RATE == 0) {
         m_playerTop.coins += PASSIVE_INCOME;
         m_playerBottom.coins += PASSIVE_INCOME;
-    }
 
-    // Give coins from tresure islands
-    ProcessGoldGeneration();
+        // Give coins from tresure islands
+        ProcessGoldGeneration();
+    }
 
     // Process ship actions
     ProcessShips(m_playerTop.ships);
@@ -453,11 +453,27 @@ void MvpServer::ProcessShips(
         }
         switch (ship.second.action) {
         case ShipAction::None:
+            // Assumes that attacking is done when ships are idle
+            // Should be to the attack action
+            if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
+                m_turn - ship.second.lastActionTurn) {
+                continue;
+            }
+
             DamageNearbyEnemies(ship.second);
             break;
         case ShipAction::Attack:
+            if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
+                m_turn - ship.second.lastActionTurn) {
+                continue;
+            }
+
             break;
         case ShipAction::Move:
+            if (TICK_RATE / ShipInfoMap[ship.second.type].MoveSpeed >
+                m_turn - ship.second.lastActionTurn) {
+                continue;
+            }
             if (m_board[ship.second.moveData.actionX]
                        [ship.second.moveData.actionY] != 0) {
                 continue;
@@ -471,6 +487,8 @@ void MvpServer::ProcessShips(
         default:
             break;
         }
+
+        ship.second.lastActionTurn = m_turn;
     }
 }
 
