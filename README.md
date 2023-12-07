@@ -103,7 +103,7 @@ add_library(engine SHARED ${SOURCES})
 add_library(engine STATIC ${SOURCES})
 ```
 
-Also, to get information about the source code in the profiling results, add the following line to the top of the CMakeLists.txt file:
+Also, to get information about the source code in the profiling results, add the following line to the top of the CMakeLists.txt file. This line adds debug info to the release build type, which is desireable since we also want to profile any optimizations that occur, which isn't the case for the debug build type.
 ```cmake
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 ```
