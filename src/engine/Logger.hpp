@@ -86,6 +86,7 @@ public:
 
     static void LogMessage(const std::string &logString) {
         AppendToLogFile(logString);
+        std::cout << "LogMessage: \n" << logString << std::endl;
     }
 
     static void CatchError(const std::string &logString, ErrorCase ec) {
