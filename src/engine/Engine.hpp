@@ -31,7 +31,7 @@ public:
         const bool wasInserted = m_layers.emplace(idx, std::move(layer)).second;
 
         if (wasInserted && active) {
-            m_activeLayers.insert(idx);
+            m_deferredToggleLayers.push_back({idx, DeferType::Add});
         }
 
         return wasInserted;
@@ -40,9 +40,7 @@ public:
     inline bool DeleteLayer(size_t idx) {
         const size_t elementsRemoved = m_layers.erase(idx);
         if (elementsRemoved != 0) {
-            // Note: we assume that this erase removes the layer if it's in the
-            // set and does not fail.
-            m_activeLayers.erase(idx);
+            m_deferredToggleLayers.push_back({idx, DeferType::Delete});
         }
 
         return elementsRemoved != 0;
@@ -59,13 +57,13 @@ public:
     inline void ActivateLayer(size_t idx) {
         if (m_layers.find(idx) != m_layers.end() &&
             !(m_activeLayers.find(idx) != m_activeLayers.end())) {
-            m_deferredToggleLayers.insert(idx);
+            m_deferredToggleLayers.push_back({idx, DeferType::Activate});
         }
     }
 
     inline void DeactivateLayer(size_t idx) {
         if (m_activeLayers.find(idx) != m_activeLayers.end()) {
-            m_deferredToggleLayers.insert(idx);
+            m_deferredToggleLayers.push_back({idx, DeferType::Deactivate});
         }
     }
 
@@ -133,10 +131,17 @@ private:
     inline bool hasLayers() { return !m_layers.empty(); }
     inline bool hasActiveLayers() { return !m_activeLayers.empty(); }
 
-    // Drawables
     std::shared_ptr<Scene> m_scene;
+
+    enum DeferType {
+        Add = 1,
+        Delete,
+        Activate,
+        Deactivate,
+    };
     std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;
-    std::unordered_set<size_t> m_activeLayers, m_deferredToggleLayers;
+    std::unordered_set<size_t> m_activeLayers;
+    std::vector<std::pair<size_t, DeferType>> m_deferredToggleLayers;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
     EngineContext m_context;
