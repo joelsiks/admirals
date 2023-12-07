@@ -45,7 +45,7 @@ bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
                 printf("Connected to the server\n");
             }
 
-            // Should probably be called later by the user conciously and not
+            // Should probably be called later by the user consciously and not
             // here
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             ReadyUp();

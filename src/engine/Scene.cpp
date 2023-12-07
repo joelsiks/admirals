@@ -32,8 +32,8 @@ void Scene::OnUpdate(const EngineContext &ctx) {
 }
 
 std::shared_ptr<NavMesh>
-Scene::BuildNavMesh(const Rect &bounds, const Vector2 &pathSize,
-                    float detailLevel, const PathValidator &validator) const {
+Scene::BuildNavMesh(const Rect &bounds, float detailLevel,
+                    const PathValidator &validator) const {
     const size_t width = static_cast<size_t>((bounds.Width() / detailLevel));
     const size_t height = static_cast<size_t>((bounds.Height() / detailLevel));
     const size_t gridSize = width * height;
@@ -43,7 +43,7 @@ Scene::BuildNavMesh(const Rect &bounds, const Vector2 &pathSize,
         const Vector2 position =
             PathFinding::ConvertNodeIndexToVector(i, width, detailLevel) +
             bounds.Position();
-        const Rect objectBounds = Rect(position, pathSize - __FLT_EPSILON__);
+        const Rect objectBounds = Rect(position, detailLevel - __FLT_EPSILON__);
         if (validator(objectBounds,
                       m_quadtree.GetObjectsInArea(objectBounds))) {
             grid[i] = detailLevel;

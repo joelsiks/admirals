@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <sstream>
 
 #include "Engine.hpp"
 
@@ -35,5 +36,13 @@ public:
     static constexpr float TotalHeight =
         GameData::GridSize + GameData::CellSize * 2;
 };
+
+template <typename T>
+std::string DecimalToString(const T a_value, const int n = 6) {
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return std::move(out).str();
+}
 
 } // namespace admirals::mvp

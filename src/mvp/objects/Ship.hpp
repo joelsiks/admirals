@@ -66,6 +66,13 @@ public:
 
     static Vector2 ShipTypeToTexOffset(uint16_t type);
 
+protected:
+    void DrawBackground(const Rect &bounds) const;
+    void DrawOutline(const Rect &bounds) const;
+    void DrawHealthBar(const Rect &bounds) const;
+    void DrawNavPath(const Rect &bounds, const Vector2 &windowSize) const;
+    void DrawNavMeshInfo(const Texture &font) const;
+
 private:
     ShipData m_data;
     bool m_drawOutline = false;
@@ -76,7 +83,6 @@ private:
     void HandleAction(const std::shared_ptr<Ship> &target = nullptr);
     void ValidateNavPath();
     std::shared_ptr<Ship> ValidateTarget();
-    void UpdateNavMesh();
 };
 
 } // namespace admirals::mvp::objects

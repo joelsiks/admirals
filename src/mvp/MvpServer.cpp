@@ -116,7 +116,7 @@ void MvpServer::ProcessTurn() {
         m_playerTop.coins += PASSIVE_INCOME;
         m_playerBottom.coins += PASSIVE_INCOME;
 
-        // Give coins from tresure islands
+        // Give coins from treasure islands
         ProcessGoldGeneration();
     }
 
@@ -352,7 +352,7 @@ void MvpServer::AttackShip(std::shared_ptr<Connection> client,
         return;
     }
 
-    const int clientID = client->GetID();
+    const auto clientID = client->GetID();
     PlayerData &player =
         clientID == m_playerTop.id ? m_playerTop : m_playerBottom;
     PlayerData &targetPlayer =
@@ -462,20 +462,13 @@ void MvpServer::AttackTargetEnemy(ShipData &ship) {
 }
 
 void MvpServer::ProcessShips(std::map<uint16_t, ShipData> &ships) {
-    // TODO: Process ship actions correctly
     for (auto &ship : ships) {
-        if (ship.second.action == ShipAction::Move &&
-            ship.second.moveData.actionY == ship.second.location.y &&
-            ship.second.moveData.actionX == ship.second.location.x) {
-            ship.second.action = ShipAction::None;
-            continue;
-        }
         switch (ship.second.action) {
         case ShipAction::None:
             // Assumes that attacking is done when ships are idle
             // Should be to the attack action
             if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
-                m_turn - ship.second.lastActionTurn) {
+                static_cast<float>(m_turn - ship.second.lastActionTurn)) {
                 continue;
             }
 
@@ -483,16 +476,26 @@ void MvpServer::ProcessShips(std::map<uint16_t, ShipData> &ships) {
             break;
         case ShipAction::Attack:
             if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
-                m_turn - ship.second.lastActionTurn) {
+                static_cast<float>(m_turn - ship.second.lastActionTurn)) {
                 continue;
             }
 
-            AttackTargetEnemy(ship.second);
-            break;
+            // Base attacks all nearby
+            if (ship.second.type == ShipType::Base) {
+                DamageNearbyEnemies(ship.second);
+            } else {
+                AttackTargetEnemy(ship.second);
+            }
+
             break;
         case ShipAction::Move:
+            if (ship.second.moveData.actionY == ship.second.location.y &&
+                ship.second.moveData.actionX == ship.second.location.x) {
+                ship.second.action = ShipAction::None;
+                continue;
+            }
             if (TICK_RATE / ShipInfoMap[ship.second.type].MoveSpeed >
-                m_turn - ship.second.lastActionTurn) {
+                static_cast<float>(m_turn - ship.second.lastActionTurn)) {
                 continue;
             }
             if (m_board[ship.second.moveData.actionX]
@@ -563,13 +566,13 @@ void MvpServer::BroadcastState() {
     msg << m_playerTop.numShips << m_playerBottom.numShips;
 
     if (m_debug) {
-        std::cout << "Turn: " << m_turn << std::endl;
+        std::cout << "Turn: " << m_turn << "\n";
         std::cout << "Player 1 coins: " << m_playerTop.coins
-                  << " Player 2 coins: " << m_playerBottom.coins << std::endl;
+                  << " Player 2 coins: " << m_playerBottom.coins << "\n";
         std::cout << "Player 1 ships: "
                   << static_cast<int>(m_playerTop.numShips)
                   << " Player 2 ships: "
-                  << static_cast<int>(m_playerBottom.numShips) << std::endl;
+                  << static_cast<int>(m_playerBottom.numShips) << "\n";
     }
 
     MessageAllClients(msg);
