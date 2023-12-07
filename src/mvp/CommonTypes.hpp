@@ -55,7 +55,7 @@ inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
     {ShipType::None, {0, 0, 0, 0.f, 0.f, 0, nullptr, nullptr}},
     {ShipType::Base,
      {.Damage = 100,
-      .Health = 1000,
+      .Health = 3000,
       .Cost = 0,
       .MoveSpeed = 0.f,
       .AttackSpeed = 0.5f,

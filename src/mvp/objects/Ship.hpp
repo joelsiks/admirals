@@ -66,6 +66,9 @@ public:
 
     static Vector2 ShipTypeToTexOffset(uint16_t type, uint8_t owner);
 
+protected:
+    void DrawHealthBar() const;
+
 private:
     ShipData m_data;
     bool m_drawOutline = false;

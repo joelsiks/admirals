@@ -2,6 +2,7 @@
 #include "GameData.hpp"
 #include "PathFinding.hpp"
 
+#include "Ship.hpp"
 #include <sstream>
 
 using namespace admirals;
@@ -13,7 +14,7 @@ const float SameCellDistance = 1.75f;
 
 Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
     : Sprite("ship-" + std::to_string(data.id), source, 3,
-             Rect(data.x, data.y, size.x(), size.y()),
+             Rect(data.location.x, data.location.y, size.x(), size.y()),
              Ship::ShipTypeToTexOffset(data.type, data.owner)),
       m_data(data) {}
 
@@ -212,6 +213,8 @@ void Ship::Render(const EngineContext &ctx) const {
 
     Sprite::Render(ctx);
 
+    DrawHealthBar();
+
     if (IsSelected()) {
         renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
                                                  Color::BLUE);
@@ -219,22 +222,6 @@ void Ship::Render(const EngineContext &ctx) const {
         renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
                                                  Color::WHITE);
     }
-
-    const auto position = GetPosition();
-    const auto size = GetSize();
-
-    // HealthBar
-    const float healthPercentage =
-        static_cast<float>(GetHealth()) /
-        static_cast<float>(ShipInfoMap[GetType()].Health);
-    const Vector2 healthOrigin =
-        position + Vector2(0, size.y() - GameData::HealthBarSize);
-    renderer::Renderer::DrawRectangle(
-        healthOrigin, Vector2(size.x(), GameData::HealthBarSize), Color::GREY);
-    renderer::Renderer::DrawRectangle(
-        healthOrigin,
-        Vector2(size.x() * healthPercentage, GameData::HealthBarSize),
-        Color::BLACK);
 
     // Nav nav-path
     if (!m_path.empty()) {
@@ -291,7 +278,7 @@ void Ship::Render(const EngineContext &ctx) const {
 
 Vector2 Ship::ShipTypeToTexOffset(uint16_t type, uint8_t owner) {
     auto offset = GameData::SpriteSize;
-    if (GameData::playerId != owner) {
+    if (GameData::PlayerId != owner) {
         offset += GameData::SpriteSize;
     }
 
@@ -305,4 +292,22 @@ Vector2 Ship::ShipTypeToTexOffset(uint16_t type, uint8_t owner) {
     default:
         return Vector2(0, GameData::SpriteSize);
     }
+}
+void Ship::DrawHealthBar() const {
+    const auto offset = Vector2(1);
+    const auto position = GetPosition();
+    const auto size = GetSize();
+    // HealthBar
+    const float healthPercentage =
+        static_cast<float>(GetHealth()) /
+        static_cast<float>(ShipInfoMap[GetType()].Health);
+    const Vector2 healthOrigin =
+        position + Vector2(0, size.y() - GameData::HealthBarSize);
+    renderer::Renderer::DrawRectangle(
+        healthOrigin, Vector2(size.x(), GameData::HealthBarSize), Color::BLACK);
+    renderer::Renderer::DrawRectangle(
+        healthOrigin + offset,
+        Vector2(size.x() * healthPercentage, GameData::HealthBarSize) -
+            offset * 2,
+        Color::Lerp(Color::RED, Color::GREEN, healthPercentage));
 }
