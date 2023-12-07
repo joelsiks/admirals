@@ -9,6 +9,58 @@ using namespace admirals::mvp::objects;
 const Vector2 HalfCellSize = Vector2(mvp::GameData::CellSize / 2.f);
 const float SameCellDistance = 1.75f;
 
+bool PathValidator(
+    const Rect &bounds,
+    const std::unordered_set<std::shared_ptr<IInteractiveDisplayable>>
+        &objects) {
+    for (const auto &object : objects) {
+        if ((object->order() == 3.f || object->order() == 2.f) &&
+            bounds.Overlaps(object->GetBoundingBox())) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void UpdateNavMesh() {
+    const Vector2 p1 = GridObject::ConvertPositionGridToWorld(0);
+    const Vector2 p2 =
+        GridObject::ConvertPositionGridToWorld(GameData::GridCells);
+    const Rect boardBounds = Rect(p1, p2 - p1);
+
+    GameData::navMesh = GameData::engine->GetScene()->BuildNavMesh(
+        boardBounds, GameData::CellSize * GridObject::GetGridScale(),
+        PathValidator);
+}
+
+bool IsValidNavLocation(const Vector2 &location, std::string &target) {
+    const Vector2 centeredLocation =
+        location + HalfCellSize * GridObject::GetGridScale();
+    const auto destObjects =
+        GameData::engine->GetScene()->GetQuadTree().GetObjectsAtPosition(
+            centeredLocation);
+
+    target.clear();
+    bool isValid = true;
+    for (const auto &object : destObjects) {
+        if (!object->GetBoundingBox().Contains(centeredLocation)) {
+            continue;
+        }
+
+        if (const auto ship = dynamic_pointer_cast<Ship>(object);
+            ship != nullptr && !ship->IsOwned()) {
+            target = ship->identifier();
+            return true;
+        }
+
+        if (object->order() > 1) {
+            isValid = false;
+        }
+    }
+
+    return isValid;
+}
+
 Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
     : Sprite("ship-" + std::to_string(data.id), source, 3,
              Rect(data.location.x, data.location.y, size.x(), size.y()),
@@ -82,58 +134,6 @@ void Ship::HandleAction(const std::shared_ptr<Ship> &target) {
     }
 }
 
-bool PathValidator(
-    const Rect &bounds,
-    const std::unordered_set<std::shared_ptr<IInteractiveDisplayable>>
-        &objects) {
-    for (const auto &object : objects) {
-        if ((object->order() == 3.f || object->order() == 2.f) &&
-            bounds.Overlaps(object->GetBoundingBox())) {
-            return false;
-        }
-    }
-    return true;
-}
-
-void UpdateNavMesh() {
-    const Vector2 p1 = GridObject::ConvertPositionGridToWorld(0);
-    const Vector2 p2 =
-        GridObject::ConvertPositionGridToWorld(GameData::GridCells);
-    const Rect boardBounds = Rect(p1, p2 - p1);
-
-    GameData::navMesh = GameData::engine->GetScene()->BuildNavMesh(
-        boardBounds, GameData::CellSize * GridObject::GetGridScale(),
-        PathValidator);
-}
-
-bool IsValidNavLocation(const Vector2 &location, std::string &target) {
-    const Vector2 centeredLocation =
-        location + HalfCellSize * GridObject::GetGridScale();
-    const auto destObjects =
-        GameData::engine->GetScene()->GetQuadTree().GetObjectsAtPosition(
-            centeredLocation);
-
-    target.clear();
-    bool isValid = true;
-    for (const auto &object : destObjects) {
-        if (!object->GetBoundingBox().Contains(centeredLocation)) {
-            continue;
-        }
-
-        if (const auto ship = dynamic_pointer_cast<Ship>(object);
-            ship != nullptr && !ship->IsOwned()) {
-            target = ship->identifier();
-            return true;
-        }
-
-        if (object->order() > 1) {
-            isValid = false;
-        }
-    }
-
-    return isValid;
-}
-
 void Ship::ValidateNavPath() {
     if (m_path.empty()) {
         return;
@@ -192,13 +192,20 @@ void Ship::OnUpdate(const EngineContext &) {
         ValidateNavPath();
     } else if (!m_target.empty()) {
         target = ValidateTarget();
-        printf("Validated action = %s : target = %s\n",
-               GetAction() == ShipAction::Attack ? "attack"
-               : GetAction() == ShipAction::Move ? "move  "
-                                                 : "none  ",
-               target == nullptr ? "none" : target->identifier().c_str());
     }
     HandleAction(target);
+}
+
+void Ship::Render(const EngineContext &ctx) const {
+    const Rect bounds = GetBoundingBox();
+    DrawBackground(bounds);
+    DrawSprite(bounds);
+    DrawHealthBar(bounds);
+    DrawOutline(bounds);
+    DrawNavPath(bounds, ctx.windowSize);
+    if (ctx.debug) {
+        DrawNavMeshInfo(*ctx.fontTexture);
+    }
 }
 
 void Ship::OnClick(events::MouseClickEventArgs &args) {
@@ -253,18 +260,6 @@ void Ship::OnMouseEnter(events::MouseMotionEventArgs &) {
 
 void Ship::OnMouseLeave(events::MouseMotionEventArgs &) {
     m_drawOutline = false;
-}
-
-void Ship::Render(const EngineContext &ctx) const {
-    const Rect bounds = GetBoundingBox();
-    DrawBackground(bounds);
-    DrawSprite(bounds);
-    DrawHealthBar(bounds);
-    DrawOutline(bounds);
-    DrawNavPath(bounds, ctx.windowSize);
-    if (ctx.debug) {
-        DrawNavMeshInfo(*ctx.fontTexture);
-    }
 }
 
 Vector2 Ship::ShipTypeToTexOffset(uint16_t type) {

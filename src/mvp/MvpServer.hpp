@@ -53,6 +53,7 @@ private:
     void DamageNearbyEnemies(ShipData &ship);
     void AttackTargetEnemy(ShipData &ship);
     void ProcessShips(std::map<uint16_t, ShipData> &ships);
+    void ProcessShipsLate(std::map<uint16_t, ShipData> &ships);
     void ProcessDeadShips(std::map<uint16_t, ShipData> &ships);
     void ProcessWinCondition();
     void BroadcastState();

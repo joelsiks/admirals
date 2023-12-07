@@ -123,6 +123,8 @@ void MvpServer::ProcessTurn() {
     // Process ship actions
     ProcessShips(m_playerTop.ships);
     ProcessShips(m_playerBottom.ships);
+    ProcessShipsLate(m_playerTop.ships);
+    ProcessShipsLate(m_playerBottom.ships);
 
     // Check if player has won
     ProcessWinCondition();
@@ -465,29 +467,36 @@ void MvpServer::ProcessShips(std::map<uint16_t, ShipData> &ships) {
     for (auto &ship : ships) {
         switch (ship.second.action) {
         case ShipAction::None:
-            // Assumes that attacking is done when ships are idle
-            // Should be to the attack action
-            if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
-                static_cast<float>(m_turn - ship.second.lastActionTurn)) {
-                continue;
-            }
-
-            // DamageNearbyEnemies(ship.second);
-            break;
+            continue;
         case ShipAction::Attack:
             if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
                 static_cast<float>(m_turn - ship.second.lastActionTurn)) {
                 continue;
             }
-
             // Base attacks all nearby
             if (ship.second.type == ShipType::Base) {
                 DamageNearbyEnemies(ship.second);
             } else {
                 AttackTargetEnemy(ship.second);
             }
-
             break;
+        case ShipAction::Move:
+            continue;
+        default:
+            break;
+        }
+
+        ship.second.lastActionTurn = m_turn;
+    }
+}
+
+void MvpServer::ProcessShipsLate(std::map<uint16_t, ShipData> &ships) {
+    for (auto &ship : ships) {
+        switch (ship.second.action) {
+        case ShipAction::None:
+            continue;
+        case ShipAction::Attack:
+            continue;
         case ShipAction::Move:
             if (ship.second.moveData.actionY == ship.second.location.y &&
                 ship.second.moveData.actionX == ship.second.location.x) {
