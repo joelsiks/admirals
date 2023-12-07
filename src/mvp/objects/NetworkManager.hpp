@@ -42,6 +42,6 @@ private:
     bool m_isHost = false;
     std::thread m_serverThread;
 
-    bool m_debug = true;
+    bool m_debug = false;
 };
 } // namespace admirals::mvp::objects

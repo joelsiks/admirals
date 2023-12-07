@@ -3,7 +3,7 @@
 #include "Server.hpp"
 
 // Number of ticks per second
-#define TICK_RATE 1
+#define TICK_RATE 10
 #define PASSIVE_INCOME 1
 #define ISLAND_INCOME 3
 

@@ -42,6 +42,8 @@ struct ShipInfo {
     uint16_t Damage;
     uint16_t Health;
     uint16_t Cost;
+    float MoveSpeed;
+    float AttackSpeed;
     uint16_t NumberOfSpawnLocations;
     Location *TopSpawns;
     Location *BottomSpawns;
@@ -49,11 +51,14 @@ struct ShipInfo {
 
 inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
     // ShipType, {damage, health, cost}
-    {ShipType::None, {0, 0, 0, 0, nullptr, nullptr}},
+    // Speed = number of actions per second
+    {ShipType::None, {0, 0, 0, 0.f, 0.f, 0, nullptr, nullptr}},
     {ShipType::Base,
-     {.Damage = 0,
+     {.Damage = 100,
       .Health = 1000,
       .Cost = 0,
+      .MoveSpeed = 0.f,
+      .AttackSpeed = 0.5f,
       .NumberOfSpawnLocations = 1,
       .TopSpawns = new Location[1]{{0, 1}},
       .BottomSpawns = new Location[1]{{BoardSize - 1, BoardSize - 2}}}},
@@ -61,6 +66,8 @@ inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
      {.Damage = 90,
       .Health = 500,
       .Cost = 10,
+      .MoveSpeed = 3.f,
+      .AttackSpeed = 1.f,
       .NumberOfSpawnLocations = 3,
       .TopSpawns = new Location[3]{{1, 0}, {1, 1}, {1, 2}},
       .BottomSpawns = new Location[3]{{BoardSize - 2, BoardSize - 1},
@@ -70,6 +77,8 @@ inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
      {.Damage = 180,
       .Health = 300,
       .Cost = 12,
+      .MoveSpeed = 5.f,
+      .AttackSpeed = 0.7f,
       .NumberOfSpawnLocations = 3,
       .TopSpawns = new Location[3]{{1, 0}, {1, 1}, {1, 2}},
       .BottomSpawns = new Location[3]{{BoardSize - 2, BoardSize - 1},
@@ -84,6 +93,7 @@ struct ShipData {
         : id(id), type(type), location({x, y}), health(health), owner(owner) {}
 
     uint16_t id = 0;
+    uint16_t lastActionTurn = 0;
     uint16_t health = 0;
     uint8_t type = ShipType::None;
     uint8_t owner = -1;
