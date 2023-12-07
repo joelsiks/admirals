@@ -120,7 +120,15 @@ void Ship::HandlePathTarget() {
     }
 }
 
-void Ship::OnUpdate(const EngineContext &) {
+void Ship::OnUpdate(const EngineContext &ctx) {
+    // update texture pointer
+    m_timer += ctx.deltaTime;
+    if (m_timer > 0.3) {
+        m_timer = 0;
+        m_texIndex += 1;
+        m_texIndex = m_texIndex % m_texOffset.size();
+    }
+
     if (IsSelected()) {
         const auto p1 = ConvertPositionGridToWorld(0);
         const auto p2 = ConvertPositionGridToWorld(GameData::GridCells);

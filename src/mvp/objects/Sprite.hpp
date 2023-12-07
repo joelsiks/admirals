@@ -17,6 +17,7 @@ public:
 
 protected:
     int m_texIndex = 0;
+    float m_timer = 0;
     const Texture &m_source;
     const Vector2 m_texSize;
     const std::vector<Vector2> m_texOffset;
