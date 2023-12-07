@@ -13,8 +13,8 @@ const float SameCellDistance = 1.75f;
 
 Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
     : Sprite("ship-" + std::to_string(data.id), source, 3,
-             Rect(data.location.x, data.location.y, size.x(), size.y()),
-             Ship::ShipTypeToTexOffset(data.type)),
+             Rect(data.x, data.y, size.x(), size.y()),
+             Ship::ShipTypeToTexOffset(data.type, data.owner)),
       m_data(data) {}
 
 Ship::~Ship() {
@@ -202,11 +202,13 @@ std::string to_string_with_precision(const T a_value, const int n = 6) {
 }
 
 void Ship::Render(const EngineContext &ctx) const {
+    /*
     if (IsOwned()) {
         renderer::Renderer::DrawRectangle(GetBoundingBox(), Color::BLUE);
     } else {
         renderer::Renderer::DrawRectangle(GetBoundingBox(), Color::RED);
     }
+    */
 
     Sprite::Render(ctx);
 
@@ -287,14 +289,19 @@ void Ship::Render(const EngineContext &ctx) const {
     }
 }
 
-Vector2 Ship::ShipTypeToTexOffset(uint16_t type) {
+Vector2 Ship::ShipTypeToTexOffset(uint16_t type, uint8_t owner) {
+    auto offset = GameData::SpriteSize;
+    if (GameData::playerId != owner) {
+        offset += GameData::SpriteSize;
+    }
+
     switch (type) {
     case ShipType::Cruiser:
-        return Vector2(0, GameData::SpriteSize);
+        return Vector2(GameData::SpriteSize, offset);
     case ShipType::Destroyer:
-        return Vector2(GameData::SpriteSize, GameData::SpriteSize);
+        return Vector2(GameData::SpriteSize * 2, offset);
     case ShipType::Base:
-        return Vector2(0);
+        return Vector2(0, offset);
     default:
         return Vector2(0, GameData::SpriteSize);
     }

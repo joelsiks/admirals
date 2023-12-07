@@ -10,7 +10,8 @@ class MenuMovingShip : public Sprite {
 public:
     MenuMovingShip(const std::string &name, const Texture &source, float order,
                    const Rect &bounds, ShipType::ShipType type, float shipSpeed)
-        : Sprite(name, source, order, bounds, Ship::ShipTypeToTexOffset(type)),
+        : Sprite(name, source, order, bounds,
+                 Ship::ShipTypeToTexOffset(type, 1)),
           m_shipSpeed(shipSpeed) {}
 
     void OnUpdate(const EngineContext &ctx) override {
