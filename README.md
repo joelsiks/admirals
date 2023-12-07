@@ -86,7 +86,7 @@ For Visual Studio Code users there is a settings template in `.vscode-template/s
 
 The engine (specifically the test programs located in `src/test`) are most easiest to profile on Linux using `callgrind` (part of the valgrind tool) to manaually interpret using `kcachegrind`.
 
-## Commands
+## Instructions
 
 ```bash
 # Navigate into the build/ directory with build files.
