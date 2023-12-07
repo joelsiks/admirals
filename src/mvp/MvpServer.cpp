@@ -413,7 +413,7 @@ void MvpServer::ProcessGoldGeneration() {
     }
 }
 
-void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
+void MvpServer::DamageNearbyEnemies(ShipData &ship) {
     const bool isTopPlayer = ship.owner == m_playerTop.id;
     auto &enemy = isTopPlayer ? m_playerBottom : m_playerTop;
     auto &enemyShips = enemy.ships;
@@ -441,8 +441,27 @@ void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
     }
 }
 
-void MvpServer::ProcessShips(
-    std::map<uint16_t, admirals::mvp::ShipData> &ships) {
+void MvpServer::AttackTargetEnemy(ShipData &ship) {
+    const bool isTopPlayer = ship.owner == m_playerTop.id;
+    auto &enemy = isTopPlayer ? m_playerBottom : m_playerTop;
+    auto enemyShip = enemy.ships.find(ship.attackTargetID);
+
+    // Check if adjacent
+    if (enemyShip != enemy.ships.end() &&
+        std::abs(enemyShip->second.location.x - ship.location.x) <= 1 &&
+        std::abs(enemyShip->second.location.y - ship.location.y) <= 1) {
+        // Damage target ship
+        if (enemyShip->second.health < ShipInfoMap[ship.type].Damage) {
+            enemyShip->second.health = 0;
+        } else {
+            enemyShip->second.health -= ShipInfoMap[ship.type].Damage;
+        }
+    } else {
+        ship.action = ShipAction::None;
+    }
+}
+
+void MvpServer::ProcessShips(std::map<uint16_t, ShipData> &ships) {
     // TODO: Process ship actions correctly
     for (auto &ship : ships) {
         if (ship.second.action == ShipAction::Move &&
@@ -460,7 +479,7 @@ void MvpServer::ProcessShips(
                 continue;
             }
 
-            DamageNearbyEnemies(ship.second);
+            // DamageNearbyEnemies(ship.second);
             break;
         case ShipAction::Attack:
             if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
@@ -468,6 +487,8 @@ void MvpServer::ProcessShips(
                 continue;
             }
 
+            AttackTargetEnemy(ship.second);
+            break;
             break;
         case ShipAction::Move:
             if (TICK_RATE / ShipInfoMap[ship.second.type].MoveSpeed >
@@ -492,8 +513,7 @@ void MvpServer::ProcessShips(
     }
 }
 
-void MvpServer::ProcessDeadShips(
-    std::map<uint16_t, admirals::mvp::ShipData> &ships) {
+void MvpServer::ProcessDeadShips(std::map<uint16_t, ShipData> &ships) {
     for (auto it = ships.begin(); it != ships.end();) {
         const auto ship = it->second;
         if (ship.health == 0) {

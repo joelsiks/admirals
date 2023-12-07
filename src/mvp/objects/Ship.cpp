@@ -23,7 +23,7 @@ Ship::~Ship() {
     }
 }
 
-void Ship::HandleAction() {
+void Ship::HandleAction(const std::shared_ptr<Ship> &target) {
     switch (GetAction()) {
     case ShipAction::None:
         if (!IsSelected()) {
@@ -37,6 +37,7 @@ void Ship::HandleAction() {
             onChanged.Invoke(this, e);
             break;
         }
+
         const Vector2 moveLocation = m_path.front();
         if (GetPosition() == moveLocation) {
             m_path.pop_front();
@@ -55,12 +56,26 @@ void Ship::HandleAction() {
             SetActionY(y);
             events::EventArgs e;
             onChanged.Invoke(this, e);
+            break;
         }
     } break;
     case ShipAction::Attack: {
-        // TODO: Implement
         if (!IsSelected()) {
             m_path.clear();
+        }
+
+        if (target == nullptr || m_target.empty()) {
+            SetAction(ShipAction::None);
+            events::EventArgs e;
+            onChanged.Invoke(this, e);
+            break;
+        }
+
+        if (GetAttackID() != target->GetID()) {
+            SetAttackID(target->GetID());
+            events::EventArgs e;
+            onChanged.Invoke(this, e);
+            break;
         }
     } break;
     default:
@@ -81,7 +96,18 @@ bool PathValidator(
     return true;
 }
 
-bool IsValidTargetLocation(const Vector2 &location, std::string &target) {
+void Ship::UpdateNavMesh() {
+    const Vector2 p1 = GridObject::ConvertPositionGridToWorld(0);
+    const Vector2 p2 =
+        GridObject::ConvertPositionGridToWorld(GameData::GridCells);
+    const Rect boardBounds = Rect(p1, p2 - p1);
+
+    GameData::navMesh = GameData::engine->GetScene()->BuildNavMesh(
+        boardBounds, GetSize(), GameData::CellSize * GridObject::GetGridScale(),
+        PathValidator);
+}
+
+bool IsValidNavLocation(const Vector2 &location, std::string &target) {
     const Vector2 centeredLocation =
         location + HalfCellSize * GridObject::GetGridScale();
     const auto destObjects =
@@ -109,31 +135,63 @@ bool IsValidTargetLocation(const Vector2 &location, std::string &target) {
     return isValid;
 }
 
-void Ship::HandlePathTarget() {
+void Ship::ValidateNavPath() {
     if (m_path.empty()) {
         return;
     }
 
-    if (!IsValidTargetLocation(m_path.back(), m_target)) {
+    if (!IsValidNavLocation(m_path.back(), m_target)) {
         m_path.clear();
     }
 }
 
-void Ship::OnUpdate(const EngineContext &) {
-    if (IsSelected()) {
-        const auto p1 = ConvertPositionGridToWorld(0);
-        const auto p2 = ConvertPositionGridToWorld(GameData::GridCells);
-        const Rect boardBounds = Rect(p1, p2 - p1);
-
-        m_navMesh = GameData::engine->GetScene()->BuildNavMesh(
-            boardBounds, GetSize(),
-            GameData::CellSize * GridObject::GetGridScale(), PathValidator);
-        m_path = PathFinding::FindPath(GetPosition(), GameData::mousePosition,
-                                       *m_navMesh, false, false);
-        HandlePathTarget();
+std::shared_ptr<Ship> Ship::ValidateTarget() {
+    if (GameData::navMesh == nullptr) {
+        UpdateNavMesh();
     }
 
-    HandleAction();
+    auto target = std::dynamic_pointer_cast<Ship>(
+        GameData::engine->GetScene()->FindDisplayable(m_target));
+
+    if (target == nullptr) {
+        m_target.clear();
+        m_path.clear();
+        return nullptr;
+    }
+
+    const Vector2 position = GetPosition();
+    const Vector2 targetPosition = target->GetPosition();
+    m_path = PathFinding::FindPath(position, targetPosition, *GameData::navMesh,
+                                   false, false);
+
+    // Is adjacent to target
+    if (GetAction() == ShipAction::Move && m_path.size() <= 1 &&
+        targetPosition.MaxDistance(position) <
+            GameData::CellSize * GridObject::GetGridScale()) {
+        SetAction(ShipAction::Attack);
+    } else if (GetAction() == ShipAction::Attack) {
+        SetAction(ShipAction::Move);
+    }
+
+    return target;
+}
+
+void Ship::OnUpdate(const EngineContext &) {
+    std::shared_ptr<Ship> target = nullptr;
+    if (IsSelected()) {
+        if (GameData::navMesh == nullptr) {
+            UpdateNavMesh();
+        }
+
+        m_path = PathFinding::FindPath(GetPosition(), GameData::mousePosition,
+                                       *GameData::navMesh, false, false);
+        ValidateNavPath();
+    } else if (!m_target.empty()) {
+        target = ValidateTarget();
+        printf("Validated target = %s\n",
+               target == nullptr ? "none" : target->identifier().c_str());
+    }
+    HandleAction(target);
 }
 
 void Ship::OnClick(events::MouseClickEventArgs &args) {
@@ -150,6 +208,7 @@ void Ship::OnClick(events::MouseClickEventArgs &args) {
                 GameData::engine->onMouseClick +=
                     BIND_EVENT_HANDLER(Ship::HandleClick);
             }
+            m_target.clear();
             args.handled = true;
         }
     }
@@ -169,15 +228,11 @@ void Ship::HandleClick(void *, events::MouseClickEventArgs &args) {
 
     if (!m_path.empty()) {
         const Rect clickBounds =
-            Rect(m_path.back(), m_navMesh->GetLevelOfDetail());
+            Rect(m_path.back(), GameData::navMesh->GetLevelOfDetail());
         const Vector2 clickLocation =
             args.Location() - m_boundingBox.Position();
         if (clickBounds.Contains(clickLocation)) {
             SetAction(ShipAction::Move);
-            const Vector2 gridPosition =
-                GridObject::ConvertPositionWorldToGrid(clickLocation);
-            printf("Now moving to: (%f, %f)\n", gridPosition.x(),
-                   gridPosition.y());
             args.handled = true;
         }
     }
@@ -210,14 +265,6 @@ void Ship::Render(const EngineContext &ctx) const {
 
     Sprite::Render(ctx);
 
-    if (IsSelected()) {
-        renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
-                                                 Color::BLUE);
-    } else if (m_drawOutline) {
-        renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
-                                                 Color::WHITE);
-    }
-
     const auto position = GetPosition();
     const auto size = GetSize();
 
@@ -233,6 +280,14 @@ void Ship::Render(const EngineContext &ctx) const {
         healthOrigin,
         Vector2(size.x() * healthPercentage, GameData::HealthBarSize),
         Color::BLACK);
+
+    if (IsSelected()) {
+        renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
+                                                 Color::BLUE);
+    } else if (m_drawOutline) {
+        renderer::Renderer::DrawRectangleOutline(GetBoundingBox(), 3.f,
+                                                 Color::WHITE);
+    }
 
     // Nav nav-path
     if (!m_path.empty()) {
@@ -255,25 +310,25 @@ void Ship::Render(const EngineContext &ctx) const {
     }
 
     // Debug draw navmesh
-    if (m_navMesh != nullptr && IsSelected()) { //  && ctx.debug
-        renderer::Renderer::DrawRectangleOutline(m_navMesh->GetBounds(), 5,
-                                                 Color::RED);
-        const size_t count =
-            m_navMesh->GetGridWidth() * m_navMesh->GetGridHeight();
+    if (GameData::navMesh != nullptr && IsSelected()) { //  && ctx.debug
+        renderer::Renderer::DrawRectangleOutline(GameData::navMesh->GetBounds(),
+                                                 5, Color::RED);
+        const size_t count = GameData::navMesh->GetGridWidth() *
+                             GameData::navMesh->GetGridHeight();
         const Color tRed = Color(0.8, 0.1, 0.1, 0.3f);
         for (size_t i = 0; i < count; i++) {
             const auto pos = PathFinding::ConvertNodeIndexToVector(
-                                 i, m_navMesh->GetGridWidth(),
-                                 m_navMesh->GetLevelOfDetail()) +
-                             m_navMesh->GetBounds().Position();
-            const float cost = m_navMesh->GetCostAt(i);
+                                 i, GameData::navMesh->GetGridWidth(),
+                                 GameData::navMesh->GetLevelOfDetail()) +
+                             GameData::navMesh->GetBounds().Position();
+            const float cost = GameData::navMesh->GetCostAt(i);
             if (cost < 0) {
                 renderer::Renderer::DrawRectangle(
-                    pos, m_navMesh->GetLevelOfDetail(), tRed);
+                    pos, GameData::navMesh->GetLevelOfDetail(), tRed);
             }
 
-            std::string target = m_target;
-            if (IsValidTargetLocation(pos, target)) {
+            std::string target;
+            if (IsValidNavLocation(pos, target)) {
                 renderer::Renderer::DrawRectangle(pos, 10.f, Color::GREEN);
             } else {
                 renderer::Renderer::DrawRectangle(pos, 10.f, Color::RED);
@@ -282,7 +337,7 @@ void Ship::Render(const EngineContext &ctx) const {
             renderer::Renderer::DrawText(*ctx.fontTexture, pos, Color::RED,
                                          to_string_with_precision(cost, 3));
             renderer::Renderer::DrawRectangleOutline(
-                pos, m_navMesh->GetLevelOfDetail(), 2, Color::RED);
+                pos, GameData::navMesh->GetLevelOfDetail(), 2, Color::RED);
         }
     }
 }

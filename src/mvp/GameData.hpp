@@ -9,10 +9,11 @@ namespace admirals::mvp {
 class GameData {
 private:
 public:
-    GameData(){};
-    ~GameData(){};
+    GameData() {}
+    ~GameData() {}
 
     inline static std::unique_ptr<Engine> engine = nullptr;
+    inline static std::shared_ptr<NavMesh> navMesh = nullptr;
 
     inline static const size_t startMenuIdx = 0;
     inline static std::shared_ptr<Scene> startMenuScene = nullptr;

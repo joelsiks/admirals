@@ -72,10 +72,11 @@ private:
     bool m_selected = false;
     std::deque<admirals::Vector2> m_path;
     std::string m_target;
-    std::shared_ptr<NavMesh> m_navMesh;
 
-    void HandleAction();
-    void HandlePathTarget();
+    void HandleAction(const std::shared_ptr<Ship> &target = nullptr);
+    void ValidateNavPath();
+    std::shared_ptr<Ship> ValidateTarget();
+    void UpdateNavMesh();
 };
 
 } // namespace admirals::mvp::objects
