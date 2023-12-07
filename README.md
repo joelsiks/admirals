@@ -86,6 +86,9 @@ We use cppunit for unit testing. It can be installed using the following command
 ```bash
 # MSYS2
 pacman -S mingw-w64-ucrt-x86_64-cppunit
+
+# Ubuntu
+sudo apt-get install libcppunit-dev
 ```
 
 # Authors
