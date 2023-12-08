@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "DeferedAction.hpp"
 #include "EngineContext.hpp"
 #include "GameObject.hpp"
 #include "IDisplayLayer.hpp"
@@ -145,14 +146,6 @@ private:
     inline bool hasActiveLayers() { return !m_activeLayers.empty(); }
 
     std::shared_ptr<Scene> m_scene;
-
-    enum DeferType {
-        None = 1,
-        Add,
-        Delete,
-        Activate,
-        Deactivate,
-    };
     std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;
     std::unordered_set<size_t> m_activeLayers;
     std::vector<std::pair<size_t, DeferType>> m_deferredToggleLayers;
