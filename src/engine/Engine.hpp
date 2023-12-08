@@ -46,29 +46,41 @@ public:
     }
 
     inline bool LayerIsActive(size_t idx) {
-        return m_activeLayers.find(idx) != m_activeLayers.end();
+        if (!m_layers.contains(idx)) {
+            return false;
+        }
+
+        if (m_activeLayers.find(idx) != m_activeLayers.end()) {
+            return true;
+        }
+
+        for (const auto &deferPair : m_deferredToggleLayers) {
+            if (deferPair.first == idx) {
+                return (deferPair.second == DeferType::Add ||
+                        deferPair.second == DeferType::Activate);
+            }
+        }
+
+        return false;
     }
 
     inline void ActivateLayer(size_t idx) {
-        if (m_layers.find(idx) != m_layers.end() &&
-            !(m_activeLayers.find(idx) != m_activeLayers.end())) {
+        if (!LayerIsActive(idx)) {
             m_deferredToggleLayers.push_back({idx, DeferType::Activate});
         }
     }
 
     inline void DeactivateLayer(size_t idx) {
-        if (m_activeLayers.find(idx) != m_activeLayers.end()) {
+        if (LayerIsActive(idx)) {
             m_deferredToggleLayers.push_back({idx, DeferType::Deactivate});
         }
     }
 
     inline void ToggleLayer(size_t idx) {
-        if (m_layers.find(idx) != m_layers.end()) {
-            if (LayerIsActive(idx)) {
-                DeactivateLayer(idx);
-            } else {
-                ActivateLayer(idx);
-            }
+        if (LayerIsActive(idx)) {
+            DeactivateLayer(idx);
+        } else {
+            ActivateLayer(idx);
         }
     }
 
