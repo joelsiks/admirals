@@ -4,9 +4,11 @@
 using namespace admirals::net;
 using namespace admirals::mvp;
 
-bool MvpServer::OnClientConnect(std::shared_ptr<Connection>) { return true; }
+bool MvpServer::OnClientConnect(const std::shared_ptr<Connection> &) {
+    return true;
+}
 
-void MvpServer::OnClientDisconnect(std::shared_ptr<Connection> client) {
+void MvpServer::OnClientDisconnect(const std::shared_ptr<Connection> &client) {
     if (!m_gameStarted || m_gamePaused) {
         return;
     }
@@ -27,7 +29,7 @@ void MvpServer::OnClientDisconnect(std::shared_ptr<Connection> client) {
     PauseGame();
 }
 
-void MvpServer::OnClientValidated(std::shared_ptr<Connection> client) {
+void MvpServer::OnClientValidated(const std::shared_ptr<Connection> &client) {
     if (m_connectedPlayers >= 2) {
         client->Disconnect();
         return;
@@ -49,7 +51,7 @@ void MvpServer::OnClientValidated(std::shared_ptr<Connection> client) {
     UpdatePlayer(oldOwner, client->GetID());
 }
 
-void MvpServer::OnMessage(std::shared_ptr<Connection> client,
+void MvpServer::OnMessage(const std::shared_ptr<Connection> &client,
                           Message &message) {
     // Messages that should be processed regardless of game state
     switch (message.header.id) {
@@ -98,11 +100,11 @@ void MvpServer::ProcessTurn() {
 
     if (m_debug) {
         std::cout << "Player 1, connected: " << m_playerTop.connected
-                  << " ready: " << m_playerTop.ready << std::endl;
+                  << " ready: " << m_playerTop.ready << "\n";
         std::cout << "Player 2, connected: " << m_playerBottom.connected
-                  << " ready: " << m_playerBottom.ready << std::endl;
+                  << " ready: " << m_playerBottom.ready << "\n";
         std::cout << "Game, started: " << m_gameStarted
-                  << " paused: " << m_gamePaused << std::endl;
+                  << " paused: " << m_gamePaused << "\n";
     }
 
     if (!m_gameStarted || m_gamePaused) {
@@ -157,7 +159,7 @@ bool MvpServer::ShipExists(PlayerData &player, uint16_t id) {
 
 void MvpServer::StartGame() {
     if (m_debug) {
-        std::cout << "Starting game" << std::endl;
+        std::cout << "Starting game\n";
     }
     const auto baseData = ShipInfoMap[ShipType::Base];
 
@@ -188,7 +190,8 @@ void MvpServer::StartGame() {
 
 void MvpServer::StopGame(uint8_t winner) {
     if (m_debug) {
-        std::cout << "Stopping game" << std::endl;
+        std::cout << "Stopping game"
+                  << "\n";
     }
     m_gameStarted = false;
     // TODO: Reset game
@@ -201,7 +204,7 @@ void MvpServer::StopGame(uint8_t winner) {
 
 void MvpServer::PauseGame() {
     if (m_debug) {
-        std::cout << "Pausing game" << std::endl;
+        std::cout << "Pausing game\n";
     }
     m_gamePaused = true;
     Message msg;
@@ -211,7 +214,7 @@ void MvpServer::PauseGame() {
 
 void MvpServer::ResumeGame() {
     if (m_debug) {
-        std::cout << "Resuming game" << std::endl;
+        std::cout << "Resuming game\n";
     }
     m_gamePaused = false;
     Message msg;
@@ -235,7 +238,7 @@ void MvpServer::UpdatePlayer(uint32_t oldOwner, uint32_t newOwner) {
     }
 }
 
-void MvpServer::PlayerReady(std::shared_ptr<Connection> client) {
+void MvpServer::PlayerReady(const std::shared_ptr<Connection> &client) {
     const uint8_t isTopPlayer = client->GetID() == m_playerTop.id;
     if (isTopPlayer) {
         m_playerTop.ready = true;
@@ -257,7 +260,8 @@ void MvpServer::PlayerReady(std::shared_ptr<Connection> client) {
     }
 }
 
-void MvpServer::BuyShip(std::shared_ptr<Connection> &client, Message &message) {
+void MvpServer::BuyShip(const std::shared_ptr<Connection> &client,
+                        Message &message) {
     uint8_t type;
     message >> type;
 
@@ -297,7 +301,8 @@ void MvpServer::BuyShip(std::shared_ptr<Connection> &client, Message &message) {
     }
 }
 
-void MvpServer::MoveShip(std::shared_ptr<Connection> client, Message &message) {
+void MvpServer::MoveShip(const std::shared_ptr<Connection> &client,
+                         Message &message) {
     uint16_t id;
     uint8_t x;
     uint8_t y;
@@ -321,10 +326,10 @@ void MvpServer::MoveShip(std::shared_ptr<Connection> client, Message &message) {
     if (m_debug) {
         std::cout << "Player " << client->GetID() << " moved ship " << id
                   << " to (" << static_cast<int>(x) << ", "
-                  << static_cast<int>(y) << ")" << std::endl;
+                  << static_cast<int>(y) << ")\n";
     }
 
-    const int clientID = client->GetID();
+    const auto clientID = client->GetID();
     PlayerData &player =
         clientID == m_playerTop.id ? m_playerTop : m_playerBottom;
 
@@ -339,7 +344,7 @@ void MvpServer::MoveShip(std::shared_ptr<Connection> client, Message &message) {
     ship.moveData.actionY = y;
 }
 
-void MvpServer::AttackShip(std::shared_ptr<Connection> client,
+void MvpServer::AttackShip(const std::shared_ptr<Connection> &client,
                            Message &message) {
     // Do not process ship actions if the game is paused
     if (m_gamePaused) {
@@ -494,7 +499,6 @@ void MvpServer::ProcessShipsLate(std::map<uint16_t, ShipData> &ships) {
     for (auto &ship : ships) {
         switch (ship.second.action) {
         case ShipAction::None:
-            continue;
         case ShipAction::Attack:
             continue;
         case ShipAction::Move:

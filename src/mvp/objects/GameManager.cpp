@@ -16,7 +16,7 @@ GameManager::GameManager(const std::string &name, const Texture &atlas)
 
 GameManager::~GameManager() {}
 
-void GameManager::OnStart(const EngineContext &) { srand(time(NULL)); }
+void GameManager::OnStart(const EngineContext &) {}
 
 void GameManager::OnUpdate(const EngineContext &) {
     // Reset navMesh to have it updated

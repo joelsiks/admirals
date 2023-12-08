@@ -26,10 +26,10 @@ public:
     MvpServer(uint16_t port, bool debug = false)
         : Server(port), m_turn(0), m_debug(debug) {}
 
-    bool OnClientConnect(std::shared_ptr<Connection>) override;
-    void OnClientDisconnect(std::shared_ptr<Connection>) override;
-    void OnClientValidated(std::shared_ptr<Connection> client) override;
-    void OnMessage(std::shared_ptr<Connection> client,
+    bool OnClientConnect(const std::shared_ptr<Connection> &) override;
+    void OnClientDisconnect(const std::shared_ptr<Connection> &) override;
+    void OnClientValidated(const std::shared_ptr<Connection> &client) override;
+    void OnMessage(const std::shared_ptr<Connection> &client,
                    Message &message) override;
 
     void ProcessTurn();
@@ -43,10 +43,11 @@ private:
     void PauseGame();
     void ResumeGame();
     void UpdatePlayer(uint32_t oldOwner, uint32_t newOwner);
-    void PlayerReady(std::shared_ptr<Connection> client);
-    void BuyShip(std::shared_ptr<Connection> &client, Message &message);
-    void MoveShip(std::shared_ptr<Connection> client, Message &message);
-    void AttackShip(std::shared_ptr<Connection> client, Message &message);
+    void PlayerReady(const std::shared_ptr<Connection> &client);
+    void BuyShip(const std::shared_ptr<Connection> &client, Message &message);
+    void MoveShip(const std::shared_ptr<Connection> &client, Message &message);
+    void AttackShip(const std::shared_ptr<Connection> &client,
+                    Message &message);
     void IncrementGoldByShipId(uint16_t shipId);
     void CheckTreasureIsland(int tx, int ty);
     void ProcessGoldGeneration();
