@@ -12,7 +12,7 @@ void TextElement::SetText(const std::string &text) { m_text = text; }
 
 void TextElement::Render(const EngineContext &ctx) const {
     renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
-                                 m_textColor, m_text);
+                                 m_textColor, m_text, 2.f);
 }
 
 void TextElement::OnClick(events::MouseClickEventArgs &args) {}

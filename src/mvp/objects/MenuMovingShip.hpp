@@ -1,8 +1,8 @@
 #pragma once
 
+#include "GameData.hpp"
 #include "objects/Ship.hpp"
 #include "objects/Sprite.hpp"
-#include "shared.hpp"
 
 namespace admirals::mvp::objects {
 

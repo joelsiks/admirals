@@ -4,25 +4,38 @@
 
 using namespace admirals;
 
-std::deque<Vector2>
-PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
-                      const Vector2 &dest, const Vector2 &pathSize,
-                      const std::unordered_set<float> &checkedOrders,
-                      float detailLevel) {
-    const Rect bounds = Rect(Vector2(0), quadTree.GetSize());
-
+std::deque<Vector2> PathFinding::FindPath(const Vector2 &start,
+                                          const Vector2 &dest,
+                                          const NavMesh &navMesh,
+                                          bool validateStart,
+                                          bool validateDest) {
+    const Rect bounds = navMesh.GetBounds();
     if (!bounds.Contains(start) || !bounds.Contains(dest)) {
         return std::deque<Vector2>();
     }
 
-    const size_t width = static_cast<size_t>((bounds.Width() / detailLevel));
-    const size_t height = static_cast<size_t>((bounds.Height() / detailLevel));
+    // Data from nav-mesh
+    const size_t width = navMesh.GetGridWidth();
+    const size_t height = navMesh.GetGridHeight();
+    const float detailLevel = navMesh.GetLevelOfDetail();
+
+    // start + end indices
+    const size_t startIndex =
+        ConvertVectorToNodeIndex(start - bounds.Position(), width, detailLevel);
+    const size_t endIndex =
+        ConvertVectorToNodeIndex(dest - bounds.Position(), width, detailLevel);
+    const Vector2 endLocation =
+        ConvertNodeIndexToVector(endIndex, width, detailLevel) +
+        detailLevel / 2.f;
+
+    if ((validateStart && navMesh.GetCostAt(startIndex) < 0) ||
+        (validateDest && navMesh.GetCostAt(endIndex) < 0) ||
+        startIndex == endIndex) {
+        return std::deque<Vector2>();
+    }
+
     // world grid representing possible move locations
     Node *grid = new Node[width * height];
-
-    const size_t startIndex =
-        ConvertVectorToNodeIndex(start, width, detailLevel);
-    const size_t endIndex = ConvertVectorToNodeIndex(dest, width, detailLevel);
 
     std::set<size_t, PathFinding::Comparator> orderedNodeIndexQueue =
         std::set<size_t, PathFinding::Comparator>(
@@ -36,28 +49,31 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
         const size_t nodeIndex = *orderedNodeIndexQueue.begin();
         orderedNodeIndexQueue.erase(orderedNodeIndexQueue.begin());
 
-        if (nodeIndex == endIndex) {
-            const auto path = FindPathRoot(grid, nodeIndex, width, detailLevel);
-            delete[] grid;
-            return path;
-        }
-
         FindNeighboringNodes(nodeIndex, width, height, neighbors);
-        const float g = grid[nodeIndex].g + detailLevel;
         for (const size_t neighborIndex : neighbors) {
             if (neighborIndex == NULLVALUE) {
                 continue;
             }
+
             Node &neighbor = grid[neighborIndex];
-            if (!neighbor.visited || neighbor.g > g) {
+
+            if (neighborIndex == endIndex) {
+                neighbor.path = nodeIndex;
+                const auto path = FindPathRoot(grid, neighborIndex, width,
+                                               detailLevel, bounds.Position());
+                delete[] grid;
+                return path;
+            }
+
+            if (!neighbor.visited || neighbor.g > grid[nodeIndex].g) {
                 const Vector2 position =
                     ConvertNodeIndexToVector(neighborIndex, width, detailLevel);
                 neighbor.visited = true;
-                if (IsValidPosition(position, pathSize, quadTree,
-                                    checkedOrders)) {
-                    neighbor.h = Heuristic(position, dest, pathSize);
-                    neighbor.g = g;
-                    neighbor.f = neighbor.h + g;
+                const float cost = navMesh.GetCostAt(neighborIndex);
+                if (cost >= 0) {
+                    neighbor.h = Heuristic(position, endLocation, detailLevel);
+                    neighbor.g = grid[nodeIndex].g + cost;
+                    neighbor.f = neighbor.h + neighbor.g;
                     neighbor.path = nodeIndex;
                     orderedNodeIndexQueue.insert(neighborIndex);
                 }
@@ -71,12 +87,13 @@ PathFinding::FindPath(const QuadTree &quadTree, const Vector2 &start,
 
 std::deque<Vector2> PathFinding::FindPathRoot(const Node *grid,
                                               size_t nodeIndex, size_t width,
-                                              float detailLevel) {
+                                              float detailLevel,
+                                              const Vector2 &offset) {
     std::deque<Vector2> path = {};
 
     while (grid[nodeIndex].path != NULLVALUE) {
         path.push_front(
-            ConvertNodeIndexToVector(nodeIndex, width, detailLevel));
+            ConvertNodeIndexToVector(nodeIndex, width, detailLevel) + offset);
         nodeIndex = grid[nodeIndex].path;
     }
 

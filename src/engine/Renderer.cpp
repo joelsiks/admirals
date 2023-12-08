@@ -9,20 +9,21 @@
 using namespace admirals;
 using namespace admirals::renderer;
 
-void RenderFont(VK2DTexture font, const Vector2 &postion, const char *text) {
+void RenderFont(VK2DTexture font, const Vector2 &postion, const Vector2 &scale,
+                const char *text) {
     float x = postion.x();
     float y = postion.y();
     const float ox = x;
     for (int i = 0; i < (int)strlen(text); i++) {
         if (text[i] != '\n') {
             vk2dRendererDrawTexture(
-                font, x, y, 2.f, 2.f, 0.f, 0.f, 0.f,
+                font, x, y, scale.x(), scale.y(), 0.f, 0.f, 0.f,
                 static_cast<float>((text[i] * 8) % 128),
                 floorf(static_cast<float>(text[i]) / 16.f) * 16.f, 8.f, 16.f);
-            x += 8 * 2;
+            x += 8 * scale.x();
         } else {
             x = ox;
-            y += 16 * 2;
+            y += 16 * scale.x();
         }
     }
 }
@@ -141,9 +142,10 @@ void Renderer::DrawSprite(const Texture &texture, const Vector2 &position,
 }
 
 void Renderer::DrawText(const Texture &font, const Vector2 &position,
-                        const Color &color, const std::string &text) {
+                        const Color &color, const std::string &text,
+                        const Vector2 &scale) {
     vk2dRendererSetColourMod(color.Data());
-    RenderFont(font.Data(), position, text.c_str());
+    RenderFont(font.Data(), position, scale, text.c_str());
     vk2dRendererSetColourMod(VK2D_DEFAULT_COLOUR_MOD);
 }
 

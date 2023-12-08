@@ -11,7 +11,7 @@ Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
     : m_fgColor(foregroundColor), m_bgColor(backgroundColor),
       m_topPadding(topPadding) {
 
-    const auto m_titleOption = std::make_shared<TextOption>(
+    m_titleOption = std::make_shared<TextOption>(
         TextOption(MENU_TITLE_NAME, Menu::commonDepthOrder, menuTitle));
 
     this->AddDisplayable(m_titleOption);

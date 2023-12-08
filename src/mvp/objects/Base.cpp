@@ -1,24 +1,26 @@
 #include "Base.hpp"
-#include "commontypes.hpp"
-#include "shared.hpp"
+#include "CommonTypes.hpp"
+#include "GameData.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;
 
-Base::Base(const std::string &name, const Texture &source, float order,
-           const Rect &bounds)
-    : Sprite(name, source, order, bounds) {
-    m_health = static_cast<float>(BaseMaxHealth);
-}
+Base::Base(const ShipData &data, const Vector2 &size, const Texture &source)
+    : Ship(data, size, source) {}
 
-void Base::Render(const EngineContext &ctx) const {
-    Sprite::Render(ctx);
+Base::~Base() {}
+
+void Base::Render(const EngineContext &) const {
+    renderer::Renderer::DrawSprite(m_source, GetPosition(), m_texOffset,
+                                   m_texSize, GetSize() / m_texSize);
 
     const auto position = GetPosition();
     const auto size = GetSize();
 
     // Health Bar
-    const float healthPercentage = m_health / static_cast<float>(BaseMaxHealth);
+    const float healthPercentage =
+        static_cast<float>(GetHealth()) /
+        static_cast<float>(ShipInfoMap[ShipType::Base].Health);
 
     const Vector2 healthOrigin =
         position + Vector2(0, size.y() - GameData::HealthBarSize);
