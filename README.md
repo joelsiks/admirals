@@ -40,6 +40,8 @@ You can then move on to creating build files:
 cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER:FILEPATH=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_CXX_COMPILER=C:/msys64/ucrt64/bin/g++.exe
 ```
 
+# Styling
+
 ## Formatting
 
 This project uses clang-format to format source code, with a config file called `.clang-format` in the project root. clang-format is part of the clang suite, which can be downloaded using the following commands:
@@ -76,9 +78,35 @@ pacman -S --needed mingw-w64-ucrt-x86_64-clang-tools-extra
 sudo apt-get install clang-tidy
 ```
 
-Running/using clang-tidy might be different depending on the development environment you are using. There is always the option of running it from the command-line (preferably using the included `run-clang-tidy`).
+Running/using clang-tidy might be different depending on the development environment you are using. There is always the option of running it from the command-line (preferably using `run-clang-tidy`).
 
 For Visual Studio Code users there is a settings template in `.vscode-template/settings.json` that includes the most important configuration for automatically running clang-tidy on file save, given that you have the [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) installed. Either move `.vscode-template/settings.json` into `.vsode/settings.json` or copy the contents into your existing `.vscode/settings.json`.
+
+# Profiling
+
+The engine (specifically the test programs located in `src/test`) are most easiest to profile on Linux using `callgrind` (part of the valgrind tool) to manaually interpret using `kcachegrind`.
+
+## Instructions
+
+```bash
+# Navigate into the build/ directory with build files.
+ninja ui_test # or some other executable
+valgrind --tool=callgrind ./ui_test
+kcachegrind callgrind.out.<pid>
+```
+
+To get results from callgrind that are (reasonably) good, it is prefered to link the Admirals engine statically in the CMakeLists.txt file. This is done by chaning the follow line:
+```cmake
+# From
+add_library(engine SHARED ${SOURCES})
+# To
+add_library(engine STATIC ${SOURCES})
+```
+
+Also, to get information about the source code in the profiling results, add the following line to the top of the CMakeLists.txt file. This line adds debug info to the release build type, which is desireable since we also want to profile any optimizations that occur, which isn't the case for the debug build type.
+```cmake
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+```
 
 # Authors
 
