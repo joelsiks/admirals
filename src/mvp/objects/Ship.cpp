@@ -1,6 +1,7 @@
 #include "objects/Ship.hpp"
 #include "GameData.hpp"
 #include "PathFinding.hpp"
+#include "Ship.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp;
@@ -187,7 +188,7 @@ void Ship::OnUpdate(const EngineContext &) {
             UpdateNavMesh();
         }
 
-        m_path = PathFinding::FindPath(GetPosition(), GameData::mousePosition,
+        m_path = PathFinding::FindPath(GetPosition(), GameData::MousePosition,
                                        *GameData::navMesh, false, false);
         ValidateNavPath();
     } else if (!m_target.empty()) {
@@ -208,19 +209,25 @@ void Ship::Render(const EngineContext &ctx) const {
     }
 }
 
+void Ship::Select() {
+    printf("Ship (%d): Selected...\n", GetID());
+    GameData::Selection->Select(identifier());
+    GameData::engine->onMouseClick += BIND_EVENT_HANDLER(Ship::HandleClick);
+}
+
+void Ship::DeSelect() {
+    printf("Ship (%d): Deselected...\n", GetID());
+    GameData::Selection->DeSelect(identifier());
+    GameData::engine->onMouseClick -= BIND_EVENT_HANDLER(Ship::HandleClick);
+}
+
 void Ship::OnClick(events::MouseClickEventArgs &args) {
     if (args.button == events::MouseButton::Left && args.pressed) {
         if (IsOwned()) {
             if (IsSelected()) {
-                printf("Ship (%d): Deselected...\n", GetID());
                 DeSelect();
-                GameData::engine->onMouseClick -=
-                    BIND_EVENT_HANDLER(Ship::HandleClick);
             } else {
-                printf("Ship (%d): Selected...\n", GetID());
                 Select();
-                GameData::engine->onMouseClick +=
-                    BIND_EVENT_HANDLER(Ship::HandleClick);
             }
             m_target.clear();
             args.handled = true;
@@ -229,14 +236,14 @@ void Ship::OnClick(events::MouseClickEventArgs &args) {
 }
 
 void Ship::HandleClick(void *, events::MouseClickEventArgs &args) {
+    if (args.button != events::MouseButton::Left || !args.pressed) {
+        return;
+    }
+
     printf("Ship (%d): Handling click...\n", GetID());
     if (!IsSelected()) {
         GameData::engine->onMouseClick -= BIND_EVENT_HANDLER(Ship::HandleClick);
         args.handled = true;
-        return;
-    }
-
-    if (args.button != events::MouseButton::Left || !args.pressed) {
         return;
     }
 
@@ -247,11 +254,9 @@ void Ship::HandleClick(void *, events::MouseClickEventArgs &args) {
             args.Location() - m_boundingBox.Position();
         if (clickBounds.Contains(clickLocation)) {
             SetAction(ShipAction::Move);
-            args.handled = true;
+            DeSelect();
         }
     }
-
-    DeSelect();
 }
 
 void Ship::OnMouseEnter(events::MouseMotionEventArgs &) {

@@ -2,6 +2,7 @@
 
 #include <VK2D/Texture.h>
 #include <cmath>
+#include <sstream>
 #include <stdint.h>
 #include <string>
 
@@ -139,6 +140,13 @@ public:
     static inline float Distance(const Vector2 &v1, const Vector2 &v2) {
         return v1.Distance(v2);
     }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << x() << ", " << y() << ")";
+        return std::move(out).str();
+    }
 };
 
 class Vector3 : public Vector2 {
@@ -261,6 +269,13 @@ public:
 
     static inline float Distance(const Vector3 &v1, const Vector3 &v2) {
         return v1.Distance(v2);
+    }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << x() << ", " << y() << ", " << z() << ")";
+        return std::move(out).str();
     }
 };
 
@@ -400,6 +415,14 @@ public:
     static inline float Distance(const Vector4 &v1, const Vector4 &v2) {
         return v1.Distance(v2);
     }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << x() << ", " << y() << ", " << z() << ", "
+            << w() << ")";
+        return std::move(out).str();
+    }
 };
 
 class Color : public Vector4 {
@@ -533,6 +556,18 @@ public:
     inline void SetSize(const Vector2 &size) {
         m_w = size.x();
         m_h = size.y();
+    }
+
+    constexpr bool IsZero() const noexcept {
+        return m_x == 0 && m_y == 0 && m_w == 0 && m_h == 0;
+    }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << m_x << ", " << m_y << " | " << m_w << " x "
+            << m_h << ")";
+        return std::move(out).str();
     }
 
 private:

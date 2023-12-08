@@ -61,9 +61,9 @@ private:
     static std::string GetWarningMessage(WarningCase ec) {
         switch (ec) {
         case MismatchOfValues:
-            return "Warning:\n  Possible mismatch of varaiables";
+            return "Warning:\n  Possible mismatch of variables";
         case WrongIdentifiers:
-            return "Warning:\n  Wrong Inditifiers";
+            return "Warning:\n  Wrong Identifiers";
         default: // code 0
             return "unknown warning code.";
         }

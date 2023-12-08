@@ -88,18 +88,18 @@ void MenuManager::OnStart(const EngineContext &) {
 void MenuManager::OnUpdate(const EngineContext &) {}
 
 void MenuManager::ToggleOpponentDisconnectMenu() {
-    GameData::engine->ToggleLayer(GameData::gameUIIdx);
+    GameData::engine->ToggleLayer(GameData::GameUIIdx);
     GameData::engine->ToggleLayer(m_opponentDisconnectIdx);
 }
 
 void MenuManager::ToggleServerDisconnectMenu() {
-    GameData::engine->ToggleLayer(GameData::gameUIIdx);
+    GameData::engine->ToggleLayer(GameData::GameUIIdx);
     GameData::engine->ToggleLayer(m_serverDisconnectIdx);
 }
 
 void MenuManager::ToggleEndGameMenu(bool won) {
     m_endGameMenu->SetTitle(won ? "You won!" : "You lost!");
-    GameData::engine->ToggleLayer(GameData::gameUIIdx);
+    GameData::engine->ToggleLayer(GameData::GameUIIdx);
     GameData::engine->ToggleLayer(m_endGameIdx);
 }
 
@@ -112,8 +112,8 @@ void MenuManager::ReturnToMenu() {
         GameData::engine->ToggleLayer(m_endGameIdx);
     }
 
-    GameData::engine->ToggleLayer(GameData::startMenuIdx);
+    GameData::engine->ToggleLayer(GameData::StartMenuIdx);
 
-    GameData::g_sceneStore =
-        GameData::engine->SetAndGetScene(GameData::g_sceneStore);
+    GameData::SceneStore =
+        GameData::engine->SetAndGetScene(GameData::SceneStore);
 }

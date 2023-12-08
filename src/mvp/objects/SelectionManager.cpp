@@ -24,7 +24,6 @@ void SelectionManager::SetSelectionToPreviewArea() {
             }
         }
     }
-
     ClearSelectionPreview();
 }
 

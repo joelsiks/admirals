@@ -11,6 +11,7 @@
 #include "objects/IconifiedButton.hpp"
 #include "objects/MenuMovingShip.hpp"
 #include "objects/Quad.hpp"
+#include "objects/SelectionManager.hpp"
 #include "objects/Ship.hpp"
 #include "objects/TreasureIsland.hpp"
 
@@ -30,10 +31,10 @@ const Color green = Color::FromHEX("#087311");
 const Color gold = Color::FromHEX("#FFD700");
 
 void SwapEngineScene() {
-    GameData::g_sceneStore =
-        GameData::engine->SetAndGetScene(GameData::g_sceneStore);
-    GameData::engine->ToggleLayer(GameData::startMenuIdx);
-    GameData::engine->ToggleLayer(GameData::gameUIIdx);
+    GameData::SceneStore =
+        GameData::engine->SetAndGetScene(GameData::SceneStore);
+    GameData::engine->ToggleLayer(GameData::StartMenuIdx);
+    GameData::engine->ToggleLayer(GameData::GameUIIdx);
 }
 
 void CreateGameBoard(const Texture &atlas) {
@@ -69,7 +70,7 @@ void CreateGameBoard(const Texture &atlas) {
 void CreateGameUI(const Texture &atlas,
                   const std::shared_ptr<GameManager> &gameManager) {
     auto gameUI = std::make_shared<UI::DisplayLayout>();
-    GameData::engine->AddLayer(GameData::gameUIIdx, gameUI);
+    GameData::engine->AddLayer(GameData::GameUIIdx, gameUI);
 
     auto idText = std::make_shared<UI::TextElement>(
         "idText", 0, "Player: X", Vector2(200, 40), Color::WHITE);
@@ -113,7 +114,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     auto startMenu = std::make_shared<UI::menu::Menu>(
         "Admirals Conquest (MVP)", Color::BLACK,
         Color::FromRGBA(20, 20, 20, 140), 100);
-    GameData::engine->AddLayer(GameData::startMenuIdx, startMenu, false);
+    GameData::engine->AddLayer(GameData::StartMenuIdx, startMenu, false);
 
     auto exitOption =
         std::make_shared<UI::menu::ClickOption>("exitOption", 1.0, "Exit...");
@@ -167,7 +168,7 @@ void CreateStartMenuScene(const Texture &atlas) {
     startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
         "movingShip3", atlas, 1, Rect(5, 7, 80, 80), ShipType::Cruiser, 0.9));
 
-    GameData::startMenuScene = startMenuScene;
+    GameData::StartMenuScene = startMenuScene;
 }
 
 int main(int, char *[]) {
@@ -178,6 +179,8 @@ int main(int, char *[]) {
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
     auto gameManager =
         GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
+    GameData::Selection =
+        GameData::engine->MakeGameObject<SelectionManager>("selectionMananger");
 
     CreateGameBoard(atlas);
     CreateGameUI(atlas, gameManager);
@@ -185,13 +188,44 @@ int main(int, char *[]) {
     CreateStartMenu(gameManager);
     CreateStartMenuScene(atlas);
 
-    GameData::g_sceneStore = GameData::startMenuScene;
+    GameData::SceneStore = GameData::StartMenuScene;
     SwapEngineScene();
 
-    GameData::engine->onMouseMove +=
-        [](void *, events::MouseMotionEventArgs args) {
-            GameData::mousePosition = args.Location();
-        };
+    Vector2 mouseDownLocation;
+    bool mouseIsDown;
+    GameData::engine->onMouseClick += [&mouseIsDown, &mouseDownLocation](
+                                          void *,
+                                          events::MouseClickEventArgs args) {
+        mouseIsDown = args.button == events::MouseButton::Left && args.pressed;
+        if (mouseIsDown) {
+            mouseDownLocation = args.Location();
+        } else if (args.button == events::MouseButton::Left) {
+            const float selectionMax =
+                std::max(GameData::Selection->GetSelectionPreview().Width(),
+                         GameData::Selection->GetSelectionPreview().Height());
+            if (selectionMax > 10.f) {
+                GameData::Selection->SetSelectionToPreviewArea();
+            }
+            args.handled = true;
+        } else {
+            GameData::Selection->ClearSelectionPreview();
+        }
+    };
+
+    GameData::engine->onMouseMove += [&mouseIsDown, &mouseDownLocation](
+                                         void *,
+                                         events::MouseMotionEventArgs args) {
+        GameData::MousePosition = args.Location();
+        if (mouseIsDown) {
+            const Vector2 topLeft =
+                Vector2(std::min(mouseDownLocation.x(), args.Location().x()),
+                        std::min(mouseDownLocation.y(), args.Location().y()));
+            const Vector2 size =
+                Vector2(std::abs(mouseDownLocation.x() - args.Location().x()),
+                        std::abs(mouseDownLocation.y() - args.Location().y()));
+            GameData::Selection->SetSelectionPreview(Rect(topLeft, size));
+        }
+    };
 
     GameData::engine->StartGameLoop();
     GameData::engine.release();

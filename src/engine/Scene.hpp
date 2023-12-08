@@ -30,9 +30,7 @@ public:
     /// @param validator Function used to determine if a location on the mesh is
     /// navigable or not.
     /// @return A pointer to the built nav-mesh
-    std::shared_ptr<NavMesh> BuildNavMesh(const Rect &bounds,
-                                          const Vector2 &pathSize,
-                                          float detailLevel,
+    std::shared_ptr<NavMesh> BuildNavMesh(const Rect &bounds, float detailLevel,
                                           const PathValidator &validator) const;
 
 private:

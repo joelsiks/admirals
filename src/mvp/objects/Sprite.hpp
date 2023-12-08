@@ -1,4 +1,5 @@
 #pragma once
+#include "GameData.hpp"
 #include "objects/GridObject.hpp"
 
 namespace admirals::mvp::objects {
