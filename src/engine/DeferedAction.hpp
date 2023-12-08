@@ -8,6 +8,7 @@ enum DeferType {
     Delete,
     Activate,
     Deactivate,
+    ToggleActive,
 };
 
 } // namespace admirals

@@ -51,44 +51,19 @@ public:
             return false;
         }
 
-        if (m_activeLayers.find(idx) != m_activeLayers.end()) {
-            return true;
-        }
-
-        // If m_layers contains the idx and it is not in m_activeLayers we must
-        // search through all defered actions to see the layer's "final" state.
-        DeferType layerDef = DeferType::None;
-        for (const auto &deferPair : m_deferredToggleLayers) {
-            if (deferPair.first == idx) {
-                layerDef = deferPair.second;
-            }
-        }
-
-        if (layerDef != DeferType::None)
-            return (layerDef == DeferType::Add ||
-                    layerDef == DeferType::Activate);
-
-        return false;
+        return m_activeLayers.find(idx) != m_activeLayers.end();
     }
 
     inline void ActivateLayer(size_t idx) {
-        if (!LayerIsActive(idx)) {
-            m_deferredToggleLayers.push_back({idx, DeferType::Activate});
-        }
+        m_deferredToggleLayers.push_back({idx, DeferType::Activate});
     }
 
     inline void DeactivateLayer(size_t idx) {
-        if (LayerIsActive(idx)) {
-            m_deferredToggleLayers.push_back({idx, DeferType::Deactivate});
-        }
+        m_deferredToggleLayers.push_back({idx, DeferType::Deactivate});
     }
 
     inline void ToggleLayer(size_t idx) {
-        if (LayerIsActive(idx)) {
-            DeactivateLayer(idx);
-        } else {
-            ActivateLayer(idx);
-        }
+        m_deferredToggleLayers.push_back({idx, DeferType::ToggleActive});
     }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element,

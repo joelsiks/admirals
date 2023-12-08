@@ -101,8 +101,18 @@ bool Engine::PollAndHandleEvent() {
 }
 
 void Engine::HandleDeferredToggleLayers() {
-    for (const auto &deferPair : m_deferredToggleLayers) {
+    for (auto &deferPair : m_deferredToggleLayers) {
         const size_t layerIdx = deferPair.first;
+
+        if (deferPair.second == DeferType::ToggleActive) {
+            if (m_layers.contains(layerIdx)) {
+                if (m_activeLayers.contains(layerIdx)) {
+                    deferPair.second = DeferType::Deactivate;
+                } else {
+                    deferPair.second = DeferType::Activate;
+                }
+            }
+        }
 
         switch (deferPair.second) {
         case DeferType::Add:
