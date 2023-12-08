@@ -54,12 +54,18 @@ public:
             return true;
         }
 
+        // If m_layers contains the idx and it is not in m_activeLayers we must
+        // search through all defered actions to see the layer's "final" state.
+        DeferType layerDef = DeferType::None;
         for (const auto &deferPair : m_deferredToggleLayers) {
             if (deferPair.first == idx) {
-                return (deferPair.second == DeferType::Add ||
-                        deferPair.second == DeferType::Activate);
+                layerDef = deferPair.second;
             }
         }
+
+        if (layerDef != DeferType::None)
+            return (layerDef == DeferType::Add ||
+                    layerDef == DeferType::Activate);
 
         return false;
     }
@@ -141,7 +147,8 @@ private:
     std::shared_ptr<Scene> m_scene;
 
     enum DeferType {
-        Add = 1,
+        None = 1,
+        Add,
         Delete,
         Activate,
         Deactivate,

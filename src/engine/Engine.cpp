@@ -125,6 +125,8 @@ void Engine::HandleDeferredToggleLayers() {
                 m_layers[layerIdx]->OnHidden();
             }
             break;
+        default:
+            break;
         }
     }
 
