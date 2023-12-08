@@ -108,21 +108,24 @@ void Engine::HandleDeferredToggleLayers() {
         case DeferType::Add:
         case DeferType::Activate:
             if (m_layers.contains(layerIdx)) {
-                m_activeLayers.insert(layerIdx);
-                m_layers[layerIdx]->OnShown();
+                const bool inserted = m_activeLayers.insert(layerIdx).second;
+                if (inserted) {
+                    m_layers[layerIdx]->OnShown();
+                }
             }
             break;
         case DeferType::Delete:
-            m_activeLayers.erase(layerIdx);
-            m_layers.erase(layerIdx);
+            if (m_layers.erase(layerIdx) == 1) {
+                m_activeLayers.erase(layerIdx);
+            }
             break;
         case DeferType::Deactivate:
-            if (m_layers.contains(layerIdx)) {
-                m_activeLayers.erase(layerIdx);
+            if (m_layers.contains(layerIdx) &&
+                m_activeLayers.erase(layerIdx) == 1) {
                 m_layers[layerIdx]->OnHidden();
             }
             break;
-        };
+        }
     }
 
     m_deferredToggleLayers.clear();
