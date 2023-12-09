@@ -64,9 +64,7 @@ bool Engine::PollAndHandleEvent() {
             auto args = MouseClickEventArgs(e.button);
 
             for (const auto &activeLayerIdx : m_activeLayers) {
-                // if (m_layers.find(activeLayerIdx) != m_layers.end()) {
-                    m_layers[activeLayerIdx]->OnClick(args);
-                // }
+                m_layers[activeLayerIdx]->OnClick(args);
             }
 
             if (hasScene() && !args.handled) {

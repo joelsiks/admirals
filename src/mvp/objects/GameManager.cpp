@@ -15,7 +15,7 @@ GameManager::GameManager(const std::string &name, const Texture &atlas)
 
 GameManager::~GameManager() {}
 
-void GameManager::OnStart(const EngineContext &) { srand(time(NULL)); }
+void GameManager::OnStart(const EngineContext &) { CreateBases(); }
 
 void GameManager::OnUpdate(const EngineContext &) {}
 
@@ -29,6 +29,11 @@ bool GameManager::ConnectToServer(const std::string &ip, uint16_t port,
     return m_networkManager->ConnectToServer(ip, port, maxTries);
 }
 
+void GameManager::StartGame() {
+    m_gameStarted = true;
+    m_waitingForOpponent = false;
+}
+
 void GameManager::StopGame(uint8_t winner) {
     if (!m_gameStarted) {
         return;
@@ -40,12 +45,21 @@ void GameManager::StopGame(uint8_t winner) {
     }
 }
 
+void GameManager::ReadyUp() {
+    if (m_gameStarted) {
+        return;
+    }
+    m_waitingForOpponent = true;
+    m_networkManager->ReadyUp();
+}
+
 // Called when the server disconnects
 void GameManager::AbortGame() {
-    if (!m_gameStarted) {
+    if (!m_gameStarted && !m_waitingForOpponent) {
         return;
     }
     m_gameStarted = false;
+    m_waitingForOpponent = false;
     m_menuManager->ToggleServerDisconnectMenu();
     if (m_debug) {
         printf("Game aborted\n");
@@ -62,6 +76,21 @@ void GameManager::ResumeGame() {
         m_menuManager->ToggleOpponentDisconnectMenu();
     m_gamePaused = false;
     m_gameStarted = true;
+}
+
+void GameManager::CreateBases() {
+    const Vector2 cellSize = Vector2(GameData::CellSize);
+    const auto baseTop = GameData::engine->MakeGameObject<Base>(
+        "baseTop", m_atlas, 2,
+        Rect(0, 1, GameData::CellSize, GameData::CellSize));
+
+    const auto baseBottom = GameData::engine->MakeGameObject<Base>(
+        "baseBottom", m_atlas, 2,
+        Rect(static_cast<float>(GameData::GridCells) - 1,
+             static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
+             GameData::CellSize));
+    m_baseTop = baseTop;
+    m_baseBottom = baseBottom;
 }
 
 void GameManager::BuyShip(uint8_t type) {
@@ -135,7 +164,8 @@ void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
 
 void GameManager::PlayAgain() {
     ResetState(false);
-    m_networkManager->ReadyUp();
+    m_menuManager->ToggleEndGameMenu();
+    ReadyUp();
 }
 
 void GameManager::ExitToMenu() {
@@ -147,6 +177,7 @@ void GameManager::ExitToMenu() {
 void GameManager::ResetState(bool removeConnection) {
     m_gameStarted = false;
     m_gamePaused = false;
+    m_waitingForOpponent = false;
 
     m_turn = 0;
     m_coins = 0;
@@ -157,6 +188,10 @@ void GameManager::ResetState(bool removeConnection) {
     for (const auto &[_, ship] : m_ships) {
         GameData::engine->GetScene()->RemoveDisplayable(ship->identifier());
     }
+
+    GameData::engine->GetScene()->RemoveDisplayable("baseTop");
+    GameData::engine->GetScene()->RemoveDisplayable("baseBottom");
+    CreateBases();
 
     m_ships.clear();
 

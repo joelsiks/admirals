@@ -77,21 +77,6 @@ void CreateGameBoard(const Texture &atlas) {
         Vector2(GameData::SpriteSize * 2, 0));
 }
 
-void CreateBases(const Texture &atlas,
-                 const std::shared_ptr<GameManager> &gameManager) {
-    const Vector2 cellSize = Vector2(GameData::CellSize);
-    const auto baseTop = GameData::engine->MakeGameObject<Base>(
-        "baseTop", atlas, 2,
-        Rect(0, 1, GameData::CellSize, GameData::CellSize));
-
-    const auto baseBottom = GameData::engine->MakeGameObject<Base>(
-        "baseBottom", atlas, 2,
-        Rect(static_cast<float>(GameData::GridCells) - 1,
-             static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
-             GameData::CellSize));
-    gameManager->SetBases(baseTop, baseBottom);
-}
-
 void CreateGameUI(const Texture &atlas,
                   const std::shared_ptr<GameManager> &gameManager) {
     auto gameUI = std::make_shared<UI::DisplayLayout>();
@@ -204,7 +189,6 @@ int main(int, char *[]) {
         GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
 
     CreateGameBoard(atlas);
-    CreateBases(atlas, gameManager);
 
     CreateGameUI(atlas, gameManager);
 

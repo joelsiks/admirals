@@ -131,8 +131,15 @@ void MvpServer::ProcessTurn() {
     ProcessGoldGeneration();
 
     // Process ship actions
-    ProcessShips(m_playerTop.ships);
-    ProcessShips(m_playerBottom.ships);
+    if (ProcessShips(m_playerTop.ships)) {
+        StopGame(m_playerTop.id);
+        return;
+    }
+
+    if (ProcessShips(m_playerBottom.ships)) {
+        StopGame(m_playerBottom.id);
+        return;
+    }
 
     // Remove ships with 0 health
     ProcessDeadShips(m_playerTop.ships);
@@ -411,7 +418,7 @@ void MvpServer::ProcessGoldGeneration() {
     CheckTreasureIsland(7, 2);
 }
 
-void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
+bool MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
     const bool isTopPlayer = ship.owner == m_playerTop.id;
     std::map<uint16_t, admirals::mvp::ShipData> &enemyShips =
         isTopPlayer ? m_playerBottom.ships : m_playerTop.ships;
@@ -429,8 +436,7 @@ void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
             if (!isTopPlayer && x == 0 && y == 1) {
                 if (m_playerTop.baseHealth < ShipInfoMap[ship.type].Damage) {
                     m_playerTop.baseHealth = 0;
-                    StopGame(m_playerBottom.id);
-                    return;
+                    return true;
                 } else {
                     m_playerTop.baseHealth -= ShipInfoMap[ship.type].Damage;
                 }
@@ -440,8 +446,7 @@ void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
             if (isTopPlayer && x == BOARD_SIZE - 1 && y == BOARD_SIZE - 2) {
                 if (m_playerBottom.baseHealth < ShipInfoMap[ship.type].Damage) {
                     m_playerBottom.baseHealth = 0;
-                    StopGame(m_playerTop.id);
-                    return;
+                    return true;
                 } else {
                     m_playerBottom.baseHealth -= ShipInfoMap[ship.type].Damage;
                 }
@@ -458,9 +463,10 @@ void MvpServer::DamageNearbyEnemies(admirals::mvp::ShipData &ship) {
             }
         }
     }
+    return false;
 }
 
-void MvpServer::ProcessShips(
+bool MvpServer::ProcessShips(
     std::map<uint16_t, admirals::mvp::ShipData> &ships) {
     // TODO: Process ship actions correctly
     for (auto &ship : ships) {
@@ -472,7 +478,8 @@ void MvpServer::ProcessShips(
         }
         switch (ship.second.action) {
         case ShipAction::None:
-            DamageNearbyEnemies(ship.second);
+            if (DamageNearbyEnemies(ship.second))
+                return true;
             break;
         case ShipAction::Attack:
             break;
@@ -490,6 +497,7 @@ void MvpServer::ProcessShips(
             break;
         }
     }
+    return false;
 }
 
 void MvpServer::ProcessDeadShips(
@@ -508,10 +516,6 @@ void MvpServer::ProcessDeadShips(
 }
 
 void MvpServer::BroadcastState() {
-    if (!m_gameStarted || m_gamePaused) {
-        return;
-    }
-
     Message msg;
     msg.header.id = NetworkMessageTypes::BoardUpdate;
     msg << m_turn << m_playerTop.coins << m_playerBottom.coins

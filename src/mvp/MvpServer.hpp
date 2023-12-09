@@ -37,7 +37,7 @@ public:
                    admirals::net::Message &message) override;
 
     void ProcessTurn();
-    void EnterServerLoop(bool& stopServer);
+    void EnterServerLoop(bool &stopServer);
 
 private:
     bool ShipAtLocation(int x, int y);
@@ -58,8 +58,8 @@ private:
     void IncrementGoldByShipId(uint16_t shipId);
     void CheckTreasureIsland(int tx, int ty);
     void ProcessGoldGeneration();
-    void DamageNearbyEnemies(admirals::mvp::ShipData &ship);
-    void ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
+    bool DamageNearbyEnemies(admirals::mvp::ShipData &ship);
+    bool ProcessShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void ProcessDeadShips(std::map<uint16_t, admirals::mvp::ShipData> &ships);
     void BroadcastState();
 

@@ -44,8 +44,8 @@ void MenuManager::OnStart(const EngineContext &) {
                 return;
 
             // TODO: implement restart
-            ToggleEndGameMenu();
-            // m_gameManager.PlayAgain();
+            // ToggleEndGameMenu();
+            m_gameManager.PlayAgain();
         });
 
     const auto exitOption =

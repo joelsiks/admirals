@@ -40,8 +40,9 @@ public:
     bool ConnectToServer(const std::string &ip = "127.0.0.1",
                          uint16_t port = 60000, size_t maxTries = -1);
 
-    void StartGame() { m_gameStarted = true; }
+    void StartGame();
     void StopGame(uint8_t winner);
+    void ReadyUp();
     void AbortGame();
     void PauseGame();
     void ResumeGame();
@@ -57,11 +58,7 @@ public:
     bool GetIsTopPlayer() const { return m_isTopPlayer; }
     void SetIsTopPlayer(bool isTopPlayer) { m_isTopPlayer = isTopPlayer; }
 
-    void SetBases(const std::shared_ptr<Base> &baseTop,
-                  const std::shared_ptr<Base> &baseBottom) {
-        m_baseTop = baseTop;
-        m_baseBottom = baseBottom;
-    }
+    void CreateBases();
 
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);
@@ -74,13 +71,14 @@ public:
     void ExitToMenu();
 
 private:
-    void ResetState(bool removeConnection = false); 
+    void ResetState(bool removeConnection = false);
     void ModifyShips(const std::map<uint16_t, ShipData> &new_ships);
     void ShipChangeEventHandler(void *sender, admirals::events::EventArgs e);
 
     bool m_testActionDone = false;
     bool m_gameStarted = false;
     bool m_gamePaused = false;
+    bool m_waitingForOpponent = false;
 
     int m_turn = 0;
     int m_coins = 0;
