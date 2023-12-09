@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "DeferedAction.hpp"
 #include "EngineContext.hpp"
 #include "GameObject.hpp"
 #include "IDisplayLayer.hpp"
@@ -31,21 +32,14 @@ public:
         const bool wasInserted = m_layers.emplace(idx, std::move(layer)).second;
 
         if (wasInserted && active) {
-            m_activeLayers.insert(idx);
+            m_deferredToggleLayers.push_back({idx, DeferType::Add});
         }
 
         return wasInserted;
     }
 
-    inline bool DeleteLayer(size_t idx) {
-        const size_t elementsRemoved = m_layers.erase(idx);
-        if (elementsRemoved != 0) {
-            // Note: we assume that this erase removes the layer if it's in the
-            // set and does not fail.
-            m_activeLayers.erase(idx);
-        }
-
-        return elementsRemoved != 0;
+    inline void DeleteLayer(size_t idx) {
+        m_deferredToggleLayers.push_back({idx, DeferType::Delete});
     }
 
     inline std::shared_ptr<IDisplayLayer> GetLayer(size_t idx) {
@@ -53,39 +47,23 @@ public:
     }
 
     inline bool LayerIsActive(size_t idx) {
+        if (!m_layers.contains(idx)) {
+            return false;
+        }
+
         return m_activeLayers.find(idx) != m_activeLayers.end();
     }
 
-    inline bool ActivateLayer(size_t idx) {
-        if (m_layers.find(idx) != m_layers.end() &&
-            !(m_activeLayers.find(idx) != m_activeLayers.end())) {
-            const bool wasInserted = m_activeLayers.insert(idx).second;
-
-            if (wasInserted) {
-                m_layers[idx]->OnShown();
-            }
-
-            return wasInserted;
-        }
-
-        return false;
+    inline void ActivateLayer(size_t idx) {
+        m_deferredToggleLayers.push_back({idx, DeferType::Activate});
     }
 
     inline void DeactivateLayer(size_t idx) {
-        if (m_activeLayers.find(idx) != m_activeLayers.end()) {
-            m_layers[idx]->OnHidden();
-            m_activeLayers.erase(idx);
-        }
+        m_deferredToggleLayers.push_back({idx, DeferType::Deactivate});
     }
 
     inline void ToggleLayer(size_t idx) {
-        if (m_layers.find(idx) != m_layers.end()) {
-            if (LayerIsActive(idx)) {
-                DeactivateLayer(idx);
-            } else {
-                ActivateLayer(idx);
-            }
-        }
+        m_deferredToggleLayers.push_back({idx, DeferType::ToggleActive});
     }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element,
@@ -131,6 +109,8 @@ public:
 private:
     bool PollAndHandleEvent();
 
+    void HandleDeferredToggleLayers();
+
     bool m_running;
 
     std::string m_gameName;
@@ -140,10 +120,10 @@ private:
     inline bool hasLayers() { return !m_layers.empty(); }
     inline bool hasActiveLayers() { return !m_activeLayers.empty(); }
 
-    // Drawables
     std::shared_ptr<Scene> m_scene;
     std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;
     std::unordered_set<size_t> m_activeLayers;
+    std::vector<std::pair<size_t, DeferType>> m_deferredToggleLayers;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
     EngineContext m_context;

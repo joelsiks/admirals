@@ -102,6 +102,49 @@ bool Engine::PollAndHandleEvent() {
     return quit;
 }
 
+void Engine::HandleDeferredToggleLayers() {
+    for (auto &deferPair : m_deferredToggleLayers) {
+        const size_t layerIdx = deferPair.first;
+
+        if (deferPair.second == DeferType::ToggleActive) {
+            if (m_layers.contains(layerIdx)) {
+                if (m_activeLayers.contains(layerIdx)) {
+                    deferPair.second = DeferType::Deactivate;
+                } else {
+                    deferPair.second = DeferType::Activate;
+                }
+            }
+        }
+
+        switch (deferPair.second) {
+        case DeferType::Add:
+        case DeferType::Activate:
+            if (m_layers.contains(layerIdx)) {
+                const bool inserted = m_activeLayers.insert(layerIdx).second;
+                if (inserted) {
+                    m_layers[layerIdx]->OnShown();
+                }
+            }
+            break;
+        case DeferType::Delete:
+            if (m_layers.erase(layerIdx) == 1) {
+                m_activeLayers.erase(layerIdx);
+            }
+            break;
+        case DeferType::Deactivate:
+            if (m_layers.contains(layerIdx) &&
+                m_activeLayers.erase(layerIdx) == 1) {
+                m_layers[layerIdx]->OnHidden();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    m_deferredToggleLayers.clear();
+}
+
 void Engine::StartGameLoop() {
     m_running = true;
 
@@ -144,5 +187,8 @@ void Engine::StartGameLoop() {
         }
 
         m_renderer->Render(GetContext(), layers);
+
+        HandleDeferredToggleLayers();
+        layers.resize(m_activeLayers.size() + 1);
     }
 }
