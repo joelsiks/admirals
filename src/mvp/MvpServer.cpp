@@ -22,15 +22,9 @@ void MvpServer::OnClientDisconnect(std::shared_ptr<Connection> client) {
     }
 
     if (m_connectedPlayers == 0 && m_gameStarted) {
-        // TODO: Reset game
-        // ResetGame();
         ResetState();
         return;
     }
-
-    // if (!m_gameStarted || m_gamePaused) {
-    //     return;
-    // }
 
     if (m_gameStarted && !m_gamePaused)
         PauseGame();
@@ -224,8 +218,6 @@ void MvpServer::ResetState() {
     m_playerBottom.numShips = 0;
     m_playerTop.ready = false;
     m_playerBottom.ready = false;
-    // m_playerTop.connected = false;
-    // m_playerBottom.connected = false;
     m_gameStarted = false;
     m_gamePaused = false;
     m_shipID = 1;

@@ -24,7 +24,7 @@ void MenuManager::OnStart(const EngineContext &) {
         GameData::engine->GetWindowSize().y() / 3.0);
 
     m_endGameMenu = std::make_shared<menu::Menu>(
-        "dwa", Color::BLACK, Color::FromRGBA(50, 50, 50, 240),
+        "", Color::BLACK, Color::FromRGBA(50, 50, 50, 240),
         GameData::engine->GetWindowSize().y() / 3.0);
 
     const auto returnToMenuOption = std::make_shared<menu::ClickOption>(
@@ -43,8 +43,6 @@ void MenuManager::OnStart(const EngineContext &) {
             if (!args.pressed)
                 return;
 
-            // TODO: implement restart
-            // ToggleEndGameMenu();
             m_gameManager.PlayAgain();
         });
 

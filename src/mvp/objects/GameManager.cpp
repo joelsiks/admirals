@@ -169,7 +169,6 @@ void GameManager::PlayAgain() {
 }
 
 void GameManager::ExitToMenu() {
-    // m_networkManager->Disconnect();
     ResetState(true);
     m_menuManager->ReturnToMenu();
 }
