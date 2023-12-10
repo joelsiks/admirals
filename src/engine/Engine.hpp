@@ -32,14 +32,14 @@ public:
         const bool wasInserted = m_layers.emplace(idx, std::move(layer)).second;
 
         if (wasInserted && active) {
-            m_deferredToggleLayers.push_back({idx, DeferType::Add});
+            m_deferredLayerActions.push_back({idx, DeferType::Add});
         }
 
         return wasInserted;
     }
 
     inline void DeleteLayer(size_t idx) {
-        m_deferredToggleLayers.push_back({idx, DeferType::Delete});
+        m_deferredLayerActions.push_back({idx, DeferType::Delete});
     }
 
     inline std::shared_ptr<IDisplayLayer> GetLayer(size_t idx) {
@@ -55,15 +55,15 @@ public:
     }
 
     inline void ActivateLayer(size_t idx) {
-        m_deferredToggleLayers.push_back({idx, DeferType::Activate});
+        m_deferredLayerActions.push_back({idx, DeferType::Activate});
     }
 
     inline void DeactivateLayer(size_t idx) {
-        m_deferredToggleLayers.push_back({idx, DeferType::Deactivate});
+        m_deferredLayerActions.push_back({idx, DeferType::Deactivate});
     }
 
     inline void ToggleLayer(size_t idx) {
-        m_deferredToggleLayers.push_back({idx, DeferType::ToggleActive});
+        m_deferredLayerActions.push_back({idx, DeferType::ToggleActive});
     }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element,
@@ -109,7 +109,7 @@ public:
 private:
     bool PollAndHandleEvent();
 
-    void HandleDeferredToggleLayers();
+    void HandleDeferredLayerActions();
 
     bool m_running;
 
@@ -123,7 +123,7 @@ private:
     std::shared_ptr<Scene> m_scene;
     std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;
     std::unordered_set<size_t> m_activeLayers;
-    std::vector<std::pair<size_t, DeferType>> m_deferredToggleLayers;
+    std::vector<std::pair<size_t, DeferType>> m_deferredLayerActions;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
     EngineContext m_context;
