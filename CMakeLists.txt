@@ -145,9 +145,16 @@ target_include_directories(test_server PRIVATE
 )
 
 # Create test executable
-add_executable(depthOrderedCollection_text src/test/depthOrderedCollection.test.cpp)
-target_link_libraries(depthOrderedCollection_text engine)
-target_include_directories(depthOrderedCollection_text PRIVATE 
+add_executable(depthOrderedCollection_test src/test/depthOrderedCollection.test.cpp)
+target_link_libraries(depthOrderedCollection_test engine cppunit)
+target_include_directories(depthOrderedCollection_test PRIVATE 
+    "src/test/"
+)
+
+# Create test executable
+add_executable(vector_test src/test/vector.test.cpp)
+target_link_libraries(vector_test engine cppunit)
+target_include_directories(vector_test PRIVATE 
     "src/test/"
 )
 

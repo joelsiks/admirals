@@ -32,7 +32,7 @@ Download the latest development package of SDL2, named `SDL2-devel-<version>-VC.
 
 Download Git Bash or MSYS2 and execute the following commands to install needed build tools (we suggest using the Universal C Runtime (ucrt)):
 ```bash
-pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-cmake
+pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-cmake 
 ```
 
 You can then move on to creating build files:
@@ -81,6 +81,17 @@ sudo apt-get install clang-tidy
 Running/using clang-tidy might be different depending on the development environment you are using. There is always the option of running it from the command-line (preferably using `run-clang-tidy`).
 
 For Visual Studio Code users there is a settings template in `.vscode-template/settings.json` that includes the most important configuration for automatically running clang-tidy on file save, given that you have the [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) installed. Either move `.vscode-template/settings.json` into `.vsode/settings.json` or copy the contents into your existing `.vscode/settings.json`.
+
+## Unit Tests
+
+We use cppunit for unit testing. It can be installed using the following commands:
+```bash
+# MSYS2
+pacman -S mingw-w64-ucrt-x86_64-cppunit
+
+# Ubuntu
+sudo apt-get install libcppunit-dev
+```
 
 # Profiling
 

@@ -1,10 +1,10 @@
-
 #include "Engine.hpp"
 #include "GameObject.hpp"
-#include "TestHandler.hpp"
+
+#include <cppunit/TestCase.h>
+#include <cppunit/ui/text/TestRunner.h>
 
 using namespace admirals;
-using namespace admirals::test;
 
 class TestObject : public GameObject {
 public:
@@ -13,65 +13,69 @@ public:
     void Render(const EngineContext &c) const override {}
 };
 
-class TestInitialSize : public TestCaseBase {
+class TestInitialSize : public CppUnit::TestCase {
 public:
-    TestInitialSize() : TestCaseBase("initial size") {}
-    void test() override {
-        const OrderedCollection collection = OrderedCollection();
+    TestInitialSize() : CppUnit::TestCase("initial size") {}
+    void runTest() override {
+        const OrderedCollection collection = OrderedCollection<TestObject>();
         const size_t size = collection.Size();
-        assert(size == 0,
-               "collection size not initially 0, was: " + std::to_string(size));
+        CPPUNIT_ASSERT_MESSAGE("collection size not initially 0, was: " +
+                                   std::to_string(size),
+                               size == 0);
     }
 };
 
-class TestInsertSize : public TestCaseBase {
+class TestInsertSize : public CppUnit::TestCase {
 public:
-    TestInsertSize() : TestCaseBase("insert size") {}
-    void test() override {
-        OrderedCollection collection = OrderedCollection();
+    TestInsertSize() : CppUnit::TestCase("insert size") {}
+    void runTest() override {
+        OrderedCollection collection = OrderedCollection<TestObject>();
         const auto t1 = std::make_shared<TestObject>("a", 0);
         collection.Insert(t1);
         const size_t size = collection.Size();
-        assert(size == 1, "collection size not 1 after insert, was: " +
-                              std::to_string(size));
+        CPPUNIT_ASSERT_MESSAGE("collection size not 1 after insert, was: " +
+                                   std::to_string(size),
+                               size == 1);
     }
 };
 
-class TestInsertSameName : public TestCaseBase {
+class TestInsertSameName : public CppUnit::TestCase {
 public:
-    TestInsertSameName() : TestCaseBase("insert same name") {}
-    void test() override {
-        OrderedCollection collection = OrderedCollection();
+    TestInsertSameName() : CppUnit::TestCase("insert same name") {}
+    void runTest() override {
+        OrderedCollection collection = OrderedCollection<TestObject>();
         const auto t1 = std::make_shared<TestObject>("a", 0);
         const auto t2 = std::make_shared<TestObject>("a", 1);
         collection.Insert(t1);
         collection.Insert(t2);
         const size_t size = collection.Size();
-        assert(size == 1, "collection size not 1 after insert, was: " +
-                              std::to_string(size));
+        CPPUNIT_ASSERT_MESSAGE("collection size not 1 after insert, was: " +
+                                   std::to_string(size),
+                               size == 1);
     }
 };
 
-class TestInsertSameZIndex : public TestCaseBase {
+class TestInsertSameZIndex : public CppUnit::TestCase {
 public:
-    TestInsertSameZIndex() : TestCaseBase("insert same z-index") {}
-    void test() override {
-        OrderedCollection collection = OrderedCollection();
+    TestInsertSameZIndex() : CppUnit::TestCase("insert same z-index") {}
+    void runTest() override {
+        OrderedCollection collection = OrderedCollection<TestObject>();
         const auto t1 = std::make_shared<TestObject>("a", 0);
         const auto t2 = std::make_shared<TestObject>("b", 0);
         collection.Insert(t1);
         collection.Insert(t2);
         const size_t size = collection.Size();
-        assert(size == 2, "collection size not 2 after insert, was: " +
-                              std::to_string(size));
+        CPPUNIT_ASSERT_MESSAGE("collection size not 2 after insert, was: " +
+                                   std::to_string(size),
+                               size == 2);
     }
 };
 
-class TestInsertMultiple : public TestCaseBase {
+class TestInsertMultiple : public CppUnit::TestCase {
 public:
-    TestInsertMultiple() : TestCaseBase("insert multiple") {}
-    void test() override {
-        OrderedCollection collection = OrderedCollection();
+    TestInsertMultiple() : CppUnit::TestCase("insert multiple") {}
+    void runTest() override {
+        OrderedCollection collection = OrderedCollection<TestObject>();
         const auto t1 = std::make_shared<TestObject>("a", 0);
         const auto t2 = std::make_shared<TestObject>("b", 1);
         const auto t3 = std::make_shared<TestObject>("c", 2);
@@ -79,16 +83,17 @@ public:
         collection.Insert(t2);
         collection.Insert(t3);
         const size_t size = collection.Size();
-        assert(size == 3, "collection size not 3 after insert, was: " +
-                              std::to_string(size));
+        CPPUNIT_ASSERT_MESSAGE("collection size not 3 after insert, was: " +
+                                   std::to_string(size),
+                               size == 3);
     }
 };
 
-class TestOrderedZIndex : public TestCaseBase {
+class TestOrderedZIndex : public CppUnit::TestCase {
 public:
-    TestOrderedZIndex() : TestCaseBase("ordered by z-index") {}
-    void test() override {
-        OrderedCollection collection = OrderedCollection();
+    TestOrderedZIndex() : CppUnit::TestCase("ordered by z-index") {}
+    void runTest() override {
+        OrderedCollection collection = OrderedCollection<TestObject>();
         const auto t1 = std::make_shared<TestObject>("a", 0);
         const auto t2 = std::make_shared<TestObject>("b", 1);
         const auto t3 = std::make_shared<TestObject>("c", 2);
@@ -99,19 +104,20 @@ public:
         float prev = -1;
         for (const auto &o : collection) {
             const float order = o->order();
-            assert(prev <= order,
-                   "object out of order, index " + std::to_string(order) +
-                       " appeared after " + std::to_string(prev));
+            CPPUNIT_ASSERT_MESSAGE(
+                "object out of order, index " + std::to_string(order) +
+                    " appeared after " + std::to_string(prev),
+                prev <= order);
             prev = order;
         }
     }
 };
 
-class TestTypedObjects : public TestCaseBase {
+class TestTypedObjects : public CppUnit::TestCase {
 public:
-    TestTypedObjects() : TestCaseBase("typed objects") {}
-    void test() override {
-        OrderedCollection collection = OrderedCollection<GameObject>();
+    TestTypedObjects() : CppUnit::TestCase("typed objects") {}
+    void runTest() override {
+        OrderedCollection collection = OrderedCollection<TestObject>();
         const Vector2 pos = Vector2(2, 4);
         const auto t1 = std::make_shared<TestObject>("a", 0);
         t1->SetPosition(pos);
@@ -119,19 +125,20 @@ public:
 
         for (const auto &o : collection) {
             const Vector2 p = o->GetPosition();
-            assert(pos == p, "object position not as expected");
+            CPPUNIT_ASSERT_MESSAGE("object position not as expected", pos == p);
         }
     }
 };
 
 int main(int argc, char *argv[]) {
-    TestHandler handler = TestHandler();
-    handler.add(new TestInitialSize());
-    handler.add(new TestInsertSize());
-    handler.add(new TestInsertSameName());
-    handler.add(new TestInsertSameZIndex());
-    handler.add(new TestInsertMultiple());
-    handler.add(new TestOrderedZIndex());
-    handler.add(new TestTypedObjects());
-    handler.run();
+    CppUnit::TextUi::TestRunner runner;
+    runner.addTest(new TestInitialSize());
+    runner.addTest(new TestInsertSize());
+    runner.addTest(new TestInsertSameName());
+    runner.addTest(new TestInsertSameZIndex());
+    runner.addTest(new TestInsertMultiple());
+    runner.addTest(new TestOrderedZIndex());
+    runner.addTest(new TestTypedObjects());
+    runner.run();
+    return EXIT_SUCCESS;
 }
