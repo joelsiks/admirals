@@ -38,7 +38,7 @@ Download the latest development package of SDL2, named `SDL2-devel-<version>-VC.
 
 Download Git Bash or MSYS2 and execute the following commands to install needed build tools (we suggest using the Universal C Runtime (ucrt)):
 ```bash
-pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-cmake 
+pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-cppunit
 ```
 
 You can then move on to creating build files:
@@ -99,7 +99,7 @@ For Visual Studio Code users there is a settings template in `.vscode-template/s
 We use cppunit for unit testing. It can be installed using the following commands:
 ```bash
 # MSYS2
-pacman -S mingw-w64-ucrt-x86_64-cppunit
+pacman -S --needed mingw-w64-ucrt-x86_64-cppunit
 
 # Ubuntu
 sudo apt-get install libcppunit-dev
