@@ -8,7 +8,7 @@ bool MvpServer::OnClientConnect(const std::shared_ptr<Connection> &) {
     return true;
 }
 
-void MvpServer::OnClientDisconnect(std::shared_ptr<Connection> client) {
+void MvpServer::OnClientDisconnect(const std::shared_ptr<Connection> &client) {
     printf("Client %d disconnected\n", client->GetID());
 
     if (client->GetID() == m_playerTop.id) {
@@ -233,8 +233,8 @@ void MvpServer::ResetState() {
     m_turn = 0;
     m_playerTop.coins = STARTING_COINS;
     m_playerBottom.coins = STARTING_COINS;
-    m_playerTop.baseHealth = BaseMaxHealth;
-    m_playerBottom.baseHealth = BaseMaxHealth;
+    // m_playerTop.baseHealth = BaseMaxHealth;
+    // m_playerBottom.baseHealth = BaseMaxHealth;
     m_playerTop.ships.clear();
     m_playerBottom.ships.clear();
     m_playerTop.numShips = 0;
@@ -471,7 +471,7 @@ void MvpServer::DamageNearbyEnemies(ShipData &ship) {
             }
         }
     }
-    return false;
+    // return false;
 }
 
 void MvpServer::AttackTargetEnemy(ShipData &ship) {
@@ -553,7 +553,7 @@ void MvpServer::ProcessShipsLate(std::map<uint16_t, ShipData> &ships) {
 
         ship.second.lastActionTurn = m_turn;
     }
-    return false;
+    // return false;
 }
 
 void MvpServer::ProcessDeadShips(std::map<uint16_t, ShipData> &ships) {

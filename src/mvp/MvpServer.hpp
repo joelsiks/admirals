@@ -10,8 +10,6 @@
 
 namespace admirals::mvp {
 
-using namespace admirals::net;
-
 struct PlayerData {
     uint16_t coins = STARTING_COINS;
     uint16_t baseId = 0;
@@ -22,16 +20,19 @@ struct PlayerData {
     bool ready = false;
 };
 
-class MvpServer : public net::Server {
+class MvpServer : public admirals::net::Server {
 public:
     MvpServer(uint16_t port, bool debug = false)
         : Server(port), m_turn(0), m_debug(debug) {}
 
-    bool OnClientConnect(const std::shared_ptr<Connection> &) override;
-    void OnClientDisconnect(const std::shared_ptr<Connection> &) override;
-    void OnClientValidated(const std::shared_ptr<Connection> &client) override;
-    void OnMessage(const std::shared_ptr<Connection> &client,
-                   Message &message) override;
+    bool OnClientConnect(
+        const std::shared_ptr<admirals::net::Connection> &) override;
+    void OnClientDisconnect(
+        const std::shared_ptr<admirals::net::Connection> &) override;
+    void OnClientValidated(
+        const std::shared_ptr<admirals::net::Connection> &client) override;
+    void OnMessage(const std::shared_ptr<admirals::net::Connection> &client,
+                   admirals::net::Message &message) override;
 
     void ProcessTurn();
     void EnterServerLoop(bool &stopServer);
@@ -45,11 +46,13 @@ private:
     void ResumeGame();
     void ResetState();
     void UpdatePlayer(uint32_t oldOwner, uint32_t newOwner);
-    void PlayerReady(const std::shared_ptr<Connection> &client);
-    void BuyShip(const std::shared_ptr<Connection> &client, Message &message);
-    void MoveShip(const std::shared_ptr<Connection> &client, Message &message);
-    void AttackShip(const std::shared_ptr<Connection> &client,
-                    Message &message);
+    void PlayerReady(const std::shared_ptr<admirals::net::Connection> &client);
+    void BuyShip(const std::shared_ptr<admirals::net::Connection> &client,
+                 admirals::net::Message &message);
+    void MoveShip(const std::shared_ptr<admirals::net::Connection> &client,
+                  admirals::net::Message &message);
+    void AttackShip(const std::shared_ptr<admirals::net::Connection> &client,
+                    admirals::net::Message &message);
     void IncrementGoldByShipId(uint16_t shipId);
     void CheckTreasureIsland(int tx, int ty);
     void ProcessGoldGeneration();

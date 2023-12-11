@@ -32,7 +32,8 @@ public:
     void Update(size_t max_messages = -1);
 
     // Called when a client is validated
-    virtual void OnClientValidated(std::shared_ptr<Connection> client) = 0;
+    virtual void
+    OnClientValidated(const std::shared_ptr<Connection> &client) = 0;
 
 protected:
     // Called when a client connects
@@ -46,14 +47,9 @@ protected:
     virtual void OnMessage(const std::shared_ptr<Connection> &client,
                            Message &message) = 0;
 
-
     void ClearDisconnectedClients();
 
 public:
-    // Called when a client is validated
-    virtual void
-    OnClientValidated(const std::shared_ptr<Connection> &client) = 0;
-
 private:
     void HandleAcceptedConnection(std::error_code ec,
                                   asio::ip::tcp::socket socket);
