@@ -52,6 +52,7 @@ set(MVP_SOURCES
     src/mvp/objects/Base.cpp
     src/mvp/objects/Background.cpp
     src/mvp/objects/GameManager.cpp
+    src/mvp/objects/Animator.cpp
     src/mvp/objects/Grid.cpp
     src/mvp/objects/MenuManager.cpp
     src/mvp/objects/NetworkManager.cpp

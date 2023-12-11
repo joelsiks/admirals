@@ -13,6 +13,5 @@ TreasureIsland::TreasureIsland(const std::string &name, const Texture &source,
              {Vector2(GameData::SpriteSize, GameData::SpriteSize * 2)}) {}
 
 void TreasureIsland::Render(const EngineContext &ctx) const {
-    // renderer::Renderer::DrawRectangle(GetBoundingBox(), GOLD);
     Sprite::Render(ctx);
 }

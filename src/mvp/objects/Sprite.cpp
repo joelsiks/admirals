@@ -1,4 +1,5 @@
 #include "objects/Sprite.hpp"
+#include "Animator.hpp"
 #include "GameData.hpp"
 #include "Renderer.hpp"
 
@@ -18,7 +19,12 @@ Sprite::Sprite(const std::string &name, const Texture &source, float order,
       m_texOffset(texOffset) {}
 
 void Sprite::Render(const EngineContext &) const {
-    renderer::Renderer::DrawSprite(m_source, GetPosition(),
-                                   m_texOffset[m_texIndex], m_texSize,
+    // Animator::RenderAnimationFrame(*this);
+
+    // Vector2 frame = Animator::GetAnimationFrame(*this);
+    Vector2 frame = Animator::GetAnimationFrame(m_texOffset);
+    renderer::Renderer::DrawSprite(m_source, GetPosition(), frame, m_texSize,
                                    GetSize() / m_texSize);
+
+    // Animator::GetAnimationFrame(m_texOffset, GetPosition(), GetSize());
 }

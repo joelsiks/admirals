@@ -5,6 +5,7 @@
 #include "UI/menu/MenuOption.hpp"
 
 #include "GameData.hpp"
+#include "objects/Animator.hpp"
 #include "objects/Background.hpp"
 #include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
@@ -179,6 +180,8 @@ int main(int, char *[]) {
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
     auto gameManager =
         GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
+    auto animator =
+        GameData::engine->MakeGameObject<Animator>("animator", atlas);
 
     CreateGameBoard(atlas);
     CreateGameUI(atlas, gameManager);
