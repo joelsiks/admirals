@@ -101,19 +101,18 @@ bool Engine::PollAndHandleEvent() {
 }
 
 void Engine::HandleDeferredLayerActions() {
-    for (auto &deferPair : m_deferredLayerActions) {
-        const size_t layerIdx = deferPair.first;
+    for (auto &[type, layerIdx] : m_deferredLayerActions) {
         const bool containsLayerIdx = m_layers.contains(layerIdx);
 
-        if (deferPair.second == DeferType::ToggleActive && containsLayerIdx) {
+        if (type == DeferType::ToggleActive && containsLayerIdx) {
             if (m_activeLayers.contains(layerIdx)) {
-                deferPair.second = DeferType::Deactivate;
+                type = DeferType::Deactivate;
             } else {
-                deferPair.second = DeferType::Activate;
+                type = DeferType::Activate;
             }
         }
 
-        switch (deferPair.second) {
+        switch (type) {
         case DeferType::Add:
         case DeferType::Activate:
             if (containsLayerIdx) {
@@ -159,12 +158,6 @@ void Engine::StartGameLoop() {
     while (!quit) {
         layers[0] = m_scene;
 
-        size_t i = 1;
-        for (const auto &layerIdx : m_activeLayers) {
-            layers[i] = m_layers[layerIdx];
-            i++;
-        }
-
         const auto now = std::chrono::high_resolution_clock::now();
         m_context.deltaTime =
             std::chrono::duration<double>(now - lastTime).count();
@@ -177,13 +170,19 @@ void Engine::StartGameLoop() {
             m_scene->Update(GetContext());
         }
 
+        HandleDeferredLayerActions();
+        layers.resize(m_activeLayers.size() + 1);
+
+        size_t i = 1;
+        for (const auto &layerIdx : m_activeLayers) {
+            layers[i] = m_layers[layerIdx];
+            i++;
+        }
+
         for (const auto &activeLayerIdx : m_activeLayers) {
             m_layers[activeLayerIdx]->Update(GetContext());
         }
 
         m_renderer->Render(GetContext(), layers);
-
-        HandleDeferredLayerActions();
-        layers.resize(m_activeLayers.size() + 1);
     }
 }

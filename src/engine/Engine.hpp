@@ -32,14 +32,14 @@ public:
         const bool wasInserted = m_layers.emplace(idx, std::move(layer)).second;
 
         if (wasInserted && active) {
-            m_deferredLayerActions.push_back({idx, DeferType::Add});
+            m_deferredLayerActions.emplace_back(DeferType::Add, idx);
         }
 
         return wasInserted;
     }
 
     inline void DeleteLayer(size_t idx) {
-        m_deferredLayerActions.push_back({idx, DeferType::Delete});
+        m_deferredLayerActions.emplace_back(DeferType::Delete, idx);
     }
 
     inline std::shared_ptr<IDisplayLayer> GetLayer(size_t idx) {
@@ -55,15 +55,15 @@ public:
     }
 
     inline void ActivateLayer(size_t idx) {
-        m_deferredLayerActions.push_back({idx, DeferType::Activate});
+        m_deferredLayerActions.emplace_back(DeferType::Activate, idx);
     }
 
     inline void DeactivateLayer(size_t idx) {
-        m_deferredLayerActions.push_back({idx, DeferType::Deactivate});
+        m_deferredLayerActions.emplace_back(DeferType::Deactivate, idx);
     }
 
     inline void ToggleLayer(size_t idx) {
-        m_deferredLayerActions.push_back({idx, DeferType::ToggleActive});
+        m_deferredLayerActions.emplace_back(DeferType::ToggleActive, idx);
     }
 
     inline void AddUIElement(std::shared_ptr<UI::Element> element,
@@ -119,7 +119,7 @@ private:
     std::shared_ptr<Scene> m_scene;
     std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;
     std::unordered_set<size_t> m_activeLayers;
-    std::vector<std::pair<size_t, DeferType>> m_deferredLayerActions;
+    std::vector<std::pair<DeferType, size_t>> m_deferredLayerActions;
 
     std::shared_ptr<renderer::Renderer> m_renderer;
     EngineContext m_context;
