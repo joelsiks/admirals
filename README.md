@@ -2,19 +2,25 @@
 
 Game engine focused on 2D (grid-based), real-time strategy (RTS), multiplayer games. 
 
+[![GitHub Actions Status](https://github.com/joelsiks/admirals/actions/workflows/main.yml/badge.svg)](https://github.com/joelsiks/admirals/actions/workflows/main.yml)
+
+
 # Installation and Building
 
 ## Prerequisites
-Vulkan, SDL2, CMake, clang-format (code formatting) and a C++ compiler for Windows (with support for C99).
+`Vulkan`, `SDL2`, `CMake`, build system (like `make` or `ninja`) and a C++ and C (with support for C99) compiler.
+ 
+Additional tools/libraries that are used by this project are:
+`clang-format` (code formatting), `clang-tidy` (linting), `valgrind` with callgrind (profiling) and `CPPUnit`.
 
 ## Cloning
 
-Start by cloning this repository and download all submodules needed:
+Start by cloning this repository and download all submodules needed using:
 ```bash
 git clone --recurse-submodules https://github.com/joelsiks/admirals.git
 ```
 
-You are also able to download/update dependencies using this command:
+You are also able to download/update dependencies using:
 ```bash
 git submodule update --init --recursive
 ```
@@ -24,7 +30,7 @@ Due to bad practice (and platform in-portability), the author(s) of Vulkan2D hav
 find include/Vulkan2D/VK2D -type f -exec sed -i 's/<SDL2\//</g' {} +
 ```
 
-## Windows (using MSYS2)
+## Building on Windows (using MSYS2)
 
 Download and install the latest Vulkan SDK [here](https://vulkan.lunarg.com/) and make sure that the `VULKAN_SDK` environment variable points to the correct installation path.
 
@@ -39,6 +45,12 @@ You can then move on to creating build files:
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER:FILEPATH=C:/msys64/ucrt64/bin/gcc.exe -DCMAKE_CXX_COMPILER=C:/msys64/ucrt64/bin/g++.exe
 ```
+
+## Building on Linux
+
+Although the game engine mainly supports Windows and likely works best there, the engine can be built on Linux due to the portability of the project's dependencies.
+
+You will need to meet the prerequisites listed [here](#prerequisites). Otherwise, the instructions are very similar to thise listen for [Windows](#building-on-windows-using-msys2).
 
 # Styling
 
@@ -95,16 +107,13 @@ sudo apt-get install libcppunit-dev
 
 # Profiling
 
-The engine (specifically the test programs located in `src/test`) are most easiest to profile on Linux using `callgrind` (part of the valgrind tool) to manaually interpret using `kcachegrind`.
+The engine (specifically the test programs located in `src/test`) are most easiest to profile on Linux using `callgrind` (part of the valgrind tool) to manaually interpret using `kcachegrind`. You can install `valgrind` and `kcachegrind` using the following command:
+```bash
+# Ubuntu
+sudo apt-get install valgrind kcachegrind
+```
 
 ## Instructions
-
-```bash
-# Navigate into the build/ directory with build files.
-ninja ui_test # or some other executable
-valgrind --tool=callgrind ./ui_test
-kcachegrind callgrind.out.<pid>
-```
 
 To get results from callgrind that are (reasonably) good, it is prefered to link the Admirals engine statically in the CMakeLists.txt file. This is done by chaning the follow line:
 ```cmake
@@ -117,6 +126,14 @@ add_library(engine STATIC ${SOURCES})
 Also, to get information about the source code in the profiling results, add the following line to the top of the CMakeLists.txt file. This line adds debug info to the release build type, which is desireable since we also want to profile any optimizations that occur, which isn't the case for the debug build type.
 ```cmake
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
+```
+
+### Running profiler
+```bash
+# Navigate into the build/ directory with build files.
+ninja ui_test # or some other executable
+valgrind --tool=callgrind ./ui_test
+kcachegrind callgrind.out.<pid>
 ```
 
 # Authors
