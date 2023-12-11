@@ -49,7 +49,13 @@ protected:
 
     void ClearDisconnectedClients();
 
-public:
+    MessageQueue<OwnedMessage> &GetIncomingMessages() {
+        return m_incomingMessages;
+    }
+    std::vector<std::shared_ptr<Connection>> &GetConnections() {
+        return m_connections;
+    }
+
 private:
     void HandleAcceptedConnection(std::error_code ec,
                                   asio::ip::tcp::socket socket);
@@ -62,7 +68,6 @@ private:
     // Start ID
     uint32_t m_idCounter = 1;
 
-public:
     MessageQueue<OwnedMessage> m_incomingMessages;
     std::vector<std::shared_ptr<Connection>> m_connections;
 };
