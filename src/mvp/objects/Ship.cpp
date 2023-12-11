@@ -120,7 +120,7 @@ void Ship::HandlePathTarget() {
     }
 }
 
-void Ship::OnUpdate(const EngineContext &ctx) {
+void Ship::OnUpdate(const EngineContext &) {
 
     if (IsSelected()) {
         const auto p1 = ConvertPositionGridToWorld(0);
@@ -204,13 +204,6 @@ std::string to_string_with_precision(const T a_value, const int n = 6) {
 }
 
 void Ship::Render(const EngineContext &ctx) const {
-    /*
-    if (IsOwned()) {
-        renderer::Renderer::DrawRectangle(GetBoundingBox(), Color::BLUE);
-    } else {
-        renderer::Renderer::DrawRectangle(GetBoundingBox(), Color::RED);
-    }
-    */
 
     Sprite::Render(ctx);
 

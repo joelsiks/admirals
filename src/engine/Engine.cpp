@@ -106,7 +106,6 @@ void Engine::StartGameLoop() {
     if (hasScene()) {
         m_scene->OnStart(GetContext());
     }
-    // admirals::Animator::SetupAnimationFrames();
     std::vector<std::shared_ptr<IDisplayLayer>> layers(m_activeLayers.size() +
                                                        1);
 

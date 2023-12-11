@@ -15,9 +15,10 @@ public:
 
     void Render(const EngineContext &ctx) const override;
 
-    const std::vector<Vector2> m_texOffset;
+protected:
     const Texture &m_source;
     const Vector2 m_texSize;
+    const std::vector<Vector2> m_texOffset;
 };
 
 } // namespace admirals::mvp::objects

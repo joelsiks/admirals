@@ -25,6 +25,7 @@ Animator::GetAnimationFrame(const std::vector<Vector2> &animationVector) {
     return animationVector[frameInd % vectorLenght];
 }
 
+/*
 void Animator::RenderAnimationFrame(const Sprite &object) {
     int vectorLenght = object.m_texOffset.size();
     // GetTypeOfSprite(object);
@@ -32,7 +33,7 @@ void Animator::RenderAnimationFrame(const Sprite &object) {
                                    object.m_texOffset[frameInd % vectorLenght],
                                    object.m_texSize,
                                    object.GetSize() / object.m_texSize);
-}
+}*/
 
 /*
 void Animator::OnStart(const EngineContext &) {

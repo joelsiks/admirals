@@ -10,8 +10,6 @@ Base::Base(const ShipData &data, const Vector2 &size, const Texture &source)
 
 Base::~Base() {}
 
-void Base::OnUpdate(const EngineContext &ctx) {}
-
 void Base::Render(const EngineContext &ctx) const {
     Sprite::Render(ctx);
     DrawHealthBar();

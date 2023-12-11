@@ -19,12 +19,7 @@ Sprite::Sprite(const std::string &name, const Texture &source, float order,
       m_texOffset(texOffset) {}
 
 void Sprite::Render(const EngineContext &) const {
-    // Animator::RenderAnimationFrame(*this);
-
-    // Vector2 frame = Animator::GetAnimationFrame(*this);
     Vector2 frame = Animator::GetAnimationFrame(m_texOffset);
     renderer::Renderer::DrawSprite(m_source, GetPosition(), frame, m_texSize,
                                    GetSize() / m_texSize);
-
-    // Animator::GetAnimationFrame(m_texOffset, GetPosition(), GetSize());
 }

@@ -29,11 +29,6 @@ public:
 
     static void RenderAnimationFrame(const Sprite &object);
 
-    SpriteType GetTypeOfSprite(Sprite &object);
-    // static void
-    // RenderAnimationFrame(const std::vector<Vector2> &animationVector,
-    //                      const Vector2 &position, const Vector2 &size);
-
     static int frameInd;
 
 private:
