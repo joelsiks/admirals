@@ -1,9 +1,9 @@
 #pragma once
 #include "Client.hpp"
+#include "GameData.hpp"
 #include "GameObject.hpp"
 #include "UI/TextElement.hpp"
 #include "objects/GameManager.hpp"
-#include "shared.hpp"
 
 namespace admirals::mvp::objects {
 
@@ -17,10 +17,9 @@ public:
     void OnUpdate(const EngineContext &ctx) override;
     void Render(const EngineContext &ctx) const override {}
 
-    bool StartAndConnectToServer(uint16_t port, const size_t maxTries);
+    bool StartAndConnectToServer(uint16_t port, size_t maxTries);
 
-    bool ConnectToServer(const std::string &ip, uint16_t port,
-                         const size_t maxTries);
+    bool ConnectToServer(const std::string &ip, uint16_t port, size_t maxTries);
 
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);
@@ -43,6 +42,6 @@ private:
     bool m_stopServer = false;
     std::thread m_serverThread;
 
-    bool m_debug = true;
+    bool m_debug = false;
 };
 } // namespace admirals::mvp::objects

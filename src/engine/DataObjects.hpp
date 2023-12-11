@@ -2,6 +2,7 @@
 
 #include <VK2D/Texture.h>
 #include <cmath>
+#include <sstream>
 #include <stdint.h>
 #include <string>
 
@@ -11,18 +12,18 @@ namespace admirals {
 
 class Vector2 {
 protected:
-    float m_0;
-    float m_1;
+    float m_0 = 0;
+    float m_1 = 0;
 
 public:
-    Vector2() noexcept;
-    Vector2(float v) noexcept;
-    Vector2(float x, float y) noexcept;
-    virtual ~Vector2() noexcept;
+    constexpr Vector2() noexcept {}
+    constexpr Vector2(float v) noexcept : m_0(v), m_1(v) {}
+    constexpr Vector2(float x, float y) noexcept : m_0(x), m_1(y) {}
+    constexpr virtual ~Vector2() noexcept {}
 
-    inline float x() const { return this->m_0; }
+    constexpr float x() const { return this->m_0; }
     inline void SetX(float value) { this->m_0 = value; }
-    inline float y() const { return this->m_1; }
+    constexpr float y() const { return this->m_1; }
     inline void SetY(float value) { this->m_1 = value; }
 
     inline float *Data() const {
@@ -34,10 +35,23 @@ public:
 
     inline float Magnitude() const { return std::sqrt(m_0 * m_0 + m_1 * m_1); }
 
+    /// @brief The Euclidean distance between two points.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
     inline float Distance(const Vector2 &v) const {
         const float a = m_0 - v.m_0;
         const float b = m_1 - v.m_1;
         return std::sqrt(a * a + b * b);
+    }
+
+    /// @brief A variant of the Manhattan distance between two points, giving
+    /// the maximum distance between each component in the vectors.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
+    inline float MaxDistance(const Vector2 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        return std::max(std::abs(a), std::abs(b));
     }
 
     inline Vector2 &operator=(float &in) {
@@ -126,19 +140,27 @@ public:
     static inline float Distance(const Vector2 &v1, const Vector2 &v2) {
         return v1.Distance(v2);
     }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << x() << ", " << y() << ")";
+        return std::move(out).str();
+    }
 };
 
 class Vector3 : public Vector2 {
 protected:
-    float m_2;
+    float m_2 = 0;
 
 public:
-    Vector3() noexcept;
-    Vector3(float v) noexcept;
-    Vector3(float x, float y, float z) noexcept;
-    virtual ~Vector3() noexcept;
+    constexpr Vector3() noexcept {}
+    constexpr Vector3(float v) noexcept : Vector2(v), m_2(v) {}
+    constexpr Vector3(float x, float y, float z) noexcept
+        : Vector2(x, y), m_2(z) {}
+    constexpr virtual ~Vector3() noexcept {}
 
-    inline float z() const { return this->m_2; }
+    constexpr float z() const { return this->m_2; }
     inline void SetZ(float value) { this->m_2 = value; }
     inline Vector2 xy() const { return *this; }
 
@@ -248,19 +270,27 @@ public:
     static inline float Distance(const Vector3 &v1, const Vector3 &v2) {
         return v1.Distance(v2);
     }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << x() << ", " << y() << ", " << z() << ")";
+        return std::move(out).str();
+    }
 };
 
 class Vector4 : public Vector3 {
 protected:
-    float m_3;
+    float m_3 = 0;
 
 public:
-    Vector4() noexcept;
-    Vector4(float v) noexcept;
-    Vector4(float x, float y, float z, float w) noexcept;
-    virtual ~Vector4() noexcept;
+    constexpr Vector4() noexcept {}
+    constexpr Vector4(float v) noexcept : Vector3(v), m_3(v) {}
+    constexpr Vector4(float x, float y, float z, float w) noexcept
+        : Vector3(x, y, z), m_3(w) {}
+    constexpr virtual ~Vector4() noexcept {}
 
-    inline float w() const { return m_3; }
+    constexpr float w() const { return m_3; }
     inline void SetW(float value) { m_3 = value; }
 
     inline float Magnitude() const {
@@ -385,19 +415,23 @@ public:
     static inline float Distance(const Vector4 &v1, const Vector4 &v2) {
         return v1.Distance(v2);
     }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << x() << ", " << y() << ", " << z() << ", "
+            << w() << ")";
+        return std::move(out).str();
+    }
 };
 
 class Color : public Vector4 {
 public:
-    Color() noexcept;
-    Color(float r, float g, float b, float a) noexcept;
-
-    /// @brief Constructs a Color object from a Vector4. This assumes that the
-    /// Vector4 contains values from 0.0-1.0.
-    /// @param vec A vector containing the data to put in the Color.
-    Color(const Vector4 &vec) noexcept;
-
-    virtual ~Color() noexcept;
+    constexpr Color() noexcept {}
+    constexpr Color(const Vector4 &v) noexcept : Vector4(v) {}
+    constexpr Color(float r, float g, float b, float a) noexcept
+        : Vector4(r, g, b, a) {}
+    constexpr virtual ~Color() noexcept {};
 
     inline float r() const { return m_0; }
     inline void SetR(float value) { m_0 = value; }
@@ -411,15 +445,15 @@ public:
     inline float a() const { return m_3; }
     inline void SetA(float value) { m_3 = value; }
 
-    inline Color operator*(const Vector4 &r) const {
-        return Color(m_0 * r.x(), m_1 * r.y(), m_2 * r.z(), m_3 * r.w());
+    inline Color operator*(const Color &r) const {
+        return Color(m_0 * r.m_0, m_1 * r.m_1, m_2 * r.m_2, m_3 * r.m_3);
     }
 
-    inline Color &operator*=(const Vector4 &r) {
-        m_0 *= r.x();
-        m_1 *= r.y();
-        m_2 *= r.z();
-        m_3 *= r.w();
+    inline Color &operator*=(const Color &r) {
+        m_0 *= r.m_0;
+        m_1 *= r.m_1;
+        m_2 *= r.m_2;
+        m_3 *= r.m_3;
         return *this;
     }
 
@@ -436,23 +470,34 @@ public:
     const static Color LIGHT_GREY;
 };
 
+// Define colors
+constexpr Color Color::RED = Color(1, 0, 0, 1);
+constexpr Color Color::GREEN = Color(0, 1, 0, 1);
+constexpr Color Color::BLUE = Color(0, 0, 1, 1);
+constexpr Color Color::WHITE = Color(1, 1, 1, 1);
+constexpr Color Color::BLACK = Color(0, 0, 0, 1);
+constexpr Color Color::TRANSPARENT = Color(0, 0, 0, 0);
+
 class Rect {
 public:
     /// @brief Creates a `Rect` object representing an area in 2d space
+    constexpr Rect() noexcept {}
+
+    /// @brief Creates a `Rect` object representing an area in 2d space
     /// @param position The position of the top-left corner in the `Rect`
     /// @param size The size of the `Rect`
-    Rect(const Vector2 &position, const Vector2 &size) noexcept;
+    constexpr Rect(const Vector2 &position, const Vector2 &size) noexcept
+        : m_x(position.x()), m_y(position.y()), m_w(size.x()), m_h(size.y()) {}
 
     /// @brief Creates a `Rect` object representing an area in 2d space
     /// @param x The x-coordinate of the top-left corner in the `Rect`
     /// @param y The y-coordinate of the top-left corner in the `Rect`
     /// @param w The width of the `Rect`
     /// @param h The height of the `Rect`
-    Rect(float x, float y, float w, float h) noexcept;
+    constexpr Rect(float x, float y, float w, float h) noexcept
+        : m_x(x), m_y(y), m_w(w), m_h(h) {}
 
-    /// @brief Creates a `Rect` object representing an area in 2d space
-    Rect() noexcept;
-    virtual ~Rect() noexcept;
+    constexpr virtual ~Rect() noexcept {}
 
     /// @brief Checks if a given point is located inside the bounds of the
     /// `Rect`.
@@ -513,8 +558,23 @@ public:
         m_h = size.y();
     }
 
+    constexpr bool IsZero() const noexcept {
+        return m_x == 0 && m_y == 0 && m_w == 0 && m_h == 0;
+    }
+
+    inline std::string ToString(unsigned int decimals = 4) const {
+        std::ostringstream out;
+        out.precision(decimals);
+        out << std::fixed << "(" << m_x << ", " << m_y << " | " << m_w << " x "
+            << m_h << ")";
+        return std::move(out).str();
+    }
+
 private:
-    float m_x, m_y, m_w, m_h;
+    float m_x = 0;
+    float m_y = 0;
+    float m_w = 0;
+    float m_h = 0;
 };
 
 class Texture {

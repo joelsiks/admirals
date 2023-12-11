@@ -24,14 +24,15 @@ public:
     }
 
 protected:
-    virtual bool OnClientConnect(std::shared_ptr<Connection> client) override {
+    virtual bool
+    OnClientConnect(const std::shared_ptr<Connection> &client) override {
         return true;
     }
 
     virtual void
-    OnClientDisconnect(std::shared_ptr<Connection> client) override {}
+    OnClientDisconnect(const std::shared_ptr<Connection> &client) override {}
 
-    virtual void OnMessage(std::shared_ptr<Connection> client,
+    virtual void OnMessage(const std::shared_ptr<Connection> &client,
                            Message &message) override {
         switch (message.header.id) {
         case TestEnum::SPAWN_SHIP: {
@@ -63,7 +64,7 @@ protected:
     }
 
     virtual void
-    OnClientValidated(std::shared_ptr<Connection> client) override {
+    OnClientValidated(const std::shared_ptr<Connection> &client) override {
         uint32_t players = 0;
         for (auto &client : m_connections) {
             if (client && client->IsConnected()) {

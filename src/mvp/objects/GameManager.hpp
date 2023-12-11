@@ -1,10 +1,9 @@
 #pragma once
-#include "Base.hpp"
+#include "CommonTypes.hpp"
+#include "GameData.hpp"
 #include "GameObject.hpp"
-#include "commontypes.hpp"
 #include "events/EventSystem.hpp"
 #include "objects/Ship.hpp"
-#include "shared.hpp"
 
 namespace admirals::mvp::objects {
 
@@ -19,8 +18,10 @@ public:
 
 class PlayerIdChangedEventArgs : public events::EventArgs {
 public:
-    PlayerIdChangedEventArgs(uint32_t id) : playerId(id) {}
+    PlayerIdChangedEventArgs(uint32_t id, bool topPlayer)
+        : playerId(id), isTopPlayer(topPlayer) {}
     const uint32_t playerId;
+    const bool isTopPlayer;
 };
 
 class GameManager : public GameObject {
@@ -49,9 +50,10 @@ public:
     bool GameStarted() const { return m_gameStarted; }
 
     uint32_t GetPlayerId() const { return m_playerId; }
-    void SetPlayerId(uint32_t id) {
+    void SetPlayerId(uint32_t id, bool isTopPlayer) {
         m_playerId = id;
-        PlayerIdChangedEventArgs args(m_playerId);
+        m_isTopPlayer = isTopPlayer;
+        PlayerIdChangedEventArgs args(m_playerId, isTopPlayer);
         onPlayerIdChanged.Invoke(this, args);
     }
 
@@ -64,7 +66,7 @@ public:
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);
     void AttackShip(uint16_t id, uint16_t targetId);
 
-    void UpdateBoard(int turn, int coins, int baseHealth, int enemyBaseHealth,
+    void UpdateBoard(int turn, int coins,
                      const std::map<uint16_t, ShipData> &ships);
 
     void PlayAgain();
@@ -96,8 +98,6 @@ private:
 
     std::shared_ptr<NetworkManager> m_networkManager;
     std::shared_ptr<MenuManager> m_menuManager;
-    std::shared_ptr<Base> m_baseTop = nullptr;
-    std::shared_ptr<Base> m_baseBottom = nullptr;
 
     bool m_debug = true;
 };

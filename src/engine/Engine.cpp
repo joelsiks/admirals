@@ -100,24 +100,23 @@ bool Engine::PollAndHandleEvent() {
     return quit;
 }
 
-void Engine::HandleDeferredToggleLayers() {
-    for (auto &deferPair : m_deferredToggleLayers) {
+void Engine::HandleDeferredLayerActions() {
+    for (auto &deferPair : m_deferredLayerActions) {
         const size_t layerIdx = deferPair.first;
+        const bool containsLayerIdx = m_layers.contains(layerIdx);
 
-        if (deferPair.second == DeferType::ToggleActive) {
-            if (m_layers.contains(layerIdx)) {
-                if (m_activeLayers.contains(layerIdx)) {
-                    deferPair.second = DeferType::Deactivate;
-                } else {
-                    deferPair.second = DeferType::Activate;
-                }
+        if (deferPair.second == DeferType::ToggleActive && containsLayerIdx) {
+            if (m_activeLayers.contains(layerIdx)) {
+                deferPair.second = DeferType::Deactivate;
+            } else {
+                deferPair.second = DeferType::Activate;
             }
         }
 
         switch (deferPair.second) {
         case DeferType::Add:
         case DeferType::Activate:
-            if (m_layers.contains(layerIdx)) {
+            if (containsLayerIdx) {
                 const bool inserted = m_activeLayers.insert(layerIdx).second;
                 if (inserted) {
                     m_layers[layerIdx]->OnShown();
@@ -130,8 +129,7 @@ void Engine::HandleDeferredToggleLayers() {
             }
             break;
         case DeferType::Deactivate:
-            if (m_layers.contains(layerIdx) &&
-                m_activeLayers.erase(layerIdx) == 1) {
+            if (containsLayerIdx && m_activeLayers.erase(layerIdx) == 1) {
                 m_layers[layerIdx]->OnHidden();
             }
             break;
@@ -140,7 +138,7 @@ void Engine::HandleDeferredToggleLayers() {
         }
     }
 
-    m_deferredToggleLayers.clear();
+    m_deferredLayerActions.clear();
 }
 
 void Engine::StartGameLoop() {
@@ -186,7 +184,7 @@ void Engine::StartGameLoop() {
 
         m_renderer->Render(GetContext(), layers);
 
-        HandleDeferredToggleLayers();
+        HandleDeferredLayerActions();
         layers.resize(m_activeLayers.size() + 1);
     }
 }

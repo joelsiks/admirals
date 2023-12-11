@@ -14,7 +14,7 @@ void MenuOption::Render(const EngineContext &ctx) const {
     }
 
     renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
-                                 m_textColor, GetOptionText());
+                                 m_textColor, GetOptionText(), 2.f);
 }
 
 void MenuOption::OnClick(events::MouseClickEventArgs &args) {
@@ -125,7 +125,7 @@ void InputOption::Render(const EngineContext &ctx) const {
     }
 
     renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
-                                 m_textColor, GetOptionText());
+                                 m_textColor, GetOptionText(), 2.f);
 }
 
 void InputOption::OnMouseEnter(events::MouseMotionEventArgs &) {

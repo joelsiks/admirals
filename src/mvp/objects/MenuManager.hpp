@@ -1,6 +1,7 @@
+#include "GameData.hpp"
 #include "GameObject.hpp"
 #include "UI/TextElement.hpp"
-#include "shared.hpp"
+#include "UI/menu/Menu.hpp"
 
 namespace admirals::mvp::objects {
 

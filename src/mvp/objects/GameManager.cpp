@@ -1,12 +1,13 @@
 #include "objects/GameManager.hpp"
 #include "events/EventArgs.hpp"
+#include "objects/Base.hpp"
 #include "objects/MenuManager.hpp"
 #include "objects/NetworkManager.hpp"
 
 using namespace admirals::mvp::objects;
 
 GameManager::GameManager(const std::string &name, const Texture &atlas)
-    : GameObject(name), m_atlas(atlas) {
+    : GameObject(name, -10.f), m_atlas(atlas) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
     m_menuManager =
@@ -17,7 +18,10 @@ GameManager::~GameManager() {}
 
 void GameManager::OnStart(const EngineContext &) { CreateBases(); }
 
-void GameManager::OnUpdate(const EngineContext &) {}
+void GameManager::OnUpdate(const EngineContext &) {
+    // Reset navMesh to have it updated
+    GameData::navMesh = nullptr;
+}
 
 bool GameManager::StartAndConnectToServer(uint16_t port,
                                           const size_t maxTries) {
@@ -72,8 +76,9 @@ void GameManager::PauseGame() {
 }
 
 void GameManager::ResumeGame() {
-    if (m_gamePaused)
+    if (m_gamePaused) {
         m_menuManager->ToggleOpponentDisconnectMenu();
+    }
     m_gamePaused = false;
     m_gameStarted = true;
 }
@@ -136,27 +141,12 @@ void GameManager::ShipChangeEventHandler(void *sender,
     }
 }
 
-void GameManager::UpdateBoard(int turn, int coins, int baseHealth,
-                              int enemyBaseHealth,
+void GameManager::UpdateBoard(int turn, int coins,
                               const std::map<uint16_t, ShipData> &ships) {
     if (coins != m_coins) {
         CoinsChangedEventArgs e = CoinsChangedEventArgs(coins);
         onCoinsChanged.Invoke(this, e);
         m_coins = coins;
-    }
-    const auto playerBase = m_isTopPlayer ? m_baseTop : m_baseBottom;
-    const auto enemyBase = m_isTopPlayer ? m_baseBottom : m_baseTop;
-    if (m_baseHealth != baseHealth) {
-        m_baseHealth = baseHealth;
-        if (playerBase != nullptr) {
-            playerBase->SetHealth(static_cast<float>(baseHealth));
-        }
-    }
-    if (m_enemyBaseHealth != enemyBaseHealth) {
-        m_enemyBaseHealth = enemyBaseHealth;
-        if (enemyBase != nullptr) {
-            enemyBase->SetHealth(static_cast<float>(enemyBaseHealth));
-        }
     }
     m_turn = turn;
     ModifyShips(ships);
@@ -215,16 +205,24 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
         auto it = m_ships.find(ship.id);
 
         if (it != m_ships.end()) {
-            it->second->SetPosition(ship.x, ship.y);
+            it->second->SetPosition(static_cast<float>(ship.location.x),
+                                    static_cast<float>(ship.location.y));
             it->second->SetHealth(ship.health);
             it->second->SetOwner(ship.owner);
             it->second->SetAction(ship.action);
         } else {
-            if (m_debug)
+            if (m_debug) {
                 printf("Creating ship %d\n", ship.id);
-            const std::shared_ptr<Ship> newShip =
-                GameData::engine->MakeGameObject<Ship>(ship, m_cellSize,
-                                                       m_atlas);
+            }
+
+            std::shared_ptr<Ship> newShip;
+            if (ship.type == ShipType::Base) {
+                newShip = GameData::engine->MakeGameObject<Base>(
+                    ship, m_cellSize, m_atlas);
+            } else {
+                newShip = GameData::engine->MakeGameObject<Ship>(
+                    ship, m_cellSize, m_atlas);
+            }
 
             newShip->onChanged +=
                 BIND_EVENT_HANDLER(GameManager::ShipChangeEventHandler);
@@ -236,8 +234,10 @@ void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {
     for (auto it = m_ships.begin(); it != m_ships.end();) {
         const auto ship = it->second;
         if (!keepSet.contains(ship->GetID())) {
-            if (m_debug)
+            if (m_debug) {
                 printf("Removing ship %d\n", ship->GetID());
+            }
+
             GameData::engine->GetScene()->RemoveDisplayable(
                 it->second->identifier());
             it = m_ships.erase(it);

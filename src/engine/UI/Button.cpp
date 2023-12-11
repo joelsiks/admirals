@@ -16,7 +16,7 @@ void Button::Render(const EngineContext &ctx) const {
 
     renderer::Renderer::DrawRectangle(m_boundingBox, renderColor);
     renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
-                                 m_fgColor, m_text);
+                                 m_fgColor, m_text, 2.f);
 }
 
 void Button::OnClick(events::MouseClickEventArgs &args) {

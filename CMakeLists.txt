@@ -53,11 +53,14 @@ set(MVP_SOURCES
     src/mvp/objects/Background.cpp
     src/mvp/objects/GameManager.cpp
     src/mvp/objects/Grid.cpp
+    src/mvp/objects/GridObject.cpp
     src/mvp/objects/MenuManager.cpp
     src/mvp/objects/NetworkManager.cpp
+    src/mvp/objects/SelectionManager.cpp
     src/mvp/objects/Quad.cpp
     src/mvp/objects/Ship.cpp
     src/mvp/objects/Sprite.cpp
+    src/mvp/objects/TreasureIsland.cpp
 )
 
 set(INCLUDE_DIRS
@@ -144,9 +147,16 @@ target_include_directories(test_server PRIVATE
 )
 
 # Create test executable
-add_executable(depthOrderedCollection_text src/test/depthOrderedCollection.test.cpp)
-target_link_libraries(depthOrderedCollection_text engine)
-target_include_directories(depthOrderedCollection_text PRIVATE 
+add_executable(depthOrderedCollection_test src/test/depthOrderedCollection.test.cpp)
+target_link_libraries(depthOrderedCollection_test engine cppunit)
+target_include_directories(depthOrderedCollection_test PRIVATE 
+    "src/test/"
+)
+
+# Create test executable
+add_executable(vector_test src/test/vector.test.cpp)
+target_link_libraries(vector_test engine cppunit)
+target_include_directories(vector_test PRIVATE 
     "src/test/"
 )
 

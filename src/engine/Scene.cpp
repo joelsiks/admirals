@@ -31,9 +31,26 @@ void Scene::OnUpdate(const EngineContext &ctx) {
     }
 }
 
-std::deque<Vector2> Scene::FindPath(
-    const Vector2 &start, const Vector2 &dest, const Vector2 &pathSize,
-    const std::unordered_set<float> &checkedOrders, float detailLevel) const {
-    return PathFinding::FindPath(m_quadtree, start, dest, pathSize,
-                                 checkedOrders, detailLevel);
+std::shared_ptr<NavMesh>
+Scene::BuildNavMesh(const Rect &bounds, float detailLevel,
+                    const PathValidator &validator) const {
+    const size_t width = static_cast<size_t>((bounds.Width() / detailLevel));
+    const size_t height = static_cast<size_t>((bounds.Height() / detailLevel));
+    const size_t gridSize = width * height;
+    float *grid = new float[gridSize];
+
+    for (size_t i = 0; i < gridSize; i++) {
+        const Vector2 position =
+            PathFinding::ConvertNodeIndexToVector(i, width, detailLevel) +
+            bounds.Position();
+        const Rect objectBounds = Rect(position, detailLevel - __FLT_EPSILON__);
+        if (validator(objectBounds,
+                      m_quadtree.GetObjectsInArea(objectBounds))) {
+            grid[i] = detailLevel;
+        } else {
+            grid[i] = -1;
+        }
+    }
+
+    return std::make_shared<NavMesh>(width, height, grid, detailLevel, bounds);
 }

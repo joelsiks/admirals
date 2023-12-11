@@ -83,7 +83,12 @@ void IDisplayLayer::RemoveDisplayable(const std::string &identifier) {
 }
 
 bool IDisplayLayer::ExistsDisplayable(const std::string &identifier) {
-    return (m_displayables.Find(identifier) != nullptr);
+    return m_displayables.Find(identifier) != nullptr;
+}
+
+std::shared_ptr<IInteractiveDisplayable>
+IDisplayLayer::FindDisplayable(const std::string &identifier) {
+    return m_displayables.Find(identifier);
 }
 
 std::vector<std::string> IDisplayLayer::GetDisplayableNames() {
