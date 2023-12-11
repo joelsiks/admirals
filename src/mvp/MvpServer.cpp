@@ -166,16 +166,18 @@ void MvpServer::StartGame() {
     // Add top player base
     const ShipData baseTop =
         ShipData(m_shipID++, ShipType::Base, baseData.TopSpawns[0].x,
-                 baseData.TopSpawns[0].y, baseData.Health, m_playerTop.id);
+                 baseData.TopSpawns[0].y, baseData.Health, m_playerTop.id,
+                 ShipAction::Attack);
     m_playerTop.baseId = baseTop.id;
     m_playerTop.ships[baseTop.id] = baseTop;
     m_playerTop.numShips++;
     m_board[baseData.TopSpawns[0].x][baseData.TopSpawns[0].y] = baseTop.id;
 
     // Add bottom player base
-    const ShipData baseBottom = ShipData(
-        m_shipID++, ShipType::Base, baseData.BottomSpawns[0].x,
-        baseData.BottomSpawns[0].y, baseData.Health, m_playerBottom.id);
+    const ShipData baseBottom =
+        ShipData(m_shipID++, ShipType::Base, baseData.BottomSpawns[0].x,
+                 baseData.BottomSpawns[0].y, baseData.Health, m_playerBottom.id,
+                 ShipAction::Attack);
     m_playerBottom.baseId = baseBottom.id;
     m_playerBottom.ships[baseBottom.id] = baseBottom;
     m_playerBottom.numShips++;
