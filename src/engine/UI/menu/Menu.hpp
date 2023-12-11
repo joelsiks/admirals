@@ -10,7 +10,8 @@ public:
     Menu(const std::string &menuTitle, const Color &foregroundColor,
          const Color &backgroundColor, float topPadding = 0);
 
-    void Render(const EngineContext &ctx) const override;
+    virtual void Render(const EngineContext &ctx) const override;
+    virtual void Update(const EngineContext &ctx) override;
 
     inline void SetTextColor(const Color &color) { m_fgColor = color; }
 
