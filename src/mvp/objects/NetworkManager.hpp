@@ -1,9 +1,9 @@
 #pragma once
 #include "Client.hpp"
+#include "GameData.hpp"
 #include "GameObject.hpp"
 #include "UI/TextElement.hpp"
 #include "objects/GameManager.hpp"
-#include "shared.hpp"
 
 namespace admirals::mvp::objects {
 
@@ -42,6 +42,6 @@ private:
     bool m_isHost = false;
     std::thread m_serverThread;
 
-    bool m_debug = true;
+    bool m_debug = false;
 };
 } // namespace admirals::mvp::objects

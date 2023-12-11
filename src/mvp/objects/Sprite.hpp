@@ -11,7 +11,7 @@ public:
 
     void Render(const EngineContext &ctx) const override;
 
-private:
+protected:
     const Texture &m_source;
     const Vector2 m_texSize;
     const Vector2 m_texOffset;

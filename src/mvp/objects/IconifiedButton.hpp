@@ -1,7 +1,7 @@
 #pragma once
+#include "GameData.hpp"
 #include "Renderer.hpp"
 #include "UI/Button.hpp"
-#include "shared.hpp"
 
 namespace admirals::mvp::objects {
 
@@ -29,7 +29,7 @@ public:
                                        m_boundingBox.Size() / m_texSize);
 
         renderer::Renderer::DrawText(*ctx.fontTexture, m_boundingBox.Position(),
-                                     m_fgColor, m_text);
+                                     m_fgColor, m_text, 2.f);
     }
 
 private:

@@ -1,6 +1,6 @@
 #include "Background.hpp"
+#include "GameData.hpp"
 #include "Renderer.hpp"
-#include "shared.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;

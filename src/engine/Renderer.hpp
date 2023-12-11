@@ -59,7 +59,8 @@ public:
                            const Vector2 &scale);
 
     static void DrawText(const Texture &font, const Vector2 &position,
-                         const Color &color, const std::string &text);
+                         const Color &color, const std::string &text,
+                         const Vector2 &scale = 1.f);
 
     static void SetCursor(Cursor cursor);
 
