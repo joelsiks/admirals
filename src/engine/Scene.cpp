@@ -15,19 +15,30 @@ void Scene::Render(const EngineContext &ctx) const {
     }
 }
 
+void Scene::Update(const EngineContext &ctx) {
+    IDisplayLayer::Update(ctx);
+    OnUpdate(ctx);
+    RebuildQuadTree(ctx.windowSize);
+}
+
 void Scene::OnStart(const EngineContext &ctx) {
     m_isInitialized = true;
-
+    HandleDeferredActions();
     for (const auto &displayable : m_displayables) {
         auto object = std::dynamic_pointer_cast<GameObject>(displayable);
-        object->OnStart(ctx);
+        if (object != nullptr) {
+            object->OnStart(ctx);
+        }
     }
 }
 
 void Scene::OnUpdate(const EngineContext &ctx) {
+    HandleDeferredActions();
     for (const auto &displayable : m_displayables) {
         auto object = std::dynamic_pointer_cast<GameObject>(displayable);
-        object->OnUpdate(ctx);
+        if (object != nullptr) {
+            object->OnUpdate(ctx);
+        }
     }
 }
 

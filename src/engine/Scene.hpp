@@ -18,6 +18,7 @@ public:
         PathValidator;
 
     virtual void Render(const EngineContext &ctx) const override;
+    virtual void Update(const EngineContext &ctx) override;
 
     virtual void OnStart(const EngineContext &ctx);
     virtual void OnUpdate(const EngineContext &ctx);

@@ -18,7 +18,6 @@ Menu::Menu(const std::string &menuTitle, const Color &foregroundColor,
 }
 
 void Menu::Render(const EngineContext &ctx) const {
-
     float centerPositionOffset = m_topPadding;
 
     // Draw background.
@@ -75,4 +74,9 @@ void Menu::Render(const EngineContext &ctx) const {
     if (ctx.debug) {
         m_quadtree.DrawTree();
     }
+}
+
+void Menu::Update(const EngineContext &ctx) {
+    IDisplayLayer::Update(ctx);
+    RebuildQuadTree(ctx.windowSize);
 }

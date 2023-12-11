@@ -174,12 +174,11 @@ void Engine::StartGameLoop() {
         m_context.windowSize = m_renderer->GetWindowSize();
 
         if (hasScene()) {
-            m_scene->OnUpdate(GetContext());
-            m_scene->RebuildQuadTree(m_context.windowSize);
+            m_scene->Update(GetContext());
         }
 
         for (const auto &activeLayerIdx : m_activeLayers) {
-            m_layers[activeLayerIdx]->RebuildQuadTree(m_context.windowSize);
+            m_layers[activeLayerIdx]->Update(GetContext());
         }
 
         m_renderer->Render(GetContext(), layers);

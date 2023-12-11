@@ -85,7 +85,6 @@ public:
 
     inline void ToggleDebugRendering() { m_context.debug = !m_context.debug; }
 
-    // TODO: This is broken.
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(size_t layerIdx, _Args &&..._args) {
         auto object = std::make_shared<T>(_args...);
@@ -93,7 +92,6 @@ public:
         return object;
     }
 
-    // TODO: This is broken.
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeGameObject(_Args &&..._args) {
         auto object = std::make_shared<T>(std::forward<_Args>(_args)...);
@@ -111,14 +109,12 @@ private:
 
     void HandleDeferredLayerActions();
 
-    bool m_running;
-
-    std::string m_gameName;
-
     inline bool hasScene() { return m_scene != nullptr; }
-
     inline bool hasLayers() { return !m_layers.empty(); }
     inline bool hasActiveLayers() { return !m_activeLayers.empty(); }
+
+    bool m_running;
+    std::string m_gameName;
 
     std::shared_ptr<Scene> m_scene;
     std::map<size_t, std::shared_ptr<IDisplayLayer>> m_layers;

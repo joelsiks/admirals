@@ -1,5 +1,6 @@
 
 #include "UI/DisplayLayout.hpp"
+#include "DisplayLayout.hpp"
 #include "Renderer.hpp"
 #include "UI/Data.hpp"
 
@@ -41,4 +42,9 @@ void DisplayLayout::Render(const EngineContext &ctx) const {
     if (ctx.debug) {
         m_quadtree.DrawTree();
     }
+}
+
+void DisplayLayout::Update(const EngineContext &ctx) {
+    IDisplayLayer::Update(ctx);
+    RebuildQuadTree(ctx.windowSize);
 }
