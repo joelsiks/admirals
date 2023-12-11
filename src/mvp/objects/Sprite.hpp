@@ -1,4 +1,5 @@
 #pragma once
+#include "GameData.hpp"
 #include "objects/GridObject.hpp"
 
 namespace admirals::mvp::objects {
@@ -15,6 +16,8 @@ protected:
     const Texture &m_source;
     const Vector2 m_texSize;
     const Vector2 m_texOffset;
+
+    void DrawSprite(const Rect &bounds) const;
 };
 
 } // namespace admirals::mvp::objects

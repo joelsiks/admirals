@@ -11,6 +11,9 @@ public:
     inline void OnUpdate(const EngineContext &ctx) override {}
     inline void OnClick(events::MouseClickEventArgs &args) override {}
     void Render(const EngineContext &ctx) const override;
+
+    inline void Select() override {}
+    inline void DeSelect() override {}
 };
 
 } // namespace admirals::mvp::objects

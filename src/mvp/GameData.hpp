@@ -1,27 +1,30 @@
 #pragma once
 
 #include <memory>
+#include <sstream>
 
 #include "Engine.hpp"
+#include "objects/SelectionManager.hpp"
 
 namespace admirals::mvp {
 
 class GameData {
 private:
 public:
-    GameData(){};
-    ~GameData(){};
+    GameData() {}
+    ~GameData() {}
 
     inline static std::unique_ptr<Engine> engine = nullptr;
+    inline static std::shared_ptr<NavMesh> navMesh = nullptr;
 
-    inline static const size_t startMenuIdx = 0;
-    inline static std::shared_ptr<Scene> startMenuScene = nullptr;
-    inline static std::shared_ptr<Scene> g_sceneStore = nullptr;
+    inline static std::shared_ptr<Scene> StartMenuScene = nullptr;
+    inline static std::shared_ptr<Scene> SceneStore = nullptr;
 
-    inline static const size_t gameUIIdx = 1;
+    static constexpr size_t StartMenuIdx = 0;
+    static constexpr size_t GameUIIdx = 1;
 
-    inline static std::string selectedShip;
-    inline static Vector2 mousePosition;
+    inline static std::shared_ptr<objects::SelectionManager> Selection;
+    inline static Vector2 MousePosition;
 
     inline static uint16_t PlayerId = 0;
     static constexpr float SpriteSize = 64;
@@ -34,5 +37,13 @@ public:
     static constexpr float TotalHeight =
         GameData::GridSize + GameData::CellSize * 2;
 };
+
+template <typename T>
+std::string DecimalToString(const T a_value, const int n = 6) {
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return std::move(out).str();
+}
 
 } // namespace admirals::mvp

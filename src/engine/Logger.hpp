@@ -33,10 +33,9 @@ private:
         const std::time_t time =
             std::time(nullptr) -
             std::chrono::system_clock::to_time_t(m_startTime);
-        long time_taken = time;
-        const long sec = time_taken % 60;
-        const long min = (time_taken / 60) % 60;
-        const long hour = (time_taken / 3600) % 60;
+        const size_t sec = time % 60;
+        const size_t min = (time / 60) % 60;
+        const size_t hour = (time / 3600) % 60;
         std::string return_str = std::to_string(hour) + ":" +
                                  std::to_string(min) + ":" +
                                  std::to_string(sec);
@@ -61,9 +60,9 @@ private:
     static std::string GetWarningMessage(WarningCase ec) {
         switch (ec) {
         case MismatchOfValues:
-            return "Warning:\n  Possible mismatch of varaiables";
+            return "Warning:\n  Possible mismatch of variables";
         case WrongIdentifiers:
-            return "Warning:\n  Wrong Inditifiers";
+            return "Warning:\n  Wrong Identifiers";
         default: // code 0
             return "unknown warning code.";
         }
@@ -86,7 +85,7 @@ public:
 
     static void LogMessage(const std::string &logString) {
         AppendToLogFile(logString);
-        std::cout << "LogMessage: \n" << logString << std::endl;
+        std::cout << "LogMessage: \n" << logString << "\n";
     }
 
     static void CatchError(const std::string &logString, ErrorCase ec) {

@@ -34,7 +34,13 @@ public:
         const void *m_source;
     };
 
-    void Invoke(void *sender, T &event) const {
+    void Invoke(void *sender, T &event) {
+        for (auto it = m_queued_unsubscribes.begin();
+             it != m_queued_unsubscribes.end();) {
+            m_handlers.erase(*it);
+            it = m_queued_unsubscribes.erase(it);
+        }
+
         for (const auto &handler : m_handlers) {
             if (event.handled) {
                 return;
@@ -49,10 +55,8 @@ public:
     }
 
     /// @brief Unsubscribes an event handler
-    /// @note Cannot be called inside an event handler for the same event unless
-    /// event argument handled property is set to `true`
     inline void Unsubscribe(const EventHandlerWrapper &handler) {
-        m_handlers.erase(handler);
+        m_queued_unsubscribes.push_back(handler);
     }
 
     /// @brief Subscribes an event handler
@@ -61,8 +65,6 @@ public:
     }
 
     /// @brief Unsubscribes an event handler
-    /// @note Cannot be called inside an event handler for the same event unless
-    /// event argument handled property is set to `true`
     inline void Unsubscribe(const EventHandler &handler) {
         Unsubscribe(EventHandlerWrapper(handler, nullptr));
     }
@@ -71,8 +73,6 @@ public:
     inline void operator+=(const EventHandler &handler) { Subscribe(handler); }
 
     /// @brief Unsubscribes an event handler
-    /// @note Cannot be called inside an event handler for the same event unless
-    /// event argument handled property is set to `true`
     inline void operator-=(const EventHandler &handler) {
         Unsubscribe(handler);
     }
@@ -83,8 +83,6 @@ public:
     }
 
     /// @brief Unsubscribes an event handler
-    /// @note Cannot be called inside an event handler for the same event unless
-    /// event argument handled property is set to `true`
     inline void operator-=(const EventHandlerWrapper &handler) {
         Unsubscribe(handler);
     }
@@ -117,6 +115,7 @@ private:
     };
 
     std::unordered_set<EventHandlerWrapper, Hash, Equals> m_handlers;
+    std::vector<EventHandlerWrapper> m_queued_unsubscribes;
 };
 
 } // namespace admirals::events

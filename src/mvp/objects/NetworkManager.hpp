@@ -17,10 +17,9 @@ public:
     void OnUpdate(const EngineContext &ctx) override;
     void Render(const EngineContext &ctx) const override {}
 
-    bool StartAndConnectToServer(uint16_t port, const size_t maxTries);
+    bool StartAndConnectToServer(uint16_t port, size_t maxTries);
 
-    bool ConnectToServer(const std::string &ip, uint16_t port,
-                         const size_t maxTries);
+    bool ConnectToServer(const std::string &ip, uint16_t port, size_t maxTries);
 
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);

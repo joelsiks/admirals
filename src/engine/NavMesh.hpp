@@ -24,12 +24,12 @@ protected:
     Rect m_bounds;
     size_t m_width = 0;
     size_t m_height = 0;
-    // Points to a 1 dimensional representation of a 2d grid of size m_width *
-    // m_height, row by row.
-    // A cost < 0 -> impassible
     float m_detailLevel = 1;
 
 private:
+    // Points to a 1 dimensional representation of a 2d grid of size m_width *
+    // m_height, row by row.
+    // A cost < 0 -> impassible
     float *m_costs = nullptr;
 };
 

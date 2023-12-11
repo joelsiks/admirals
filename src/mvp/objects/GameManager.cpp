@@ -7,7 +7,7 @@
 using namespace admirals::mvp::objects;
 
 GameManager::GameManager(const std::string &name, const Texture &atlas)
-    : GameObject(name), m_atlas(atlas) {
+    : GameObject(name, -10.f), m_atlas(atlas) {
     m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
         "networkManager", (*this));
     m_menuManager =
@@ -16,9 +16,12 @@ GameManager::GameManager(const std::string &name, const Texture &atlas)
 
 GameManager::~GameManager() {}
 
-void GameManager::OnStart(const EngineContext &) { srand(time(NULL)); }
+void GameManager::OnStart(const EngineContext &) {}
 
-void GameManager::OnUpdate(const EngineContext &) {}
+void GameManager::OnUpdate(const EngineContext &) {
+    // Reset navMesh to have it updated
+    GameData::navMesh = nullptr;
+}
 
 bool GameManager::StartAndConnectToServer(uint16_t port,
                                           const size_t maxTries) {

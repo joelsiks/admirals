@@ -118,8 +118,8 @@ public:
         const Vector2 scale =
             ctx.windowSize / Vector2(static_cast<float>(WINDOW_WIDTH),
                                      static_cast<float>(WINDOW_HEIGHT));
-        const auto navMesh = m_scene->BuildNavMesh(
-            Rect(0, ctx.windowSize), CELL_SIZE, CELL_SIZE, PathValidator);
+        const auto navMesh = m_scene->BuildNavMesh(Rect(0, ctx.windowSize),
+                                                   CELL_SIZE, PathValidator);
         const auto path = PathFinding::FindPath(GetPosition(), m_mousePosition,
                                                 *navMesh, false);
 

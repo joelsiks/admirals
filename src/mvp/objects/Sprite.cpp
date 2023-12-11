@@ -12,6 +12,10 @@ Sprite::Sprite(const std::string &name, const Texture &source, float order,
       m_texOffset(texOffset) {}
 
 void Sprite::Render(const EngineContext &) const {
-    renderer::Renderer::DrawSprite(m_source, GetPosition(), m_texOffset,
-                                   m_texSize, GetSize() / m_texSize);
+    DrawSprite(GetBoundingBox());
+}
+
+void Sprite::DrawSprite(const Rect &bounds) const {
+    renderer::Renderer::DrawSprite(m_source, bounds.Position(), m_texOffset,
+                                   m_texSize, bounds.Size() / m_texSize);
 }

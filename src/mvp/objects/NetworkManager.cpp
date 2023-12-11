@@ -19,8 +19,7 @@ void NetworkManager::OnStart(const EngineContext &) {}
 
 void NetworkManager::OnUpdate(const EngineContext &) { HandleMessages(); }
 
-bool NetworkManager::StartAndConnectToServer(uint16_t port,
-                                             const size_t maxTries) {
+bool NetworkManager::StartAndConnectToServer(uint16_t port, size_t maxTries) {
     m_isHost = true;
 
     m_serverThread = std::thread([this, port]() {
@@ -33,7 +32,7 @@ bool NetworkManager::StartAndConnectToServer(uint16_t port,
 }
 
 bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
-                                     const size_t maxTries) {
+                                     size_t maxTries) {
     for (size_t i = 0; i < maxTries; i++) {
         if (m_debug) {
             printf("Trying to connect to the server...\n");
@@ -45,7 +44,7 @@ bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
                 printf("Connected to the server\n");
             }
 
-            // Should probably be called later by the user conciously and not
+            // Should probably be called later by the user consciously and not
             // here
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             ReadyUp();

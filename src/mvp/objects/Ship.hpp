@@ -21,13 +21,13 @@ public:
 
     void Render(const EngineContext &ctx) const;
 
-    inline bool IsOwned() const { return GameData::PlayerId == GetPlayerId(); }
     inline bool IsSelected() const {
-        return GameData::selectedShip == m_identifier;
+        return GameData::Selection->IsSelected(identifier());
     }
-    inline void Select() const { GameData::selectedShip = m_identifier; }
-    inline static void DeSelect() { GameData::selectedShip = ""; }
+    virtual void Select();
+    virtual void DeSelect();
 
+    inline bool IsOwned() const { return GameData::PlayerId == GetPlayerId(); }
     inline void SetOwner(uint8_t owner) { m_data.owner = owner; }
     inline uint8_t GetOwner() const { return m_data.owner; }
 
@@ -66,16 +66,23 @@ public:
 
     static Vector2 ShipTypeToTexOffset(uint16_t type);
 
+protected:
+    void DrawBackground(const Rect &bounds) const;
+    void DrawOutline(const Rect &bounds) const;
+    void DrawHealthBar(const Rect &bounds) const;
+    void DrawNavPath(const Rect &bounds, const Vector2 &windowSize) const;
+    void DrawNavMeshInfo(const Texture &font) const;
+
 private:
     ShipData m_data;
     bool m_drawOutline = false;
     bool m_selected = false;
     std::deque<admirals::Vector2> m_path;
     std::string m_target;
-    std::shared_ptr<NavMesh> m_navMesh;
 
-    void HandleAction();
-    void HandlePathTarget();
+    void HandleAction(const std::shared_ptr<Ship> &target = nullptr);
+    void ValidateNavPath();
+    std::shared_ptr<Ship> ValidateTarget();
 };
 
 } // namespace admirals::mvp::objects
