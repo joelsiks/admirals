@@ -2,6 +2,8 @@
 
 using namespace admirals;
 
+void IDisplayLayer::Update(const EngineContext &) { HandleDeferredActions(); }
+
 void IDisplayLayer::OnClick(events::MouseClickEventArgs &args) {
     const Vector2 clickLocation = args.Location();
     for (const auto &displayable :
@@ -75,11 +77,11 @@ void IDisplayLayer::OnHidden() {
 
 void IDisplayLayer::AddDisplayable(
     std::shared_ptr<IInteractiveDisplayable> displayable) {
-    m_displayables.Insert(std::move(displayable));
+    m_deferredActions.emplace_back(DeferType::Add, displayable);
 }
 
 void IDisplayLayer::RemoveDisplayable(const std::string &identifier) {
-    m_displayables.Erase(identifier);
+    m_deferredActions.emplace_back(DeferType::Delete, identifier);
 }
 
 bool IDisplayLayer::ExistsDisplayable(const std::string &identifier) {
@@ -101,4 +103,21 @@ std::vector<std::string> IDisplayLayer::GetDisplayableNames() {
 
 void IDisplayLayer::RebuildQuadTree(const Vector2 &windowSize) {
     m_quadtree.BuildTree(windowSize, m_displayables.ToVector());
+}
+
+void IDisplayLayer::HandleDeferredActions() {
+    for (const auto &[type, value] : m_deferredActions) {
+        switch (type) {
+        case DeferType::Add:
+            m_displayables.Insert(
+                std::get<std::shared_ptr<IInteractiveDisplayable>>(value));
+            break;
+        case DeferType::Delete:
+            m_displayables.Erase(std::get<std::string>(value));
+            break;
+        default:
+            break;
+        }
+    }
+    m_deferredActions.clear();
 }

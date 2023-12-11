@@ -171,16 +171,18 @@ void MvpServer::StartGame() {
     // Add top player base
     const ShipData baseTop =
         ShipData(m_shipID++, ShipType::Base, baseData.TopSpawns[0].x,
-                 baseData.TopSpawns[0].y, baseData.Health, m_playerTop.id);
+                 baseData.TopSpawns[0].y, baseData.Health, m_playerTop.id,
+                 ShipAction::Attack);
     m_playerTop.baseId = baseTop.id;
     m_playerTop.ships[baseTop.id] = baseTop;
     m_playerTop.numShips++;
     m_board[baseData.TopSpawns[0].x][baseData.TopSpawns[0].y] = baseTop.id;
 
     // Add bottom player base
-    const ShipData baseBottom = ShipData(
-        m_shipID++, ShipType::Base, baseData.BottomSpawns[0].x,
-        baseData.BottomSpawns[0].y, baseData.Health, m_playerBottom.id);
+    const ShipData baseBottom =
+        ShipData(m_shipID++, ShipType::Base, baseData.BottomSpawns[0].x,
+                 baseData.BottomSpawns[0].y, baseData.Health, m_playerBottom.id,
+                 ShipAction::Attack);
     m_playerBottom.baseId = baseBottom.id;
     m_playerBottom.ships[baseBottom.id] = baseBottom;
     m_playerBottom.numShips++;
@@ -258,13 +260,13 @@ void MvpServer::UpdatePlayer(uint32_t oldOwner, uint32_t newOwner) {
         return;
     };
 
-    for (auto &ship : player.ships) {
-        ship.second.owner = newOwner;
+    for (auto &[key, ship] : player.ships) {
+        ship.owner = newOwner;
     }
 }
 
 void MvpServer::PlayerReady(const std::shared_ptr<Connection> &client) {
-    const uint8_t isTopPlayer = client->GetID() == m_playerTop.id;
+    const bool isTopPlayer = client->GetID() == m_playerTop.id;
     if (isTopPlayer) {
         m_playerTop.ready = true;
     } else {
@@ -272,7 +274,7 @@ void MvpServer::PlayerReady(const std::shared_ptr<Connection> &client) {
     }
     Message msg;
     msg.header.id = NetworkMessageTypes::ReadyConfirmation;
-    msg << client->GetID() << isTopPlayer;
+    msg << client->GetID() << static_cast<uint8_t>(isTopPlayer);
     MessageClient(client, msg);
 
     // Should probably be moved somewhere else
@@ -495,20 +497,20 @@ void MvpServer::AttackTargetEnemy(ShipData &ship) {
 }
 
 void MvpServer::ProcessShips(std::map<uint16_t, ShipData> &ships) {
-    for (auto &ship : ships) {
-        switch (ship.second.action) {
+    for (auto &[key, ship] : ships) {
+        switch (ship.action) {
         case ShipAction::None:
             continue;
         case ShipAction::Attack:
-            if (TICK_RATE / ShipInfoMap[ship.second.type].AttackSpeed >
-                static_cast<float>(m_turn - ship.second.lastActionTurn)) {
+            if (TICK_RATE / ShipInfoMap[ship.type].AttackSpeed >
+                static_cast<float>(m_turn - ship.lastActionTurn)) {
                 continue;
             }
             // Base attacks all nearby
-            if (ship.second.type == ShipType::Base) {
-                DamageNearbyEnemies(ship.second);
+            if (ship.type == ShipType::Base) {
+                DamageNearbyEnemies(ship);
             } else {
-                AttackTargetEnemy(ship.second);
+                AttackTargetEnemy(ship);
             }
             break;
         case ShipAction::Move:
@@ -517,41 +519,39 @@ void MvpServer::ProcessShips(std::map<uint16_t, ShipData> &ships) {
             break;
         }
 
-        ship.second.lastActionTurn = m_turn;
+        ship.lastActionTurn = m_turn;
     }
 }
 
 void MvpServer::ProcessShipsLate(std::map<uint16_t, ShipData> &ships) {
-    for (auto &ship : ships) {
-        switch (ship.second.action) {
+    for (auto &[key, ship] : ships) {
+        switch (ship.action) {
         case ShipAction::None:
         case ShipAction::Attack:
             continue;
         case ShipAction::Move:
-            if (ship.second.moveData.actionY == ship.second.location.y &&
-                ship.second.moveData.actionX == ship.second.location.x) {
-                ship.second.action = ShipAction::None;
+            if (ship.moveData.actionY == ship.location.y &&
+                ship.moveData.actionX == ship.location.x) {
+                ship.action = ShipAction::None;
                 continue;
             }
-            if (TICK_RATE / ShipInfoMap[ship.second.type].MoveSpeed >
-                static_cast<float>(m_turn - ship.second.lastActionTurn)) {
+            if (TICK_RATE / ShipInfoMap[ship.type].MoveSpeed >
+                static_cast<float>(m_turn - ship.lastActionTurn)) {
                 continue;
             }
-            if (m_board[ship.second.moveData.actionX]
-                       [ship.second.moveData.actionY] != 0) {
+            if (m_board[ship.moveData.actionX][ship.moveData.actionY] != 0) {
                 continue;
             }
-            m_board[ship.second.location.x][ship.second.location.y] = 0;
-            ship.second.location.x = ship.second.moveData.actionX;
-            ship.second.location.y = ship.second.moveData.actionY;
-            m_board[ship.second.location.x][ship.second.location.y] =
-                ship.second.id;
+            m_board[ship.location.x][ship.location.y] = 0;
+            ship.location.x = ship.moveData.actionX;
+            ship.location.y = ship.moveData.actionY;
+            m_board[ship.location.x][ship.location.y] = ship.id;
             break;
         default:
             break;
         }
 
-        ship.second.lastActionTurn = m_turn;
+        ship.lastActionTurn = m_turn;
     }
     // return false;
 }
@@ -596,12 +596,12 @@ void MvpServer::BroadcastState() {
     msg.header.id = NetworkMessageTypes::BoardUpdate;
     msg << m_turn << m_playerTop.coins << m_playerBottom.coins;
 
-    for (auto &ship : m_playerTop.ships) {
-        msg << ship.second;
+    for (auto &[key, ship] : m_playerTop.ships) {
+        msg << ship;
     }
 
-    for (auto &ship : m_playerBottom.ships) {
-        msg << ship.second;
+    for (auto &[key, ship] : m_playerBottom.ships) {
+        msg << ship;
     }
 
     msg << m_playerTop.numShips << m_playerBottom.numShips;

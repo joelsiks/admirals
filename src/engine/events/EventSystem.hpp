@@ -1,4 +1,5 @@
 #pragma once
+#include "DeferedAction.hpp"
 #include "EventArgs.hpp"
 
 #include <functional>
@@ -35,12 +36,7 @@ public:
     };
 
     void Invoke(void *sender, T &event) {
-        for (auto it = m_queued_unsubscribes.begin();
-             it != m_queued_unsubscribes.end();) {
-            m_handlers.erase(*it);
-            it = m_queued_unsubscribes.erase(it);
-        }
-
+        HandleDeferredActions();
         for (const auto &handler : m_handlers) {
             if (event.handled) {
                 return;
@@ -51,12 +47,12 @@ public:
 
     /// @brief Subscribes an event handler
     inline void Subscribe(const EventHandlerWrapper &handler) {
-        m_handlers.insert(std::move(handler));
+        m_deferredActions.emplace_back(DeferType::Add, handler);
     }
 
     /// @brief Unsubscribes an event handler
     inline void Unsubscribe(const EventHandlerWrapper &handler) {
-        m_queued_unsubscribes.push_back(handler);
+        m_deferredActions.emplace_back(DeferType::Delete, handler);
     }
 
     /// @brief Subscribes an event handler
@@ -114,8 +110,24 @@ private:
         }
     };
 
+    inline void HandleDeferredActions() {
+        for (const auto &[type, value] : m_deferredActions) {
+            switch (type) {
+            case DeferType::Add:
+                m_handlers.insert(value);
+                break;
+            case DeferType::Delete:
+                m_handlers.erase(value);
+                break;
+            default:
+                break;
+            }
+        }
+        m_deferredActions.clear();
+    }
+
     std::unordered_set<EventHandlerWrapper, Hash, Equals> m_handlers;
-    std::vector<EventHandlerWrapper> m_queued_unsubscribes;
+    std::vector<std::pair<DeferType, EventHandlerWrapper>> m_deferredActions;
 };
 
 } // namespace admirals::events

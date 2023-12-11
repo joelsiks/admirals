@@ -89,8 +89,9 @@ inline std::map<uint8_t, ShipInfo> ShipInfoMap = {
 struct ShipData {
     ShipData() {}
     ShipData(uint16_t id, uint8_t type, uint8_t x, uint8_t y, uint16_t health,
-             uint8_t owner)
-        : id(id), type(type), location({x, y}), health(health), owner(owner) {}
+             uint8_t owner, uint8_t action = ShipAction::None)
+        : id(id), type(type), location({x, y}), health(health), owner(owner),
+          action(action) {}
 
     uint16_t id = 0;
     uint16_t lastActionTurn = 0;
