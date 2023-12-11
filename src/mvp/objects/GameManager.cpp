@@ -16,7 +16,6 @@ GameManager::GameManager(const std::string &name, const Texture &atlas)
 
 GameManager::~GameManager() {}
 
-// void GameManager::OnStart(const EngineContext &) { CreateBases(); }
 void GameManager::OnStart(const EngineContext &) {}
 
 void GameManager::OnUpdate(const EngineContext &) {
@@ -83,21 +82,6 @@ void GameManager::ResumeGame() {
     m_gamePaused = false;
     m_gameStarted = true;
 }
-
-// void GameManager::CreateBases() {
-//     const Vector2 cellSize = Vector2(GameData::CellSize);
-//     const auto baseTop = GameData::engine->MakeGameObject<Base>(
-//         "baseTop", m_atlas, 2,
-//         Rect(0, 1, GameData::CellSize, GameData::CellSize));
-
-//     const auto baseBottom = GameData::engine->MakeGameObject<Base>(
-//         "baseBottom", m_atlas, 2,
-//         Rect(static_cast<float>(GameData::GridCells) - 1,
-//              static_cast<float>(GameData::GridCells) - 2, GameData::CellSize,
-//              GameData::CellSize));
-//     m_baseTop = baseTop;
-//     m_baseBottom = baseBottom;
-// }
 
 void GameManager::BuyShip(uint8_t type) {
     if (m_coins < ShipInfoMap[type].Cost) {
@@ -179,11 +163,8 @@ void GameManager::ResetState(bool removeConnection) {
         GameData::engine->GetScene()->RemoveDisplayable(ship->identifier());
     }
 
-    // GameData::engine->GetScene()->RemoveDisplayable("baseTop");
-    // GameData::engine->GetScene()->RemoveDisplayable("baseBottom");
-    // CreateBases();
-
     m_ships.clear();
+    GameData::Selection->Clear();
 
     if (removeConnection) {
         GameData::engine->GetScene()->RemoveDisplayable("networkManager");

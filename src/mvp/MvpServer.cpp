@@ -235,8 +235,6 @@ void MvpServer::ResetState() {
     m_turn = 0;
     m_playerTop.coins = STARTING_COINS;
     m_playerBottom.coins = STARTING_COINS;
-    // m_playerTop.baseHealth = BaseMaxHealth;
-    // m_playerBottom.baseHealth = BaseMaxHealth;
     m_playerTop.ships.clear();
     m_playerBottom.ships.clear();
     m_playerTop.numShips = 0;
@@ -473,7 +471,6 @@ void MvpServer::DamageNearbyEnemies(ShipData &ship) {
             }
         }
     }
-    // return false;
 }
 
 void MvpServer::AttackTargetEnemy(ShipData &ship) {
@@ -553,7 +550,6 @@ void MvpServer::ProcessShipsLate(std::map<uint16_t, ShipData> &ships) {
 
         ship.lastActionTurn = m_turn;
     }
-    // return false;
 }
 
 void MvpServer::ProcessDeadShips(std::map<uint16_t, ShipData> &ships) {

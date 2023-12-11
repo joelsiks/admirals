@@ -60,8 +60,6 @@ public:
     bool GetIsTopPlayer() const { return m_isTopPlayer; }
     void SetIsTopPlayer(bool isTopPlayer) { m_isTopPlayer = isTopPlayer; }
 
-    void CreateBases();
-
     void BuyShip(uint8_t type);
     void MoveShip(uint16_t id, uint8_t x, uint8_t y);
     void AttackShip(uint16_t id, uint16_t targetId);
