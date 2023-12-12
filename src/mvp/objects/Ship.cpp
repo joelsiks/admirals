@@ -293,10 +293,10 @@ std::vector<Vector2> Ship::ShipTypeToTexOffset(uint16_t type, uint8_t owner) {
             Vector2(offset + GameData::SpriteSize, GameData::SpriteSize * 3));
         break;
     case ShipType::Base:
-        textureOffset.push_back(Vector2(offset, GameData::SpriteSize));
+        textureOffset.push_back(Vector2(offset, 0));
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 1));
         textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 2));
         textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 3));
-        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 4));
         break;
     default:
         textureOffset.push_back(Vector2(0, GameData::SpriteSize));
