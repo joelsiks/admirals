@@ -462,11 +462,6 @@ public:
     inline static Color Lerp(const Color &c1, const Color &c2, float t) {
         return c1 * Vector4(1 - t) + c2 * Vector4(t);
     };
-    inline Color ApplyGammaCorrection() const {
-        const float exp = 1.f / 2.2f;
-        return Color(std::pow(m_0, exp), std::pow(m_1, exp), std::pow(m_2, exp),
-                     m_3);
-    }
 
     const static Color RED;
     const static Color GREEN;
