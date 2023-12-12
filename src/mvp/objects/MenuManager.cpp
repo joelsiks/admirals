@@ -33,12 +33,7 @@ void MenuManager::OnStart(const EngineContext &) {
         [this](void *, events::MouseClickEventArgs &args) {
             if (!args.pressed)
                 return;
-
-            // TODO: reset game state
-            // should also close the server if hosting
-            // m_gameManager.Reset();
-
-            ReturnToMenu();
+            m_gameManager.ExitToMenu();
         });
 
     const auto playAgainOption = std::make_shared<menu::ClickOption>(
@@ -48,8 +43,7 @@ void MenuManager::OnStart(const EngineContext &) {
             if (!args.pressed)
                 return;
 
-            // TODO: implement restart
-            // m_gameManager.PlayAgain();
+            m_gameManager.PlayAgain();
         });
 
     const auto exitOption =

@@ -31,6 +31,10 @@ public:
     // Empties the incoming message queue, calling OnMessage on each message
     void Update(size_t max_messages = -1);
 
+    // Called when a client is validated
+    virtual void
+    OnClientValidated(const std::shared_ptr<Connection> &client) = 0;
+
 protected:
     // Called when a client connects
     virtual bool OnClientConnect(const std::shared_ptr<Connection> &) {
@@ -43,20 +47,19 @@ protected:
     virtual void OnMessage(const std::shared_ptr<Connection> &client,
                            Message &message) = 0;
 
-public:
-    // Called when a client is validated
-    virtual void
-    OnClientValidated(const std::shared_ptr<Connection> &client) = 0;
+    void ClearDisconnectedClients();
+
+    MessageQueue<OwnedMessage> &GetIncomingMessages() {
+        return m_incomingMessages;
+    }
+    std::vector<std::shared_ptr<Connection>> &GetConnections() {
+        return m_connections;
+    }
 
 private:
     void HandleAcceptedConnection(std::error_code ec,
                                   asio::ip::tcp::socket socket);
 
-public:
-    MessageQueue<OwnedMessage> m_incomingMessages;
-    std::vector<std::shared_ptr<Connection>> m_connections;
-
-private:
     asio::io_context m_ioContext;
     std::thread m_contextThread;
 
@@ -64,6 +67,9 @@ private:
 
     // Start ID
     uint32_t m_idCounter = 1;
+
+    MessageQueue<OwnedMessage> m_incomingMessages;
+    std::vector<std::shared_ptr<Connection>> m_connections;
 };
 
 } // namespace admirals::net

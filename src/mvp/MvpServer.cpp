@@ -9,24 +9,27 @@ bool MvpServer::OnClientConnect(const std::shared_ptr<Connection> &) {
 }
 
 void MvpServer::OnClientDisconnect(const std::shared_ptr<Connection> &client) {
-    if (!m_gameStarted || m_gamePaused) {
-        return;
-    }
-
-    if (--m_connectedPlayers == 0) {
-        // TODO: Reset game
-        // ResetGame();
-    }
+    printf("Client %d disconnected\n", client->GetID());
 
     if (client->GetID() == m_playerTop.id) {
         m_playerTop.ready = false;
         m_playerTop.connected = false;
-    } else {
+        m_playerTop.id = 0;
+        m_connectedPlayers--;
+    } else if (client->GetID() == m_playerBottom.id) {
         m_playerBottom.ready = false;
         m_playerBottom.connected = false;
+        m_playerBottom.id = 0;
+        m_connectedPlayers--;
     }
 
-    PauseGame();
+    if (m_connectedPlayers == 0 && m_gameStarted) {
+        ResetState();
+        return;
+    }
+
+    if (m_gameStarted && !m_gamePaused)
+        PauseGame();
 }
 
 void MvpServer::OnClientValidated(const std::shared_ptr<Connection> &client) {
@@ -38,7 +41,7 @@ void MvpServer::OnClientValidated(const std::shared_ptr<Connection> &client) {
     m_connectedPlayers++;
 
     // Set the previous owner to the first player not connected, or 0 if none
-    // are not connected
+    // are connected
     uint32_t oldOwner;
     if (!m_playerTop.connected && !m_playerBottom.connected) {
         oldOwner = 0;
@@ -97,6 +100,7 @@ void MvpServer::OnMessage(const std::shared_ptr<Connection> &client,
 void MvpServer::ProcessTurn() {
     // Process incoming actions
     Update();
+    ClearDisconnectedClients();
 
     if (m_debug) {
         std::cout << "Player 1, connected: " << m_playerTop.connected
@@ -129,7 +133,8 @@ void MvpServer::ProcessTurn() {
     ProcessShipsLate(m_playerBottom.ships);
 
     // Check if player has won
-    ProcessWinCondition();
+    if (ProcessWinCondition())
+        return;
 
     // Remove ships with 0 health
     ProcessDeadShips(m_playerTop.ships);
@@ -139,8 +144,8 @@ void MvpServer::ProcessTurn() {
     BroadcastState();
 }
 
-void MvpServer::EnterServerLoop() {
-    while (true) {
+void MvpServer::EnterServerLoop(bool &stopServer) {
+    while (!stopServer) {
         auto start = std::chrono::high_resolution_clock::now();
         ProcessTurn();
         auto end = std::chrono::high_resolution_clock::now();
@@ -195,13 +200,12 @@ void MvpServer::StopGame(uint8_t winner) {
         std::cout << "Stopping game"
                   << "\n";
     }
-    m_gameStarted = false;
-    // TODO: Reset game
-    // ResetGame();
     Message msg;
     msg.header.id = NetworkMessageTypes::GameStop;
     msg << winner;
     MessageAllClients(msg);
+
+    ResetState();
 }
 
 void MvpServer::PauseGame() {
@@ -222,6 +226,25 @@ void MvpServer::ResumeGame() {
     Message msg;
     msg.header.id = NetworkMessageTypes::GameResume;
     MessageAllClients(msg);
+}
+
+void MvpServer::ResetState() {
+    if (m_debug) {
+        std::cout << "Resetting game" << std::endl;
+    }
+    m_turn = 0;
+    m_playerTop.coins = STARTING_COINS;
+    m_playerBottom.coins = STARTING_COINS;
+    m_playerTop.ships.clear();
+    m_playerBottom.ships.clear();
+    m_playerTop.numShips = 0;
+    m_playerBottom.numShips = 0;
+    m_playerTop.ready = false;
+    m_playerBottom.ready = false;
+    m_gameStarted = false;
+    m_gamePaused = false;
+    m_shipID = 1;
+    memset(m_board, 0, sizeof(m_board));
 }
 
 void MvpServer::UpdatePlayer(uint32_t oldOwner, uint32_t newOwner) {
@@ -543,7 +566,7 @@ void MvpServer::ProcessDeadShips(std::map<uint16_t, ShipData> &ships) {
     }
 }
 
-void MvpServer::ProcessWinCondition() {
+bool MvpServer::ProcessWinCondition() {
     const bool playerTopWon =
         m_playerBottom.ships[m_playerBottom.baseId].health == 0;
     const bool playerBottomWon =
@@ -551,16 +574,17 @@ void MvpServer::ProcessWinCondition() {
 
     if (playerTopWon && playerBottomWon) {
         StopGame(0); // TODO: Find better value
-        return;
+        return true;
     }
     if (playerTopWon) {
         StopGame(m_playerTop.id);
-        return;
+        return true;
     }
     if (playerBottomWon) {
         StopGame(m_playerBottom.id);
-        return;
+        return true;
     }
+    return false;
 }
 
 void MvpServer::BroadcastState() {

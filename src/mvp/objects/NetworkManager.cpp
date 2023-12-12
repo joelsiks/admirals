@@ -11,6 +11,7 @@ NetworkManager::NetworkManager(const std::string &name,
 
 NetworkManager::~NetworkManager() {
     if (m_isHost) {
+        m_stopServer = true;
         m_serverThread.join();
     }
 }
@@ -25,7 +26,7 @@ bool NetworkManager::StartAndConnectToServer(uint16_t port, size_t maxTries) {
     m_serverThread = std::thread([this, port]() {
         MvpServer server(port);
         server.Start();
-        server.EnterServerLoop();
+        server.EnterServerLoop(m_stopServer);
     });
 
     return ConnectToServer("127.0.0.1", port, maxTries);
@@ -47,7 +48,7 @@ bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
             // Should probably be called later by the user consciously and not
             // here
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            ReadyUp();
+            m_gameManager.ReadyUp();
 
             return true;
         }
@@ -102,8 +103,9 @@ void NetworkManager::ReadyUp() {
 
 void NetworkManager::HandleMessages() {
     if (!IsConnected()) {
-        if (m_gameManager.GameStarted())
+        if (m_gameManager.GameStarted()) {
             m_gameManager.AbortGame();
+        }
         return;
     }
 

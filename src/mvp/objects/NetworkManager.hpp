@@ -39,6 +39,7 @@ private:
     uint32_t m_playerId = 0;
 
     bool m_isHost = false;
+    bool m_stopServer = false;
     std::thread m_serverThread;
 
     bool m_debug = false;

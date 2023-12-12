@@ -33,6 +33,11 @@ bool GameManager::ConnectToServer(const std::string &ip, uint16_t port,
     return m_networkManager->ConnectToServer(ip, port, maxTries);
 }
 
+void GameManager::StartGame() {
+    m_gameStarted = true;
+    m_waitingForOpponent = false;
+}
+
 void GameManager::StopGame(uint8_t winner) {
     if (!m_gameStarted) {
         return;
@@ -44,11 +49,21 @@ void GameManager::StopGame(uint8_t winner) {
     }
 }
 
+void GameManager::ReadyUp() {
+    if (m_gameStarted) {
+        return;
+    }
+    m_waitingForOpponent = true;
+    m_networkManager->ReadyUp();
+}
+
+// Called when the server disconnects
 void GameManager::AbortGame() {
-    if (!m_gameStarted) {
+    if (!m_gameStarted && !m_waitingForOpponent) {
         return;
     }
     m_gameStarted = false;
+    m_waitingForOpponent = false;
     m_menuManager->ToggleServerDisconnectMenu();
     if (m_debug) {
         printf("Game aborted\n");
@@ -120,6 +135,44 @@ void GameManager::UpdateBoard(int turn, int coins,
     }
     m_turn = turn;
     ModifyShips(ships);
+}
+
+void GameManager::PlayAgain() {
+    ResetState(false);
+    m_menuManager->ToggleEndGameMenu();
+    ReadyUp();
+}
+
+void GameManager::ExitToMenu() {
+    ResetState(true);
+    m_menuManager->ReturnToMenu();
+}
+
+void GameManager::ResetState(bool removeConnection) {
+    m_gameStarted = false;
+    m_gamePaused = false;
+    m_waitingForOpponent = false;
+
+    m_turn = 0;
+    m_coins = 0;
+    m_shipsP1 = 0;
+    m_shipsP2 = 0;
+    m_baseHealth = 0;
+    m_enemyBaseHealth = 0;
+    for (const auto &[_, ship] : m_ships) {
+        GameData::engine->GetScene()->RemoveDisplayable(ship->identifier());
+    }
+
+    m_ships.clear();
+    GameData::Selection->Clear();
+
+    if (removeConnection) {
+        GameData::engine->GetScene()->RemoveDisplayable("networkManager");
+        m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
+            "networkManager", (*this));
+        m_playerId = 0;
+        m_isTopPlayer = false;
+    }
 }
 
 void GameManager::ModifyShips(const std::map<uint16_t, ShipData> &ships) {

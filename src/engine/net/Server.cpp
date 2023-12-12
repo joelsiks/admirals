@@ -84,16 +84,18 @@ void Server::MessageClient(std::shared_ptr<Connection> client,
 
 void Server::MessageAllClients(const Message &message,
                                std::shared_ptr<Connection> ignore_client) {
-    for (auto &connection : m_connections) {
+    for (auto iter = m_connections.begin(); iter != m_connections.end();) {
         // Send the message to all connected clients
+        auto connection = *iter;
         if (connection && connection->IsConnected()) {
             if (connection != ignore_client) {
                 connection->Send(message);
             }
+            iter++;
         } else {
             // Extract and remove the connection
             std::shared_ptr<Connection> temp = connection;
-            m_connections.erase(
+            iter = m_connections.erase(
                 std::remove(m_connections.begin(), m_connections.end(), temp),
                 m_connections.end());
 
@@ -111,5 +113,18 @@ void Server::Update(size_t max_messages) {
         m_incomingMessages.PopFront();
         OnMessage(message.remote, message.message);
         message_count++;
+    }
+}
+
+void Server::ClearDisconnectedClients() {
+    for (auto iter = m_connections.begin(); iter != m_connections.end();) {
+        if (!(*iter)->IsConnected()) {
+            std::shared_ptr<Connection> temp = *iter;
+            iter = m_connections.erase(iter);
+            OnClientDisconnect(temp);
+            temp.reset();
+        } else {
+            iter++;
+        }
     }
 }

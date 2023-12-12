@@ -6,13 +6,12 @@
 #define TICK_RATE 10
 #define PASSIVE_INCOME 1
 #define ISLAND_INCOME 3
+#define STARTING_COINS 20
 
 namespace admirals::mvp {
 
-using namespace admirals::net;
-
 struct PlayerData {
-    uint16_t coins = 5;
+    uint16_t coins = STARTING_COINS;
     uint16_t baseId = 0;
     uint8_t id = 0;
     uint8_t numShips = 0;
@@ -21,19 +20,22 @@ struct PlayerData {
     bool ready = false;
 };
 
-class MvpServer : public net::Server {
+class MvpServer : public admirals::net::Server {
 public:
     MvpServer(uint16_t port, bool debug = false)
         : Server(port), m_turn(0), m_debug(debug) {}
 
-    bool OnClientConnect(const std::shared_ptr<Connection> &) override;
-    void OnClientDisconnect(const std::shared_ptr<Connection> &) override;
-    void OnClientValidated(const std::shared_ptr<Connection> &client) override;
-    void OnMessage(const std::shared_ptr<Connection> &client,
-                   Message &message) override;
+    bool OnClientConnect(
+        const std::shared_ptr<admirals::net::Connection> &) override;
+    void OnClientDisconnect(
+        const std::shared_ptr<admirals::net::Connection> &) override;
+    void OnClientValidated(
+        const std::shared_ptr<admirals::net::Connection> &client) override;
+    void OnMessage(const std::shared_ptr<admirals::net::Connection> &client,
+                   admirals::net::Message &message) override;
 
     void ProcessTurn();
-    void EnterServerLoop();
+    void EnterServerLoop(bool &stopServer);
 
 private:
     bool ShipAtLocation(int x, int y);
@@ -42,12 +44,15 @@ private:
     void StopGame(uint8_t winner = 0);
     void PauseGame();
     void ResumeGame();
+    void ResetState();
     void UpdatePlayer(uint32_t oldOwner, uint32_t newOwner);
-    void PlayerReady(const std::shared_ptr<Connection> &client);
-    void BuyShip(const std::shared_ptr<Connection> &client, Message &message);
-    void MoveShip(const std::shared_ptr<Connection> &client, Message &message);
-    void AttackShip(const std::shared_ptr<Connection> &client,
-                    Message &message);
+    void PlayerReady(const std::shared_ptr<admirals::net::Connection> &client);
+    void BuyShip(const std::shared_ptr<admirals::net::Connection> &client,
+                 admirals::net::Message &message);
+    void MoveShip(const std::shared_ptr<admirals::net::Connection> &client,
+                  admirals::net::Message &message);
+    void AttackShip(const std::shared_ptr<admirals::net::Connection> &client,
+                    admirals::net::Message &message);
     void IncrementGoldByShipId(uint16_t shipId);
     void CheckTreasureIsland(int tx, int ty);
     void ProcessGoldGeneration();
@@ -56,7 +61,7 @@ private:
     void ProcessShips(std::map<uint16_t, ShipData> &ships);
     void ProcessShipsLate(std::map<uint16_t, ShipData> &ships);
     void ProcessDeadShips(std::map<uint16_t, ShipData> &ships);
-    void ProcessWinCondition();
+    bool ProcessWinCondition();
     void BroadcastState();
 
     uint16_t m_turn = 0;

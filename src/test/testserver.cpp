@@ -66,7 +66,7 @@ protected:
     virtual void
     OnClientValidated(const std::shared_ptr<Connection> &client) override {
         uint32_t players = 0;
-        for (auto &client : m_connections) {
+        for (auto &client : GetConnections()) {
             if (client && client->IsConnected()) {
                 players++;
             }
