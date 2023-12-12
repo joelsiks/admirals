@@ -167,6 +167,7 @@ void GameManager::ResetState(bool removeConnection) {
     GameData::Selection->Clear();
 
     if (removeConnection) {
+        m_networkManager->StopServer();
         GameData::engine->GetScene()->RemoveDisplayable("networkManager");
         m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
             "networkManager", (*this));

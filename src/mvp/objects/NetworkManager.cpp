@@ -9,12 +9,7 @@ NetworkManager::NetworkManager(const std::string &name,
                                GameManager &gameManager)
     : GameObject(name), m_gameManager(gameManager) {}
 
-NetworkManager::~NetworkManager() {
-    if (m_isHost) {
-        m_stopServer = true;
-        m_serverThread.join();
-    }
-}
+NetworkManager::~NetworkManager() { StopServer(); }
 
 void NetworkManager::OnStart(const EngineContext &) {}
 
@@ -59,6 +54,17 @@ bool NetworkManager::ConnectToServer(const std::string &ip, uint16_t port,
     }
 
     return false;
+}
+
+void NetworkManager::StopServer() {
+    if (!m_isHost || m_stopServer) {
+        return;
+    }
+    if (m_debug) {
+        printf("Stopping server\n");
+    }
+    m_stopServer = true;
+    m_serverThread.join();
 }
 
 void NetworkManager::BuyShip(uint8_t type) {

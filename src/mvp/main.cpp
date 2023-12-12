@@ -30,11 +30,16 @@ const Color blue = Color::FromHEX("#3283cf");
 const Color green = Color::FromHEX("#087311");
 const Color gold = Color::FromHEX("#FFD700");
 
-void SwapEngineScene() {
+void SwapEngineScene(const size_t menuUIIdx = GameData::StartMenuIdx) {
     GameData::SceneStore =
         GameData::engine->SetAndGetScene(GameData::SceneStore);
-    GameData::engine->ToggleLayer(GameData::StartMenuIdx);
+    GameData::engine->ToggleLayer(menuUIIdx);
     GameData::engine->ToggleLayer(GameData::GameUIIdx);
+}
+
+void ToggleConnectMenu() {
+    GameData::engine->ToggleLayer(GameData::StartMenuIdx);
+    GameData::engine->ToggleLayer(GameData::ConnectMenuIdx);
 }
 
 void CreateGameBoard(const Texture &atlas) {
@@ -131,10 +136,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     connectOption->onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed && args.button == events::MouseButton::Left) {
-                const bool connected = gameManager->ConnectToServer();
-                if (connected) {
-                    SwapEngineScene();
-                }
+                ToggleConnectMenu();
             }
         });
     startMenu->AddDisplayable(connectOption);
@@ -171,6 +173,54 @@ void CreateStartMenuScene(const Texture &atlas) {
     GameData::StartMenuScene = startMenuScene;
 }
 
+void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
+    auto connectMenu = std::make_shared<UI::menu::Menu>(
+        "Enter the IP of the server", Color::BLACK,
+        Color::FromRGBA(40, 40, 40, 200),
+        GameData::engine->GetWindowSize().y() / 3.0);
+    GameData::engine->AddLayer(GameData::ConnectMenuIdx, connectMenu, false);
+
+    const auto inputOption = std::make_shared<UI::menu::InputOption>(
+        "ipInput", 1.0, GameData::engine->onKeyPress, "127.0.0.1");
+    inputOption->onClick.Subscribe(
+        [inputOption](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed && args.button == events::MouseButton::Left &&
+                !inputOption->IsActive()) {
+                inputOption->SetOptionText("");
+            }
+        });
+
+    auto connectOption = std::make_shared<UI::menu::ClickOption>(
+        "connectOption", 1.0, "Connect");
+    connectOption->onClick.Subscribe(
+        [gameManager, connectMenu,
+         inputOption](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed && args.button == events::MouseButton::Left) {
+                connectMenu->SetTitle("Connecting...");
+                const bool connected = gameManager->ConnectToServer(
+                    inputOption->GetOptionText().c_str());
+                if (connected) {
+                    SwapEngineScene(GameData::ConnectMenuIdx);
+                } else {
+                    connectMenu->SetTitle("Connection failed");
+                }
+            }
+        });
+
+    auto returnOption =
+        std::make_shared<UI::menu::ClickOption>("returnOption", 1.0, "Return");
+    returnOption->onClick.Subscribe(
+        [](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed && args.button == events::MouseButton::Left) {
+                ToggleConnectMenu();
+            }
+        });
+
+    connectMenu->AddDisplayable(returnOption);
+    connectMenu->AddDisplayable(connectOption);
+    connectMenu->AddDisplayable(inputOption);
+}
+
 int main(int, char *[]) {
     GameData::engine =
         std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
@@ -187,6 +237,7 @@ int main(int, char *[]) {
 
     CreateStartMenu(gameManager);
     CreateStartMenuScene(atlas);
+    CreateConnectMenu(gameManager);
 
     GameData::SceneStore = GameData::StartMenuScene;
     SwapEngineScene();

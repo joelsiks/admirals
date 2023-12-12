@@ -113,6 +113,7 @@ public:
 
     virtual void OnHidden() override;
 
+    void SetOptionText(const std::string &text);
     std::string GetOptionText() const override;
 
     inline bool IsActive() const { return m_isActive; }
