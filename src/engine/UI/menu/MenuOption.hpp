@@ -113,7 +113,6 @@ public:
 
     virtual void OnHidden() override;
 
-    void SetOptionText(const std::string &text);
     std::string GetOptionText() const override;
 
     inline bool IsActive() const { return m_isActive; }
@@ -121,6 +120,7 @@ public:
 
     void HandleKeyPressEvent(void *sender, events::KeyPressEventArgs &args);
 
+    inline void SetInputText(const std::string &text) { m_text = text; }
     inline std::string GetInputText() const { return m_text; }
 
 private:

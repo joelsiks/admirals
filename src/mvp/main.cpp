@@ -176,8 +176,7 @@ void CreateStartMenuScene(const Texture &atlas) {
 void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
     auto connectMenu = std::make_shared<UI::menu::Menu>(
         "Enter the IP of the server", Color::BLACK,
-        Color::FromRGBA(40, 40, 40, 200),
-        GameData::engine->GetWindowSize().y() / 3.0);
+        Color::FromRGBA(20, 20, 20, 140), 100);
     GameData::engine->AddLayer(GameData::ConnectMenuIdx, connectMenu, false);
 
     const auto inputOption = std::make_shared<UI::menu::InputOption>(
@@ -186,7 +185,7 @@ void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
         [inputOption](void *, events::MouseClickEventArgs &args) {
             if (args.pressed && args.button == events::MouseButton::Left &&
                 !inputOption->IsActive()) {
-                inputOption->SetOptionText("");
+                inputOption->SetInputText("");
             }
         });
 

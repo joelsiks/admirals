@@ -153,8 +153,6 @@ void InputOption::OnHidden() {
     }
 }
 
-void InputOption::SetOptionText(const std::string &text) { m_text = text; }
-
 std::string InputOption::GetOptionText() const {
     if (m_text.length() == 0) {
         return m_placeholderText;
