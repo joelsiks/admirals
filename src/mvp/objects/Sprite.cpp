@@ -23,7 +23,7 @@ void Sprite::Render(const EngineContext &) const {
 }
 
 void Sprite::DrawSprite(const Rect &bounds) const {
-    Vector2 frame = GameData::Animator->GetAnimationFrame(m_texOffset);
+    const Vector2 frame = GameData::Animator->GetAnimationFrame(m_texOffset);
     renderer::Renderer::DrawSprite(m_source, bounds.Position(), frame,
                                    m_texSize, bounds.Size() / m_texSize);
 }
