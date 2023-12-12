@@ -120,6 +120,7 @@ public:
 
     void HandleKeyPressEvent(void *sender, events::KeyPressEventArgs &args);
 
+    inline void SetInputText(const std::string &text) { m_text = text; }
     inline std::string GetInputText() const { return m_text; }
 
 private:
