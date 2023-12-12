@@ -5,7 +5,6 @@
 #include "UI/menu/MenuOption.hpp"
 
 #include "GameData.hpp"
-#include "objects/Animator.hpp"
 #include "objects/Background.hpp"
 #include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
@@ -182,7 +181,6 @@ int main(int, char *[]) {
         GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
     GameData::Selection =
         GameData::engine->MakeGameObject<SelectionManager>("selectionMananger");
-    GameData::Animator = GameData::engine->MakeGameObject<Animator>("animator");
 
     CreateGameBoard(atlas);
     CreateGameUI(atlas, gameManager);

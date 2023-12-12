@@ -1,5 +1,4 @@
 #include "objects/Sprite.hpp"
-#include "Animator.hpp"
 #include "GameData.hpp"
 #include "Renderer.hpp"
 
@@ -23,7 +22,7 @@ void Sprite::Render(const EngineContext &) const {
 }
 
 void Sprite::DrawSprite(const Rect &bounds) const {
-    const Vector2 frame = GameData::Animator->GetAnimationFrame(m_texOffset);
-    renderer::Renderer::DrawSprite(m_source, bounds.Position(), frame,
+    // const Vector2 frame = GameData::Animator->GetAnimationFrame(m_texOffset);
+    renderer::Renderer::DrawSprite(m_source, bounds.Position(), m_texOffset,
                                    m_texSize, bounds.Size() / m_texSize);
 }

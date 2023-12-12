@@ -90,6 +90,14 @@ void Renderer::Render(const EngineContext &context,
     }
 
     vk2dRendererEndFrame();
+
+    // update animation timer
+    m_frameTimer += context.deltaTime;
+    if (m_frameTimer > m_timeReset) {
+        m_frameTimer = 0;
+        frameIndex += 1;
+        frameIndex = frameIndex % m_totalFrames;
+    }
 }
 
 void Renderer::DrawLine(const Vector2 &p1, const Vector2 &p2,
@@ -139,6 +147,14 @@ void Renderer::DrawSprite(const Texture &texture, const Vector2 &position,
     vk2dRendererDrawTexture(texture.Data(), position.x(), position.y(),
                             scale.x(), scale.y(), 0, 0, 0, texOffset.x(),
                             texOffset.y(), texSize.x(), texSize.y());
+}
+
+void Renderer::DrawSprite(const Texture &texture, const Vector2 &position,
+                          const std::vector<Vector2> &texOffset,
+                          const Vector2 &texSize, const Vector2 &scale) {
+    Renderer::DrawSprite(texture, position,
+                         texOffset[frameIndex % texOffset.size()], texSize,
+                         scale);
 }
 
 void Renderer::DrawText(const Texture &font, const Vector2 &position,
