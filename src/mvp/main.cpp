@@ -5,6 +5,7 @@
 #include "UI/menu/MenuOption.hpp"
 
 #include "GameData.hpp"
+#include "objects/Animator.hpp"
 #include "objects/Background.hpp"
 #include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
@@ -96,7 +97,8 @@ void CreateGameUI(const Texture &atlas,
         auto buyShipButton = std::make_shared<objects::IconifiedButton>(
             "buyShip" + std::to_string(shipType), 0, std::to_string(ship.Cost),
             Vector2(GameData::CellSize), Color::WHITE, Color::BLACK, atlas,
-            Vector2(Ship::ShipTypeToTexOffset(shipType)));
+            Vector2(
+                Ship::ShipTypeToTexOffset(shipType, GameData::PlayerId)[0]));
 
         buyShipButton->SetDisplayOrientation(UI::DisplayOrientation::LowerLeft);
         buyShipButton->onClick.Subscribe(
@@ -181,6 +183,8 @@ int main(int, char *[]) {
         GameData::engine->MakeGameObject<GameManager>("gameManager", atlas);
     GameData::Selection =
         GameData::engine->MakeGameObject<SelectionManager>("selectionMananger");
+    auto animator =
+        GameData::engine->MakeGameObject<Animator>("animator", atlas);
 
     CreateGameBoard(atlas);
     CreateGameUI(atlas, gameManager);

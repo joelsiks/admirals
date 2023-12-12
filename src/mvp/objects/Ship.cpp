@@ -65,7 +65,7 @@ bool IsValidNavLocation(const Vector2 &location, std::string &target) {
 Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
     : Sprite("ship-" + std::to_string(data.id), source, 3,
              Rect(data.location.x, data.location.y, size.x(), size.y()),
-             Ship::ShipTypeToTexOffset(data.type)),
+             Ship::ShipTypeToTexOffset(data.type, data.owner)),
       m_data(data) {}
 
 Ship::~Ship() {
@@ -199,7 +199,6 @@ void Ship::OnUpdate(const EngineContext &) {
 
 void Ship::Render(const EngineContext &ctx) const {
     const Rect bounds = GetBoundingBox();
-    DrawBackground(bounds);
     DrawSprite(bounds);
     DrawHealthBar(bounds);
     DrawOutline(bounds);
@@ -267,25 +266,43 @@ void Ship::OnMouseLeave(events::MouseMotionEventArgs &) {
     m_drawOutline = false;
 }
 
-Vector2 Ship::ShipTypeToTexOffset(uint16_t type) {
+std::vector<Vector2> Ship::ShipTypeToTexOffset(uint16_t type, uint8_t owner) {
+    auto offset = GameData::SpriteSize * 2;
+    if (GameData::PlayerId != owner) {
+        offset += GameData::SpriteSize * 3;
+    }
+
+    std::vector<Vector2> textureOffset;
     switch (type) {
     case ShipType::Cruiser:
-        return Vector2(0, GameData::SpriteSize);
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize * 2, 0));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize * 2, GameData::SpriteSize));
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize * 2,
+                                        GameData::SpriteSize * 2));
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize * 2,
+                                        GameData::SpriteSize * 3));
+        break;
     case ShipType::Destroyer:
-        return Vector2(GameData::SpriteSize, GameData::SpriteSize);
+        textureOffset.push_back(Vector2(offset + GameData::SpriteSize, 0));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize, GameData::SpriteSize));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize, GameData::SpriteSize * 2));
+        textureOffset.push_back(
+            Vector2(offset + GameData::SpriteSize, GameData::SpriteSize * 3));
+        break;
     case ShipType::Base:
-        return Vector2(0);
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize));
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 2));
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 3));
+        textureOffset.push_back(Vector2(offset, GameData::SpriteSize * 4));
+        break;
     default:
-        return Vector2(0, GameData::SpriteSize);
+        textureOffset.push_back(Vector2(0, GameData::SpriteSize));
+        break;
     }
-}
-
-void Ship::DrawBackground(const Rect &bounds) const {
-    if (IsOwned()) {
-        renderer::Renderer::DrawRectangle(bounds, Color::BLUE);
-    } else {
-        renderer::Renderer::DrawRectangle(bounds, Color::RED);
-    }
+    return textureOffset;
 }
 
 void Ship::DrawOutline(const Rect &bounds) const {
@@ -297,6 +314,7 @@ void Ship::DrawOutline(const Rect &bounds) const {
 }
 
 void Ship::DrawHealthBar(const Rect &bounds) const {
+    const auto offset = Vector2(1);
     const float healthPercentage =
         static_cast<float>(GetHealth()) /
         static_cast<float>(ShipInfoMap[GetType()].Health);
@@ -304,11 +322,12 @@ void Ship::DrawHealthBar(const Rect &bounds) const {
         bounds.Position() +
         Vector2(0, bounds.Height() - GameData::HealthBarSize);
     renderer::Renderer::DrawRectangle(
-        origin, Vector2(bounds.Width(), GameData::HealthBarSize), Color::GREY);
+        origin, Vector2(bounds.Width(), GameData::HealthBarSize), Color::BLACK);
     renderer::Renderer::DrawRectangle(
-        origin,
-        Vector2(bounds.Width() * healthPercentage, GameData::HealthBarSize),
-        Color::BLACK);
+        origin + offset,
+        Vector2(bounds.Width() * healthPercentage, GameData::HealthBarSize) -
+            offset * 2,
+        Color::Lerp(Color::RED, Color::GREEN, healthPercentage));
 }
 
 void Ship::DrawNavPath(const Rect &bounds, const Vector2 &windowSize) const {
