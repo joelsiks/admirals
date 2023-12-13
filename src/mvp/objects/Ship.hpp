@@ -64,10 +64,10 @@ public:
     inline void SetData(const ShipData &data) { m_data = data; }
     inline const ShipData &GetData() const { return m_data; }
 
-    static Vector2 ShipTypeToTexOffset(uint16_t type);
+    static std::vector<Vector2> ShipTypeToTexOffset(uint16_t type,
+                                                    uint8_t owner);
 
 protected:
-    void DrawBackground(const Rect &bounds) const;
     void DrawOutline(const Rect &bounds) const;
     void DrawHealthBar(const Rect &bounds) const;
     void DrawNavPath(const Rect &bounds, const Vector2 &windowSize) const;

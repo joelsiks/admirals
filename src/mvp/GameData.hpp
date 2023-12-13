@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "Engine.hpp"
+#include "objects/Animator.hpp"
 #include "objects/SelectionManager.hpp"
 
 namespace admirals::mvp {
@@ -25,6 +26,7 @@ public:
     static constexpr size_t ConnectMenuIdx = 2;
 
     inline static std::shared_ptr<objects::SelectionManager> Selection;
+    inline static std::shared_ptr<objects::Animator> Animator;
     inline static Vector2 MousePosition;
 
     inline static uint16_t PlayerId = 0;

@@ -49,6 +49,7 @@ set(SOURCES
 )
 set(MVP_SOURCES 
     src/mvp/MvpServer.cpp
+    src/mvp/objects/Animator.cpp
     src/mvp/objects/Base.cpp
     src/mvp/objects/Background.cpp
     src/mvp/objects/GameManager.cpp
