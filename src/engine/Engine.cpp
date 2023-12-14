@@ -101,6 +101,8 @@ bool Engine::PollAndHandleEvent() {
 }
 
 void Engine::HandleDeferredLayerActions() {
+    std::unordered_set<size_t> activatedLayers;
+
     for (auto &[type, layerIdx] : m_deferredLayerActions) {
         const bool containsLayerIdx = m_layers.contains(layerIdx);
 
@@ -119,6 +121,7 @@ void Engine::HandleDeferredLayerActions() {
                 const bool inserted = m_activeLayers.insert(layerIdx).second;
                 if (inserted) {
                     m_layers[layerIdx]->OnShown();
+                    activatedLayers.insert(layerIdx);
                 }
             }
             break;
@@ -132,12 +135,28 @@ void Engine::HandleDeferredLayerActions() {
                 m_layers[layerIdx]->OnHidden();
             }
             break;
+        case DeferType::MouseMove: {
+            SDL_MouseMotionEvent motionEvent;
+            motionEvent.state =
+                SDL_GetMouseState(&motionEvent.x, &motionEvent.y);
+            events::MouseMotionEventArgs args(motionEvent);
+
+            if (m_activeLayers.contains(layerIdx)) {
+                m_layers[layerIdx]->OnMouseMove(args);
+            }
+        } break;
         default:
             break;
         }
     }
 
     m_deferredLayerActions.clear();
+
+    if (!activatedLayers.empty()) {
+        for (const size_t layerIdx : activatedLayers) {
+            m_deferredLayerActions.emplace_back(DeferType::MouseMove, layerIdx);
+        }
+    }
 }
 
 void Engine::StartGameLoop() {
