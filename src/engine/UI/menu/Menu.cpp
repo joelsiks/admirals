@@ -27,7 +27,9 @@ void Menu::Render(const EngineContext &ctx) const {
         }
 
         const auto option = std::dynamic_pointer_cast<menu::MenuOption>(*it);
-        if(option == nullptr) continue;
+        if (option == nullptr) {
+            continue;
+        }
 
         const Vector2 position = option->GetPosition();
         const Vector2 displaySize = option->GetSize();
@@ -65,7 +67,9 @@ void Menu::Update(const EngineContext &ctx) {
         }
 
         auto option = std::dynamic_pointer_cast<menu::MenuOption>(*it);
-        if(option == nullptr) continue;
+        if (option == nullptr) {
+            continue;
+        }
 
         // TODO: This should be fixed somewhere else in the future. This is
         // needed to make sure that all elements are displayed in a center
