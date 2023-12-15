@@ -34,6 +34,7 @@ void Button::OnMouseLeave(events::MouseMotionEventArgs &) {
 }
 
 void Button::OnMouseMove(events::MouseMotionEventArgs &) {
+    m_shouldFadeBackground = true;
     renderer::Renderer::SetCursor(renderer::Cursor::Hand);
 }
 

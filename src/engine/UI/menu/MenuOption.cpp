@@ -32,6 +32,7 @@ void MenuOption::OnMouseLeave(events::MouseMotionEventArgs &) {
 }
 
 void MenuOption::OnMouseMove(events::MouseMotionEventArgs &) {
+    m_shouldDrawBackground = true;
     renderer::Renderer::SetCursor(renderer::Cursor::Hand);
 }
 

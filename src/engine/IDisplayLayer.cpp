@@ -20,9 +20,6 @@ void IDisplayLayer::OnClick(events::MouseClickEventArgs &args) {
 }
 
 void IDisplayLayer::OnMouseMove(events::MouseMotionEventArgs &args) {
-    // TODO: This currently handles MouseEnter/MouseMove before any MouseLeave
-    // events, which is reverse of what is happening chronologically. Instead,
-    // one might want to handle MouseLeave events first.
     const Vector2 mouseLocation = args.Location();
     std::unordered_set<std::string> currentMouseOverElements;
 
@@ -36,11 +33,6 @@ void IDisplayLayer::OnMouseMove(events::MouseMotionEventArgs &args) {
         if (displayable->IsVisible() &&
             displayable->GetBoundingBox().Contains(mouseLocation)) {
             currentMouseOverElements.insert(identifier);
-            if (m_mouseOverSet.insert(identifier).second) {
-                displayable->OnMouseEnter(args);
-            } else {
-                displayable->OnMouseMove(args);
-            }
         }
     }
 
@@ -59,6 +51,19 @@ void IDisplayLayer::OnMouseMove(events::MouseMotionEventArgs &args) {
             it = m_mouseOverSet.erase(it);
         } else {
             it++;
+        }
+    }
+
+    for (const std::string &identifier : currentMouseOverElements) {
+        auto el = m_displayables.Find(identifier);
+        if (el == nullptr) {
+            continue;
+        }
+
+        if (m_mouseOverSet.insert(identifier).second) {
+            el->OnMouseEnter(args);
+        } else {
+            el->OnMouseMove(args);
         }
     }
 }

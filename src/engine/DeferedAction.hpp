@@ -9,6 +9,7 @@ enum DeferType {
     Activate,
     Deactivate,
     ToggleActive,
+    MouseMove,
 };
 
 } // namespace admirals
