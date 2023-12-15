@@ -48,14 +48,6 @@ void CreateGameBoard(const Texture &atlas) {
                                                  Color::BLACK);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
-        "overlayTop", 1, Rect(0, -1, GridWidth, GameData::CellSize),
-        Color::BLACK);
-    GameData::engine->MakeGameObject<Quad>(
-        "overlayBottom", 1,
-        Rect(0, static_cast<float>(GameData::GridCells), GridWidth,
-             GameData::CellSize),
-        Color::BLACK);
-    GameData::engine->MakeGameObject<Quad>(
         "islandLeft", 2, Rect(0, 0, GameData::CellSize, GameData::CellSize * 3),
         green);
     GameData::engine->MakeGameObject<Quad>(
