@@ -98,7 +98,7 @@ IDisplayLayer::FindDisplayable(const std::string &identifier) {
     return m_displayables.Find(identifier);
 }
 
-std::vector<std::string> IDisplayLayer::GetDisplayableNames() {
+std::vector<std::string> IDisplayLayer::GetDisplayableIdentifiers() {
     std::vector<std::string> vec = {};
     for (const auto &value : this->m_displayables) {
         vec.emplace_back(value->identifier());
