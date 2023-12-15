@@ -5,9 +5,12 @@
 using namespace admirals;
 using namespace admirals::mvp::objects;
 
-Background::Background(const std::string &name, const Color &color)
-    : GameObject(name), m_color(color) {}
+Background::Background(const std::string &name, const Color &color,
+                       const Color &outerColor)
+    : GridObject(name, 0, Rect(0, GameData::GridArea.Size())), m_color(color),
+      m_outerColor(outerColor) {}
 
 void Background::Render(const EngineContext &ctx) const {
-    renderer::Renderer::DrawRectangle(Vector2(0, 0), ctx.windowSize, m_color);
+    renderer::Renderer::DrawRectangle(0, ctx.windowSize, m_outerColor);
+    renderer::Renderer::DrawRectangle(GetBoundingBox(), m_color);
 }

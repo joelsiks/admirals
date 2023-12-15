@@ -9,15 +9,15 @@ class GridObject : public GameObject {
 public:
     virtual inline Rect GetBoundingBox() const override {
         return Rect(GetPosition(), GetSize());
-    };
+    }
 
     virtual inline Vector2 GetPosition() const override {
         return ConvertPositionGridToWorld(m_boundingBox.Position());
-    };
+    }
 
     virtual inline Vector2 GetSize() const override {
         return m_boundingBox.Size() * GetGridScale();
-    };
+    }
 
     static float GetGridScale();
 
