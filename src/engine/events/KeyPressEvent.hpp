@@ -12,7 +12,7 @@ namespace admirals::events {
 class KeyPressEventArgs : public EventArgs {
 public:
     KeyPressEventArgs(const SDL_KeyboardEvent &e)
-        : key(e.keysym.sym), isKeyUp(e.state == SDL_PRESSED) {}
+        : key(e.keysym.sym), isKeyUp(e.state == SDL_RELEASED) {}
 
     const SDL_Keycode key; // The key that is pressed
     const bool isKeyUp;
