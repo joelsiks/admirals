@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include "Engine.hpp"
 #include "IInteractiveDisplayable.hpp"
 #include "PathFinding.hpp"
 
@@ -10,7 +11,8 @@ void Scene::Render(const EngineContext &ctx) const {
         object->Render(ctx);
     }
 
-    if (ctx.debug) {
+    if (Engine::HasDebugMask(ctx.debug, EngineDebugMode::DebugEnabled |
+                                            EngineDebugMode::DebugQuadTree)) {
         m_quadtree.DrawTree();
     }
 }

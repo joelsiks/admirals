@@ -2,8 +2,8 @@
 
 #include <VK2D/Texture.h>
 #include <cmath>
+#include <cstdint>
 #include <sstream>
-#include <stdint.h>
 #include <string>
 
 #undef TRANSPARENT

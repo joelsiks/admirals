@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstdint>
 #include <map>
-#include <stdint.h>
 #include <vector>
 
 namespace admirals::mvp {

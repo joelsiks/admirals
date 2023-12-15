@@ -17,7 +17,6 @@ public:
     }
 
     virtual inline Rect GetBoundingBox() const { return m_boundingBox; };
-    // virtual inline Rect &GetBoundingBox() { return m_boundingBox; };
 
     virtual inline Vector2 GetPosition() const {
         return m_boundingBox.Position();

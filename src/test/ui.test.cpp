@@ -54,8 +54,7 @@ private:
     bool m_keepAspectRatio;
 };
 
-std::shared_ptr<menu::Menu> CreateEscapeMenu(Engine &engine,
-                                             bool initialDebugValue) {
+std::shared_ptr<menu::Menu> CreateEscapeMenu(Engine &engine) {
     auto escapeMenu = std::make_shared<menu::Menu>(
         "Pause Menu", Color::BLACK, Color::FromRGBA(50, 50, 50, 100));
 
@@ -79,13 +78,13 @@ std::shared_ptr<menu::Menu> CreateEscapeMenu(Engine &engine,
 
     const auto toggleDebugOption = std::make_shared<menu::ToggleOption>(
         "toggleDebugRenderingOption", 1.0, "Debug Rendering",
-        initialDebugValue);
+        engine.GetContext().debug & EngineDebugMode::DebugEnabled != 0);
     toggleDebugOption->onClick.Subscribe(
         [&engine](void *, events::MouseClickEventArgs &args) {
             if (args.pressed)
                 return;
 
-            engine.ToggleDebugRendering();
+            engine.ToggleDebug();
         });
     escapeMenu->AddDisplayable(toggleDebugOption);
 
@@ -143,13 +142,13 @@ CreateTestUI(std::shared_ptr<TextureObject> textureObj) {
 
 int main(int, char **) {
 
-    const bool debug = true;
-    Engine engine("UI Test", WINDOW_WIDTH, WINDOW_HEIGHT, debug);
+    Engine engine("UI Test", WINDOW_WIDTH, WINDOW_HEIGHT,
+                  EngineDebugMode::DebugAll);
 
     const size_t escapeMenuIdx = 0;
     const size_t testUIIdx = 1;
 
-    auto escapeMenu = CreateEscapeMenu(engine, debug);
+    auto escapeMenu = CreateEscapeMenu(engine);
     engine.AddLayer(escapeMenuIdx,
                     std::dynamic_pointer_cast<IDisplayLayer>(escapeMenu),
                     false);

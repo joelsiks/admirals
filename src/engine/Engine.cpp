@@ -10,11 +10,14 @@ static const float FONT_CHAR_WIDTH = 16.0;
 static const float FONT_CHAR_HEIGHT = 36.0;
 
 Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
-               bool debug)
+               uint32_t debugMode)
     : m_context() {
     m_context.windowSize = Vector2(static_cast<float>(windowWidth),
                                    static_cast<float>(windowHeight));
-    m_context.debug = debug;
+    // Default to the entire window size.
+    m_context.displayPort = Rect(0, m_context.windowSize);
+    m_context.debug = debugMode;
+
     m_renderer = std::make_shared<renderer::Renderer>(gameName, windowWidth,
                                                       windowHeight);
     // Initialize the renderer right after creating it. Necessary in cases where
@@ -22,8 +25,7 @@ Engine::Engine(const std::string &gameName, int windowWidth, int windowHeight,
     m_renderer->Init(m_context);
 
     m_context.fontTexture = new Texture(vk2dTextureLoad(FONT_PATH));
-    m_context.fontWidth = FONT_CHAR_WIDTH;
-    m_context.fontHeight = FONT_CHAR_HEIGHT;
+    m_context.fontSize = Vector2(FONT_CHAR_WIDTH, FONT_CHAR_HEIGHT);
 
     m_scene = std::make_shared<Scene>();
 }
@@ -90,6 +92,13 @@ bool Engine::PollAndHandleEvent() {
         case SDL_KEYUP: {
             auto args = KeyPressEventArgs(e.key);
             onKeyPress.Invoke(this, args);
+
+            if (args.key == SDLK_F12 && args.isKeyUp &&
+                Engine::HasDebugMask(m_context.debug,
+                                     EngineDebugMode::DebugToggleHotkey)) {
+                ToggleDebug();
+            }
+
         } break;
         default:
             break;

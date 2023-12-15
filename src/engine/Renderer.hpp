@@ -31,7 +31,7 @@ public:
     ~Renderer();
 
     int Init(const EngineContext &ctx);
-    static void Render(const EngineContext &context,
+    static void Render(const EngineContext &ctx,
                        const DrawableLayers &drawables);
 
     Vector2 GetWindowSize() const;
@@ -64,9 +64,10 @@ public:
 
     static void SetCursor(Cursor cursor);
 
-    static inline Vector2 TextFontSize(const std::string &text, float width,
-                                       float height) {
-        return Vector2(static_cast<float>(text.length()) * width, height);
+    static inline Vector2 TextFontSize(const std::string &text,
+                                       const Vector2 &fontSize,
+                                       const Vector2 &scale = 1.f) {
+        return Vector2(static_cast<float>(text.length()), 1) * fontSize * scale;
     }
 
 private:
