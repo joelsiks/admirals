@@ -10,6 +10,7 @@ public:
                 const Vector2 &size, const Color &color);
 
     void SetText(const std::string &text);
+    std::string GetText() const { return m_text; }
 
     void Render(const EngineContext &ctx) const override;
 
