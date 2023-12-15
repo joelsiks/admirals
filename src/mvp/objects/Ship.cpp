@@ -94,8 +94,6 @@ void Ship::HandleAction(const std::shared_ptr<Ship> &target) {
         if (GetPosition() == moveLocation) {
             m_path.pop_front();
             HandleAction();
-            events::EventArgs e;
-            onChanged.Invoke(this, e);
             break;
         }
 

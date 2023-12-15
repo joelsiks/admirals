@@ -44,16 +44,9 @@ void ToggleConnectMenu() {
 }
 
 void CreateGameBoard(const Texture &atlas) {
-    GameData::engine->MakeGameObject<Background>("background", blue);
+    GameData::engine->MakeGameObject<Background>("background", blue,
+                                                 Color::BLACK);
     GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
-    GameData::engine->MakeGameObject<Quad>(
-        "overlayTop", 1, Rect(0, -1, GridWidth, GameData::CellSize),
-        Color::BLACK);
-    GameData::engine->MakeGameObject<Quad>(
-        "overlayBottom", 1,
-        Rect(0, static_cast<float>(GameData::GridCells), GridWidth,
-             GameData::CellSize),
-        Color::BLACK);
     GameData::engine->MakeGameObject<Quad>(
         "islandLeft", 2, Rect(0, 0, GameData::CellSize, GameData::CellSize * 3),
         green);
@@ -160,7 +153,7 @@ void CreateStartMenuScene(const Texture &atlas) {
     auto startMenuScene = std::make_shared<Scene>();
 
     startMenuScene->AddDisplayable(
-        std::make_shared<Background>("background", blue));
+        std::make_shared<Background>("background", blue, blue));
 
     startMenuScene->AddDisplayable(std::make_shared<MenuMovingShip>(
         "movingShip1", atlas, 1, Rect(0, -1, 80, 80), ShipType::Cruiser, 1));
