@@ -15,6 +15,7 @@
 #include "objects/SelectionManager.hpp"
 #include "objects/Ship.hpp"
 #include "objects/TreasureIsland.hpp"
+#include "objects/UIManager.hpp"
 
 // Undefine macro from msys
 #undef TRANSPARENT
@@ -84,6 +85,9 @@ void CreateGameUI(const Texture &atlas,
         "coinText", 0, "Coins: 0", Vector2(100, 20), Color::WHITE);
     gameManager->onCoinsChanged.Subscribe([coinText](void *, auto e) {
         coinText->SetText("Coins: " + std::to_string(e.coins));
+        auto ctx = GameData::engine->GetContext();
+        admirals::renderer::Renderer::TextFontSize(coinText->GetText(),
+                                                   ctx.fontSize);
     });
     gameUI->AddDisplayable(coinText);
 
@@ -152,6 +156,8 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
 void CreateStartMenuScene(const Texture &atlas) {
     auto startMenuScene = std::make_shared<Scene>();
 
+    startMenuScene->AddDisplayable(std::make_shared<UIManager>("uiManager"));
+
     startMenuScene->AddDisplayable(
         std::make_shared<Background>("background", blue, blue));
 
@@ -215,8 +221,11 @@ void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
 }
 
 int main(int, char *[]) {
-    GameData::engine =
-        std::make_unique<Engine>("Admirals", GridWidth, GridHeight, false);
+    GameData::engine = std::make_unique<Engine>(
+        "Admirals", GridWidth, GridHeight,
+        EngineDebugMode::DebugDisabled | EngineDebugMode::DebugToggleHotkey |
+            EngineDebugMode::DebugPathfinding |
+            EngineDebugMode::DebugRendering);
 
     const Texture atlas =
         Texture::LoadFromPath("assets/admirals_texture_atlas.png");
@@ -225,6 +234,7 @@ int main(int, char *[]) {
     GameData::Selection =
         GameData::engine->MakeGameObject<SelectionManager>("selectionMananger");
     GameData::Animator = GameData::engine->MakeGameObject<Animator>("animator");
+    GameData::engine->MakeGameObject<UIManager>("uiManager");
 
     CreateGameBoard(atlas);
     CreateGameUI(atlas, gameManager);

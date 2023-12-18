@@ -31,7 +31,7 @@ public:
     FindDisplayable(const std::string &identifier);
 
     inline size_t NumDisplayables() const { return m_displayables.Size(); }
-    std::vector<std::string> GetDisplayableNames();
+    std::vector<std::string> GetDisplayableIdentifiers();
 
     void RebuildQuadTree(const Vector2 &windowSize);
     inline const QuadTree &GetQuadTree() const { return m_quadtree; }

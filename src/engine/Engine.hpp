@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 
 #include "DeferedAction.hpp"
@@ -16,6 +17,20 @@
 
 namespace admirals {
 
+enum EngineDebugMode : uint32_t {
+    // First bit denotes if we're in debug mode or not.
+    DebugDisabled = 0b0,
+    DebugEnabled = 0b1,
+    DebugToggleHotkey = 0b10,
+
+    // Other bits denote special features.
+    DebugRendering = 0b100,
+    DebugQuadTree = 0b1000,
+    DebugPathfinding = 0b10000,
+
+    DebugAll = 0xFFFFFFFF,
+};
+
 class Engine {
 public:
     events::EventSystem<events::MouseClickEventArgs> onMouseClick;
@@ -23,7 +38,7 @@ public:
     events::EventSystem<events::MouseMotionEventArgs> onMouseMove;
 
     Engine(const std::string &gameName, int windowWidth, int windowHeight,
-           bool debug);
+           uint32_t debugMode = EngineDebugMode::DebugDisabled);
 
     inline const EngineContext &GetContext() const { return m_context; }
 
@@ -44,6 +59,10 @@ public:
 
     inline std::shared_ptr<IDisplayLayer> GetLayer(size_t idx) {
         return m_layers[idx];
+    }
+
+    inline std::unordered_set<size_t> GetActiveLayersIndices() {
+        return m_activeLayers;
     }
 
     inline bool LayerIsActive(size_t idx) {
@@ -83,8 +102,6 @@ public:
         }
     }
 
-    inline void ToggleDebugRendering() { m_context.debug = !m_context.debug; }
-
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(size_t layerIdx, _Args &&..._args) {
         auto object = std::make_shared<T>(_args...);
@@ -103,6 +120,23 @@ public:
     inline void StopGameLoop() { m_running = false; }
 
     inline Vector2 GetWindowSize() const { return m_context.windowSize; }
+
+    inline Rect GetDisplayPort() const { return m_context.displayPort; }
+    inline void SetDisplayPort(const Rect &displayPort) {
+        m_context.displayPort = displayPort;
+    }
+
+    inline void ToggleDebug() {
+        m_context.debug ^= EngineDebugMode::DebugEnabled;
+    }
+
+    inline void ToggleDebugMode(EngineDebugMode mode) {
+        m_context.debug ^= static_cast<uint32_t>(mode);
+    }
+
+    static bool HasDebugMask(uint32_t currentDebugMode, uint32_t mask) {
+        return (currentDebugMode & mask) == mask;
+    }
 
 private:
     bool PollAndHandleEvent();

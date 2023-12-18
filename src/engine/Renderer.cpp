@@ -4,6 +4,7 @@
 #include <VK2D/Renderer.h>
 
 #include "DataObjects.hpp"
+#include "Engine.hpp"
 #include "Renderer.hpp"
 
 using namespace admirals;
@@ -42,8 +43,9 @@ Renderer::~Renderer() {
 int Renderer::Init(const EngineContext &ctx) {
     const VK2DRendererConfig config = {
         VK2D_MSAA_32X, VK2D_SCREEN_MODE_IMMEDIATE, VK2D_FILTER_TYPE_NEAREST};
-    VK2DStartupOptions options = {ctx.debug, ctx.debug, ctx.debug, "error.txt",
-                                  false};
+    const bool debug =
+        Engine::HasDebugMask(ctx.debug, EngineDebugMode::DebugEnabled);
+    VK2DStartupOptions options = {debug, debug, debug, "error.txt", false};
 
     const int code = vk2dRendererInit(this->m_window, config, &options);
     if (code < 0) {
@@ -74,7 +76,7 @@ void DrawDebugFpsInformation(const EngineContext &ctx) {
     Renderer::DrawText(*ctx.fontTexture, Vector2(0), Color::RED, fpsString);
 }
 
-void Renderer::Render(const EngineContext &context,
+void Renderer::Render(const EngineContext &ctx,
                       const DrawableLayers &drawables) {
     vk2dRendererStartFrame(Color::WHITE.Data());
     for (const auto &drawable : drawables) {
@@ -82,11 +84,13 @@ void Renderer::Render(const EngineContext &context,
             continue;
         }
 
-        drawable->Render(context);
+        drawable->Render(ctx);
     }
 
-    if (context.debug) {
-        DrawDebugFpsInformation(context);
+    if (Engine::HasDebugMask(ctx.debug, EngineDebugMode::DebugEnabled |
+                                            EngineDebugMode::DebugRendering)) {
+        Renderer::DrawRectangleOutline(ctx.displayPort, 3, Color::BLUE);
+        DrawDebugFpsInformation(ctx);
     }
 
     vk2dRendererEndFrame();

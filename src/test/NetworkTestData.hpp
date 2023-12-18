@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include <cstdint>
 
 struct TestEnum {
     static const uint32_t GAME_START = 0;

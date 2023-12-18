@@ -1,4 +1,5 @@
 #include "objects/Ship.hpp"
+#include "Engine.hpp"
 #include "GameData.hpp"
 #include "PathFinding.hpp"
 #include "Ship.hpp"
@@ -201,7 +202,9 @@ void Ship::Render(const EngineContext &ctx) const {
     DrawHealthBar(bounds);
     DrawOutline(bounds);
     DrawNavPath(bounds, ctx.windowSize);
-    if (ctx.debug) {
+    if (Engine::HasDebugMask(ctx.debug,
+                             EngineDebugMode::DebugEnabled |
+                                 EngineDebugMode::DebugPathfinding)) {
         DrawNavMeshInfo(*ctx.fontTexture);
     }
 }

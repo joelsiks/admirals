@@ -1,5 +1,6 @@
 #include "UI/menu/Menu.hpp"
 
+#include "Engine.hpp"
 #include "Renderer.hpp"
 #include "UI/Data.hpp"
 
@@ -46,13 +47,16 @@ void Menu::Render(const EngineContext &ctx) const {
         }
 
         // If debugging, render an outline around the UI Element.
-        if (ctx.debug) {
+        if (Engine::HasDebugMask(ctx.debug,
+                                 EngineDebugMode::DebugEnabled |
+                                     EngineDebugMode::DebugRendering)) {
             renderer::Renderer::DrawRectangleOutline(position, displaySize, 2,
                                                      Color::RED);
         }
     }
 
-    if (ctx.debug) {
+    if (Engine::HasDebugMask(ctx.debug, EngineDebugMode::DebugEnabled |
+                                            EngineDebugMode::DebugQuadTree)) {
         m_quadtree.DrawTree();
     }
 }
@@ -78,7 +82,7 @@ void Menu::Update(const EngineContext &ctx) {
 
         // Update menu-dependent state of the options.
         option->SetSize(renderer::Renderer::TextFontSize(
-            option->GetOptionText(), ctx.fontWidth, ctx.fontHeight));
+            option->GetOptionText(), ctx.fontSize));
         option->SetTextColor(m_fgColor);
 
         const DisplayOrientation orientation = option->GetDisplayOrientation();

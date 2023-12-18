@@ -151,7 +151,8 @@ private:
 };
 
 int main(int, char *[]) {
-    Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT, false);
+    Engine engine("GameObject Test", WINDOW_WIDTH, WINDOW_HEIGHT,
+                  EngineDebugMode::DebugAll);
     engine.AddGameObject(
         std::make_shared<CellObject>("1", Vector3(0, 0, 2), Color::BLUE));
     engine.AddGameObject(

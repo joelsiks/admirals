@@ -7,13 +7,16 @@ namespace admirals {
 struct EngineContext {
     Vector2 windowSize;
 
+    // Represents thepartof the window that is used for displaying the game.
+    Rect displayPort;
+
     // Indicates whether to draw outlines of elements for debugging purposes.
-    bool debug;
+    uint32_t debug;
 
     double deltaTime;
 
     Texture *fontTexture;
-    float fontWidth, fontHeight;
+    Vector2 fontSize;
 };
 
 } // namespace admirals
