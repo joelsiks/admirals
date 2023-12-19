@@ -24,7 +24,7 @@ public:
     }
 
     // TODO: This should probably be handled some other way..
-    static constexpr float commonDepthOrder = 10;
+    static constexpr float commonDepthOrder = 20;
 
 private:
     std::shared_ptr<TextOption> m_titleOption;
