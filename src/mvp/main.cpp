@@ -238,7 +238,7 @@ void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
 void CreateHelpMenu() {
     auto helpMenu = std::make_shared<UI::menu::Menu>(
         "Welcome to admirals conquest!", Color::BLACK,
-        Color::FromRGBA(20, 20, 20, 140), 100);
+        Color::FromRGBA(70, 70, 70, 140), 100);
     GameData::engine->AddLayer(GameData::HelpMenuIdx, helpMenu, false);
 
     std::vector<std::string> sentences = {
