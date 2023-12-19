@@ -109,9 +109,7 @@ void NetworkManager::ReadyUp() {
 
 void NetworkManager::HandleMessages() {
     if (!IsConnected()) {
-        if (m_gameManager.GameStarted()) {
-            m_gameManager.AbortGame();
-        }
+        m_gameManager.AbortGame();
         return;
     }
 

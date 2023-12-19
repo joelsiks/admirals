@@ -87,7 +87,11 @@ void MenuManager::ToggleOpponentDisconnectMenu() {
 }
 
 void MenuManager::ToggleServerDisconnectMenu() {
-    GameData::engine->ToggleLayer(GameData::GameUIIdx);
+    if (GameData::engine->LayerIsActive(m_opponentDisconnectIdx)) {
+        GameData::engine->ToggleLayer(m_opponentDisconnectIdx);
+    } else {
+        GameData::engine->ToggleLayer(GameData::GameUIIdx);
+    }
     GameData::engine->ToggleLayer(m_serverDisconnectIdx);
 }
 
