@@ -1,7 +1,7 @@
 #include "objects/Sprite.hpp"
-#include "Animator.hpp"
 #include "GameData.hpp"
 #include "Renderer.hpp"
+#include "managers/Animator.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;

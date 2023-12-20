@@ -38,16 +38,19 @@ Engine::SetAndGetScene(const std::shared_ptr<Scene> &scene) {
     m_scene = scene;
 
     // Initialize the scene immediately after swapping if it isn't already.
-    if (hasScene() && !m_scene->IsInitialized()) {
-        m_scene->OnStart(m_context);
+    if (scene != nullptr && !scene->IsInitialized()) {
+        scene->OnStart(m_context);
     }
 
-    m_scene->OnShown();
+    if (scene != nullptr) {
+        scene->OnShown();
 
-    SDL_MouseMotionEvent motionEvent;
-    motionEvent.state = SDL_GetMouseState(&motionEvent.x, &motionEvent.y);
-    events::MouseMotionEventArgs args(motionEvent);
-    m_scene->OnMouseMove(args);
+        SDL_MouseMotionEvent motionEvent;
+        motionEvent.state = SDL_GetMouseState(&motionEvent.x, &motionEvent.y);
+        events::MouseMotionEventArgs args(motionEvent);
+
+        scene->OnMouseMove(args);
+    }
 
     return currentScene;
 }
@@ -175,8 +178,7 @@ void Engine::StartGameLoop() {
         m_scene->OnStart(GetContext());
     }
 
-    std::vector<std::shared_ptr<IDisplayLayer>> layers(m_activeLayers.size() +
-                                                       1);
+    std::vector<std::shared_ptr<IDisplayLayer>> layers = {m_scene};
 
     // Start render loop
     bool quit = false;
@@ -184,7 +186,6 @@ void Engine::StartGameLoop() {
         std::chrono::high_resolution_clock::now();
 
     while (!quit) {
-        layers[0] = m_scene;
 
         const auto now = std::chrono::high_resolution_clock::now();
         m_context.deltaTime =
@@ -199,9 +200,13 @@ void Engine::StartGameLoop() {
         }
 
         HandleDeferredLayerActions();
-        layers.resize(m_activeLayers.size() + 1);
+        const size_t newSize = m_activeLayers.size() + 1;
+        if (layers.size() != newSize) {
+            layers.resize(newSize);
+        }
 
         size_t i = 1;
+        layers[0] = m_scene;
         for (const auto &layerIdx : m_activeLayers) {
             layers[i] = m_layers[layerIdx];
             i++;

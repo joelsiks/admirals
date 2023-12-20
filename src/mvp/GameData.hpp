@@ -4,8 +4,8 @@
 #include <sstream>
 
 #include "Engine.hpp"
-#include "objects/Animator.hpp"
-#include "objects/SelectionManager.hpp"
+#include "managers/Animator.hpp"
+#include "managers/SelectionManager.hpp"
 
 namespace admirals::mvp {
 
@@ -18,6 +18,7 @@ public:
     inline static std::unique_ptr<Engine> engine = nullptr;
     inline static std::shared_ptr<NavMesh> navMesh = nullptr;
 
+    inline static std::shared_ptr<Scene> GameScene = nullptr;
     inline static std::shared_ptr<Scene> StartMenuScene = nullptr;
     inline static std::shared_ptr<Scene> SceneStore = nullptr;
 

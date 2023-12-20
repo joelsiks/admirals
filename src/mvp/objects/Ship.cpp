@@ -70,7 +70,7 @@ Ship::Ship(const ShipData &data, const Vector2 &size, const Texture &source)
       m_data(data) {}
 
 Ship::~Ship() {
-    if (IsOwned()) {
+    if (IsOwned() && GameData::engine != nullptr) {
         GameData::engine->onMouseClick -= BIND_EVENT_HANDLER(Ship::HandleClick);
     }
 }

@@ -66,11 +66,7 @@ public:
     }
 
     inline bool LayerIsActive(size_t idx) {
-        if (!m_layers.contains(idx)) {
-            return false;
-        }
-
-        return m_activeLayers.find(idx) != m_activeLayers.end();
+        return m_layers.contains(idx) && m_activeLayers.contains(idx);
     }
 
     inline void ActivateLayer(size_t idx) {
@@ -102,6 +98,15 @@ public:
         }
     }
 
+    /// @brief Creates a new UI `Element` in the given layer and returns a
+    /// shared pointer to it.
+    /// @tparam T The type of the `Element`, must extend the `Element`
+    /// class
+    /// @tparam ..._Args The types of the constructor arguments to the
+    /// `Element` type
+    /// @param layerIdx The index of the layer to insert the `Element` into
+    /// @param ..._args The constructor arguments to the `Element` type
+    /// @return A shared pointer to the newly created `Element`
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeUIElement(size_t layerIdx, _Args &&..._args) {
         auto object = std::make_shared<T>(_args...);
@@ -109,6 +114,14 @@ public:
         return object;
     }
 
+    /// @brief Creates a new `GameObject` in the current scene and returns a
+    /// shared pointer to it.
+    /// @tparam T The type of the `GameObject`, must extend the `GameObject`
+    /// class
+    /// @tparam ..._Args The types of the constructor arguments to the
+    /// `GameObject` type
+    /// @param ..._args The constructor arguments to the `GameObject` type
+    /// @return A shared pointer to the newly created `GameObject`
     template <typename T, typename... _Args>
     inline std::shared_ptr<T> MakeGameObject(_Args &&..._args) {
         auto object = std::make_shared<T>(std::forward<_Args>(_args)...);

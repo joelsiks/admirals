@@ -1,6 +1,6 @@
-#include "objects/SelectionManager.hpp"
+#include "managers/SelectionManager.hpp"
 #include "GameData.hpp"
-#include "Ship.hpp"
+#include "objects/Ship.hpp"
 
 using namespace admirals;
 using namespace admirals::mvp::objects;
