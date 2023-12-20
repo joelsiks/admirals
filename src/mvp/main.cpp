@@ -214,8 +214,6 @@ void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
         });
 }
 
-void CreateSelectionManager() {}
-
 int main(int, char *[]) {
     GameData::engine = std::make_unique<Engine>(
         "Admirals", GridWidth, GridHeight,
@@ -241,7 +239,6 @@ int main(int, char *[]) {
     CreateStartMenu(gameManager);
     CreateStartMenuScene(atlas);
     CreateConnectMenu(gameManager);
-    // CreateSelectionManager();
 
     Vector2 mouseDownLocation;
     bool mouseIsDown;
