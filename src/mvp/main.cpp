@@ -246,7 +246,7 @@ void CreateHelpMenu() {
         "Spend gold to buy ships.",
         "Buy ships by clicking the ship icons.",
         "Gold generates passively.",
-        "Islands give extra gold.",
+        "Place ships by islands for bonus gold.",
         "Select ships by clicking on them.",
         "You can also drag to select multiple.",
         "Click on the grid to move ships.",
