@@ -138,8 +138,8 @@ void GameManager::UpdateBoard(int turn, int coins,
 }
 
 void GameManager::PlayAgain() {
-    ResetState(false);
     m_menuManager->ToggleEndGameMenu();
+    ResetState(false);
     ReadyUp();
 }
 
@@ -168,6 +168,7 @@ void GameManager::ResetState(bool removeConnection) {
 
     if (removeConnection) {
         m_networkManager->StopServer();
+        m_networkManager->Disconnect();
         GameData::engine->GetScene()->RemoveDisplayable("networkManager");
         m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
             "networkManager", (*this));

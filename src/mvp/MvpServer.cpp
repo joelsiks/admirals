@@ -14,12 +14,10 @@ void MvpServer::OnClientDisconnect(const std::shared_ptr<Connection> &client) {
     if (client->GetID() == m_playerTop.id) {
         m_playerTop.ready = false;
         m_playerTop.connected = false;
-        m_playerTop.id = 0;
         m_connectedPlayers--;
     } else if (client->GetID() == m_playerBottom.id) {
         m_playerBottom.ready = false;
         m_playerBottom.connected = false;
-        m_playerBottom.id = 0;
         m_connectedPlayers--;
     }
 
