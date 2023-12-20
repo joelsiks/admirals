@@ -10,6 +10,8 @@
 #include "managers/SelectionManager.hpp"
 #include "managers/UIManager.hpp"
 #include "objects/Background.hpp"
+#include "objects/Decoration.hpp"
+#include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
 #include "objects/IconifiedButton.hpp"
 #include "objects/MenuMovingShip.hpp"
@@ -69,6 +71,20 @@ void CreateGameBoard(const Texture &atlas) {
              static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
              GameData::CellSize * 3),
         green);
+
+    for (int x = 0; x < GameData::GridCells; x++) {
+        for (int y = 0; y < GameData::GridCells; y++) {
+            if ((x == 0 && y < 3) ||
+                (x == GameData::GridCells && y > (GameData::GridCells - 3))) {
+                continue;
+            }
+            GameData::engine->MakeGameObject<Decoration>(
+                "water" + std::to_string(x) + std::to_string(y), atlas, 1, 0,
+                Rect(static_cast<float>(x), static_cast<float>(y),
+                     GameData::CellSize, GameData::CellSize));
+        }
+    }
+
     int index = 0;
     for (const auto &islandLocation : IslandLocations) {
         GameData::GameScene->MakeGameObject<TreasureIsland>(

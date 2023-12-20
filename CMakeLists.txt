@@ -62,6 +62,7 @@ set(MVP_SOURCES
     src/mvp/objects/Ship.cpp
     src/mvp/objects/Sprite.cpp
     src/mvp/objects/TreasureIsland.cpp
+    src/mvp/objects/Decoration.cpp
 )
 
 set(INCLUDE_DIRS
