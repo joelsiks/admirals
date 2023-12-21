@@ -139,6 +139,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     helpOption->onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed && args.button == events::MouseButton::Left) {
+                args.handled = true;
                 ToggleHelpMenu();
             }
         });
@@ -149,6 +150,7 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
     connectOption->onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed && args.button == events::MouseButton::Left) {
+                args.handled = true;
                 ToggleConnectMenu();
             }
         });
@@ -237,7 +239,7 @@ void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
 
 void CreateHelpMenu() {
     auto helpMenu = std::make_shared<UI::menu::Menu>(
-        "Welcome to admirals conquest!", Color::BLACK,
+        "Welcome to Admirals Conquest!", Color::BLACK,
         Color::FromRGBA(70, 70, 70, 140), 100);
     GameData::engine->AddLayer(GameData::HelpMenuIdx, helpMenu, false);
 
@@ -246,7 +248,7 @@ void CreateHelpMenu() {
         "Spend gold to buy ships.",
         "Buy ships by clicking the ship icons.",
         "Gold generates passively.",
-        "Place ships by islands for bonus gold.",
+        "Place ships by islands for bonus gold.\ntest123",
         "Select ships by clicking on them.",
         "You can also drag to select multiple.",
         "Click on the grid to move ships.",
