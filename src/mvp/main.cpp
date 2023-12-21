@@ -51,6 +51,11 @@ void ToggleConnectMenu() {
     GameData::engine->ToggleLayer(GameData::ConnectMenuIdx);
 }
 
+void ToggleHelpMenu() {
+    GameData::engine->ToggleLayer(GameData::StartMenuIdx);
+    GameData::engine->ToggleLayer(GameData::HelpMenuIdx);
+}
+
 void CreateGameBoard(const Texture &atlas) {
     GameData::GameScene->MakeGameObject<Background>("background", blue,
                                                     Color::BLACK);
@@ -131,11 +136,22 @@ void CreateStartMenu(const std::shared_ptr<GameManager> &gameManager) {
             }
         });
 
+    auto helpOption = startMenu->MakeMenuOption<UI::menu::ClickOption>(
+        "helpOption", 1.0, "How to play");
+    helpOption->onClick.Subscribe(
+        [gameManager](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed && args.button == events::MouseButton::Left) {
+                args.handled = true;
+                ToggleHelpMenu();
+            }
+        });
+
     auto connectOption = startMenu->MakeMenuOption<UI::menu::ClickOption>(
         "connectOption", 1.0, "Connect to server");
     connectOption->onClick.Subscribe(
         [gameManager](void *, events::MouseClickEventArgs &args) {
             if (args.pressed && args.button == events::MouseButton::Left) {
+                args.handled = true;
                 ToggleConnectMenu();
             }
         });
@@ -214,6 +230,44 @@ void CreateConnectMenu(const std::shared_ptr<GameManager> &gameManager) {
         });
 }
 
+void CreateHelpMenu() {
+    auto helpMenu = std::make_shared<UI::menu::Menu>(
+        "Welcome to Admirals Conquest!", Color::BLACK,
+        Color::FromRGBA(70, 70, 70, 140), 100);
+    GameData::engine->AddLayer(GameData::HelpMenuIdx, helpMenu, false);
+
+    std::vector<std::string> sentences = {
+        "Win by destroying the enemy base.",
+        "Spend gold to buy ships.",
+        "Buy ships by clicking the ship icons.",
+        "Gold generates passively.",
+        "Place ships by islands for bonus gold.",
+        "Select ships by clicking on them.",
+        "You can also drag to select multiple.",
+        "Click on the grid to move ships.",
+        "Click on enemy ships to attack them.",
+        "Click on the enemy base to attack it.",
+        ""};
+
+    float order = sentences.size() + 1;
+    for (const auto &sentence : sentences) {
+        auto text = std::make_shared<UI::menu::TextOption>(
+            "helpText" + std::to_string(order), order--, sentence);
+        helpMenu->AddDisplayable(text);
+    }
+
+    auto returnOption = std::make_shared<UI::menu::ClickOption>(
+        "returnOption", order--, "Return");
+    returnOption->onClick.Subscribe(
+        [](void *, events::MouseClickEventArgs &args) {
+            if (args.pressed && args.button == events::MouseButton::Left) {
+                ToggleHelpMenu();
+            }
+        });
+
+    helpMenu->AddDisplayable(returnOption);
+}
+
 int main(int, char *[]) {
     GameData::engine = std::make_unique<Engine>(
         "Admirals", GridWidth, GridHeight,
@@ -239,6 +293,7 @@ int main(int, char *[]) {
     CreateStartMenu(gameManager);
     CreateStartMenuScene(atlas);
     CreateConnectMenu(gameManager);
+    CreateHelpMenu();
 
     Vector2 mouseDownLocation;
     bool mouseIsDown;
