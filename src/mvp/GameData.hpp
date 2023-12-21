@@ -24,6 +24,7 @@ public:
     static constexpr size_t StartMenuIdx = 0;
     static constexpr size_t GameUIIdx = 1;
     static constexpr size_t ConnectMenuIdx = 2;
+    static constexpr size_t HelpMenuIdx = 3;
 
     inline static std::shared_ptr<objects::SelectionManager> Selection;
     inline static std::shared_ptr<objects::Animator> Animator;
