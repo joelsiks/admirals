@@ -168,11 +168,25 @@ public:
         return std::sqrt(m_0 * m_0 + m_1 * m_1 + m_2 * m_2);
     }
 
+    /// @brief The Euclidean distance between two points.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
     inline float Distance(const Vector3 &v) const {
         const float a = m_0 - v.m_0;
         const float b = m_1 - v.m_1;
         const float c = m_2 - v.m_2;
         return std::sqrt(a * a + b * b + c * c);
+    }
+
+    /// @brief A variant of the Manhattan distance between two points, giving
+    /// the maximum distance between each component in the vectors.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
+    inline float MaxDistance(const Vector3 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        const float c = m_2 - v.m_2;
+        return std::max(std::max(std::abs(a), std::abs(b)), std::abs(c));
     }
 
     inline Vector3 &operator=(float &in) {
@@ -297,12 +311,28 @@ public:
         return std::sqrt(m_0 * m_0 + m_1 * m_1 + m_2 * m_2 + m_3 * m_3);
     }
 
+    /// @brief The Euclidean distance between two points.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
     inline float Distance(const Vector4 &v) const {
         const float a = m_0 - v.m_0;
         const float b = m_1 - v.m_1;
         const float c = m_2 - v.m_2;
         const float d = m_3 - v.m_3;
         return std::sqrt(a * a + b * b + c * c + d * d);
+    }
+
+    /// @brief A variant of the Manhattan distance between two points, giving
+    /// the maximum distance between each component in the vectors.
+    /// @param v The point to measure the distance to.
+    /// @return The distance between the two points.
+    inline float MaxDistance(const Vector4 &v) const {
+        const float a = m_0 - v.m_0;
+        const float b = m_1 - v.m_1;
+        const float c = m_2 - v.m_2;
+        const float d = m_3 - v.m_3;
+        return std::max(std::max(std::abs(a), std::abs(b)),
+                        std::max(std::abs(c), std::abs(d)));
     }
 
     inline Vector4 &operator=(float &in) {
