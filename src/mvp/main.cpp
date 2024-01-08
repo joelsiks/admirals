@@ -58,20 +58,8 @@ void ToggleHelpMenu() {
     GameData::engine->ToggleLayer(GameData::HelpMenuIdx);
 }
 
-void CreateGameBoard(const Texture &atlas) {
-    GameData::GameScene->MakeGameObject<Background>("background", blue,
-                                                    Color::BLACK);
-    GameData::GameScene->MakeGameObject<Grid>("grid", Color::BLACK);
-    GameData::GameScene->MakeGameObject<Quad>(
-        "islandLeft", 2, Rect(0, 0, GameData::CellSize, GameData::CellSize * 3),
-        green);
-    GameData::GameScene->MakeGameObject<Quad>(
-        "islandRight", 2,
-        Rect(static_cast<float>(GameData::GridCells) - 1,
-             static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
-             GameData::CellSize * 3),
-        green);
-
+void GenerateTreasureIsland(const Texture &atlas) {
+    // generate island
     int index = 0;
     for (const auto &islandLocation : IslandLocations) {
         GameData::GameScene->MakeGameObject<TreasureIsland>(
@@ -88,30 +76,7 @@ void CreateGameBoard(const Texture &atlas) {
                  GameData::CellSize));
     }
 
-    for (int x = 0; x < GameData::GridCells; x++) {
-        for (int y = 0; y < GameData::GridCells; y++) {
-            if ((x < 2 && y < 4) || (x >= (GameData::GridCells - 2) &&
-                                     y >= (GameData::GridCells - 4))) {
-                continue;
-            }
-            bool islandFound = false;
-            for (const auto &islandLocation : IslandLocations) {
-                if ((x >= islandLocation.x - 1 && x <= islandLocation.x + 1) &&
-                    (y >= islandLocation.y - 1 && y <= islandLocation.y + 1)) {
-                    islandFound = true;
-                    break;
-                }
-            }
-            if (islandFound) {
-                continue;
-            }
-            GameData::engine->MakeGameObject<Decoration>(
-                "water" + std::to_string(x) + std::to_string(y), atlas, 1,
-                Vector2(9, 2), 0,
-                Rect(static_cast<float>(x), static_cast<float>(y),
-                     GameData::CellSize, GameData::CellSize));
-        }
-    }
+    // generate water edges around island
     std::vector<Vector2> spriteoffset = {
         Vector2(6, 2), Vector2(9, 3), Vector2(5, 2),  Vector2(11, 2),
         Vector2(8, 1), Vector2(6, 1), Vector2(10, 0), Vector2(5, 1)};
@@ -133,7 +98,38 @@ void CreateGameBoard(const Texture &atlas) {
             }
         }
     }
+}
 
+void GenerateWater(const Texture &atlas) {
+    // generate water
+    for (int x = 0; x < GameData::GridCells; x++) {
+        for (int y = 0; y < GameData::GridCells; y++) {
+            // avoid base islands
+            if ((x < 2 && y < 4) || (x >= (GameData::GridCells - 2) &&
+                                     y >= (GameData::GridCells - 4))) {
+                continue;
+            }
+            // avoid treasure islands
+            bool islandFound = false;
+            for (const auto &islandLocation : IslandLocations) {
+                if ((x >= islandLocation.x - 1 && x <= islandLocation.x + 1) &&
+                    (y >= islandLocation.y - 1 && y <= islandLocation.y + 1)) {
+                    islandFound = true;
+                    break;
+                }
+            }
+            if (islandFound) {
+                continue;
+            }
+            GameData::engine->MakeGameObject<Decoration>(
+                "water" + std::to_string(x) + std::to_string(y), atlas, 1,
+                Vector2(9, 2), 0,
+                Rect(static_cast<float>(x), static_cast<float>(y),
+                     GameData::CellSize, GameData::CellSize));
+        }
+    }
+
+    // generate water edges at the base islands
     for (int y = 0; y < 3; y++) {
         GameData::engine->MakeGameObject<Decoration>(
             "wateredgetop" + std::to_string(y), atlas, 1, Vector2(8, 1), 0,
@@ -166,7 +162,27 @@ void CreateGameBoard(const Texture &atlas) {
         Rect(static_cast<float>(GameData::GridCells - 1),
              static_cast<float>(GameData::GridCells - 4), GameData::CellSize,
              GameData::CellSize));
+}
 
+void CreateGameBoard(const Texture &atlas) {
+    GameData::engine->MakeGameObject<Background>("background", blue,
+                                                 Color::BLACK);
+    GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
+
+    GameData::engine->MakeGameObject<Quad>(
+        "islandLeft", 2, Rect(0, 0, GameData::CellSize, GameData::CellSize * 3),
+        green);
+    GameData::engine->MakeGameObject<Quad>(
+        "islandRight", 2,
+        Rect(static_cast<float>(GameData::GridCells) - 1,
+             static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
+             GameData::CellSize * 3),
+        green);
+
+    GenerateTreasureIsland(atlas);
+    GenerateWater(atlas);
+
+    // generate additional decorations
     GameData::engine->MakeGameObject<Decoration>(
         "ring", atlas, 4, Vector2(), 2,
         Rect(static_cast<float>(0), static_cast<float>(GameData::GridCells - 1),
