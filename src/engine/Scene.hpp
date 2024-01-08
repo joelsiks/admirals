@@ -6,6 +6,7 @@
 
 #include "GameObject.hpp"
 #include "IDisplayLayer.hpp"
+#include "IInteractiveDisplayable.hpp"
 #include "NavMesh.hpp"
 
 namespace admirals {
