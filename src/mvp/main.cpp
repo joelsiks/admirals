@@ -11,7 +11,6 @@
 #include "managers/UIManager.hpp"
 #include "objects/Background.hpp"
 #include "objects/Decoration.hpp"
-#include "objects/GameManager.hpp"
 #include "objects/Grid.hpp"
 #include "objects/IconifiedButton.hpp"
 #include "objects/MenuMovingShip.hpp"
@@ -68,7 +67,7 @@ void GenerateTreasureIsland(const Texture &atlas) {
                  static_cast<float>(islandLocation.y), GameData::CellSize,
                  GameData::CellSize));
 
-        GameData::engine->MakeGameObject<Decoration>(
+        GameData::GameScene->MakeGameObject<Decoration>(
             "treasureIslandBeach" + std::to_string(index), atlas, 2, Vector2(),
             0,
             Rect(static_cast<float>(islandLocation.x),
@@ -87,7 +86,7 @@ void GenerateTreasureIsland(const Texture &atlas) {
                 if (dx == 0 && dy == 0) {
                     continue;
                 }
-                GameData::engine->MakeGameObject<Decoration>(
+                GameData::GameScene->MakeGameObject<Decoration>(
                     "wateredgeisland" + std::to_string(islandLocation.x + dx) +
                         std::to_string(islandLocation.y + dy),
                     atlas, 1, spriteoffset[index], 0,
@@ -121,7 +120,7 @@ void GenerateWater(const Texture &atlas) {
             if (islandFound) {
                 continue;
             }
-            GameData::engine->MakeGameObject<Decoration>(
+            GameData::GameScene->MakeGameObject<Decoration>(
                 "water" + std::to_string(x) + std::to_string(y), atlas, 1,
                 Vector2(9, 2), 0,
                 Rect(static_cast<float>(x), static_cast<float>(y),
@@ -131,33 +130,33 @@ void GenerateWater(const Texture &atlas) {
 
     // generate water edges at the base islands
     for (int y = 0; y < 3; y++) {
-        GameData::engine->MakeGameObject<Decoration>(
+        GameData::GameScene->MakeGameObject<Decoration>(
             "wateredgetop" + std::to_string(y), atlas, 1, Vector2(8, 1), 0,
             Rect(static_cast<float>(1), static_cast<float>(y),
                  GameData::CellSize, GameData::CellSize));
     }
-    GameData::engine->MakeGameObject<Decoration>(
+    GameData::GameScene->MakeGameObject<Decoration>(
         "wateredgetop3", atlas, 1, Vector2(5, 1), 0,
         Rect(static_cast<float>(1), static_cast<float>(3), GameData::CellSize,
              GameData::CellSize));
-    GameData::engine->MakeGameObject<Decoration>(
+    GameData::GameScene->MakeGameObject<Decoration>(
         "wateredgetop4", atlas, 1, Vector2(10, 0), 0,
         Rect(static_cast<float>(0), static_cast<float>(3), GameData::CellSize,
              GameData::CellSize));
 
     for (int y = 0; y < 3; y++) {
-        GameData::engine->MakeGameObject<Decoration>(
+        GameData::GameScene->MakeGameObject<Decoration>(
             "wateredgebot" + std::to_string(y), atlas, 1, Vector2(11, 2), 0,
             Rect(static_cast<float>(GameData::GridCells - 2),
                  static_cast<float>(GameData::GridCells - 1 - y),
                  GameData::CellSize, GameData::CellSize));
     }
-    GameData::engine->MakeGameObject<Decoration>(
+    GameData::GameScene->MakeGameObject<Decoration>(
         "wateredgebot3", atlas, 1, Vector2(6, 2), 0,
         Rect(static_cast<float>(GameData::GridCells - 2),
              static_cast<float>(GameData::GridCells - 4), GameData::CellSize,
              GameData::CellSize));
-    GameData::engine->MakeGameObject<Decoration>(
+    GameData::GameScene->MakeGameObject<Decoration>(
         "wateredgebot4", atlas, 1, Vector2(9, 3), 0,
         Rect(static_cast<float>(GameData::GridCells - 1),
              static_cast<float>(GameData::GridCells - 4), GameData::CellSize,
@@ -165,14 +164,14 @@ void GenerateWater(const Texture &atlas) {
 }
 
 void CreateGameBoard(const Texture &atlas) {
-    GameData::engine->MakeGameObject<Background>("background", blue,
-                                                 Color::BLACK);
-    GameData::engine->MakeGameObject<Grid>("grid", Color::BLACK);
+    GameData::GameScene->MakeGameObject<Background>("background", blue,
+                                                    Color::BLACK);
+    GameData::GameScene->MakeGameObject<Grid>("grid", Color::BLACK);
 
-    GameData::engine->MakeGameObject<Quad>(
+    GameData::GameScene->MakeGameObject<Quad>(
         "islandLeft", 2, Rect(0, 0, GameData::CellSize, GameData::CellSize * 3),
         green);
-    GameData::engine->MakeGameObject<Quad>(
+    GameData::GameScene->MakeGameObject<Quad>(
         "islandRight", 2,
         Rect(static_cast<float>(GameData::GridCells) - 1,
              static_cast<float>(GameData::GridCells) - 3, GameData::CellSize,
@@ -183,11 +182,11 @@ void CreateGameBoard(const Texture &atlas) {
     GenerateWater(atlas);
 
     // generate additional decorations
-    GameData::engine->MakeGameObject<Decoration>(
+    GameData::GameScene->MakeGameObject<Decoration>(
         "ring", atlas, 4, Vector2(), 2,
         Rect(static_cast<float>(0), static_cast<float>(GameData::GridCells - 1),
              GameData::CellSize, GameData::CellSize));
-    GameData::engine->MakeGameObject<Decoration>(
+    GameData::GameScene->MakeGameObject<Decoration>(
         "waterGreen", atlas, 5, Vector2(), 2,
         Rect(static_cast<float>(GameData::GridCells - 1), static_cast<float>(0),
              GameData::CellSize, GameData::CellSize));
