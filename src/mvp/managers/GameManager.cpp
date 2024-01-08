@@ -1,17 +1,18 @@
-#include "objects/GameManager.hpp"
+#include "managers/GameManager.hpp"
 #include "events/EventArgs.hpp"
+#include "managers/MenuManager.hpp"
+#include "managers/NetworkManager.hpp"
 #include "objects/Base.hpp"
-#include "objects/MenuManager.hpp"
-#include "objects/NetworkManager.hpp"
 
 using namespace admirals::mvp::objects;
 
-GameManager::GameManager(const std::string &name, const Texture &atlas)
-    : GameObject(name, -10.f), m_atlas(atlas) {
-    m_networkManager = GameData::engine->MakeGameObject<NetworkManager>(
-        "networkManager", (*this));
-    m_menuManager =
-        GameData::engine->MakeGameObject<MenuManager>("menuManager", (*this));
+GameManager::GameManager(const std::string &name, const Texture &atlas,
+                         bool debug)
+    : GameObject(name, -10.f), m_atlas(atlas), m_debug(debug) {
+    m_networkManager = GameData::GameScene->MakeGameObject<NetworkManager>(
+        "networkManager", (*this), debug);
+    m_menuManager = GameData::GameScene->MakeGameObject<MenuManager>(
+        "menuManager", (*this));
 }
 
 GameManager::~GameManager() {}
@@ -36,6 +37,7 @@ bool GameManager::ConnectToServer(const std::string &ip, uint16_t port,
 void GameManager::StartGame() {
     m_gameStarted = true;
     m_waitingForOpponent = false;
+    m_menuManager->ShowGameMenu();
 }
 
 void GameManager::StopGame(uint8_t winner) {
@@ -43,7 +45,7 @@ void GameManager::StopGame(uint8_t winner) {
         return;
     }
     m_gameStarted = false;
-    m_menuManager->ToggleEndGameMenu(winner == m_playerId);
+    m_menuManager->ShowGameEndMenu(winner == m_playerId);
     if (m_debug) {
         printf("Game stopped\n");
     }
@@ -55,6 +57,7 @@ void GameManager::ReadyUp() {
     }
     m_waitingForOpponent = true;
     m_networkManager->ReadyUp();
+    m_menuManager->ShowWaitingMenu();
 }
 
 // Called when the server disconnects
@@ -64,7 +67,7 @@ void GameManager::AbortGame() {
     }
     m_gameStarted = false;
     m_waitingForOpponent = false;
-    m_menuManager->ToggleServerDisconnectMenu();
+    m_menuManager->ShowServerDisconnectMenu();
     if (m_debug) {
         printf("Game aborted\n");
     }
@@ -72,12 +75,12 @@ void GameManager::AbortGame() {
 
 void GameManager::PauseGame() {
     m_gamePaused = true;
-    m_menuManager->ToggleOpponentDisconnectMenu();
+    m_menuManager->ShowOpponentDisconnectMenu();
 }
 
 void GameManager::ResumeGame() {
     if (m_gamePaused) {
-        m_menuManager->ToggleOpponentDisconnectMenu();
+        m_menuManager->ShowGameMenu();
     }
     m_gamePaused = false;
     m_gameStarted = true;
@@ -138,7 +141,7 @@ void GameManager::UpdateBoard(int turn, int coins,
 }
 
 void GameManager::PlayAgain() {
-    m_menuManager->ToggleEndGameMenu();
+    m_menuManager->ShowGameMenu();
     ResetState(false);
     ReadyUp();
 }

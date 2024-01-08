@@ -1,8 +1,8 @@
-#include "objects/MenuManager.hpp"
+#include "managers/MenuManager.hpp"
 #include "CommonTypes.hpp"
 #include "UI/menu/Menu.hpp"
 #include "UI/menu/MenuOption.hpp"
-#include "objects/GameManager.hpp"
+#include "managers/GameManager.hpp"
 
 using namespace admirals;
 using namespace admirals::UI;
@@ -26,6 +26,10 @@ void MenuManager::OnStart(const EngineContext &) {
     m_endGameMenu = std::make_shared<menu::Menu>(
         "", Color::BLACK, Color::FromRGBA(50, 50, 50, 240),
         GameData::engine->GetWindowSize().y() / 3.0);
+
+    m_waitingMenu = std::make_shared<UI::menu::Menu>(
+        "Waiting for Opponent...", Color::BLACK,
+        Color::FromRGBA(20, 20, 20, 140), 100);
 
     const auto returnToMenuOption = std::make_shared<menu::ClickOption>(
         "returnToMenuOption", 1.0, "Return to menu");
@@ -66,52 +70,56 @@ void MenuManager::OnStart(const EngineContext &) {
     m_endGameMenu->AddDisplayable(returnToMenuOption);
     m_endGameMenu->AddDisplayable(playAgainOption);
 
-    GameData::engine->AddLayer(
-        m_opponentDisconnectIdx,
-        std::dynamic_pointer_cast<IDisplayLayer>(m_opponentDisconnectMenu),
-        false);
-    GameData::engine->AddLayer(
-        m_serverDisconnectIdx,
-        std::dynamic_pointer_cast<IDisplayLayer>(m_serverDisconnectMenu),
-        false);
-    GameData::engine->AddLayer(
-        m_endGameIdx, std::dynamic_pointer_cast<IDisplayLayer>(m_endGameMenu),
-        false);
+    GameData::engine->AddLayer(OpponentDisconnectMenuIdx,
+                               m_opponentDisconnectMenu, false);
+    GameData::engine->AddLayer(ServerDisconnectMenuIdx, m_serverDisconnectMenu,
+                               false);
+    GameData::engine->AddLayer(EndGameMenuIdx, m_endGameMenu, false);
+    GameData::engine->AddLayer(WaitingMenuMenuIdx, m_waitingMenu, false);
 }
 
 void MenuManager::OnUpdate(const EngineContext &) {}
 
-void MenuManager::ToggleOpponentDisconnectMenu() {
-    GameData::engine->ToggleLayer(GameData::GameUIIdx);
-    GameData::engine->ToggleLayer(m_opponentDisconnectIdx);
+void MenuManager::ShowOpponentDisconnectMenu() const {
+    GameData::engine->ActivateLayer(OpponentDisconnectMenuIdx);
+    GameData::engine->DeactivateLayer(GameData::GameUIIdx);
+    GameData::engine->DeactivateLayer(ServerDisconnectMenuIdx);
 }
 
-void MenuManager::ToggleServerDisconnectMenu() {
-    if (GameData::engine->LayerIsActive(m_opponentDisconnectIdx)) {
-        GameData::engine->ToggleLayer(m_opponentDisconnectIdx);
-    } else {
-        GameData::engine->ToggleLayer(GameData::GameUIIdx);
-    }
-    GameData::engine->ToggleLayer(m_serverDisconnectIdx);
+void MenuManager::ShowServerDisconnectMenu() const {
+    GameData::engine->ActivateLayer(ServerDisconnectMenuIdx);
+    GameData::engine->DeactivateLayer(GameData::GameUIIdx);
+    GameData::engine->DeactivateLayer(OpponentDisconnectMenuIdx);
 }
 
-void MenuManager::ToggleEndGameMenu(bool won) {
+void MenuManager::ShowWaitingMenu() const {
+    GameData::engine->ActivateLayer(WaitingMenuMenuIdx);
+    GameData::engine->DeactivateLayer(GameData::GameUIIdx);
+}
+
+void MenuManager::ShowGameEndMenu(bool won) {
+    ClearActiveMenus();
+    GameData::engine->ActivateLayer(EndGameMenuIdx);
     m_endGameMenu->SetTitle(won ? "You won!" : "You lost!");
-    GameData::engine->ToggleLayer(GameData::GameUIIdx);
-    GameData::engine->ToggleLayer(m_endGameIdx);
 }
 
-void MenuManager::ReturnToMenu() {
-    if (GameData::engine->LayerIsActive(m_opponentDisconnectIdx)) {
-        GameData::engine->ToggleLayer(m_opponentDisconnectIdx);
-    } else if (GameData::engine->LayerIsActive(m_serverDisconnectIdx)) {
-        GameData::engine->ToggleLayer(m_serverDisconnectIdx);
-    } else if (GameData::engine->LayerIsActive(m_endGameIdx)) {
-        GameData::engine->ToggleLayer(m_endGameIdx);
-    }
+void MenuManager::ShowGameMenu() const {
+    ClearActiveMenus();
+    GameData::engine->ActivateLayer(GameData::GameUIIdx);
+}
 
-    GameData::engine->ToggleLayer(GameData::StartMenuIdx);
+void MenuManager::ClearActiveMenus() const {
+    GameData::engine->DeactivateLayer(GameData::StartMenuIdx);
+    GameData::engine->DeactivateLayer(GameData::GameUIIdx);
+    GameData::engine->DeactivateLayer(GameData::ConnectMenuIdx);
+    GameData::engine->DeactivateLayer(WaitingMenuMenuIdx);
+    GameData::engine->DeactivateLayer(OpponentDisconnectMenuIdx);
+    GameData::engine->DeactivateLayer(ServerDisconnectMenuIdx);
+    GameData::engine->DeactivateLayer(EndGameMenuIdx);
+}
 
-    GameData::SceneStore =
-        GameData::engine->SetAndGetScene(GameData::SceneStore);
+void MenuManager::ReturnToMenu() const {
+    ClearActiveMenus();
+    GameData::engine->SetAndGetScene(GameData::StartMenuScene);
+    GameData::engine->ActivateLayer(GameData::StartMenuIdx);
 }

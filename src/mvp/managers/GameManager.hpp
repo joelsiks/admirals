@@ -26,7 +26,8 @@ public:
 
 class GameManager : public GameObject {
 public:
-    GameManager(const std::string &name, const Texture &m_atlas);
+    GameManager(const std::string &name, const Texture &m_atlas,
+                bool debug = false);
     ~GameManager();
 
     events::EventSystem<CoinsChangedEventArgs> onCoinsChanged;
@@ -97,7 +98,7 @@ private:
     std::shared_ptr<NetworkManager> m_networkManager;
     std::shared_ptr<MenuManager> m_menuManager;
 
-    bool m_debug = true;
+    bool m_debug = false;
 };
 
 } // namespace admirals::mvp::objects

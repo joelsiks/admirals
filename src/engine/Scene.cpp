@@ -1,6 +1,5 @@
 #include "Scene.hpp"
 #include "Engine.hpp"
-#include "IInteractiveDisplayable.hpp"
 #include "PathFinding.hpp"
 
 using namespace admirals;

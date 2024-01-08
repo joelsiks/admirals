@@ -17,19 +17,25 @@ public:
     void OnUpdate(const EngineContext &) override;
     void Render(const EngineContext &) const override {}
 
-    void ToggleOpponentDisconnectMenu();
-    void ToggleServerDisconnectMenu();
-    void ToggleEndGameMenu(bool won = false);
-    void ReturnToMenu();
+    void ShowOpponentDisconnectMenu() const;
+    void ShowServerDisconnectMenu() const;
+    void ShowWaitingMenu() const;
+    void ShowGameEndMenu(bool won = false);
+    void ShowGameMenu() const;
+    void ReturnToMenu() const;
 
 private:
+    void ClearActiveMenus() const;
+
     GameManager &m_gameManager;
     std::shared_ptr<admirals::UI::menu::Menu> m_opponentDisconnectMenu;
     std::shared_ptr<admirals::UI::menu::Menu> m_serverDisconnectMenu;
     std::shared_ptr<admirals::UI::menu::Menu> m_endGameMenu;
-    const size_t m_opponentDisconnectIdx = 11;
-    const size_t m_serverDisconnectIdx = 12;
-    const size_t m_endGameIdx = 13;
+    std::shared_ptr<admirals::UI::menu::Menu> m_waitingMenu;
+    static const size_t OpponentDisconnectMenuIdx = 11;
+    static const size_t ServerDisconnectMenuIdx = 12;
+    static const size_t EndGameMenuIdx = 13;
+    static const size_t WaitingMenuMenuIdx = 14;
     bool m_debug = false;
 };
 

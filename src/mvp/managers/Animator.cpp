@@ -1,6 +1,6 @@
 
 
-#include "Animator.hpp"
+#include "managers/Animator.hpp"
 #include "GameData.hpp"
 
 using namespace admirals;

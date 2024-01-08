@@ -1,4 +1,4 @@
-#include "objects/NetworkManager.hpp"
+#include "managers/NetworkManager.hpp"
 #include "CommonTypes.hpp"
 #include "MvpServer.hpp"
 
@@ -6,8 +6,8 @@ using namespace admirals::mvp::objects;
 using namespace admirals::net;
 
 NetworkManager::NetworkManager(const std::string &name,
-                               GameManager &gameManager)
-    : GameObject(name), m_gameManager(gameManager) {}
+                               GameManager &gameManager, bool debug)
+    : GameObject(name), m_gameManager(gameManager), m_debug(debug) {}
 
 NetworkManager::~NetworkManager() { StopServer(); }
 

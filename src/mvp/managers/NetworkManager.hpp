@@ -3,14 +3,15 @@
 #include "GameData.hpp"
 #include "GameObject.hpp"
 #include "UI/TextElement.hpp"
-#include "objects/GameManager.hpp"
+#include "managers/GameManager.hpp"
 
 namespace admirals::mvp::objects {
 
 class NetworkManager : public GameObject, public net::Client {
 
 public:
-    NetworkManager(const std::string &name, GameManager &gameManager);
+    NetworkManager(const std::string &name, GameManager &gameManager,
+                   bool debug = false);
     ~NetworkManager();
 
     void OnStart(const EngineContext &ctx) override;
