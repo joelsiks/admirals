@@ -8,7 +8,14 @@ using namespace ::admirals::mvp::objects;
 TreasureIsland::TreasureIsland(const std::string &name, const Texture &source,
                                float order, const Rect &bounds)
     : Sprite(name, source, order, bounds,
-             Vector2(GameData::SpriteSize, GameData::SpriteSize * 0)) {}
+             {(Vector2(15, 2) * GameData::SpriteSize),
+              (Vector2(15, 2) * GameData::SpriteSize),
+              (Vector2(15, 2) * GameData::SpriteSize),
+              (Vector2(15, 2) * GameData::SpriteSize),
+              (Vector2(16, 2) * GameData::SpriteSize),
+              (Vector2(16, 2) * GameData::SpriteSize),
+              (Vector2(16, 2) * GameData::SpriteSize),
+              (Vector2(16, 2) * GameData::SpriteSize)}) {}
 
 void TreasureIsland::Render(const EngineContext &ctx) const {
     Sprite::Render(ctx);
