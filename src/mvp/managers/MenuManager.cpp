@@ -90,6 +90,7 @@ void MenuManager::ShowServerDisconnectMenu() const {
     GameData::engine->ActivateLayer(ServerDisconnectMenuIdx);
     GameData::engine->DeactivateLayer(GameData::GameUIIdx);
     GameData::engine->DeactivateLayer(OpponentDisconnectMenuIdx);
+    GameData::engine->DeactivateLayer(WaitingMenuMenuIdx);
 }
 
 void MenuManager::ShowWaitingMenu() const {
