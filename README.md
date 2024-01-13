@@ -15,17 +15,17 @@ Additional tools/libraries that are used by this project are:
 
 ## Cloning
 
-Start by cloning this repository and download all submodules needed using:
+Start by cloning this repository and downloading all the submodules using:
 ```bash
 git clone --recurse-submodules https://github.com/joelsiks/admirals.git
 ```
 
-You are also able to download/update dependencies using:
+You are also able to download/update submodules using:
 ```bash
 git submodule update --init --recursive
 ```
 
-Due to bad practice (and platform in-portability), the author(s) of Vulkan2D have named the include paths for SDL2 in Linux fashion, resulting in Windows developers not being able to include SDL using the *correct* paths. To fix this, run the following command which replaces the bad include paths with correct ones.
+Due to bad practice (and platform in-portability), the author(s) of Vulkan2D have named the include paths for SDL2 in Linux fashion, resulting in Windows developers not being able to include SDL using the *correct* paths. To fix this, run the following command which replaces the bad include paths with the correct format.
 ```bash
 find include/Vulkan2D/VK2D -type f -exec sed -i 's/<SDL2\//</g' {} +
 ```
@@ -50,7 +50,7 @@ cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER:FILEPATH=C:/msys64/ucrt64/bin/gc
 
 Although the game engine mainly supports Windows and likely works best there, the engine can be built on Linux due to the portability of the project's dependencies.
 
-You will need to meet the prerequisites listed [here](#prerequisites). Otherwise, the instructions are very similar to thise listen for [Windows](#building-on-windows-using-msys2).
+You will need to meet the prerequisites listed [here](#prerequisites). Otherwise, the instructions are very similar to those listed for [Windows](#building-on-windows-using-msys2).
 
 # Styling
 
@@ -71,7 +71,7 @@ Run the following command to format a single source file:
 clang-format --style=file -i <source_file>
 ```
 
-To format all files in the `src/` dir, run:
+To format all files in the `src/` directory, run:
 ```bash
 find src -name '*.cpp' -o -name '*.hpp' | xargs clang-format --style=file -i
 ```
@@ -92,11 +92,11 @@ sudo apt-get install clang-tidy
 
 Running/using clang-tidy might be different depending on the development environment you are using. There is always the option of running it from the command-line (preferably using `run-clang-tidy`).
 
-For Visual Studio Code users there is a settings template in `.vscode-template/settings.json` that includes the most important configuration for automatically running clang-tidy on file save, given that you have the [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) installed. Either move `.vscode-template/settings.json` into `.vsode/settings.json` or copy the contents into your existing `.vscode/settings.json`.
+For Visual Studio Code users, there is a settings template in `.vscode-template/settings.json` that includes the most important configuration for automatically running clang-tidy on file save, given that you have the [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) installed. Either move `.vscode-template/settings.json` into `.vsode/settings.json` or copy the contents into your existing `.vscode/settings.json`.
 
 ## Unit Tests
 
-We use cppunit for unit testing. It can be installed using the following commands:
+We use CppUnit for unit testing. It can be installed using the following commands:
 ```bash
 # MSYS2
 pacman -S --needed mingw-w64-ucrt-x86_64-cppunit
@@ -107,7 +107,7 @@ sudo apt-get install libcppunit-dev
 
 # Profiling
 
-The engine (specifically the test programs located in `src/test`) are most easiest to profile on Linux using `callgrind` (part of the valgrind tool) to manaually interpret using `kcachegrind`. You can install `valgrind` and `kcachegrind` using the following command:
+The engine (specifically the test programs located in `src/test`) are easiest to profile on Linux using `callgrind` (part of the valgrind tool) to manually interpret using `kcachegrind`. You can install `valgrind` and `kcachegrind` using the following command:
 ```bash
 # Ubuntu
 sudo apt-get install valgrind kcachegrind
@@ -115,7 +115,7 @@ sudo apt-get install valgrind kcachegrind
 
 ## Instructions
 
-To get results from callgrind that are (reasonably) good, it is prefered to link the Admirals engine statically in the CMakeLists.txt file. This is done by chaning the follow line:
+To get results from callgrind that are (reasonably) good, it is preferred to link the Admirals engine statically in the CMakeLists.txt file. This is done by changing the follow line:
 ```cmake
 # From
 add_library(engine SHARED ${SOURCES})
@@ -123,7 +123,7 @@ add_library(engine SHARED ${SOURCES})
 add_library(engine STATIC ${SOURCES})
 ```
 
-Also, to get information about the source code in the profiling results, add the following line to the top of the CMakeLists.txt file. This line adds debug info to the release build type, which is desireable since we also want to profile any optimizations that occur, which isn't the case for the debug build type.
+Also, to get information about the source code in the profiling results, add the following line to the top of the CMakeLists.txt file. This line adds debug info to the release build type, which is desirable since we also want to profile any optimizations that occur, which isn't the case for the debug build type.
 ```cmake
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 ```
